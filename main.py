@@ -622,7 +622,39 @@ def main(argv: list[str] | None = None) -> int:
 
 
     if ns.chat_jsonl:
-        session = JaznRuntimeSession(config, session_id=ns.session_id, no_carryover=ns.no_carryover)
+        sessions: dict[str, JaznRuntimeSession] = {}
+        generated_session: JaznRuntimeSession | None = None
+
+        def get_session(session_id: str | None, *, client: str) -> tuple[JaznRuntimeSession, str]:
+            nonlocal generated_session
+            if session_id:
+                if session_id not in sessions:
+                    sessions[session_id] = JaznRuntimeSession(
+                        config,
+                        session_id=session_id,
+                        no_carryover=ns.no_carryover,
+                        source_client=client,
+                    )
+                return sessions[session_id], "payload"
+            if ns.session_id:
+                if ns.session_id not in sessions:
+                    sessions[ns.session_id] = JaznRuntimeSession(
+                        config,
+                        session_id=ns.session_id,
+                        no_carryover=ns.no_carryover,
+                        source_client=client,
+                    )
+                return sessions[ns.session_id], "cli_arg"
+            if generated_session is None:
+                generated_session = JaznRuntimeSession(
+                    config,
+                    session_id=None,
+                    no_carryover=ns.no_carryover,
+                    source_client=client,
+                )
+                sessions[generated_session.state.session_id] = generated_session
+            return generated_session, "generated"
+
         try:
             for line in sys.stdin:
                 line=line.strip()
@@ -633,12 +665,24 @@ def main(argv: list[str] | None = None) -> int:
                 try:
                     payload=json.loads(line)
                     user_text=str(payload.get("user_text") or payload.get("text") or "")
+                    payload_session_id = str(payload.get("session_id") or "").strip() or None
+                    client = str(payload.get("client") or "chat_jsonl")
                 except Exception:
                     user_text=line
-                result=session.process_user_text(user_text, client="chat_jsonl")
+                    payload_session_id = None
+                    client = "chat_jsonl"
+                session, session_id_source = get_session(payload_session_id, client=client)
+                result=session.process_user_text(
+                    user_text,
+                    client=client,
+                    lifecycle="chat_jsonl_batch",
+                    session_id_source=session_id_source,
+                    process_reused=True,
+                )
                 print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
         finally:
-            session.close()
+            for session in sessions.values():
+                session.close()
         return 0
 
     if ns.export_system or ns.export_memory or ns.export_full or ns.export_nlp or ns.export_github_source_safe:
@@ -648,14 +692,18 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
+    if ns.chat_loop:
+        session = JaznRuntimeSession(config, session_id=ns.session_id, no_carryover=ns.no_carryover, source_client="chat")
+        try:
+            run_persistent_chat(session, session_id=ns.session_id, no_carryover=ns.no_carryover)
+        finally:
+            session.close()
+        return 0
+
     engine = JaznEngine(config)
     try:
         text = _message_from_remainder(ns.message)
-        if ns.chat_loop:
-            # W tym trybie runtime nie kończy działania po jednej odpowiedzi.
-            # `engine.shutdown()` nastąpi dopiero po wyjściu z pętli.
-            run_persistent_chat(engine, session_id=ns.session_id, no_carryover=ns.no_carryover)
-        elif ns.cognitive_frame:
+        if ns.cognitive_frame:
             packet = engine.build_cognitive_frame(text, client_context={"client": "chatgpt_cli_bridge", "lifecycle": "one_shot"})
             print(json.dumps(packet, ensure_ascii=False, indent=2, sort_keys=True))
         elif text:

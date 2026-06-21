@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import json, uuid
 from typing import Any
+import re
 
 SCHEMA_VERSION = "runtime_session_state/v14.8.2.4"
 
@@ -35,17 +36,74 @@ class RuntimeSessionStateStore:
     def __init__(self, root: Path) -> None:
         self.root = Path(root)
         self.path = self.root / "workspace_runtime" / "runtime_session_state.json"
+        self.last_load_metadata: dict[str, Any] = {
+            "session_loaded_from": "new",
+            "session_reused": False,
+            "session_resurrected_from_disk": False,
+        }
+        self.last_save_status: dict[str, Any] = {
+            "session_state_saved": False,
+            "session_state_path": str(self.path),
+        }
+
+    def _path_for_session(self, session_id: str | None) -> Path:
+        if not session_id:
+            return self.path
+        safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", session_id).strip("._") or "session"
+        return self.root / "workspace_runtime" / "runtime_sessions" / f"{safe}.json"
 
     def load_or_create(self, session_id: str | None = None, *, source_client: str = "unknown", no_carryover: bool = False) -> RuntimeSessionState:
-        if not no_carryover and self.path.exists():
-            try:
-                data = json.loads(self.path.read_text(encoding="utf-8"))
-                if session_id is None or data.get("session_id") == session_id:
-                    return RuntimeSessionState(**{k: data.get(k) for k in RuntimeSessionState.__dataclass_fields__ if k in data})
-            except Exception:
-                pass
-        return RuntimeSessionState.create(session_id=session_id, source_client=source_client)
+        requested_path = self._path_for_session(session_id)
+        legacy_path = self.path
+        self.path = requested_path
+        self.last_load_metadata = {
+            "session_loaded_from": "new",
+            "session_reused": False,
+            "session_resurrected_from_disk": False,
+        }
+        if not no_carryover:
+            candidates = [requested_path]
+            if session_id and legacy_path != requested_path:
+                candidates.append(legacy_path)
+            for candidate in candidates:
+                if not candidate.exists():
+                    continue
+                try:
+                    data = json.loads(candidate.read_text(encoding="utf-8"))
+                    if session_id is None or data.get("session_id") == session_id:
+                        self.path = requested_path
+                        self.last_load_metadata = {
+                            "session_loaded_from": "workspace_runtime",
+                            "session_reused": True,
+                            "session_resurrected_from_disk": True,
+                        }
+                        return RuntimeSessionState(**{k: data.get(k) for k in RuntimeSessionState.__dataclass_fields__ if k in data})
+                except Exception:
+                    self.last_load_metadata = {
+                        "session_loaded_from": "new",
+                        "session_reused": False,
+                        "session_resurrected_from_disk": False,
+                        "load_error": True,
+                    }
+                    pass
+        state = RuntimeSessionState.create(session_id=session_id, source_client=source_client)
+        self.path = self._path_for_session(state.session_id)
+        return state
 
-    def save(self, state: RuntimeSessionState) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(state.to_dict(), ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+    def save(self, state: RuntimeSessionState) -> dict[str, Any]:
+        try:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            self.path.write_text(json.dumps(state.to_dict(), ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8")
+            self.last_save_status = {
+                "session_state_saved": True,
+                "session_state_path": str(self.path),
+            }
+        except OSError as exc:
+            self.last_save_status = {
+                "session_state_saved": False,
+                "session_state_path": str(self.path),
+                "session_state_save_error_type": exc.__class__.__name__,
+                "session_state_save_error": str(exc),
+                "truth_boundary": "Sesja działa w pamięci procesu, ale zapis stanu sesji nie został potwierdzony.",
+            }
+        return dict(self.last_save_status)

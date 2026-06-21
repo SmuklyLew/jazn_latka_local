@@ -4,7 +4,7 @@ import cmd
 import json
 import sys
 from dataclasses import dataclass, asdict
-from typing import TextIO
+from typing import Any, TextIO
 
 from latka_jazn.core.engine import JaznEngine
 
@@ -47,7 +47,7 @@ class LatkaRuntimeShell(cmd.Cmd):
 
     def __init__(
         self,
-        engine: JaznEngine,
+        runtime: Any,
         *,
         stdin: TextIO | None = None,
         stdout: TextIO | None = None,
@@ -60,8 +60,10 @@ class LatkaRuntimeShell(cmd.Cmd):
             # Przy podanym stdin musimy czytać z tego strumienia, żeby testy,
             # pipe i bridge JSONL nie próbowały czytać globalnego sys.stdin.
             self.use_rawinput = False
-        self.engine = engine
-        self.session_id = session_id
+        self.runtime = runtime
+        self.engine = getattr(runtime, "engine", runtime)
+        self._session_id_source = "cli_arg" if session_id else "generated"
+        self.session_id = session_id or getattr(getattr(runtime, "state", None), "session_id", None)
         self.no_carryover = no_carryover
         input_stream = stdin if stdin is not None else sys.stdin
         try:
@@ -139,18 +141,28 @@ class LatkaRuntimeShell(cmd.Cmd):
             return self.do_status("")
         if text.startswith("/frame "):
             return self.do_frame(text.removeprefix("/frame ").strip())
-        envelope = self.engine.process_turn(
-            text,
-            client_context={
-                "client": "cli_persistent_chat",
-                "persistent_chat": True,
-                "lifecycle": "persistent_chat_loop",
-                "preview_phase": "same_pipeline_as_one_shot_process_turn",
-                "session_id": self.session_id,
-                "no_carryover": self.no_carryover,
-            },
-        )
-        visible = envelope.final_visible_text or envelope.final_response_contract.get("final_visible_text", "")
+        if hasattr(self.runtime, "process_user_text"):
+            result = self.runtime.process_user_text(
+                text,
+                client="chat",
+                lifecycle="persistent_chat_loop",
+                session_id_source=self._session_id_source,
+                process_reused=True,
+            )
+            visible = str(result.get("final_visible_text") or "")
+        else:
+            envelope = self.engine.process_turn(
+                text,
+                client_context={
+                    "client": "cli_persistent_chat",
+                    "persistent_chat": True,
+                    "lifecycle": "persistent_chat_loop",
+                    "preview_phase": "same_pipeline_as_one_shot_process_turn",
+                    "session_id": self.session_id,
+                    "no_carryover": self.no_carryover,
+                },
+            )
+            visible = envelope.final_visible_text or envelope.final_response_contract.get("final_visible_text", "")
         visible = self._protect_against_repeated_visible_text(user_text=text, visible_text=visible)
         self._write(visible)
         self._last_user_text = text
@@ -200,7 +212,7 @@ class LatkaRuntimeShell(cmd.Cmd):
 
 
 def run_persistent_chat(
-    engine: JaznEngine,
+    runtime: Any,
     *,
     stdin: TextIO | None = None,
     stdout: TextIO | None = None,
@@ -208,7 +220,7 @@ def run_persistent_chat(
     no_carryover: bool = False,
 ) -> RuntimeChatLifecycle:
     shell = LatkaRuntimeShell(
-        engine,
+        runtime,
         stdin=stdin,
         stdout=stdout,
         session_id=session_id,
