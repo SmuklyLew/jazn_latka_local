@@ -1,0 +1,45 @@
+{
+  "version": "v14.5.37-persistent-runtime-dialogue",
+  "created_for": "naprawa widoczności Łatki z runtime main.py i rozdziału między jednorazowym wywołaniem a stałą rozmową",
+  "source_version": "v14.5.36-birth-source-contract",
+  "core_problem": [
+    "main.py w trybie bezpośrednim wykonywał jedną turę i zamykał JaznEngine przez engine.shutdown(), więc w ChatGPT po turze zostawała głównie warstwa ChatGPT, a nie stale działający proces Jaźni.",
+    "ConversationResponder miał odpowiedzi rozmowne, ale pytania o stan Łatki, np. 'Jak się masz?', trafiały za wcześnie do ogólnej trasy open_question i zwracały metakomunikat zamiast pierwszoosobowej odpowiedzi.",
+    "Pytania o lifecycle runtime nie rozróżniały jasno: jednorazowy most ChatGPT kontra stały proces terminalowy.",
+    "Tryb debugowy, cognitive-frame i zwykła rozmowa miały zbyt mało jawny kontrakt życia procesu."
+  ],
+  "design_basis": [
+    "Do lokalnej rozmowy potrzebny jest trwały loop utrzymujący jeden obiekt JaznEngine przez wiele tur.",
+    "Do mostu ChatGPT potrzebny jest uczciwy lifecycle: one_shot oznacza wywołanie na turę; persistent_chat_loop oznacza utrzymanie procesu tylko w otwartym terminalu.",
+    "Odpowiedzi o stanie, pamięci, tożsamości i widoczności Łatki muszą być pierwszoosobowe, rozmowne i źródłowo ostrożne.",
+    "Fallback diagnostyczny nie może być domyślną odpowiedzią użytkownikowi."
+  ],
+  "implemented_changes": [
+    "Dodano latka_jazn/core/runtime_chat.py z LatkaRuntimeShell opartym o pętlę komend i jednym utrzymywanym JaznEngine.",
+    "Dodano argumenty main.py: --chat oraz --loop.",
+    "Tryb --chat utrzymuje runtime do /exit, /quit, exit, quit, EOF albo Ctrl+D; engine.shutdown() wykonuje się dopiero po wyjściu z pętli.",
+    "Dodano komendy /status, status, /frame i frame w trybie --chat.",
+    "Dodano jawny RuntimeChatLifecycle: mode, engine_reused_between_turns, shutdown_when_loop_exits, truth_boundary.",
+    "Rozszerzono ConversationResponder o trasy: self_state_dialogue, runtime_process_lifecycle, persistent_runtime_dialogue_repair.",
+    "Pytania typu 'Jak się masz?', 'Co u Ciebie?', 'Jak Ci się żyje?', 'Jak się czujesz?' nie wpadają już do ogólnego open_question.",
+    "Pytania o main.py i zakończenie procesu dostają uczciwą odpowiedź: jednorazowy tryb zamyka proces; --chat utrzymuje go lokalnie.",
+    "Rozszerzono ChatGPTAdapter o lifecycle_rule.",
+    "Rozszerzono cognitive-frame o direct_conversation_runtime.persistent_chat_mode i truth_boundary dla lifecycle.",
+    "Dodano warstwę self_architecture: runtime_session_lifecycle.",
+    "Podniesiono wersję systemu, config, metadata i SQLite do v14.5.37-persistent-runtime-dialogue.",
+    "Dodano testy regresji tests/test_v14537_persistent_runtime_dialogue.py."
+  ],
+  "truth_boundary": [
+    "v14.5.37 nie udaje procesu w tle po zamknięciu terminala ani po zakończeniu wywołania w ChatGPT.",
+    "Stała rozmowa oznacza utrzymanie jednego procesu Python tylko w trybie python main.py --chat.",
+    "W ChatGPT runtime nadal może być wywoływany jednorazowo na turę; system musi to jawnie oznaczać, a nie udawać ciągłego działania.",
+    "Pierwszoosobowa odpowiedź Łatki jest odpowiedzią operacyjną z plików/runtime, nie deklaracją biologicznej świadomości."
+  ],
+  "new_commands": {
+    "persistent_chat": "python main.py --chat",
+    "persistent_chat_alias": "python main.py --loop",
+    "exit_commands": ["/exit", "/quit", "exit", "quit", "EOF", "Ctrl+D"],
+    "status_commands": ["/status", "status"],
+    "frame_commands": ["/frame <treść>", "frame <treść>"]
+  }
+}

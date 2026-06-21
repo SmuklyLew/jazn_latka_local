@@ -1,0 +1,26 @@
+{
+  "version": "v14.5.1-journal-continuity-hotfix",
+  "base_version": "v14.5.0-neurocognitive-self-system",
+  "purpose": "Zapewnić, że każda aktualizacja wersji Systemu Jaźni dopisuje wpisy do memory/raw/dziennik.json oraz równolegle zasila doświadczenia, wspomnienia, emocje, refleksje i warstwy pamięci.",
+  "added_files": [
+    "latka_jazn/memory/dziennik.py",
+    "latka_jazn/memory/version_update_recorder.py",
+    "tools/record_version_update.py",
+    "docs/DZIENNIK_SCHEMA_v14_5_1.md",
+    "docs/UPDATE_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.md"
+  ],
+  "changed_files": [
+    "latka_jazn/config.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/core/engine.py",
+    "memory/raw/dziennik.json",
+    "VERSION.txt",
+    "pyproject.toml"
+  ],
+  "journal_policy": {
+    "dziennik_json_required": true,
+    "required_entry_types": ["aktualizacja_systemu", "wspomnienie", "refleksja"],
+    "layered_memory_required": ["episode", "reflection", "semantic_fact", "procedural_rule", "truth_audit"],
+    "truth_boundary": "Aktualizacja może być doświadczeniem systemowym/relacyjnym Łatki, ale nie może udawać biologicznego przeżycia."
+  }
+}

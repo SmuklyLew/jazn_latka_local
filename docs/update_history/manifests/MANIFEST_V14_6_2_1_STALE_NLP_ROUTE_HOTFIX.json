@@ -1,0 +1,49 @@
+{
+  "schema_version": "jazn_manifest_current/v14.6.2.1",
+  "version": "v14.6.2.1-stale-nlp-route-hotfix",
+  "created_at_utc": "2026-05-18T16:56:54.487352+00:00",
+  "start_file": "main.py",
+  "update_name": "stale NLP route hotfix",
+  "goals": [
+    "naprawić zbyt ogólną odpowiedź o NLP/v14.6.1 przy pytaniu o bieżący hotfix",
+    "nie tworzyć równoległych modułów, tylko uzupełnić istniejący ConversationResponder i FinalResponseContract",
+    "oddzielić pytanie o zakres NLP od polecenia wykonania aktualizacji NLP",
+    "zachować kontrakt v14.6.2: runtime start, fallback truth contract, timestamp i jeden głos Łatki"
+  ],
+  "implemented_changes": [
+    "ConversationResponder dodaje CurrentVersionGuard przez _is_current_stale_nlp_hotfix",
+    "ConversationResponder dodaje trasę v14_6_2_1_nlp_safety_scope dla pytań o warunki NLP w hotfixie",
+    "historyczne v14_6_1_nlp_adapter_update wymaga jawnej intencji legacy albo wykonawczej aktualizacji NLP",
+    "FinalResponseContract klasyfikuje stale_route_mismatch, gdy aktywna wersja v14.6.2+ wraca do historycznego tekstu o v14.6.1",
+    "aktywna baza SQLite to workspace_runtime/latka_jazn_v14_6_2_1.sqlite3"
+  ],
+  "affected_files": [
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/config.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/memory/version_update_recorder.py",
+    "main.py",
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt",
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "MANIFEST_CURRENT.json",
+    "docs/UPDATE_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.md",
+    "UPDATE_REPORT_V14_6_2_1.md",
+    "tests/test_v14621_stale_nlp_route_hotfix.py",
+    "workspace_runtime/latka_jazn_v14_6_2_1.sqlite3"
+  ],
+  "tests": [
+    "tests/test_v14621_stale_nlp_route_hotfix.py",
+    "tests/test_v1462_runtime_start_fallback_truth_contract.py",
+    "tests/test_v146114_version_consistency_contract.py",
+    "tests/test_v146115_contextual_greeting_fallback_repair.py",
+    "tests/test_v1461_nlp_adapter_zip_profiles.py",
+    "tests/test_v1460_lexical_semantic_runtime.py"
+  ],
+  "truth_boundary": "Hotfix wzmacnia routing i kontrakt prawdy. Nie deklaruje biologicznej świadomości, stałego procesu w tle ani pełnego zewnętrznego modelu NLP.",
+  "version_consistency_contract": "Bieżące pliki sterujące tej paczki muszą wskazywać v14.6.2.1-stale-nlp-route-hotfix albo jawnie oznaczać starsze treści jako historyczne.",
+  "current_pointer_note": "Ten plik jest aktywnym aliasem manifestu wersji; nie jest bitowo identyczny z archiwalnym manifestem wersji."
+}

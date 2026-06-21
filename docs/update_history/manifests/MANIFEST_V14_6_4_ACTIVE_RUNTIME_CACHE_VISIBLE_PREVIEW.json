@@ -1,0 +1,94 @@
+{
+  "schema_version": "jazn_manifest_current/v14.6.4",
+  "version": "v14.6.4-active-runtime-cache-visible-preview",
+  "created_at_utc": "2026-05-19T09:07:17.351426+00:00",
+  "start_file": "main.py",
+  "update_name": "active runtime cache and visible runtime preview contract",
+  "active_database": "workspace_runtime/latka_jazn_v14_6_4.sqlite3",
+  "no_summary_preservation_rule": {
+    "required": true,
+    "rule": "Aktualizacje nie zastępują pełnych plików streszczeniami. Baza nowej wersji powstaje z pełnej kopii aktywnego rozpakowanego folderu; zmiany są dopisywane albo patchowane w konkretnych plikach.",
+    "applied_in_this_update": "v14.6.4 została utworzona z pełnej kopii istniejącego rozpakowanego folderu v14.6.3, bez ponownego rozpakowywania ZIP-a i bez redukcji zawartości."
+  },
+  "ten_point_update_plan": [
+    {
+      "point": 1,
+      "name": "Active Extraction Cache Contract",
+      "implemented": "Dodano latka_jazn/tools/active_extraction_cache.py z markerem JAZN_ACTIVE_RUNTIME.json, wersją, ścieżką aktywnego folderu, start_file, manifest_sha256 i checksum ZIP-a źródłowego."
+    },
+    {
+      "point": 2,
+      "name": "No Re-Extraction Rule",
+      "implemented": "Jeśli aktywny folder istnieje, VERSION.txt, MANIFEST_CURRENT.json i opcjonalny SHA-256 ZIP-a są zgodne, ZIP nie ma być rozpakowywany ponownie."
+    },
+    {
+      "point": 3,
+      "name": "Visible Runtime Preview Contract",
+      "implemented": "--runtime-preview zwraca visible_runtime_preview_contract z timestamp_header, active_root, start_file, jakością odpowiedzi i granicą trybu one-shot."
+    },
+    {
+      "point": 4,
+      "name": "Timestamp Visibility Guard",
+      "implemented": "Kontrakt runtime preview wymusza pokazanie timestampu i jakości runtime przy pytaniach o runtime, timestamp, pliki, pamięć lub fallback."
+    },
+    {
+      "point": 5,
+      "name": "Active Folder Marker CLI",
+      "implemented": "main.py dostał --active-cache-status, --write-active-runtime-marker, --source-zip i --marker-output."
+    },
+    {
+      "point": 6,
+      "name": "Runtime Writes Are Folder-Based",
+      "implemented": "Marker wskazuje memory_write_root, workspace_runtime_root i exports_root, żeby nie udawać zapisu do ZIP-a."
+    },
+    {
+      "point": 7,
+      "name": "Version and Database Continuity",
+      "implemented": "VERSION/config/pyproject wskazują v14.6.4; utworzono aktywną kopię SQLite latka_jazn_v14_6_4.sqlite3 z meta system_version."
+    },
+    {
+      "point": 8,
+      "name": "Current Bootstrap and Start File",
+      "implemented": "BOOTSTRAP_JAZN_CURRENT.json oraz START_CHATGPT_FROM_HERE.txt wskazują nową wersję, aktywny folder cache i widoczny runtime preview."
+    },
+    {
+      "point": 9,
+      "name": "Regression Tests",
+      "implemented": "Dodano tests/test_v1464_active_cache_visible_preview.py i zaktualizowano bieżący test spójności wersji."
+    },
+    {
+      "point": 10,
+      "name": "Full Export Readiness",
+      "implemented": "Dodano manifest, raport, audit wersji, profile paczki i możliwość eksportu pełnej paczki bez dublowania rozpakowanego chat.html, gdy chat.html.7z istnieje."
+    }
+  ],
+  "affected_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/tools/active_extraction_cache.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/memory/version_update_recorder.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/core/birth_manifest.py",
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "MANIFEST_CURRENT.json",
+    "MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+    "docs/UPDATE_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.md",
+    "UPDATE_REPORT_V14_6_4.md",
+    "latka_jazn/resources/zip_package_profiles_v14_6_4.json",
+    "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_4.json",
+    "tests/test_v1464_active_cache_visible_preview.py",
+    "workspace_runtime/latka_jazn_v14_6_4.sqlite3",
+    "ACTIVE_RUNTIME_CACHE_CONTRACT.json",
+    "reports/TEST_REPORT_V14_6_4.md"
+  ],
+  "archival_manifest": "MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+  "version_label": "v14.6.4-active-runtime-cache-visible-preview",
+  "runtime_truth_boundary": "Runtime w ChatGPT działa jako jednorazowe wywołanie, chyba że lokalnie uruchomiono python main.py --chat. Marker aktywnego folderu nie oznacza procesu w tle; oznacza folder, z którego wolno kontynuować i do którego zapisują się pliki.",
+  "zip_truth_boundary": "ZIP jest artefaktem do pobrania. Po eksporcie nowe zapisy nie trafiają automatycznie do już utworzonego ZIP-a; trafiają do aktywnego folderu roboczego i dopiero następny eksport tworzy nowy ZIP.",
+  "manifest_role": "archival_release_manifest",
+  "test_status": "156 passed / 156 collected when run in blocks; single full pytest command exceeded tool timeout after prior assertions were repaired."
+}

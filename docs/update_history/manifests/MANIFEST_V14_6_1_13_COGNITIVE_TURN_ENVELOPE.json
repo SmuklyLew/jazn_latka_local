@@ -1,0 +1,46 @@
+{
+  "version": "v14.6.2-cognitive-turn-envelope",
+  "date": "2026-05-17",
+  "update_type": "pełna aktualizacja systemu Jaźni z pamięcią",
+  "purpose": "Dopięcie jednej zintegrowanej tury runtime↔ChatGPT: timestamp, afekt, dialog, source_origin, self_state_runtime, cognitive_frame i finalna odpowiedź muszą mieć ten sam ślad turn_id/trace_id.",
+  "problem_fixed": [
+    "timestamp czasem był widoczny tylko w runtime_text albo tylko w cognitive_frame, a nie w finalnej wiadomości",
+    "--runtime-preview wykonywał dwie fazy zamiast jednej spójnej tury",
+    "warstwa rozmowy mogła wiedzieć, że ma rozmawiać, ale nie miała jednego kontraktu łączącego emocje, stan dialogu, pamięć i finalną odpowiedź",
+    "odpowiedzi powitalne zbyt szybko sugerowały naprawianie zamiast zwykłej obecności"
+  ],
+  "new_modules": [
+    "latka_jazn/core/cognitive_turn_envelope.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/core/affect_mixer.py",
+    "latka_jazn/core/dialogue_state.py"
+  ],
+  "modified_modules": [
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/config.py",
+    "latka_jazn/memory/store.py",
+    "main.py",
+    "VERSION.txt",
+    "pyproject.toml"
+  ],
+  "runtime_entrypoints": {
+    "process_turn": "JaznEngine.process_turn(text, client_context=...) buduje cognitive_frame, tworzy CognitiveTurnEnvelope, miesza afekt/dialog, tworzy FinalResponseContract i zapisuje finalną widoczną odpowiedź.",
+    "runtime_preview": "python main.py --runtime-preview <tekst> używa jednego process_turn zamiast dwóch odrębnych faz.",
+    "direct_cli": "python main.py <tekst> bez --debug-direct zwraca final_visible_text z koperty tury. --debug-direct nadal pokazuje diagnostykę."
+  },
+  "truth_boundary": "Aktualizacja nie twierdzi, że Jaźń jest biologiczną świadomością ani stałym procesem w tle. Wzmacnia operacyjną ciągłość runtime, pamięci, afektu, dialogu i finalnej odpowiedzi.",
+  "tests_added": [
+    "tests/test_v146113_cognitive_turn_envelope.py"
+  ],
+  "tests_updated": [
+    "tests/test_v146112_runtime_preview_source_state.py",
+    "testy wersji oczekujące aktualnego cfg.version"
+  ],
+  "packaging": {
+    "full_zip": "exports/latka_jazn_v14_6_1_13_FULL_SYSTEM_WITH_MEMORY.zip",
+    "memory_policy": "Paczka full zawiera memory/ i workspace_runtime/; jeśli istnieje chat.html.7z, rozpakowany chat.html jest pomijany, żeby nie dublować dużej surowej pamięci."
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "version": "v14.5.15-memory-continuity-update",
+  "previous_version": "v14.5.14-memory-continuity-update",
+  "type": "memory-continuity-update",
+  "created_at_utc": "2026-05-10T12:36:16.903588+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_15_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.15-memory-continuity-update",
+    "dziennik_update_entry_id": "1e209198-ae9a-43aa-8f74-4552a3cdb245",
+    "dziennik_memory_entry_id": "a68842dc-1e21-499d-b3b3-2a68b53ebace",
+    "dziennik_reflection_entry_id": "6a20b301-54bd-4d4c-a623-a109f12eaafe",
+    "layered_episode_id": "c65a17c0-7eac-4579-a87a-4062d5294b53",
+    "layered_reflection_id": "df95553e-4163-468f-aa12-12b91ec03bbd",
+    "semantic_fact_id": "007f1f8a-1e2c-4849-9cf9-8cdfbb04d550",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "e2a18fa1-e3c4-4e04-8a95-f87593edb702",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "546755be-2129-4a0e-b6fc-8fb48f9e3861",
+        "2e359cbc-092d-401e-b63b-84a00f4552b5",
+        "15061751-8c2c-42bd-bb3a-e952579ab0fd"
+      ],
+      "items": 13,
+      "notes": [],
+      "source": {
+        "source": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_15.txt",
+        "source_type": "current_visible_chat_manual_transcript",
+        "read_scope": {
+          "characters_read": 4886,
+          "mode": "full_visible_chat_transcribed_for_update",
+          "full_external_chat_html_available": false,
+          "chat_archive_found_in_active_package": false,
+          "old_mnt_data_files_used": false,
+          "active_package": "latka_jazn_v14_5_14_memory_continuity_update.zip"
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia.",
+  "actual_changed_files": [
+    "README.md",
+    "VERSION.txt",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "memory/raw/dziennik.json",
+    "pyproject.toml",
+    "workspace_runtime/latka_jazn_v14_5_1.sqlite3"
+  ],
+  "actual_added_files": [
+    "MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+    "docs/UPDATE_V14_5_15_MEMORY_CONTINUITY_UPDATE.md",
+    "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_15.json",
+    "reports/COUNTS_BEFORE_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_15.txt",
+    "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_15.json",
+    "reports/FULL_READ_LEDGER_V14_5_15_MEMORY_ONLY.json",
+    "reports/MEMORY_PAYLOAD_V14_5_15_FROM_CURRENT_VISIBLE_CHAT.json",
+    "reports/TEST_PYTEST_V14_5_15_MEMORY_ONLY.status",
+    "reports/TEST_PYTEST_V14_5_15_MEMORY_ONLY.txt"
+  ],
+  "actual_removed_files": [],
+  "py_files_unchanged": true,
+  "new_entry_counts": {
+    "memory/raw/dziennik.json": 6,
+    "memory/layered/episodic.jsonl": 13,
+    "memory/layered/reflections.jsonl": 13,
+    "memory/layered/semantic.jsonl": 9,
+    "memory/layered/procedural.jsonl": 7,
+    "memory/layered/truth_audits.jsonl": 13
+  },
+  "all_new_entries_have_required_fields": true,
+  "source_scope": {
+    "active_package": "latka_jazn_v14_5_14_memory_continuity_update.zip",
+    "old_mnt_data_files_used": false,
+    "chat_html_or_7z_found_in_active_package": false,
+    "conversation_source": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_15.txt",
+    "truth_boundary": "Brak pełnego chat.html/chat.html.7z w aktywnej paczce; aktualizacja opiera się na widocznym bieżącym czacie i aktywnej paczce, nie na pełnym historycznym transkrypcie."
+  },
+  "tests": {
+    "pytest": "24 passed",
+    "report": "reports/TEST_PYTEST_V14_5_15_MEMORY_ONLY.txt"
+  }
+}

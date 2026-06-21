@@ -1,0 +1,51 @@
+{
+  "schema_version": "package_manifest_profiles/v14.8.2.4",
+  "profiles": {
+    "static_package": {
+      "description": "source code, docs, tests, config, resources; stable SHA after export",
+      "include": [
+        "latka_jazn/**",
+        "tests/**",
+        "docs/**",
+        "README.md",
+        "START_CHATGPT_FROM_HERE.txt",
+        "VERSION.txt",
+        "pyproject.toml",
+        "main.py"
+      ]
+    },
+    "runtime_dynamic": {
+      "description": "runtime checkpoints, event ledgers, sqlite, cache; may change after startup",
+      "include": [
+        "workspace_runtime/**",
+        "memory/layered/**"
+      ]
+    },
+    "memory_dynamic": {
+      "description": "journal, layered memory and raw-memory status controlled outside static package hash",
+      "include": [
+        "memory/**"
+      ]
+    },
+    "archive_payload": {
+      "description": "ZIP/7z payloads; do not unpack during audit unless required",
+      "include": [
+        "**/*.7z",
+        "**/*.zip"
+      ]
+    },
+    "ignored_build_artifacts": {
+      "description": "transient build/runtime artefacts",
+      "include": [
+        "__pycache__/**",
+        ".pytest_cache/**",
+        "*.pyc",
+        "*.sqlite3-wal",
+        "*.sqlite3-shm"
+      ]
+    }
+  },
+  "truth_boundary": "Static manifest integrity is separate from live runtime and memory files. v14.8.2.4 preserves history and marks the active package as logic-routing-memory-grounding repair.",
+  "active_version": "v14.8.2.4-logic-routing-memory-grounding-repair",
+  "current_version": "v14.8.2.4-logic-routing-memory-grounding-repair"
+}

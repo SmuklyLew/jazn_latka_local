@@ -1,0 +1,36 @@
+{
+  "version": "v14.5.32-cognitive-packets-self-state-runtime",
+  "base": "v14.5.31-identity-continuity-understanding-runtime",
+  "kind": "full_system_update",
+  "keeps_previous_content": true,
+  "primary_changes": [
+    "added CognitivePacketLibrary",
+    "added cognitive_packet_catalog.json",
+    "integrated cognitive_packets and state_emoticon into build_cognitive_frame",
+    "expanded PolishUnderstandingEngine with cognitive_packet_expansion_update",
+    "expanded ConversationResponder direct route",
+    "expanded SelfArchitecture with cognitive_packets layer",
+    "improved AffectiveState marker selection",
+    "optimized full package export for sqlite3 and 7z files"
+  ],
+  "packet_keys": [
+    "identity",
+    "continuity",
+    "knowledge",
+    "logic",
+    "intelligence",
+    "learning",
+    "emotions",
+    "experience",
+    "memories",
+    "impressions",
+    "wellbeing",
+    "emoticons"
+  ],
+  "tests": {
+    "status": "passed",
+    "count": 77,
+    "duration": "22.85s"
+  },
+  "truth_boundary": "Cognitive packets are operational guidance layers, not biological consciousness or separate personalities."
+}

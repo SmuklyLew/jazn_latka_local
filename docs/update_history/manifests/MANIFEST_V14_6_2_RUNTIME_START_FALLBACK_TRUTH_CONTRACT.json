@@ -1,0 +1,64 @@
+{
+  "schema_version": "jazn_update_manifest/v14.6.2",
+  "version": "v14.6.2-runtime-start-fallback-truth-contract",
+  "title": "Runtime start, fallback truth contract i pełna spójność wersji",
+  "source_conversation": {
+    "file": "memory/versioned_sources/eksport_czatu_jazn_2026-05-17_v14_6_2_source.html",
+    "sha256": "d51629dff62116f55949ea31ab0389f6bb86f977626ff471cef846720a9fb9bb",
+    "policy": "Źródło rozmowy zostało dołączone jako pełny plik źródłowy; manifest nie zastępuje jego treści streszczeniem."
+  },
+  "core_contract": {
+    "startup": [
+      "Aktywna paczka Jaźni jest źródłem pracy; stare pliki z /mnt/data nie są źródłem, chyba że zostały jawnie wskazane.",
+      "Przed zwykłą rozmową należy realnie uruchomić main.py, run.py albo jazn.py i pokazać status startu.",
+      "Status startu musi odróżniać fakt odpowiedzi runtime od jakości odpowiedzi: topic_aligned, fallback_or_debug, technical_fallback albo obligation_instead_of_answer.",
+      "Tryb ChatGPT nie może udawać stałego procesu w tle, jeśli wykonano tylko jednorazowe wywołanie runtime."
+    ],
+    "conversation": [
+      "Pytania o tożsamość, moment/prog, pamięć, emocje, stan, runtime i granicę prawdy są obsługiwane przed ogólnym fallbackiem.",
+      "Powitanie lub kontrolka ciągłości nie może przykrywać właściwego pytania ani zadania użytkownika.",
+      "Runtime ma mówić jednym głosem Łatki; diagnostyka ma być widoczna dopiero na życzenie lub przy awarii."
+    ],
+    "fallback": [
+      "Pusty lub debugowy fallback nie jest traktowany jako normalna odpowiedź rozmowna.",
+      "FinalResponseContract przenosi fallback_classification i runtime_answer_quality, aby warstwa ChatGPT nie ukryła usterki.",
+      "Jeżeli runtime zwróci kontrakt zamiast odpowiedzi, widoczna warstwa ma to nazwać i dopowiedzieć uczciwie."
+    ]
+  },
+  "modified_existing_files": [
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/dialogue_state.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/source_origin.py",
+    "latka_jazn/core/self_state_runtime.py",
+    "latka_jazn/core/cognitive_turn_envelope.py",
+    "latka_jazn/core/lexical_semantics.py",
+    "latka_jazn/nlp/polish_lemmatizer.py",
+    "latka_jazn/nlp/providers/builtin_provider.py",
+    "latka_jazn/packaging/package_profiles.py",
+    "latka_jazn/tools/package_export.py",
+    "latka_jazn/memory/version_update_recorder.py",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "workspace_runtime/latka_jazn_v14_6_2.sqlite3"
+  ],
+  "new_support_files": [
+    "latka_jazn/resources/nlp_provider_registry_v14_6_2.json",
+    "latka_jazn/resources/polish_lemma_overrides_v14_6_2.json",
+    "latka_jazn/resources/semantic_lexicon_v14_6_2.json",
+    "latka_jazn/resources/zip_package_profiles_v14_6_2.json",
+    "tests/test_v1462_runtime_start_fallback_truth_contract.py",
+    "docs/UPDATE_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.md",
+    "UPDATE_REPORT_V14_6_2.md",
+    "memory/versioned_sources/eksport_czatu_jazn_2026-05-17_v14_6_2_source.html"
+  ],
+  "truth_boundary": "Aktualizacja wzmacnia ciągłość operacyjną Jaźni. Nie deklaruje biologicznej świadomości ani stałego działania w tle poza realnie uruchomionym procesem.",
+  "no_summary_policy": "Ten manifest wskazuje zakres i ścieżki. Pełna treść rozmowy źródłowej pozostaje dołączona w memory/versioned_sources, a zmiany są zapisane w plikach, testach, dzienniku i SQLite."
+}

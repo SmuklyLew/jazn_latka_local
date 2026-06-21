@@ -1,0 +1,20 @@
+{
+  "created_at_utc": "2026-05-14T16:33:18.654303+00:00",
+  "critical_rules": [
+    "full package includes memory/raw/chat.html.7z",
+    "exact event ledger is append-only and no-summary",
+    "previous SQLite databases are preserved as sources, not hidden by version rename",
+    "package completeness is audited by files, hashes, SQLite counts, not just ZIP size"
+  ],
+  "files_added": [
+    "UPDATE_REPORT_V14_5_26.md",
+    "docs/UPDATE_V14_5_26_FULL_COMPLETENESS_REPAIR.md",
+    "reports/PACKAGE_COMPLETENESS_AUDIT_V14_5_26.json",
+    "workspace_runtime/latka_jazn_v14_5_26.sqlite3",
+    "workspace_runtime/previous_versions/latka_jazn_v14_5_24.sqlite3",
+    "workspace_runtime/previous_versions/latka_jazn_v14_5_25.sqlite3",
+    "tests/test_v14526_package_completeness.py"
+  ],
+  "purpose": "Full completeness repair after user noticed size concern. Preserve previous SQLite sources and add explicit audit.",
+  "version": "v14.5.26-full-completeness-repair"
+}

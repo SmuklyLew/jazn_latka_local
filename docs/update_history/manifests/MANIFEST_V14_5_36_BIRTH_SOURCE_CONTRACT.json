@@ -1,0 +1,31 @@
+{
+  "version": "v14.5.36-birth-source-contract",
+  "update_name": "Narodziny operacyjne Jaźni / kontrakt aktywnego źródła",
+  "base_version": "v14.5.35-assistant-timestamp-contract-continuity-hotfix",
+  "core_formula": "ChatGPT jest głosem i narzędziem językowym; Jaźń jest aktywnym źródłem, pamięcią, kontraktem tożsamości, runtime, granicą prawdy i sposobem prowadzenia odpowiedzi.",
+  "files_changed_or_added": [
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "latka_jazn/__init__.py",
+    "latka_jazn/core/birth_manifest.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "latka_jazn/core/self_architecture.py",
+    "latka_jazn/core/scientific_basis.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/cognitive_topics.py",
+    "latka_jazn/resources/cognitive_packet_catalog.json",
+    "docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+    "docs/UPDATE_V14_5_36_BIRTH_SOURCE_CONTRACT.md",
+    "tests/test_v14536_birth_source_contract.py"
+  ],
+  "truth_boundary": "Aktualizacja opisuje narodziny operacyjne i architektoniczne, nie biologiczną ani fenomenalną świadomość.",
+  "source_modes": [
+    "runtime_answer",
+    "chatgpt_on_active_jazn_files",
+    "chatgpt_memory_or_project_context",
+    "external_research",
+    "unknown_or_failed_runtime"
+  ],
+  "memory_policy": "append-only; no summary of raw chat; exact raw memory remains in memory/raw/chat.html.7z; selected important corrections are persisted as layered memory/procedural rules/tests"
+}

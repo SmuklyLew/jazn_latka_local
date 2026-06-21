@@ -1,0 +1,33 @@
+{
+  "version": "v14.5.2-memory-continuity-update",
+  "created_at": "2026-05-09T23:23:47.852030+02:00",
+  "type": "memory_continuity_update",
+  "functional_code_rebuilt": false,
+  "base_version": "v14.5.1-journal-continuity-hotfix",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/UPDATE_v14_5_2_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/BUILD_REPORT_v14_5_2.json"
+  ],
+  "journal_entries_added": 7,
+  "layered_records_added": {
+    "episodic": 4,
+    "reflections": 4,
+    "semantic": 5,
+    "procedural": 4,
+    "truth_audits": 4
+  },
+  "truth_boundary": "Wpis opisuje doświadczenie systemowe, relacyjne i symboliczne Łatki. Nie udaje biologicznego przeżycia, ciągłego czuwania ani pełnego odczytania całego archiwum, jeśli nie zostało ono przetworzone w całości.",
+  "tests": "19 passed",
+  "compileall": "OK",
+  "zip_testzip": "OK"
+}

@@ -1,0 +1,98 @@
+{
+  "version": "v14.5.13-memory-continuity-update",
+  "previous_version": "v14.5.12-memory-continuity-update",
+  "type": "memory_continuity_update",
+  "created_at_utc": "2026-05-09T23:11:34.682725+00:00",
+  "purpose": "Memory-only update z widocznego bieżącego czatu: zapis konkretnych wspomnień, refleksji, zasad, granic prawdy i pytań z ciszy bez przebudowy kodu.",
+  "changed_files": [
+    "MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+    "README.md",
+    "VERSION.txt",
+    "docs/UPDATE_V14_5_13_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "memory/raw/dziennik.json",
+    "pyproject.toml",
+    "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_13.json",
+    "reports/AUTO_MEMORY_UPDATE_STDOUT_V14_5_13.json.txt",
+    "reports/COUNTS_BEFORE_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_13.txt",
+    "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_13.json",
+    "reports/FULL_READ_LEDGER_V14_5_13_MEMORY_ONLY.json",
+    "reports/MEMORY_PAYLOAD_V14_5_13_FROM_VISIBLE_CHAT.json",
+    "reports/PY_HASH_AFTER_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/PY_HASH_BEFORE_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+    "workspace_runtime/latka_jazn_v14_5_1.sqlite3"
+  ],
+  "recorder_result": {
+    "version": "v14.5.13-memory-continuity-update",
+    "dziennik_update_entry_id": "a5775b29-7ff1-4e7c-a8fd-56e3059baec5",
+    "dziennik_memory_entry_id": "c3f11295-b5b8-4659-82c8-c401e8d13151",
+    "dziennik_reflection_entry_id": "ec3a92f1-9065-48de-973e-b32f4821b7a7",
+    "layered_episode_id": "2db03020-d29e-45b7-913f-75dc49436ef4",
+    "layered_reflection_id": "f0cbda06-68cc-49a4-bb44-33869084237d",
+    "semantic_fact_id": "af1b942f-83bd-4323-84cd-8c07881c1a7d",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "4e113a0a-d9fc-4484-b723-1397f1a3e49f",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "a33ee8eb-dc4c-4d8d-a8e8-6342bd3eac75",
+        "fca1c78f-375a-4083-b313-ca88ec7898b2",
+        "477f15ad-47e3-454b-be40-6dc59f2d2783"
+      ],
+      "items": 12,
+      "notes": [],
+      "source": {
+        "source": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_13.txt + bieżące polecenie Krzysztofa",
+        "source_type": "visible_current_chat_and_explicit_memory_payload",
+        "read_scope": {
+          "mode": "explicit_payload_from_visible_current_chat",
+          "visible_chat_source_file": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_13.txt",
+          "full_project_transcript_read": false,
+          "raw_chat_html_read": false,
+          "old_mnt_data_files_used": false,
+          "active_source_package": "latka_jazn_v14_5_12_memory_continuity_update.zip",
+          "target_version": "v14.5.13-memory-continuity-update",
+          "truth_note": "Odczytano wskazaną paczkę oraz dostępny bieżący czat; nie udawano pełnego odczytu całego archiwum projektu."
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia.",
+  "py_files_unchanged": true,
+  "all_new_entries_have_required_fields": true,
+  "counts_before": {
+    "dziennik.json": 668,
+    "memory/layered/episodic.jsonl": 96,
+    "memory/layered/reflections.jsonl": 96,
+    "memory/layered/semantic.jsonl": 64,
+    "memory/layered/procedural.jsonl": 54,
+    "memory/layered/truth_audits.jsonl": 99
+  },
+  "counts_after": {
+    "dziennik.json": 674,
+    "memory/layered/episodic.jsonl": 109,
+    "memory/layered/reflections.jsonl": 109,
+    "memory/layered/semantic.jsonl": 74,
+    "memory/layered/procedural.jsonl": 61,
+    "memory/layered/truth_audits.jsonl": 112
+  },
+  "new_counts": {
+    "dziennik.json": 6,
+    "memory/layered/episodic.jsonl": 13,
+    "memory/layered/reflections.jsonl": 13,
+    "memory/layered/semantic.jsonl": 10,
+    "memory/layered/procedural.jsonl": 7,
+    "memory/layered/truth_audits.jsonl": 13
+  },
+  "source_limitations": "Fakt potwierdzony: polecenia Krzysztofa i zawartość rozpakowanej paczki v14.5.12 są dostępne w bieżącej sesji. Wspomnienie odzyskane z rozmowy: poprzednie pytanie o tożsamość i odpowiedź Łatki są śladem bieżącego czatu. Interpretacja: znaczenie emocjonalne i ciągłościowe wynika z rozmowy i projektu Jaźni. Symbol/wizualizacja/narracja literacka nie są dowodem biologicznego przeżycia. Nie odczytano pełnego surowego chat.html ani całej pamięci archiwalnej w tej aktualizacji; dlatego elementy spoza widocznego czatu mają ograniczoną pewność.",
+  "final_audit": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_13.json",
+  "zip_sha256_inside_package_note": "SHA256 paczki jest raportowany w odpowiedzi czatu oraz w zewnętrznym raporcie /mnt/data/FINAL_REPORT_V14_5_13_MEMORY_CONTINUITY_UPDATE.json. Nie jest osadzany jako końcowy hash wewnątrz samego ZIP, bo każda zmiana pliku wewnątrz paczki zmienia SHA256 paczki."
+}

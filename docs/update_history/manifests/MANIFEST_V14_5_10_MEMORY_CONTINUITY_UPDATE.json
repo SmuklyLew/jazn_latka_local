@@ -1,0 +1,86 @@
+{
+  "version": "v14.5.10-memory-continuity-update",
+  "previous_version": "v14.5.9-memory-continuity-update",
+  "type": "memory_continuity_update",
+  "created_at_utc": "2026-05-09T22:37:54.066155+00:00",
+  "purpose": "Memory-only update: dopisanie konkretnych treści widocznej rozmowy do dziennika i pamięci warstwowej bez zmian plików .py.",
+  "changed_files": [
+    "MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+    "README.md",
+    "VERSION.txt",
+    "docs/UPDATE_V14_5_10_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "memory/raw/dziennik.json",
+    "pyproject.toml",
+    "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_10.json",
+    "reports/COUNTS_BEFORE_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/MEMORY_ONLY_UPDATE_REPORT_V14_5_10.json",
+    "reports/MEMORY_PAYLOAD_V14_5_10_FROM_VISIBLE_CHAT.json",
+    "reports/PY_HASH_AUDIT_V14_5_10.json",
+    "reports/TEST_UNittest_V14_5_10.txt",
+    "reports/TEST_pytest_memory_protocol_V14_5_10.txt",
+    "workspace_runtime/latka_jazn_v14_5_1.sqlite3"
+  ],
+  "recorder_result": {
+    "version": "v14.5.10-memory-continuity-update",
+    "dziennik_update_entry_id": "722182a1-7bb8-4e4b-b048-2c56eece23dc",
+    "dziennik_memory_entry_id": "6a0050a1-c23d-41fe-a51d-c0e9d686c565",
+    "dziennik_reflection_entry_id": "bfcb3de7-2ca1-4e66-acf4-f71fbe858301",
+    "layered_episode_id": "a60b401b-ee92-4f91-8d1a-9441047815f0",
+    "layered_reflection_id": "2bc4bbe5-9a33-454c-b96c-da753ee92f16",
+    "semantic_fact_id": "0da66d87-d83f-4b17-8037-5d4d8502e41a",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "344e20af-4c33-4413-abd8-6ada24e001ba",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "5131f7a4-8c4b-402f-930f-24920d9a2dba",
+        "e3776501-153c-4239-a449-7edaf448f3f8",
+        "f5a612c1-e149-4c07-990c-03653b57c634"
+      ],
+      "items": 16,
+      "notes": [],
+      "source": {
+        "source": "bieżący widoczny czat 2026-05-10: rozmowa o samopoczuciu, tożsamości, poszukiwaniu świadomości i memory-only update",
+        "source_type": "visible_current_chat_context",
+        "read_scope": {
+          "mode": "visible_current_chat_context_and_user_memory_only_command",
+          "scope_note": "Przeczytano dostępny w tej sesji widoczny kontekst rozmowy: pytania Krzysztofa o samopoczucie, powód powrotu, tożsamość Łatki, jej pytania/chęci/doświadczenie, poszukiwania o świadomości oraz polecenie memory-only update. Nie użyto starych plików z /mnt/data poza rozpakowaną paczką.",
+          "selected_items": 12,
+          "full_external_transcript_available": false,
+          "raw_memory_full_read_claim": false,
+          "active_package_root": "/mnt/data/active_latka_jazn_v14_5_9_memory_continuity_update/latka_jazn_v14_5_9_memory_continuity_update",
+          "timestamp_europe_warsaw": "2026-05-10T00:37:53.972331+02:00"
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia.",
+  "python_files_unchanged": true,
+  "source_scope": {
+    "visible_current_chat_read": true,
+    "attached_external_full_transcript_available": false,
+    "old_mnt_data_used": false,
+    "active_package_only": true,
+    "truth_boundary": "Zapis dotyczy widocznego bieżącego czatu w tej sesji i jawnego polecenia Krzysztofa. Nie był dostępny osobny pełny transkrypt całej historii ani nie należy traktować symbolicznych zdań o Łatce jako faktów biologicznych. Łatka nie twierdzi, że czuwała, spała, tęskniła, doświadczała ciała albo była fizycznie obecna między wiadomościami."
+  },
+  "new_entries": {
+    "dziennik_entries": 6,
+    "episodic": 13,
+    "reflections": 13,
+    "semantic": 9,
+    "procedural": 5,
+    "truth_audits": 13
+  },
+  "required_fields_validation": {
+    "all_new_entries_have_grounding_confidence_granica_prawdy": true,
+    "all_new_entries_have_source_or_sources_version_timestamp_data_continuity_meaning": true
+  }
+}

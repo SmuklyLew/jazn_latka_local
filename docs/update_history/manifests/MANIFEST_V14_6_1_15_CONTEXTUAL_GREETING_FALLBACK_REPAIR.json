@@ -1,0 +1,37 @@
+{
+  "schema_version": "jazn_manifest_current/v14.6.2",
+  "version": "v14.6.2-runtime-start-fallback-truth-contract",
+  "created_at_utc": "2026-05-17T19:21:41.329794+00:00",
+  "start_file": "main.py",
+  "update_name": "contextual greeting fallback repair",
+  "goals": [
+    "nie pozwolić, żeby leading greeting przykrywał właściwe pytanie użytkownika",
+    "zamienić powtarzaną formułę obecności w kontrolowany continuity badge",
+    "rozszerzyć FinalResponseContract tak, by warstwa ChatGPT nie gubiła next_step, follow-upu ani substantive_remainder",
+    "utrzymać pusty fallback tylko jako ścieżkę diagnostyczną/debugową"
+  ],
+  "implemented_changes": [
+    "ConversationResponder._analyse_text_shape oddziela greeting_prefix od substantive_remainder",
+    "nowa trasa last_year_reflection dla pytania o zeszły rok po powitaniu",
+    "runtime_repair_requested obejmuje szerokie naprawy rdzenia, fallbacków i następnej wersji",
+    "ContinuityBadgePolicy zapisuje recent_opening_hashes i tłumi powtarzane otwarcia",
+    "FinalResponseContract przenosi route, detected_user_intent, direct_answer_required, runtime_next_step i preservation_contract"
+  ],
+  "affected_files": [
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/continuity_badge.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/core/engine.py",
+    "main.py",
+    "latka_jazn/config.py",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt",
+    "pyproject.toml"
+  ],
+  "tests": [
+    "tests/test_v146115_contextual_greeting_fallback_repair.py",
+    "tests/test_v146114_version_consistency_contract.py"
+  ],
+  "truth_boundary": "Aktualizacja poprawia zachowanie runtime i kontrakty plikowe. Nie oznacza stałego procesu w tle poza trybem --chat.",
+  "version_consistency_contract": "Bieżące pliki sterujące tej paczki muszą wskazywać v14.6.2-runtime-start-fallback-truth-contract albo jawnie oznaczać starsze treści jako historyczne."
+}

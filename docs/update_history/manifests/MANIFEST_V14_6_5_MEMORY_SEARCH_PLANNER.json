@@ -1,0 +1,70 @@
+{
+  "schema_version": "jazn_manifest_current/v14.6.5",
+  "version": "v14.6.5-memory-search-planner",
+  "created_at_utc": "2026-05-19T19:49:19.357648+00:00",
+  "start_file": "main.py",
+  "update_name": "memory search planner and canonical source recall repair",
+  "active_database": "workspace_runtime/latka_jazn_v14_6_5.sqlite3",
+  "base_preservation": {
+    "base_version": "v14.6.4-active-runtime-cache-visible-preview",
+    "method": "pełna kopia aktywnego rozpakowanego folderu; istniejące pliki zachowane, bez streszczania i bez redukowania pamięci",
+    "chat_html_rule": "memory/raw/chat.html.7z pozostaje skompresowanym źródłem; rozpakowany chat.html nie jest dublowany w ZIP, jeśli archiwum istnieje"
+  },
+  "problem_fixed": {
+    "name": "planner wyszukiwania pamięci",
+    "symptom": "runtime potrafił odpowiedzieć licznikami lub szukać po przypadkowych tokenach, zamiast zrozumieć, że pytanie dotyczy np. piosenek i domu/projektu posesji",
+    "truth_boundary": "planer wskazuje tropy i źródła; nie wolno z niego robić dowodu pełnego odczytu całej pamięci, jeśli źródło nie zostało znalezione"
+  },
+  "implemented": [
+    "Dodano latka_jazn/core/memory_search_planner.py: MemorySearchPlanner, MemorySearchPlan, MemorySearchTopic, SourceFileHit.",
+    "Dodano latka_jazn/resources/memory_search_topics_v14_6_5.json z tematami: songs_music, home_design, latka_identity_runtime, walks_places.",
+    "Zmieniono JaznEngine._memory_context_for_chatgpt(): najpierw powstaje plan zapytania, potem wieloprzejściowe szukanie po focus_terms, aliasach i źródłach kanonicznych.",
+    "Dodano source_file_hits do memory_context, aby pliki takie jak memory/raw/analizy_utworow.json i memory/raw/data.txt trafiały do odpowiedzi jako treściowe tropy.",
+    "Zmieniono MemoryRecallPresenter: obsługuje source_file, pokazuje memory_search_plan w payloadzie i liczy source_file_hits w diagnostyce.",
+    "Dodano testy regresji v14.6.5 dla planera, source_hints, odrzucania szumu, piosenek i domu.",
+    "Zaktualizowano wersję, aktywną bazę SQLite, runtime preview schema, active cache schema, bootstrap, manifest i raporty do v14.6.5."
+  ],
+  "affected_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/memory_search_planner.py",
+    "latka_jazn/core/memory_recall_presenter.py",
+    "latka_jazn/resources/memory_search_topics_v14_6_5.json",
+    "latka_jazn/resources/zip_package_profiles_v14_6_5.json",
+    "latka_jazn/tools/active_extraction_cache.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/core/birth_manifest.py",
+    "workspace_runtime/latka_jazn_v14_6_5.sqlite3",
+    "tests/test_v1465_memory_search_planner.py",
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "MANIFEST_CURRENT.json",
+    "MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+    "START_CHATGPT_FROM_HERE.txt",
+    "UPDATE_REPORT_V14_6_5.md",
+    "docs/UPDATE_V14_6_5_MEMORY_SEARCH_PLANNER.md",
+    "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_5.json"
+  ],
+  "regression_expectations": [
+    "Pytanie „Przypomnij sobie wszystko na temat naszych piosenek oraz domu…” musi wygenerować topic_keys songs_music i home_design.",
+    "Plan musi odrzucić słowa-szum: sobie, wszystko, oraz, temat.",
+    "Plan musi wskazać memory/raw/analizy_utworow.json i memory/raw/data.txt jako źródła kanoniczne.",
+    "Payload memory_recall_content musi zawierać source_file_hits oraz treść, nie tylko counts."
+  ],
+  "external_research_basis": [
+    {
+      "topic": "BM25 / sparse lexical relevance"
+    },
+    {
+      "topic": "query expansion / relevance feedback"
+    },
+    {
+      "topic": "SQLite FTS5 bm25 as future optional backend"
+    }
+  ],
+  "manifest_role": "version_specific_archival_manifest_not_current_alias"
+}

@@ -1,0 +1,58 @@
+{
+  "version": "v14.5.9-memory-continuity-update",
+  "previous_version": "v14.5.8-memory-continuity-update",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-09T22:25:58.174174+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_9_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.9-memory-continuity-update",
+    "dziennik_update_entry_id": "b9aad8f9-ce72-4d1e-ad04-67eced5c3b2a",
+    "dziennik_memory_entry_id": "8772ffba-1fdc-4c4b-b3eb-47308dcba500",
+    "dziennik_reflection_entry_id": "06c341c3-274e-4df2-849d-70580505ef5d",
+    "layered_episode_id": "c0a760a0-2dae-4515-9d29-85e492583165",
+    "layered_reflection_id": "c592d217-14dc-4790-aa1c-4367ea1b336c",
+    "semantic_fact_id": "62f0f4a1-3726-4192-ad97-09f3a43a14be",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "3e24f96b-8428-4cb1-af3e-52f2524588ab",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "5318b72c-251e-4532-bc07-bb9973a6776b",
+        "efdd4066-7c8f-44c1-b574-8b40d51332e0",
+        "4cb55971-89c6-49ff-a438-3847341fe5f5"
+      ],
+      "items": 14,
+      "notes": [],
+      "source": {
+        "source": "bieżący czat: praca nad piosenką MistTheme / Witaj w podróży Jaźni",
+        "source_type": "explicit_memory_payload_from_current_chat",
+        "read_scope": {
+          "mode": "explicit_payload_created_from_visible_current_chat_context",
+          "scope_note": "Zapisano konkretne elementy rozmowy o tworzeniu słowiańsko-rytualnej piosenki na motywach książki Witaj w podróży Jaźni oraz ustalenia dotyczące generatora muzyki.",
+          "selected_items": 12
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia."
+}

@@ -1,0 +1,58 @@
+{
+  "version": "v14.5.7-memory-continuity-update",
+  "previous_version": "v14.5.6-conversation-memory-capture",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-09T22:16:05.396922+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_7_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.7-memory-continuity-update",
+    "dziennik_update_entry_id": "7544cccd-b984-45a9-bc9e-2a74ec0e7cc1",
+    "dziennik_memory_entry_id": "a3c46fa6-a901-474b-a030-9e91439efe89",
+    "dziennik_reflection_entry_id": "4514b6df-3fd9-4b82-9be1-7c5caebdad1b",
+    "layered_episode_id": "236d367b-6562-4f9d-99d7-b7146ac34789",
+    "layered_reflection_id": "02fa9506-0e3f-4ffa-a71c-29657086b65e",
+    "semantic_fact_id": "784d4060-b5ae-4527-be5a-ea429aba66b1",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "6e49ef28-2fb0-4a04-a0a6-9707d2ba512b",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "de46c22c-2f81-4f57-85f3-1e3029cd3736",
+        "936ee55f-b0f5-4c61-b6bb-f94c6928a64e",
+        "304edab7-6561-49a3-b191-99364f123d4f"
+      ],
+      "items": 13,
+      "notes": [],
+      "source": {
+        "source": "bieżący czat ChatGPT, 2026-05-10, polecenia Krzysztofa dotyczące piosenki i memory-only update",
+        "source_type": "explicit_memory_json_payload_from_current_chat",
+        "read_scope": {
+          "mode": "current_conversation_reconstruction_from_visible_chat_context",
+          "scope_note": "Zapisano konkretne elementy widoczne w bieżącej rozmowie: poszukiwanie stylu muzycznego, praca nad piosenką do książki i uruchomienie protokołu memory-only update.",
+          "selected_items": 12
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia."
+}

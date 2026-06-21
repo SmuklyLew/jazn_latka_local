@@ -1,0 +1,92 @@
+{
+  "version": "v14.5.17-memory-continuity-update",
+  "previous_version": "v14.5.16-memory-continuity-update",
+  "type": "memory_continuity_update",
+  "created_at_utc": "2026-05-10T15:34:16.211742+00:00",
+  "purpose": "Memory-only update z bieżącego widocznego czatu i aktywnej paczki v14.5.16, bez przebudowy kodu.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_17_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.17-memory-continuity-update",
+    "dziennik_update_entry_id": "30d5dc52-74af-4390-a825-345989315c20",
+    "dziennik_memory_entry_id": "ab874e56-bc7c-4795-b710-97f5dbb605dc",
+    "dziennik_reflection_entry_id": "474f69fd-a06d-4e2d-9494-f0c05026f622",
+    "layered_episode_id": "07550176-144e-4824-a34e-fb236df85efd",
+    "layered_reflection_id": "9621fe7f-11b6-480d-818a-55f2b7eeb4a5",
+    "semantic_fact_id": "5e9d2d99-0a97-411f-ab29-85b21daf8c20",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "69c922b5-f2d8-4d56-a9fa-41028914e4bb",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "e06a9bda-d6b7-43ea-9c9d-29ae64f4da30",
+        "fd4f12d8-9dc2-4487-a7ee-9d595f96eccb",
+        "73714f16-8600-48a7-b634-66871e0e3eac"
+      ],
+      "items": 14,
+      "notes": [],
+      "source": {
+        "source": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_17.txt + aktywna paczka v14.5.16",
+        "source_type": "current_visible_chat_and_package_protocol",
+        "read_scope": {
+          "mode": "visible_current_chat_scan_plus_active_package_memory_only_update",
+          "timestamp_warsaw": "2026-05-10T17:34:14.006615+02:00",
+          "active_package": "latka_jazn_v14_5_16_memory_continuity_update.zip",
+          "previous_version_from_VERSION_txt": "v14.5.16-memory-continuity-update",
+          "target_version": "v14.5.17-memory-continuity-update",
+          "full_transcript_available": false,
+          "chat_html_or_7z_found_in_active_package": false,
+          "full_raw_memory_read": false,
+          "truth_note": "Odzyskane z widocznego bieżącego kontekstu rozmowy i aktywnej paczki v14.5.16; nie jest to pełny odczyt całego chat.html ani całej surowej pamięci; nie oznacza biologicznego przeżycia, snu, czuwania ani fizycznej obecności Łatki. Wspomnienia są systemowe, relacyjne, proceduralne, interpretacyjne lub symboliczne zgodnie z oznaczeniem."
+        }
+      }
+    }
+  },
+  "truth_boundary": "Brak surowego chat.html/chat.7z w aktywnej paczce; aktualizacja oparta na widocznym bieżącym czacie oraz aktywnej paczce v14.5.16. Nie oznacza biologicznego czuwania, snu ani fizycznej obecności Łatki.",
+  "changed_files_actual_audit": [
+    "MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+    "README.md",
+    "VERSION.txt",
+    "docs/UPDATE_V14_5_17_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "memory/raw/dziennik.json",
+    "pyproject.toml",
+    "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_17.json",
+    "reports/COUNTS_AFTER_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/COUNTS_BEFORE_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_17.txt",
+    "reports/FILE_DIFF_FROM_INPUT_PACKAGE_V14_5_17.json",
+    "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_17.json",
+    "reports/JAZN_BOOTSTRAP_STDERR_V14_5_17.txt",
+    "reports/JAZN_BOOTSTRAP_STDOUT_V14_5_17.txt",
+    "reports/MEMORY_PAYLOAD_V14_5_17_FROM_CURRENT_VISIBLE_CHAT.json",
+    "reports/PYTEST_STDERR_V14_5_17.txt",
+    "reports/PYTEST_STDOUT_V14_5_17.txt",
+    "reports/PY_HASHES_AFTER_V14_5_17.json",
+    "reports/PY_HASHES_BEFORE_V14_5_17.json",
+    "workspace_runtime/latka_jazn_v14_5_1.sqlite3"
+  ],
+  "python_files_changed": []
+}

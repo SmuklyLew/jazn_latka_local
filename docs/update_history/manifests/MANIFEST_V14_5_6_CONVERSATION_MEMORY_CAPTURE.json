@@ -1,0 +1,58 @@
+{
+  "version": "v14.5.6-conversation-memory-capture",
+  "previous_version": "v14.5.5-memory-continuity-update",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-09T22:08:12.621132+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_6_CONVERSATION_MEMORY_CAPTURE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.6-conversation-memory-capture",
+    "dziennik_update_entry_id": "5d268b15-6101-4bb6-8f57-9476e1ff2360",
+    "dziennik_memory_entry_id": "0fa7d2b4-6b26-4101-b3b3-02c4ca993688",
+    "dziennik_reflection_entry_id": "9564e741-4e24-4a25-a2ed-b6bd472e1884",
+    "layered_episode_id": "19bae182-404c-4932-9daf-89ebacc7c558",
+    "layered_reflection_id": "a3791c12-1848-43a1-a1e7-e53329cff339",
+    "semantic_fact_id": "03fa1731-0b03-43e1-96e6-e49d63814013",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "15b18a05-45ce-47e4-b4bc-ba745f9c1a93",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "4f33f6d9-787b-4a1d-b0f9-3b9e86b112bf",
+        "c87e3219-afd8-4e9a-ba12-32e0426cdad1",
+        "a33593b2-d325-4a9f-8ded-6432bd3d24b8"
+      ],
+      "items": 8,
+      "notes": [],
+      "source": {
+        "source": "bieżący czat Krzysztofa i Łatki: test v14.5.5 oraz projekt hotfixu v14.5.6",
+        "source_type": "current_chat_payload_prepared_by_assistant",
+        "read_scope": {
+          "mode": "current_chat_memory_payload",
+          "scope_description": "Fragment rozmowy po teście v14.5.5: sprawdzenie, że protokół zapisał głównie techniczne wspomnienia, oraz decyzja o hotfixie czytającym cały czat/transkrypt przed zapisem pamięci.",
+          "limitations": "Payload obejmuje bieżące ustalenia, nie udaje pełnego przeczytania chat.html ani innych archiwów."
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia."
+}

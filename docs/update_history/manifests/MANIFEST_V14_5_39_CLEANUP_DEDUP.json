@@ -1,0 +1,191 @@
+{
+  "version": "v14.5.39-cleanup-dedup",
+  "update_name": "cleanup/dedup",
+  "created_at": "2026-05-16T23:08:00+02:00",
+  "source_version": "v14.5.38-github-cognitive-runtime",
+  "policy": {
+    "goal": "Zostawić historię przez manifesty, SHA-256 i ścieżki kanoniczne zamiast przechowywać identyczne kopie treści.",
+    "canonical_rule": "Preferowane są aktywne pliki raw/system/docs/top-level; duplikaty w versioned_sources i reports są usuwane, jeżeli mają identyczny SHA-256.",
+    "truth_boundary": "Usunięcie dotyczy wyłącznie identycznych bajtowo kopii; nie scala podobnych, ale różnych wersji."
+  },
+  "actions_count": 25,
+  "actions": [
+    {
+      "removed_path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_14.json",
+      "canonical_path": "MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+      "sha256": "d33d7d67c81ae7b0b0c851ea6d6175efe3260c77ed28bbe5b41e800b7bf5bcd3",
+      "size_bytes": 6043,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/MEMORY_UPDATE_REPORT_V14_5_18.json",
+      "canonical_path": "MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+      "sha256": "61d01ad2f5445ae8b5d90f929892e9241579b42a5bb2545a3ecf1e35801fca0a",
+      "size_bytes": 9108,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/BUILD_REPORT.json",
+      "canonical_path": "MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "sha256": "b0973eb1183435c9f165105c30a048e22cce76835aae670fb57a4074fae12bbd",
+      "size_bytes": 1674,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PATCH_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.diff",
+      "canonical_path": "PATCH_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.diff",
+      "sha256": "2d0fe6f043728644b100088096a0c47a2282410a0cb58dd5b3ce511c5a15884a",
+      "size_bytes": 59017,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.report.json",
+      "canonical_path": "UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.json",
+      "sha256": "1dc5a6c1b886e86e70e5c00403eebc7e235ed6e66c3cffe419a769e00da3eab1",
+      "size_bytes": 1127,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "docs/UPDATE_V14_5_36_BIRTH_SOURCE_CONTRACT.md",
+      "canonical_path": "docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+      "sha256": "9c91b549c243b2b31a0039a054abb4c313ca449081b76f80aa913124cfe6e505",
+      "size_bytes": 6967,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "memory/versioned_sources/analizy_utworow.json.638a38c14e31.json",
+      "canonical_path": "memory/raw/analizy_utworow.json",
+      "sha256": "638a38c14e3108c1f34d4adde9fcaa3a660b576dda8e8fcabd24835617815792",
+      "size_bytes": 209985,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "memory/versioned_sources/data.txt.d13e0b55e2bf.txt",
+      "canonical_path": "memory/raw/data.txt",
+      "sha256": "d13e0b55e2bf06f14c5b0d1b685aba6f2e05fd86090237e7726b9264b017050e",
+      "size_bytes": 87299,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "memory/versioned_sources/episodic_memory.jsonl.776dc744781f.jsonl",
+      "canonical_path": "memory/raw/episodic_memory.jsonl",
+      "sha256": "776dc744781f7e9a6a628c9f8bed88bf8ae4fb248794ff69fd87969b10ea8acb",
+      "size_bytes": 402452,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "memory/versioned_sources/extra_data.json.769964ce6c36.json",
+      "canonical_path": "memory/raw/extra_data.json",
+      "sha256": "769964ce6c365a01a171a0ab71649745880aba8c3b2c47ffbb392f6a9fde244f",
+      "size_bytes": 18578,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "memory/versioned_sources/plugins_jazn.json.42fd96ad1069.json",
+      "canonical_path": "memory/raw/plugins_jazn.json",
+      "sha256": "42fd96ad1069e76604cd3930629c5d475a558bd359d420d899c0e385fb226224",
+      "size_bytes": 2705,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/JAZN_BOOTSTRAP_STDERR_V14_5_17.txt",
+      "canonical_path": "memory/raw/runtime_event_errors.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PYTEST_STDERR_V14_5_17.txt",
+      "canonical_path": "memory/raw/runtime_event_errors.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "memory/versioned_sources/analizy_utworow.json.8911b68a7c08.json",
+      "canonical_path": "memory/versioned_sources/analizy_utworow.json.3fe5fa2a4f5c.json",
+      "sha256": "8911b68a7c08c00440b622db1fd6b48356b6978a3908b47c9f839f7ff4f0e5e5",
+      "size_bytes": 202387,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_12.json",
+      "canonical_path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_12.json",
+      "sha256": "14b131f4c3101341ccea99dc38ea04d976e071b2f8e26e9911da916035944147",
+      "size_bytes": 3167,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASHES_BEFORE_V14_5_17.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_AFTER_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_AFTER_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_AFTER_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_BEFORE_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_BEFORE_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_BEFORE_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f",
+      "size_bytes": 5617,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASHES_BEFORE_V14_5_18.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_18.json",
+      "sha256": "9fd98171c46574fe51f8680af64b9542554524e3e3662f8ae5cb41422f9d6e9c",
+      "size_bytes": 5616,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_AFTER_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_18.json",
+      "sha256": "9fd98171c46574fe51f8680af64b9542554524e3e3662f8ae5cb41422f9d6e9c",
+      "size_bytes": 5616,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    },
+    {
+      "removed_path": "reports/PY_HASH_BEFORE_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "canonical_path": "reports/PY_HASHES_AFTER_V14_5_18.json",
+      "sha256": "9fd98171c46574fe51f8680af64b9542554524e3e3662f8ae5cb41422f9d6e9c",
+      "size_bytes": 5616,
+      "reason": "exact_duplicate_content_replaced_by_manifest_reference"
+    }
+  ],
+  "kept_active_db": "workspace_runtime/latka_jazn_v14_5_39.sqlite3",
+  "removed_previous_active_db": "workspace_runtime/latka_jazn_v14_5_38.sqlite3"
+}

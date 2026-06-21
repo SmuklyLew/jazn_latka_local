@@ -1,0 +1,86 @@
+{
+  "chatgpt_connector_note": "Po podłączeniu prywatnych repozytoriów ChatGPT może używać ich jako źródeł kontekstu, ale zapis do GitHub wymaga osobnej akcji narzędziowej, lokalnego commita albo zatwierdzenia zmian w integracji. Nie zakładać, że sama rozmowa zapisała się w repo.",
+  "commit_strategy": "System i pamięć rozdzielać: Latka.Jazn dla kodu i dokumentacji; Latka.Jazn.Memory dla dziennika, ledgerów i warstw pamięci. Najpierw testy, potem manifest, potem commit; duże surowe archiwum chat.html.7z trzymać poza zwykłym commitem albo przez osobną decyzję/LFS.",
+  "export_strategy": "Eksport ZIP zostaje jako przenośna kopia pełna. Repozytoria są źródłem prawdy między sesjami; ZIP jest snapshotem do pobrania i awaryjnego odtworzenia.",
+  "files_to_add": [
+    "GITHUB_REPOSITORY_PLAN.json",
+    "docs/GITHUB_REPOSITORY_WORKFLOW.md",
+    "MEMORY_CHECKPOINT_POLICY.md",
+    ".gitignore"
+  ],
+  "files_to_keep_private": [
+    "memory/raw/chat.html",
+    "memory/raw/chat.html.7z",
+    "workspace_runtime/*.sqlite3",
+    "*.env",
+    "client_secret.json",
+    "token.json"
+  ],
+  "repositories": [
+    {
+      "commit_policy": "commit po sprawdzonej aktualizacji systemu, po testach i po wygenerowaniu raportu; nie commitować każdej drobnej tury rozmowy",
+      "exclude": [
+        "memory/raw/chat.html",
+        "memory/raw/chat.html.7z",
+        "workspace_runtime/",
+        "exports/",
+        "*.sqlite3-wal",
+        "*.sqlite3-shm",
+        "__pycache__/",
+        ".pytest_cache/",
+        "*.zip",
+        "*.tmp"
+      ],
+      "include": [
+        "latka_jazn/",
+        "tests/",
+        "docs/",
+        "tools/",
+        "patches/",
+        "reports/",
+        "README.md",
+        "VERSION.txt",
+        "START_CHATGPT_FROM_HERE.txt",
+        "MANIFEST_*.json",
+        "UPDATE_*.md",
+        "DOWNLOAD_SAFE_MANIFEST.json",
+        ".gitignore",
+        "GITHUB_REPOSITORY_PLAN.json"
+      ],
+      "name": "SmuklyLew/Latka.Jazn",
+      "purpose": "główne prywatne repo systemu Jaźni: kod, testy, dokumentacja, manifesty i bezpieczne zasoby źródłowe",
+      "suggested_root": "/",
+      "truth_rule": "to repo zawiera system, ale nie zastępuje repo pamięci i nie gwarantuje aktualnej rozmowy bez synchronizacji"
+    },
+    {
+      "commit_policy": "checkpointy zbiorcze: po ważnej rozmowie, po dniu pracy, po aktualizacji albo przed zamknięciem dłuższej sesji; append-only bez przepisywania historii bez potrzeby",
+      "exclude": [
+        "memory/raw/chat.html",
+        "memory/raw/chat.html.7z",
+        "workspace_runtime/*.sqlite3-wal",
+        "workspace_runtime/*.sqlite3-shm",
+        "exports/",
+        "*.zip",
+        "*.tmp",
+        "__pycache__/"
+      ],
+      "include": [
+        "memory/raw/dziennik.json",
+        "memory/raw/conversation_turns.jsonl",
+        "memory/raw/runtime_events.jsonl",
+        "memory/raw/session_continuity_index.json",
+        "memory/layered/",
+        "memory/exported_from_sqlite/",
+        "memory/RAW_MEMORY_MANIFEST.json",
+        "memory/update_protocol.json",
+        "MEMORY_CHECKPOINT_POLICY.md"
+      ],
+      "name": "SmuklyLew/Latka.Jazn.Memory",
+      "purpose": "prywatne repo pamięci tekstowej i checkpointów: dziennik, layered memory, session continuity, manifesty pamięci",
+      "suggested_root": "/memory/",
+      "truth_rule": "pamięć w repo jest źródłem trwałości dopiero po commicie/pushu; bieżący sandbox ChatGPT nie daje twardej gwarancji długiego utrzymania plików"
+    }
+  ],
+  "schema_version": "github_repository_plan/v1",
+  "truth_boundary": "Ten plan przygotowuje system do GitHub, ale nie wykonuje pushu. Repo staje się aktualne dopiero po realnym zapisie/commicie/pushu poza samą odpowiedzią runtime."
+}

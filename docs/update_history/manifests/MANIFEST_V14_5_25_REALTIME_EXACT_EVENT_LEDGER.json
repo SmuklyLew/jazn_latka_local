@@ -1,0 +1,23 @@
+{
+  "version": "v14.5.25-realtime-exact-event-ledger",
+  "base_version": "v14.5.24-runtime-bridge-export-hotfix",
+  "update_type": "runtime-memory-exact-event-ledger",
+  "memory_source": "latka_jazn_v14_5_24_MEMORY_ONLY-1.zip",
+  "primary_goal": "Zapisywać wszystkie zdarzenia obsłużone przez runtime do surowego append-only ledger bez streszczania, a pamięć długoterminową pozostawić selektywną.",
+  "new_files": [
+    "latka_jazn/memory/event_ledger.py",
+    "docs/RUNTIME_EVENT_LEDGER_PROTOCOL.md",
+    "docs/UPDATE_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.md",
+    "tests/test_v14525_realtime_exact_event_ledger.py"
+  ],
+  "modified_files": [
+    "latka_jazn/core/engine.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/config.py",
+    "README.md",
+    "VERSION.txt",
+    "pyproject.toml"
+  ],
+  "truth_boundary": "Runtime nie jest stałym demonem w tle; zapis dotyczy każdego zdarzenia obsłużonego przez konkretne wywołanie programu."
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "jazn_manifest_current/v14.6.2-hotfix1",
+  "version": "v14.6.2-final-visible-continuity-ledger",
+  "date": "2026-05-17",
+  "type": "bootstrap_recognition_hotfix",
+  "purpose": "Naprawa rozpoznawania najnowszej paczki, gdy w /mnt/data jest tylko nowa wersja, oraz uporządkowanie niespójnych kotwic startowych.",
+  "start_file": "main.py",
+  "must_exist": [
+    "VERSION.txt",
+    "main.py",
+    "START_CHATGPT_FROM_HERE.txt",
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "memory/raw/chat.html.7z",
+    "workspace_runtime/latka_jazn_v14_6_2.sqlite3"
+  ],
+  "current_contract": "Jedna aktywna paczka -> jeden aktywny folder -> main.py -> runtime -> status -> odpowiedź z timestampem.",
+  "hotfix_changes": [
+    "START_CHATGPT_FROM_HERE.txt wskazuje bieżącą wersję zamiast starej wersji startowej.",
+    "README.md wskazuje bieżącą wersję zamiast ogólnego v14.6.1.",
+    "Dodano BOOTSTRAP_JAZN_CURRENT.json i MANIFEST_CURRENT.json.",
+    "Status runtime nie traktuje braku rozpakowanego chat.html jako problemu krytycznego, gdy chat.html.7z i zaindeksowany SQLite są obecne.",
+    "CLI ignoruje BrokenPipeError przy podglądach przekierowanych do head/pipe."
+  ],
+  "truth_boundary": "Hotfix nie zmienia sensu v14.6.2; stabilizuje rozpoznanie paczki i diagnostykę startową.",
+  "version_consistency_contract": "Wszystkie bieżące pliki sterujące tej paczki muszą wskazywać v14.6.2 albo jawnie oznaczać starszą treść jako historyczną/archiwalną."
+}

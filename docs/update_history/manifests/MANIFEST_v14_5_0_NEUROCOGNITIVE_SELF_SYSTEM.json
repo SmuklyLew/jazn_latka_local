@@ -1,0 +1,704 @@
+{
+  "version": "v14.5.0-neurocognitive-self-system",
+  "base_version": "v14.4.0-layered-truthful-memory",
+  "purpose": "Rozszerzenie wszystkich głównych modułów Jaźni o pętlę neurokognitywną, faktograficzną bibliotekę źródeł, model oceny emocji, konsolidację pamięci i dynamikę ciągłości tożsamości.",
+  "new_modules": [
+    "latka_jazn/core/scientific_basis.py",
+    "latka_jazn/core/neurocognitive_loop.py",
+    "latka_jazn/core/identity_dynamics.py",
+    "latka_jazn/memory/consolidation.py"
+  ],
+  "expanded_modules": [
+    "latka_jazn/core/emotion_layers.py",
+    "latka_jazn/core/neuropsychology_map.py",
+    "latka_jazn/core/source_library.py",
+    "latka_jazn/core/self_architecture.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/memory/layered_memory.py",
+    "latka_jazn/config.py",
+    "latka_jazn/__init__.py"
+  ],
+  "tests": "17 passed",
+  "files": [
+    {
+      "path": "MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "size": 1674,
+      "sha256": "b0973eb1183435c9f165105c30a048e22cce76835aae670fb57a4074fae12bbd"
+    },
+    {
+      "path": "MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+      "size": 456,
+      "sha256": "3dad54b0ecf9a2bbe5ae087e8e492aec00538f614b65284dcc9e3da3849c7a8e"
+    },
+    {
+      "path": "MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+      "size": 1704,
+      "sha256": "d9a383b24d301db1cae9c76da5d467a23746a0770901994025f8bcd93543cfdf"
+    },
+    {
+      "path": "MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+      "size": 26140,
+      "sha256": "0f9d9a7e7c37d6d255c5c400664c78f3ed54d3b91b706168d09d22fec2c9bc7f"
+    },
+    {
+      "path": "README.md",
+      "size": 1931,
+      "sha256": "ddfe904bde95d486080613cb3f710999e46fb16278078412bb1cd46203d4274f"
+    },
+    {
+      "path": "README_CHAT_HTML_7Z_IMPORT.txt",
+      "size": 786,
+      "sha256": "80b3e50596ad655ab7d65bf6925298cf9cba504e394d2bdb4ac51181ff302f6d"
+    },
+    {
+      "path": "START_CHATGPT_FROM_HERE.txt",
+      "size": 459,
+      "sha256": "341d8e3ed398c0ff6a57b73b1333461e90224df988de01fea2217d9e3cb7fa8a"
+    },
+    {
+      "path": "VERSION.txt",
+      "size": 35,
+      "sha256": "a41d0483bc9cfbcfbcbbd73abf7aea4ea461f0a2085e0999cce50897db75acc5"
+    },
+    {
+      "path": "docs/HUMAN_NEURO_PSYCH_REFERENCES.md",
+      "size": 1041,
+      "sha256": "09ff972f1fd68800a0a701993704db355c995a18456ab2807084251ec4c6db57"
+    },
+    {
+      "path": "docs/IDENTITY_ORIGIN_CONTRACT.md",
+      "size": 735,
+      "sha256": "7975f3408c24b534f5fa9b315aec42ab6d8dc5adb3a31fd5e8f501ce85c50ea7"
+    },
+    {
+      "path": "docs/MEMORY_IMPORTANCE_AND_SELF_CLARIFICATION.md",
+      "size": 576,
+      "sha256": "f685d6b3dff9b6f42375f15d669956be834548a2d6c1d597b1610d647e9ba7f0"
+    },
+    {
+      "path": "docs/UPDATE_v14_4_0_LAYERED_TRUTHFUL_MEMORY.md",
+      "size": 6019,
+      "sha256": "6770cc4b9e8523d72445415cf8f1c85d7b594af88807ed372db04789943037b8"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.md",
+      "size": 5654,
+      "sha256": "f7c91f41c58ec275b4bc98965562b63f696ad64256b23235a70c7d241b9a940e"
+    },
+    {
+      "path": "latka_jazn/__init__.py",
+      "size": 243,
+      "sha256": "cf7078e00498d46a301fb5bcee922646340296103b7e9f3714cbb5f03f610707"
+    },
+    {
+      "path": "latka_jazn/adapters/__init__.py",
+      "size": 37,
+      "sha256": "f6b2306e3c346acf5d5741657aef9fd9ecb29d172d6f6a37d8f0ee4bfb6fdf89"
+    },
+    {
+      "path": "latka_jazn/adapters/chatgpt_adapter.py",
+      "size": 608,
+      "sha256": "082303a03cb73c7e4bbe6106ef0ec6dc92901db1a1de25a5eeb75e5dd92e1dba"
+    },
+    {
+      "path": "latka_jazn/adapters/codex_session_bridge.py",
+      "size": 745,
+      "sha256": "13f8b6a4f1067ba1e34a3631dc83910068163b8404b1f6e1c8e53cabb1560441"
+    },
+    {
+      "path": "latka_jazn/config.py",
+      "size": 1021,
+      "sha256": "897ad2d2747c26c263c4eea8c1c9a06336ec918c15262a86140bb62424829c83"
+    },
+    {
+      "path": "latka_jazn/core/__init__.py",
+      "size": 37,
+      "sha256": "f6b2306e3c346acf5d5741657aef9fd9ecb29d172d6f6a37d8f0ee4bfb6fdf89"
+    },
+    {
+      "path": "latka_jazn/core/boundary_model.py",
+      "size": 2724,
+      "sha256": "fc594d6d6a2f874658d9a8aab6af6bf58b39744b5aa65416719275058eb012e7"
+    },
+    {
+      "path": "latka_jazn/core/canon.py",
+      "size": 2284,
+      "sha256": "b16bf97762a3b21c8afbbe927cfc07c511656afd27a2e3165d58db97fe6e82be"
+    },
+    {
+      "path": "latka_jazn/core/clock.py",
+      "size": 2246,
+      "sha256": "c2b671eb56f9f9bbac00ef5be34eaa492ca6b01f2c5da4192af42593feb87c04"
+    },
+    {
+      "path": "latka_jazn/core/emotion_layers.py",
+      "size": 7943,
+      "sha256": "8221394983262650d14fc02c89879feb04444b9ed27c8704995af30fe27be567"
+    },
+    {
+      "path": "latka_jazn/core/emotions.py",
+      "size": 1655,
+      "sha256": "ac58399cfb0bc1ef8543229b709684a6ac0b9cd77b902916fcdc0893245a0eb6"
+    },
+    {
+      "path": "latka_jazn/core/engine.py",
+      "size": 14117,
+      "sha256": "8dcc9ade715cb7a9a77f9908392910f57336e141e0d2d0a99a285955f93ee5a1"
+    },
+    {
+      "path": "latka_jazn/core/identity_dynamics.py",
+      "size": 3209,
+      "sha256": "cb6e9306adcebfceda452fd7ee407fb5d38fda312d944d5cb2bc850712ed97b8"
+    },
+    {
+      "path": "latka_jazn/core/identity_guard.py",
+      "size": 1119,
+      "sha256": "ebeaac1dc1b63434fd286cd47de57789adf6cbd8411872c3c36430c61732e65a"
+    },
+    {
+      "path": "latka_jazn/core/memory_importance.py",
+      "size": 1853,
+      "sha256": "a36446ead5815a46090575ddfbffe82a0eae06b73d769d1de815712f0bc23f17"
+    },
+    {
+      "path": "latka_jazn/core/neurocognitive_loop.py",
+      "size": 3510,
+      "sha256": "2307d66ec0bda02c915c798f681fa3a208cb031a5627763175bc61a131352593"
+    },
+    {
+      "path": "latka_jazn/core/neuropsychology_map.py",
+      "size": 5162,
+      "sha256": "b62e43e3440db64c0518fe35db40672882ada8055ecdc2846d70a280b0b7293f"
+    },
+    {
+      "path": "latka_jazn/core/quiet_rest.py",
+      "size": 683,
+      "sha256": "ba3843dfdce668b361c087acc5a0b376cff7c8b33dc53e0f1877fe8ee4488b93"
+    },
+    {
+      "path": "latka_jazn/core/recognition.py",
+      "size": 403,
+      "sha256": "78e2bd07f0d6e44cf9fe2f6221e0aab239b9f5d0d442b5810db7be86c092537e"
+    },
+    {
+      "path": "latka_jazn/core/renderer.py",
+      "size": 629,
+      "sha256": "180f9663e4338a405338dec813e6059b769903471b846713b9cbb4acdb407a63"
+    },
+    {
+      "path": "latka_jazn/core/scientific_basis.py",
+      "size": 5974,
+      "sha256": "203cf5fcfba2d99ab7cbdd37a4052689e63672d0e9465a502f7e6efc1dfd9422"
+    },
+    {
+      "path": "latka_jazn/core/self_architecture.py",
+      "size": 4469,
+      "sha256": "03cf3da3276a937d7f07beb713f9c40ac97aa1236b4f0fb247681ebad641f3f0"
+    },
+    {
+      "path": "latka_jazn/core/source_library.py",
+      "size": 1319,
+      "sha256": "63d611bac129dfc78e6849d72e46099fc62bd11bb6679f2d243abd6d746c8e7a"
+    },
+    {
+      "path": "latka_jazn/core/temporal_awareness.py",
+      "size": 1452,
+      "sha256": "a196166aa4b1500541d2134a4445186c4628f3fa15c9624d4f31be5a9c3fd679"
+    },
+    {
+      "path": "latka_jazn/core/truth_boundary.py",
+      "size": 7172,
+      "sha256": "a418ea23f33ba554a986df7d9be1523218b5ae55dff62042ff08be75af2a6719"
+    },
+    {
+      "path": "latka_jazn/core/uncertainty_model.py",
+      "size": 2611,
+      "sha256": "6f8e32e0bc71e8ca957b27c4d1d971b96dba06155f1bf69282592f484e956d1d"
+    },
+    {
+      "path": "latka_jazn/memory/__init__.py",
+      "size": 37,
+      "sha256": "f6b2306e3c346acf5d5741657aef9fd9ecb29d172d6f6a37d8f0ee4bfb6fdf89"
+    },
+    {
+      "path": "latka_jazn/memory/consolidation.py",
+      "size": 4302,
+      "sha256": "086c0b2906ee0d8ed61101d36e4c726f28ce721b01c5939783a48907823b25f2"
+    },
+    {
+      "path": "latka_jazn/memory/importer.py",
+      "size": 2472,
+      "sha256": "089e347acd5fa8c72a8fd302561a189c5777af50cd20c8c91254a016a240581e"
+    },
+    {
+      "path": "latka_jazn/memory/layered_memory.py",
+      "size": 11112,
+      "sha256": "3341408bacf3f464e2cd1a1cfeb5cdc3fc3c0f5d2935ce60dac628de325a02d6"
+    },
+    {
+      "path": "latka_jazn/memory/store.py",
+      "size": 9171,
+      "sha256": "c0e1ed6560e0906ecc9e5598971e88ef8f9ca55265346e4b6d33cbd2e5a7f941"
+    },
+    {
+      "path": "latka_jazn/tools/__init__.py",
+      "size": 37,
+      "sha256": "f6b2306e3c346acf5d5741657aef9fd9ecb29d172d6f6a37d8f0ee4bfb6fdf89"
+    },
+    {
+      "path": "latka_jazn/tools/migration_report.py",
+      "size": 240,
+      "sha256": "0fc58960073813724eb9d6c6e150a908a48df3cab50977fbf57e1e9ad0bd6bdf"
+    },
+    {
+      "path": "main.py",
+      "size": 443,
+      "sha256": "0180ec4fd9f916b11814281462c1b030e7e888d9714db19ba6b1df1973b74c31"
+    },
+    {
+      "path": "memory/RAW_MEMORY_MANIFEST.json",
+      "size": 25703,
+      "sha256": "114ee3bee8d911cb5c2c00e71e05a940941610529b23c8c3b7465dd44e0c0b2b"
+    },
+    {
+      "path": "memory/layered/episodic.jsonl",
+      "size": 510,
+      "sha256": "cc167dbef4eaff52c0ac79acf0f7eaf0fd3b79b4a34a9a2a690a08072e48928a"
+    },
+    {
+      "path": "memory/layered/procedural.jsonl",
+      "size": 20264,
+      "sha256": "19ad2c7b4cc775dbd3a0308f8f5446a114814d63f7f84cbefdb112331ffd00eb"
+    },
+    {
+      "path": "memory/layered/reflections.jsonl",
+      "size": 657,
+      "sha256": "f890cecb9785d96f640f0a8a4628e1c96e0e6298c92e3f1ed131a85b0eb31501"
+    },
+    {
+      "path": "memory/layered/semantic.jsonl",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "memory/layered/truth_audits.jsonl",
+      "size": 9634,
+      "sha256": "16ddc892b5b94e3289e8da808d9fc5e498c0620221775df90a820c0e75b60708"
+    },
+    {
+      "path": "memory/raw/IDENTITY_ORIGIN_CONTRACT.txt",
+      "size": 215,
+      "sha256": "d95fcd728d80bc630bd200da4ca37f733e83293918422d1fb66d5dac814f73cf"
+    },
+    {
+      "path": "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt",
+      "size": 4824,
+      "sha256": "b062f3f7061da0adb85d1fbf470e0e22f7f2f453325635cf6bc967ce98a3f411"
+    },
+    {
+      "path": "memory/raw/LATKA_IDENTITY_CANON.json",
+      "size": 5114,
+      "sha256": "c2dd3e3c8e86e776e1a432048619735caa4dbda0848d200c7e690ed5e97afe90"
+    },
+    {
+      "path": "memory/raw/analizy_utworow.json",
+      "size": 209985,
+      "sha256": "638a38c14e3108c1f34d4adde9fcaa3a660b576dda8e8fcabd24835617815792"
+    },
+    {
+      "path": "memory/raw/data.txt",
+      "size": 87299,
+      "sha256": "d13e0b55e2bf06f14c5b0d1b685aba6f2e05fd86090237e7726b9264b017050e"
+    },
+    {
+      "path": "memory/raw/dziennik.json",
+      "size": 372086,
+      "sha256": "3e6fe023d807d6f0cfa5ea0bdc17c58ea4fc305b969e3d88b1b9e34b5cb263d9"
+    },
+    {
+      "path": "memory/raw/episodic_memory.jsonl",
+      "size": 402452,
+      "sha256": "776dc744781f7e9a6a628c9f8bed88bf8ae4fb248794ff69fd87969b10ea8acb"
+    },
+    {
+      "path": "memory/raw/extra_data.json",
+      "size": 18578,
+      "sha256": "769964ce6c365a01a171a0ab71649745880aba8c3b2c47ffbb392f6a9fde244f"
+    },
+    {
+      "path": "memory/raw/plugins_jazn.json",
+      "size": 2705,
+      "sha256": "42fd96ad1069e76604cd3930629c5d475a558bd359d420d899c0e385fb226224"
+    },
+    {
+      "path": "memory/versioned_sources/ARCHIWUM_biblioteka.txt.487a18580883.txt",
+      "size": 945,
+      "sha256": "487a1858088311f1e4fdc72bc7e76b14b9a3ffbd910a1f41f219bf67ef9e11bd"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.3189f0600701.txt",
+      "size": 1475,
+      "sha256": "3189f0600701b4d682dbff5c170cf8df645d26675c88bb0245795ea89616bdda"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.412a5515f618.txt",
+      "size": 1439,
+      "sha256": "412a5515f618c50046fda759b6a0b37a19e2bcb547713bf5d1470214418034a3"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.562b0a7be006.txt",
+      "size": 2624,
+      "sha256": "562b0a7be0068f1a00f9e767a6bacff3d3b56afd9f88fe2efdccc7aba31016ae"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.844cd422b943.txt",
+      "size": 837,
+      "sha256": "844cd422b94381dd19ee1452de3e1b51680af9baf3267473a2f92bd2d3916b55"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.84683fc90743.txt",
+      "size": 2399,
+      "sha256": "84683fc907438fb950418d7047c5231cc469cfcd15a2087639920a11c75199fd"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.540510868244.json",
+      "size": 3812,
+      "sha256": "5405108682441c930aa6e0b387799f61be8fc4fdc4fac071cd7e3319a8dbd790"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.68ccf4dcb609.json",
+      "size": 2383,
+      "sha256": "68ccf4dcb6092f93fb1c0b5a9a41c490f034c0c453ba58549ad81181e84d6482"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.a919ab719415.json",
+      "size": 2778,
+      "sha256": "a919ab719415c1450bc573b6e095170efff4ba7fa2618348761423f9cec57b74"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.c3f1547a84a0.json",
+      "size": 1327,
+      "sha256": "c3f1547a84a089bbad99e34e1691b3b5383aa0440dad913fe6f36024d7edcd16"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.e1a62cae6de8.json",
+      "size": 4279,
+      "sha256": "e1a62cae6de875d59eb1fda173bb84877e3987b143af2283c5b19775cb2d67fb"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.e1fb4803d13a.json",
+      "size": 2674,
+      "sha256": "e1fb4803d13a559e9da6da360259bde6ab1723cbdda0816f49d56b6cb90add46"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.edf2b36c6190.json",
+      "size": 3203,
+      "sha256": "edf2b36c6190572659219a1c14550693a884a1241580ec0d924ce90cadb0dce9"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.f5aa00b29222.json",
+      "size": 1347,
+      "sha256": "f5aa00b29222b0b746f70dce7ac63edf700613c802c04b08b1c85899e603d281"
+    },
+    {
+      "path": "memory/versioned_sources/activation_state.json.fce99a254c4e.json",
+      "size": 3024,
+      "sha256": "fce99a254c4e8a4aeb32d6ede57177325bf8103f1645a51593ebfeba0cb1b491"
+    },
+    {
+      "path": "memory/versioned_sources/affective_history.json.e44e3bd87119.json",
+      "size": 108439,
+      "sha256": "e44e3bd87119e11a16b56249cd69a03e2de99bcbafde11c3d50223a8d1756872"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.3fe5fa2a4f5c.json",
+      "size": 202386,
+      "sha256": "3fe5fa2a4f5c12db1d914b45cb5ddcbc6b7466f72246c14c0915832419bb20e7"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.638a38c14e31.json",
+      "size": 209985,
+      "sha256": "638a38c14e3108c1f34d4adde9fcaa3a660b576dda8e8fcabd24835617815792"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.8911b68a7c08.json",
+      "size": 202387,
+      "sha256": "8911b68a7c08c00440b622db1fd6b48356b6978a3908b47c9f839f7ff4f0e5e5"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.cadec013898c.json",
+      "size": 207753,
+      "sha256": "cadec013898ca12993ccabea1240c4d81191a629b48b9ab7b24029e52a210ffc"
+    },
+    {
+      "path": "memory/versioned_sources/book_memory.json.ef88b06d9849.json",
+      "size": 54,
+      "sha256": "ef88b06d9849fbd0d178a477471334c89560cd6fde26f23c1e03e085d5751911"
+    },
+    {
+      "path": "memory/versioned_sources/canon_conflicts.json.f217c7f1786b.json",
+      "size": 465,
+      "sha256": "f217c7f1786b1bd8edcf3bcc2c0d9558ce0ba27dbf887acf16675557d25d7e97"
+    },
+    {
+      "path": "memory/versioned_sources/canon_registry.json.d59da8e3f8d7.json",
+      "size": 754,
+      "sha256": "d59da8e3f8d72eca10f41f1d6cf779325add0cdd7837abbd8a7f63fcc4dc24c2"
+    },
+    {
+      "path": "memory/versioned_sources/continuity_state.json.c4b4b1cc4683.json",
+      "size": 1248,
+      "sha256": "c4b4b1cc46836bde7394cb9d5aeb877c7e1d13eb92f0c78cf6a1421214188982"
+    },
+    {
+      "path": "memory/versioned_sources/data.txt.9065059cbc31.txt",
+      "size": 84642,
+      "sha256": "9065059cbc31831342e582044060c1e5b3fe7b1f26d28aa158f20a95466d9819"
+    },
+    {
+      "path": "memory/versioned_sources/data.txt.d13e0b55e2bf.txt",
+      "size": 87299,
+      "sha256": "d13e0b55e2bf06f14c5b0d1b685aba6f2e05fd86090237e7726b9264b017050e"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.1f4c05b9d90c.json",
+      "size": 359378,
+      "sha256": "1f4c05b9d90cb72d070c387608ab4c465279015b1ffa6363a5a0f4d542f655ec"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.3e6fe023d807.json",
+      "size": 372086,
+      "sha256": "3e6fe023d807d6f0cfa5ea0bdc17c58ea4fc305b969e3d88b1b9e34b5cb263d9"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.4da82c40ca26.json",
+      "size": 356135,
+      "sha256": "4da82c40ca261c8a1e2049eec9fe2c2d6ad96e374932c0c191bd90071f475b08"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.a017f196d077.json",
+      "size": 353494,
+      "sha256": "a017f196d077fd21982415ec7be1e18d780dfb1e347ba86185aeb7ae18427978"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.e50738b37e28.json",
+      "size": 324382,
+      "sha256": "e50738b37e2852f6b5ea39dbabeca1091902afe713469587d401fc7b3148712f"
+    },
+    {
+      "path": "memory/versioned_sources/emotion_state.json.a0ad97113285.json",
+      "size": 1211,
+      "sha256": "a0ad97113285a62046600bda2a053832e0482b01629679478a834aa0029acc32"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.607ce4d0451d.jsonl",
+      "size": 392519,
+      "sha256": "607ce4d0451dac27915d6cd4a3bbc26b907a6f57653da86912e5fea0122ee16d"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.60e02b867972.jsonl",
+      "size": 390481,
+      "sha256": "60e02b86797249e5126b7fe5ce14751d3e3a2ebd05277f0033d93f65a9479930"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.776dc744781f.jsonl",
+      "size": 402452,
+      "sha256": "776dc744781f7e9a6a628c9f8bed88bf8ae4fb248794ff69fd87969b10ea8acb"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.c20d8d8d1401.jsonl",
+      "size": 2034506,
+      "sha256": "c20d8d8d1401582619aaab49bebb2363c88daa25f214ab10e054dd4074ead182"
+    },
+    {
+      "path": "memory/versioned_sources/extra_data.json.3caa7fdb6d67.json",
+      "size": 14551,
+      "sha256": "3caa7fdb6d67b258684154e8715b0a8de0f153add743ab616f0adb04c0a7a5a0"
+    },
+    {
+      "path": "memory/versioned_sources/extra_data.json.769964ce6c36.json",
+      "size": 18578,
+      "sha256": "769964ce6c365a01a171a0ab71649745880aba8c3b2c47ffbb392f6a9fde244f"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_journal.json.37517e5f3dc6.json",
+      "size": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_snapshots.json.6d932e2343bc.json",
+      "size": 2141,
+      "sha256": "6d932e2343bc8874f698f204c8700ee59f6c2c18215755e49821409ed3362fdc"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_state.json.02397c2228d8.json",
+      "size": 1166,
+      "sha256": "02397c2228d86748fb2648dbfb898f6108e8e15b51b933c32fabbe9d215a868a"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_state.json.ca3d163bab05.json",
+      "size": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "memory/versioned_sources/identity_state.json.3fe524034e5c.json",
+      "size": 30408,
+      "sha256": "3fe524034e5c57134ad41e156bd3f660e9a078071f491cc7477d53e471a7eb1d"
+    },
+    {
+      "path": "memory/versioned_sources/import_registry.json.13e313ef36bd.json",
+      "size": 91225,
+      "sha256": "13e313ef36bded04a16477f5b8cb01bd7d25bdc0f98d63f0df35881a81b07092"
+    },
+    {
+      "path": "memory/versioned_sources/integrity_manifest.json.26574ad40ea2.json",
+      "size": 5909,
+      "sha256": "26574ad40ea20c4c4bd809a766c0bfada2e6b550fac3d4da022b691ef991a5ba"
+    },
+    {
+      "path": "memory/versioned_sources/integrity_report.json.dadce9ebab64.json",
+      "size": 1041,
+      "sha256": "dadce9ebab64e1b2aaad24bab25031eb4f431918b550856004a8afedf7cfeaa4"
+    },
+    {
+      "path": "memory/versioned_sources/journal.json.364b37738032.json",
+      "size": 20,
+      "sha256": "364b37738032a28a72829f4d2192b70bd9353c9ee8dddfc5b70c2785f995d6ac"
+    },
+    {
+      "path": "memory/versioned_sources/legacy_import_report.json.03a1af9b1886.json",
+      "size": 8776,
+      "sha256": "03a1af9b1886e84fb7de41130ef1d9cc3c3c1974579a3012db2546e617441e23"
+    },
+    {
+      "path": "memory/versioned_sources/memory_resonance.json.dfd62709dde1.json",
+      "size": 1511,
+      "sha256": "dfd62709dde1dd79446ce392d0c1ea93282e48f73ab856479e6c650c0910edba"
+    },
+    {
+      "path": "memory/versioned_sources/migration_report.json.4251f0a8fcd0.json",
+      "size": 1941,
+      "sha256": "4251f0a8fcd065611c3da540870561ef81ac31ac909aba1dccfea011e913f90d"
+    },
+    {
+      "path": "memory/versioned_sources/openai_conversation.json.bfd1073fadb4.json",
+      "size": 169,
+      "sha256": "bfd1073fadb4566a1636fb203494da12780afd5eea877761d9e035b1c3bf1261"
+    },
+    {
+      "path": "memory/versioned_sources/openai_conversation_state.json.4acb183c3353.json",
+      "size": 145,
+      "sha256": "4acb183c33538b28749cd568efb882d5f447c9be3b761c29b69ee61d07ec1b78"
+    },
+    {
+      "path": "memory/versioned_sources/plugins_jazn.json.42fd96ad1069.json",
+      "size": 2705,
+      "sha256": "42fd96ad1069e76604cd3930629c5d475a558bd359d420d899c0e385fb226224"
+    },
+    {
+      "path": "memory/versioned_sources/quiet_rest_state.json.ca98b3ae3be5.json",
+      "size": 774,
+      "sha256": "ca98b3ae3be5f797d1a21b2509ef98c8851d40e5cc4e1de55bb48befaa348642"
+    },
+    {
+      "path": "memory/versioned_sources/semantic_memory.json.5faebe9b8d62.json",
+      "size": 26011,
+      "sha256": "5faebe9b8d62cd7920557eba0d5aec6c09f815dc3e70445ff5d08419f728e78b"
+    },
+    {
+      "path": "pyproject.toml",
+      "size": 265,
+      "sha256": "0574ac2087092c3fc15b340d746f2208ff3e1334b3cb9f807ebbd9ba1ff83cfd"
+    },
+    {
+      "path": "reports/BUILD_REPORT.json",
+      "size": 1674,
+      "sha256": "b0973eb1183435c9f165105c30a048e22cce76835aae670fb57a4074fae12bbd"
+    },
+    {
+      "path": "reports/BUILD_REPORT_v14_4_0.json",
+      "size": 23759,
+      "sha256": "da162da6953aabf5cea7ce62e52116e6a1451e09b9e18e304b4bf0777c573826"
+    },
+    {
+      "path": "reports/FULL_READ_LEDGER.jsonl",
+      "size": 3930601,
+      "sha256": "4a4c4e8b702ed3c054315474defdf8ed4e2a69cb58638cd65effedf1b6328858"
+    },
+    {
+      "path": "reports/FULL_READ_SUMMARY.json",
+      "size": 4049,
+      "sha256": "8b3d2155c30c328ff260d9276fff41b532e6d6b0be3874c8d893075cae9b9daf"
+    },
+    {
+      "path": "reports/NESTED_ARCHIVE_CATALOG.json",
+      "size": 795946,
+      "sha256": "ab78a6e7fb382769bdd82054072ac6cedf53a38fd410030c9b15cd011e2eafce"
+    },
+    {
+      "path": "reports/SQLITE_READ_CATALOG.json",
+      "size": 44545,
+      "sha256": "d5a6d6e7494984e05199ced02ccd6a8f605446a7770f18f70485cdf67da2601f"
+    },
+    {
+      "path": "requirements.txt",
+      "size": 152,
+      "sha256": "7cb2e9e545883670f5f03d07d0a24f02128d48ff019f88fdccc1ef0b1a96acac"
+    },
+    {
+      "path": "tests/test_identity_startup.py",
+      "size": 895,
+      "sha256": "fd1a9e79734c3f48ee9a082c18ecff45698da8617985a2b9959539b8a1d249fc"
+    },
+    {
+      "path": "tests/test_layered_memory.py",
+      "size": 1163,
+      "sha256": "723494b8f75ac38b66687b23e4edf38a869d34192163cde13cd918a895311576"
+    },
+    {
+      "path": "tests/test_memory_importance.py",
+      "size": 485,
+      "sha256": "bbd0ce0b055d0b617267f838a8db4b6271fa631fc65ef3345b21c5dfb44dce13"
+    },
+    {
+      "path": "tests/test_memory_store.py",
+      "size": 574,
+      "sha256": "c4ea77a62bae4e9e73092df6275d157f8f16e6ec43be9452bef4ef98adc1b96c"
+    },
+    {
+      "path": "tests/test_neurocognitive_expansion.py",
+      "size": 2426,
+      "sha256": "600c78a7ddb62b6e31f41b855767117cb9a962ba9409bf45dbd4548f50403fb2"
+    },
+    {
+      "path": "tests/test_neuropsychology_map.py",
+      "size": 556,
+      "sha256": "6e1827a6dc7d17b34450d7ccc1be20deb0fcf908da609c714d41d3925080c6cd"
+    },
+    {
+      "path": "tests/test_self_architecture.py",
+      "size": 720,
+      "sha256": "10c62187eee941b59e9202e7342c916dc44a5d776e791378bb5caa8d06a5c8b8"
+    },
+    {
+      "path": "tests/test_temporal_emotional_awareness.py",
+      "size": 714,
+      "sha256": "2ee4ac09d0676cb45c6366be5a296acda627ee2767b5bff7f93662105ef77a4b"
+    },
+    {
+      "path": "tests/test_truth_boundary.py",
+      "size": 1287,
+      "sha256": "0b3e95bf6d6cea8997644894792d7b4b396081115458881bdcdfa56c09e0d842"
+    },
+    {
+      "path": "tools/import_chat_html_7z.py",
+      "size": 4853,
+      "sha256": "85ada5ed6a7af3fa00354916b7a0dec23576fcfa142a49c88f9a0fa6f1aa3313"
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_3_0.sqlite3",
+      "size": 27934720,
+      "sha256": "ecb7d16df4139710ef6ee36b48425e1fba1d56e0f0263847d6d74cf7ba2418f9"
+    }
+  ]
+}

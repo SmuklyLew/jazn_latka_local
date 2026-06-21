@@ -1,0 +1,568 @@
+{
+  "schema_version": "manifest_runtime_mutable/v14.8.3",
+  "version": "v14.8.3-route-status-marker-routing-hotfix",
+  "runtime_version": "v14.8.3-route-status-marker-routing-hotfix",
+  "package_version": "v14.8.3-route-status-marker-routing-hotfix",
+  "generated_at_utc": "2026-06-20T01:38:34.769741+00:00",
+  "updated_at_utc": "2026-06-20T01:48:19.539111+00:00",
+  "start_file": "main.py",
+  "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+  "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+  "active_runtime_write_database": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+  "active_conversation_archive": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+  "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+  "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+  "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
+  "file_count": 59,
+  "mutable_patterns": [
+    "workspace_runtime/**/*.sqlite3",
+    "workspace_runtime/**/*.json",
+    "workspace_runtime/**/*.jsonl",
+    "workspace_runtime/**/*.log",
+    "workspace_runtime/logs/**",
+    "workspace_runtime/turn_checkpoints/**",
+    "workspace_runtime/codex_session_bridge/**",
+    "memory/sqlite/**/*.sqlite3",
+    "memory/sqlite/**/*.json",
+    "memory/layered/*.jsonl",
+    "memory/raw/session_continuity_index.json",
+    "memory/raw/runtime_event_errors.jsonl",
+    "memory/raw/runtime_events.jsonl",
+    "memory/raw/conversation_turns.jsonl",
+    "memory/raw/dziennik.json"
+  ],
+  "truth_boundary": "This manifest contains runtime-mutable files only. Their hashes are deferred; size and path describe the generation snapshot.",
+  "files": [
+    {
+      "path": "memory/layered/affective.jsonl",
+      "size_bytes": 374283,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/continuity.jsonl",
+      "size_bytes": 12983625,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/episodic.jsonl",
+      "size_bytes": 778837,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/procedural.jsonl",
+      "size_bytes": 183939,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/reflections.jsonl",
+      "size_bytes": 778372,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/requirements_ledger_v14_6_9_3.jsonl",
+      "size_bytes": 7885,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/semantic.jsonl",
+      "size_bytes": 518105,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
+      "size_bytes": 667283,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_3.jsonl",
+      "size_bytes": 20636,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_4.jsonl",
+      "size_bytes": 181276,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/truth_audits.jsonl",
+      "size_bytes": 1513355,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/layered/turn_logic_audit.jsonl",
+      "size_bytes": 212687,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/raw/conversation_turns.jsonl",
+      "size_bytes": 2736618,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/raw/dziennik.json",
+      "size_bytes": 1537619,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/raw/runtime_event_errors.jsonl",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/raw/runtime_events.jsonl",
+      "size_bytes": 264798706,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/raw/session_continuity_index.json",
+      "size_bytes": 15127,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 208564224,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 126214144,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 94126080,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+      "size_bytes": 36864,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit_shards.json",
+      "size_bytes": 883,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+      "size_bytes": 3960832,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
+      "size_bytes": 893,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/sharded_v1/latka_memory_raw_0001.sqlite3",
+      "size_bytes": 187027456,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 116953088,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/logs/bridge.stderr.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/logs/bridge.stdout.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/083d4c73ef29402b91572c6e674d7143.json",
+      "size_bytes": 176,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/1221865c397c4b78bae5b93ad533d299.json",
+      "size_bytes": 166,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/1d37f7f46fb249d8a4260642641fa32f.json",
+      "size_bytes": 229,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/37da490522534af6bafd34e1679ab4c4.json",
+      "size_bytes": 256,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/3961773027b4435784204d627546962e.json",
+      "size_bytes": 232,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/4f1eab4825bf4ccfa67a1ea6c9e24748.json",
+      "size_bytes": 166,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/661222c247d943b696b0d469dffad5d6.json",
+      "size_bytes": 267,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/709b90bcdf10452e8dd7905546ec7975.json",
+      "size_bytes": 232,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/7366efc2684c4df695740dbd40ee86a4.json",
+      "size_bytes": 213,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/d37c72a8be054d878fddd7abd1bf4fb1.json",
+      "size_bytes": 166,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/dc988e79027749be92f73de2205cc399.json",
+      "size_bytes": 203,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/f63e5aa36c244911bc8b319f629b4477.json",
+      "size_bytes": 180,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/f6ad44e78d11408d8eaf169bb466e9a9.json",
+      "size_bytes": 203,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/f63e5aa36c244911bc8b319f629b4477.json",
+      "size_bytes": 13711,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve.stderr.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve.stdout.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve_20260619_154513.stderr.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve_20260619_154513.stdout.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/status/runtime.json",
+      "size_bytes": 499,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-25/turns.jsonl",
+      "size_bytes": 440039,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-26/turns.jsonl",
+      "size_bytes": 272835,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-27/turns.jsonl",
+      "size_bytes": 245115,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-01/turns.jsonl",
+      "size_bytes": 188029,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-02/turns.jsonl",
+      "size_bytes": 262224,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-04/turns.jsonl",
+      "size_bytes": 124637,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-13/turns.jsonl",
+      "size_bytes": 4778,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-14/turns.jsonl",
+      "size_bytes": 351408,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-18/turns.jsonl",
+      "size_bytes": 62798,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-19/turns.jsonl",
+      "size_bytes": 31324,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-20/turns.jsonl",
+      "size_bytes": 42355,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/LATEST_TURN_CHECKPOINT.json",
+      "size_bytes": 4706,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "mutable_runtime_hash_deferred"
+    }
+  ]
+}

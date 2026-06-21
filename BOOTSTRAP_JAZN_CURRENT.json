@@ -1,0 +1,20 @@
+{
+  "active_audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+  "active_conversation_archive": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+  "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+  "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+  "active_folder": "D:\\.AI\\latka_jazn_v14_8_3",
+  "active_root": "D:\\.AI\\latka_jazn_v14_8_3",
+  "active_runtime_write_database": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+  "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+  "cache_contract_version": "active_extraction_cache_contract/v14.8.3-route-status-marker-routing-hotfix",
+  "manifest_current_sha256": "e06ffb18c3440bd5a3b50f5540dee2356db34504a4051af3e626244d50a373cd",
+  "raw_memory_status": "conversation_archive_v1_ready",
+  "runtime_version": "v14.8.3-route-status-marker-routing-hotfix",
+  "schema_version": "bootstrap_jazn_current/v14.8.3-route-status-marker-routing-hotfix",
+  "start_file": "main.py",
+  "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
+  "truth_boundary": "Ten marker opisuje aktywny folder roboczy. ZIP jest ?r?d?em importu/eksportu, nie miejscem bie??cych zapis?w runtime.",
+  "updated_at_utc": "2026-06-20T01:48:19.539111+00:00",
+  "version": "v14.8.3-route-status-marker-routing-hotfix"
+}

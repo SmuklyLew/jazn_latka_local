@@ -1,0 +1,111 @@
+{
+  "version": "v14.5.19-runtime-memory-writer",
+  "previous_version": "v14.5.18-memory-continuity-update",
+  "type": "runtime_memory_writer_hotfix",
+  "created_at_utc": "2026-05-10T17:16:48.643664+00:00",
+  "purpose": "Dodać runtimeowy zapis dziennika, warstw pamięci i afektu z deduplikacją.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "latka_jazn/config.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "tools/runtime_memory.py",
+    "tests/test_runtime_persistence.py",
+    "docs/RUNTIME_MEMORY_PROTOCOL.md",
+    "docs/UPDATE_V14_5_19_RUNTIME_MEMORY_WRITER.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "memory/layered/affective.jsonl",
+    "reports/runtime_duplicate_audit_v14_5_19.json"
+  ],
+  "runtime_writer_record": {
+    "accepted": true,
+    "candidate_fingerprint": "c990e9f6b61c8f36194256e54bbc0cef301ba05d99ec8645e6720cfbad817f6c",
+    "candidate_kind": "reguła_proceduralna",
+    "reason": "importance_threshold",
+    "records": [
+      {
+        "layer": "dziennik",
+        "path": "memory/raw/dziennik.json",
+        "record_id": "1d13bb30-a7ec-42ba-8d2f-096279e3569b",
+        "fingerprint": "c990e9f6b61c8f36194256e54bbc0cef301ba05d99ec8645e6720cfbad817f6c",
+        "appended": true,
+        "reason": "appended"
+      },
+      {
+        "layer": "episodic",
+        "path": "memory/layered/episodic.jsonl",
+        "record_id": "d2c0d541-1342-4bc6-b7eb-89e7e75b4252",
+        "fingerprint": "c910384bd74592c10a4a33bd1875fd5440a96c04b2710d598ce41b39852b9e6d",
+        "appended": true,
+        "reason": "appended"
+      },
+      {
+        "layer": "reflections",
+        "path": "memory/layered/reflections.jsonl",
+        "record_id": "d0517aff-2b3e-41f1-aeed-e80b6c158343",
+        "fingerprint": "21232cdc2e842a8e351e781b425bdad8fb8b8c0acec710da52be0ec1ca054f6d",
+        "appended": true,
+        "reason": "appended"
+      },
+      {
+        "layer": "affective",
+        "path": "memory/layered/affective.jsonl",
+        "record_id": "2563f974-7aea-48cd-bb3a-082a79e0185e",
+        "fingerprint": "8369de2c59a7a15baf7075c0db7c4be69b5c7a266415c1fd04bf15365048553a",
+        "appended": true,
+        "reason": "appended"
+      },
+      {
+        "layer": "semantic",
+        "path": "memory/layered/semantic.jsonl",
+        "record_id": "9764d6a2-88a9-4dc7-9058-d3495d8ffe14",
+        "fingerprint": "ac2c9d0273bbee81b162dc960c257c0a726ff01348be810698c76b3bff5dcbca",
+        "appended": true,
+        "reason": "appended"
+      },
+      {
+        "layer": "procedural",
+        "path": "memory/layered/procedural.jsonl",
+        "record_id": "6cf8a26f-242b-44ff-b6a7-63ee139c96be",
+        "fingerprint": "a81775755cf078d28e11026d8484cad9278bb3c2a8667111cce8cc1eb363fc1f",
+        "appended": true,
+        "reason": "appended"
+      },
+      {
+        "layer": "truth_audits",
+        "path": "memory/layered/truth_audits.jsonl",
+        "record_id": "e63545ca-a570-4b40-a126-3adbc0738d0a",
+        "fingerprint": "1898142825344d6cec53b2ec6357c5a6007c589da9be5818daf48b5d769ec1a5",
+        "appended": true,
+        "reason": "appended"
+      }
+    ]
+  },
+  "version_recorder_result": {
+    "version": "v14.5.19-runtime-memory-writer",
+    "dziennik_update_entry_id": "33b79a8d-e14d-4609-9b78-b677a10f4eb4",
+    "dziennik_memory_entry_id": "730dbc3a-c1ca-40b2-b799-e4b62c20938c",
+    "dziennik_reflection_entry_id": "18aa206e-ba10-4dea-b397-2ac49e5d3579",
+    "layered_episode_id": "fa2623fd-c6cc-445f-ac87-02677b9ef520",
+    "layered_reflection_id": "32a4fb7b-a2ab-4f14-bf43-0b41c6a0fe05",
+    "semantic_fact_id": "135e47ea-86de-417b-af89-6dbfca6d9342",
+    "procedural_rule_id": "d14e3f27-b5d4-4376-8930-0d5fe1227c44",
+    "sql_journal_id": "f2d3cfd7-754a-4e58-a571-5ce48c61dc38",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": []
+  },
+  "duplicate_audit_summary": {
+    "duplicates_count": 0
+  },
+  "truth_boundary": "Runtimeowy zapis pamięci działa tylko w uruchomionym środowisku z dostępem do plików; nie jest biologiczną pamięcią ani pracą w tle."
+}

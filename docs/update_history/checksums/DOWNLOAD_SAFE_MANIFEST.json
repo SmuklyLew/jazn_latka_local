@@ -1,0 +1,15 @@
+{
+  "package": "latka_jazn_v14_6_1_FULL_SYSTEM_WITH_MEMORY",
+  "source_folder": "v14.6.1 active working folder",
+  "excluded_to_separate_parts": [
+    "memory/raw/chat.html.7z",
+    "workspace_runtime/latka_jazn_v14_5_35.sqlite3",
+    "workspace_runtime/previous_versions/*.sqlite3",
+    "memory/raw/chat.html (unpacked working copy, excluded intentionally)"
+  ],
+  "restore_note": "To restore full working set, extract CORE first, then extract MEMORY_RAW_CHAT_7Z, CURRENT_SQLITE, and optionally PREVIOUS_SQLITE_BACKUPS into the same root folder.",
+  "version": "v14.6.1-nlp-adapter-zip-profiles",
+  "cleanup_dedup": "v14.6.1 keeps cleanup/dedup policy and adds NLP/ZIP profile separation.",
+  "active_sqlite": "workspace_runtime/latka_jazn_v14_6_2_1.sqlite3",
+  "zip_profiles": "system, memory, nlp, github_source_safe, full"
+}

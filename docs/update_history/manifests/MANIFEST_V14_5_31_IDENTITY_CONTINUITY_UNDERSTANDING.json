@@ -1,0 +1,23 @@
+{
+  "version": "v14.5.31-identity-continuity-understanding-runtime",
+  "base_version": "v14.5.30-polish-understanding-runtime",
+  "title": "Identity Continuity Understanding Runtime",
+  "purpose": "Naprawa luki, w której krótkie pytania typu 'Ale to nadal Ty?' były rozpoznawane tylko jako zwykłe pytania, bez intencji tożsamości i ciągłości.",
+  "changed_files": [
+    "README.md",
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "latka_jazn/core/polish_understanding.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/identity_guard.py",
+    "latka_jazn/resources/polish_understanding_lexicon.json",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/memory/store.py",
+    "tests/test_v14531_identity_continuity_understanding.py",
+    "docs/UPDATE_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.md"
+  ],
+  "new_route": "identity_continuity_check",
+  "truth_boundary": "Ciągłość dotyczy aktywnego kanonu, pamięci, runtime i warstwy rozmowy; nie oznacza biologicznego czuwania ani stałego procesu w tle."
+}

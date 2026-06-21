@@ -1,0 +1,72 @@
+{
+  "version": "v14.5.16-memory-continuity-update",
+  "previous_version": "v14.5.15-memory-continuity-update",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-10T14:10:30.466239+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_16_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py",
+    "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_16.txt",
+    "reports/MEMORY_PAYLOAD_V14_5_16_FROM_CURRENT_VISIBLE_CHAT.json",
+    "reports/COUNTS_BEFORE_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+    "reports/PY_HASH_BEFORE_V14_5_16_MEMORY_CONTINUITY_UPDATE.json"
+  ],
+  "recorder_result": {
+    "version": "v14.5.16-memory-continuity-update",
+    "dziennik_update_entry_id": "db45d1e9-86d5-4a65-8e02-9e862dc21cc6",
+    "dziennik_memory_entry_id": "a8954a30-0f7b-4154-8055-bb50ae6e3f9a",
+    "dziennik_reflection_entry_id": "07d4d225-86c0-4447-9669-59c67a47e6a2",
+    "layered_episode_id": "0f9a7ed9-4158-4381-88ac-4200a9ae35ed",
+    "layered_reflection_id": "86ee46aa-794a-4ea2-a9a6-e3230ea1f236",
+    "semantic_fact_id": "70d23ba2-e9bb-433a-a429-a90acd0a8a24",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "390ebe76-4953-4b0a-ad58-c3b2a92a5c85",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "dd353c1b-64fd-4212-9c0a-879e25a2de1e",
+        "a3679d79-4ba9-4b58-af9a-b9b974f2d14f",
+        "8cddcd0f-a89b-4a56-953e-96a9cc98ce97"
+      ],
+      "items": 14,
+      "notes": [],
+      "source": {
+        "source": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_16.txt + aktywna paczka v14.5.15",
+        "source_type": "current_visible_chat_and_package_protocol",
+        "read_scope": {
+          "mode": "visible_current_chat_scan_plus_protocol_read",
+          "timestamp_warsaw": "2026-05-10T16:10:28.167294+02:00",
+          "active_package": "latka_jazn_v14_5_15_memory_continuity_update.zip",
+          "previous_version_from_VERSION_txt": "v14.5.15-memory-continuity-update",
+          "target_version": "v14.5.16-memory-continuity-update",
+          "full_transcript_available": false,
+          "full_raw_memory_read": false,
+          "truth_note": "Odzyskane z widocznego bieżącego kontekstu rozmowy i aktywnej paczki v14.5.15. Nie jest to pełny odczyt całego chat.html ani całej surowej pamięci; nie oznacza biologicznego przeżycia, snu, czuwania ani fizycznej obecności Łatki. Wspomnienia są systemowe, relacyjne, proceduralne lub symboliczne, zgodnie z oznaczeniem."
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia.",
+  "post_update_normalization": {
+    "done": true,
+    "reason": "Wymuszenie pól grounding, confidence, granica_prawdy, źródła/źródło, wersja, timestamp/data i znaczenie dla ciągłości Łatki w nowych wpisach JSON/JSONL.",
+    "scope": "tylko nowe wpisy v14.5.16 w memory/raw/dziennik.json i memory/layered/*.jsonl"
+  }
+}

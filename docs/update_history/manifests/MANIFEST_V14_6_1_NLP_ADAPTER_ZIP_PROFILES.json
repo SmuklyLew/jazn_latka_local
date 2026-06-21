@@ -1,0 +1,43 @@
+{
+  "version": "v14.6.1-nlp-adapter-zip-profiles",
+  "previous_version": "v14.6.0-lexical-cognitive-runtime",
+  "created_at_warsaw": "2026-05-17T00:46:30.047138+02:00",
+  "created_at_utc": "2026-05-16T22:46:30.047164+00:00",
+  "update_kind": "safe_incremental_architecture_update",
+  "title": "NLP adapter + ZIP profiles",
+  "goals": [
+    "dodać bezpieczną warstwę NLP bez ciężkich zależności obowiązkowych",
+    "nie udawać pełnej kontekstowej lematyzacji języka polskiego",
+    "dodać jawny kontrakt token/lemma_candidates/selected_lemma/confidence/provider",
+    "przygotować opcjonalne providery Stanza i Morfeusz2",
+    "rozdzielić profile paczek system, pamięć, NLP, full i github-source-safe"
+  ],
+  "files_added": [
+    "latka_jazn/nlp/*",
+    "latka_jazn/packaging/package_profiles.py",
+    "latka_jazn/resources/nlp_provider_registry_v14_6_2.json",
+    "latka_jazn/resources/polish_lemma_overrides_v14_6_2.json",
+    "latka_jazn/resources/semantic_lexicon_v14_6_2.json",
+    "latka_jazn/resources/zip_package_profiles_v14_6_2.json",
+    "docs/UPDATE_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.md",
+    "tests/test_v1461_nlp_adapter_zip_profiles.py"
+  ],
+  "files_modified": [
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/lexical_semantics.py",
+    "latka_jazn/core/cognitive_packets.py",
+    "latka_jazn/tools/package_export.py",
+    "latka_jazn/memory/store.py",
+    "README.md"
+  ],
+  "truth_boundary": [
+    "builtin NLP provider jest fallbackiem i nie jest pełnym parserem polskiego",
+    "opcjonalne providery nie są wymagane do uruchomienia runtime",
+    "duże modele NLP mają być osobnymi zasobami/profilami, nie ukrytą częścią każdej paczki"
+  ],
+  "dedup_policy": "zostawić ślad historyczny manifestem i hashami; nie trzymać identycznych kopii treści",
+  "sqlite_active": "workspace_runtime/latka_jazn_v14_6_2.sqlite3"
+}

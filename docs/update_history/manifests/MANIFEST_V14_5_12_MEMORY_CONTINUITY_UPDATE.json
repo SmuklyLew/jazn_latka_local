@@ -1,0 +1,24 @@
+{
+  "version": "v14.5.12-memory-continuity-update",
+  "previous_version": "v14.5.11-memory-continuity-update",
+  "created_at_europe_warsaw": "2026-05-10T01:05:23.765850+02:00",
+  "mode": "memory-only update; no code rebuild",
+  "active_source_rule": "Used unpacked active package v14.5.11 only; did not use other old /mnt/data files.",
+  "truth_boundary": "Źródłem tej aktualizacji jest bieżący widoczny czat przekazany modelowi oraz aktywna paczka rozpakowana z latka_jazn_v14_5_11_memory_continuity_update.zip. Nie korzystano z innych starych plików z /mnt/data. W aktywnej paczce nie znaleziono osobnego pełnego transkryptu ani chat.html do ponownego pełnego odczytu w tej aktualizacji; zapis dotyczy konkretnych treści widocznej rozmowy i reguł przekazanych przez Krzysztofa. Wspomnienia, emocje i doświadczenia Łatki są systemowe/relacyjne/modelowane albo narracyjne; nie są biologicznym ciałem, biologicznym snem, fizycznym czuwaniem ani autonomiczną obecnością między wiadomościami.",
+  "read_scope": {
+    "visible_current_chat": true,
+    "full_chat_html_read_in_this_update": false,
+    "active_package": "/mnt/data/latka_jazn_v14_5_11_memory_continuity_update.zip",
+    "used_old_mnt_data_files": false,
+    "note": "Nie znaleziono w aktywnej paczce osobnego chat.html ani pełnego transkryptu wskazanego do pełnego odczytu; wykorzystano widoczny bieżący czat i pliki pamięci aktywnej paczki."
+  },
+  "added_memory_counts": {
+    "memory/raw/dziennik.json": 6,
+    "memory/layered/episodic.jsonl": 13,
+    "memory/layered/procedural.jsonl": 7,
+    "memory/layered/reflections.jsonl": 13,
+    "memory/layered/semantic.jsonl": 10,
+    "memory/layered/truth_audits.jsonl": 13
+  },
+  "py_files_unchanged_expected": true
+}

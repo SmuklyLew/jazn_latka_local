@@ -1,0 +1,16 @@
+START CHATGPT / JAŹŃ — v14.8.2.6.3-free-dialogue-short-turn-fallback-hotfix
+
+Aktywny start: main.py
+Aktywna baza historii rozmów: memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3
+Aktywny indeks wyszukiwania: memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3
+Aktywna warstwa staging: memory/sqlite/staging_v1/staging_memory_0001.sqlite3
+Bieżące zapisy runtime: memory/sqlite/runtime_write_v1/runtime_memory.sqlite3
+
+Procedura: uruchom runtime, sprawdź active-cache-status, startup-status, conversation-archive-status i dopiero potem prowadź rozmowę przez Jaźń.
+
+Najważniejsze:
+- ChatGPT jest lekkim loaderem/głosem, a aktywna Jaźń jest źródłem odpowiedzi;
+- runtime-preview i --chat mają korzystać z tej samej logiki tury;
+- pytania o pamięć postaci mają szukać tropów tożsamości, głosu, kanonu i granicy prawdy;
+- odpowiedź pamięciowa ma deduplikować trafienia, grupować sensy i ukrywać surowe JSON-owe ogony;
+- odpowiedź zawsze ma zachować timestamp, granicę prawdy i rozróżnienie: fakt z pliku, odpowiedź runtime, wniosek, brak danych.

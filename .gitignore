@@ -1,0 +1,54 @@
+﻿# Python/cache
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.pytest-tmp/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime/private state at repository root
+/workspace_runtime/
+/memory/
+/processed/
+/requests/
+/responses/
+/status/
+
+# Private/runtime databases anywhere
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Archives / split packages / raw exports
+*.zip
+*.zip.*
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.part_*
+*.sha256
+*.parts.sha256
+*.source_files.sha256
+*.join.ps1
+
+# Codex/editor local state
+.codex/
+.vscode/
+
+# Backups/temp
+/backups/
+/backups_git/
+/tmp/
+/temp/
+*.tmp
+*.bak
+*.bad
+*.corrupt
+
+# Logs generated during runtime
+*.log

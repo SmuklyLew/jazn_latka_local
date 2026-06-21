@@ -1,0 +1,3390 @@
+{
+  "schema_version": "manifest_current/v14.6.10.1",
+  "version": "v14.6.10.1-stale-route-context-guard-hotfix",
+  "runtime_version": "v14.6.10.1-stale-route-context-guard-hotfix",
+  "start_file": "main.py",
+  "generated_at_utc": "2026-05-26T00:53:03.068085+00:00",
+  "file_count_static": 572,
+  "file_count_dynamic_declared": 103,
+  "file_count_total": 675,
+  "total_size_bytes_scanned": 1793792406,
+  "hotfix": "stale-route-context-guard",
+  "truth_boundary": "Manifest jest aktywnym indeksem paczki po hotfixie; historyczne manifesty są zachowane w docs/update_history/ i nie są traktowane jako aktywne wymagania runtime.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "size_bytes": 517,
+      "sha256": "8eb2c1f3d0b1d2a57acd4d62d1393bacf9fb7d020e148f84a8eb580d268d8a62"
+    },
+    {
+      "path": "ACTIVE_RUNTIME_CACHE_CONTRACT.json",
+      "size_bytes": 759,
+      "sha256": "cc02575d352703a4e9315ead5df3ff03ecb92ca2df1381572cd96c1eb0253813"
+    },
+    {
+      "path": "ACTIVE_RUNTIME_MARKER.json",
+      "size_bytes": 778,
+      "sha256": "282600f13887fba0b761e272eff799bb4771293c83c3512f06923637fb309e80"
+    },
+    {
+      "path": "BOOTSTRAP_JAZN_CURRENT.json",
+      "size_bytes": 2384,
+      "sha256": "7ea6fb8f04836f37e95ef1040c94b9575cf149ed8907587d03634add0d7ba4f4"
+    },
+    {
+      "path": "CHANGELOG_v14_6_9_4.md",
+      "size_bytes": 4334,
+      "sha256": "6a4486352611c2be3ccf34dc83a148e0b1b6e4f79a8db75740c93a08bc7c1013"
+    },
+    {
+      "path": "CHANGELOG_v14_6_9_5_STANDALONE_GREETING_STALE_CONTEXT_HOTFIX.md",
+      "size_bytes": 4462,
+      "sha256": "c8277e537a434fdd576e56d0861bacd65df4004077648271cd4e2a5602c91a7f"
+    },
+    {
+      "path": "GITHUB_REPOSITORY_PLAN.json",
+      "size_bytes": 3775,
+      "sha256": "39b89bfe1cb3f5e882b420e322b29b8395567c94512054ebf6b16e96a9c6b5ee"
+    },
+    {
+      "path": "MEMORY_CHECKPOINT_POLICY.md",
+      "size_bytes": 1773,
+      "sha256": "537b6cdddfcdb0c22be0086f45ab7053e741ffde7a48a9d0298e2e7d2dbed9ca"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 1627,
+      "sha256": "36490b9d512827cedfd2155edf507b156bd3d9779153a4f0c44979d6361dcd53"
+    },
+    {
+      "path": "README_CHAT_HTML_7Z_IMPORT.txt",
+      "size_bytes": 1784,
+      "sha256": "a113baadd75789549778113adec0adad49f6806a459065b66cb70f7ecc4ef899"
+    },
+    {
+      "path": "README_CURRENT_SQLITE.txt",
+      "size_bytes": 100,
+      "sha256": "8df168f872e5daa7032e0de41b670fe40697168cb5e0ec7764b7684018f5f27a"
+    },
+    {
+      "path": "README_MEMORY_RAW_CHAT_7Z.txt",
+      "size_bytes": 156,
+      "sha256": "f7a058c5afe23054777a5fa52c40c44d9c6bcb7fb07e6a402457779666a41934"
+    },
+    {
+      "path": "SHA256SUMS",
+      "size_bytes": 77104,
+      "sha256": "a19afd768182bda45109950ef22c2d580b662fbf883bbfec62ac54f01048dedb"
+    },
+    {
+      "path": "START_CHATGPT_FROM_HERE.txt",
+      "size_bytes": 1073,
+      "sha256": "b6a900b31692da409d64a141a30c444bbac89af90b4a3270505772ff6820eb6b"
+    },
+    {
+      "path": "VERSION.txt",
+      "size_bytes": 44,
+      "sha256": "f692cc6f932739868d3406a93e2c4ecfd0bef657fe979a96dbf4c1ad940de860"
+    },
+    {
+      "path": "docs/AKTUALIZACJA_V14_5_34.md",
+      "size_bytes": 1548,
+      "sha256": "e4d3949c8d3d7e50a072c9cbbfd7606371e593b80a91b6ba7b70ea1d4272ce47"
+    },
+    {
+      "path": "docs/DZIENNIK_SCHEMA_v14_5_1.md",
+      "size_bytes": 2144,
+      "sha256": "4c3d810fc4ae1eb2bd13a8a307aeeaf259e4cf29d6ad24dd922e8430429d622c"
+    },
+    {
+      "path": "docs/GITHUB_REPOSITORY_WORKFLOW.md",
+      "size_bytes": 1591,
+      "sha256": "ee2c4b600a263f45189add8c18b391b137eda5107ff8f858a9a1127cf4c93c78"
+    },
+    {
+      "path": "docs/HUMAN_NEURO_PSYCH_REFERENCES.md",
+      "size_bytes": 1041,
+      "sha256": "09ff972f1fd68800a0a701993704db355c995a18456ab2807084251ec4c6db57"
+    },
+    {
+      "path": "docs/IDENTITY_ORIGIN_CONTRACT.md",
+      "size_bytes": 735,
+      "sha256": "7975f3408c24b534f5fa9b315aec42ab6d8dc5adb3a31fd5e8f501ce85c50ea7"
+    },
+    {
+      "path": "docs/JAZN_v14_6_9_4_PELNA_LISTA_DO_AKTUALIZACJI.md",
+      "size_bytes": 37583,
+      "sha256": "9a02fa74dbed0b5eee09e4ce8dcacee023f6fb531b38222941054426406d11d4"
+    },
+    {
+      "path": "docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+      "size_bytes": 6967,
+      "sha256": "9c91b549c243b2b31a0039a054abb4c313ca449081b76f80aa913124cfe6e505"
+    },
+    {
+      "path": "docs/MEMORY_IMPORTANCE_AND_SELF_CLARIFICATION.md",
+      "size_bytes": 576,
+      "sha256": "f685d6b3dff9b6f42375f15d669956be834548a2d6c1d597b1610d647e9ba7f0"
+    },
+    {
+      "path": "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+      "size_bytes": 2143,
+      "sha256": "d807a82ab8354c561fca4b9dda794da37fb4b97b6ff37f61b369f00eb5010d46"
+    },
+    {
+      "path": "docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
+      "size_bytes": 51513,
+      "sha256": "ed82095ef9917c9fa16c07debc0fb11ecbd0bc3fa17990a1ff822a12e32cefe8"
+    },
+    {
+      "path": "docs/RUNTIME_EVENT_LEDGER_PROTOCOL.md",
+      "size_bytes": 1942,
+      "sha256": "0e36b7abd91a628ed9d7caa65dafe017bd441314569d336b40a516c9c3a20c53"
+    },
+    {
+      "path": "docs/RUNTIME_MEMORY_PROTOCOL.md",
+      "size_bytes": 1413,
+      "sha256": "ddbd16822bca94044b3cba7880753f8daa8490903ef396ff20154bbdf645af12"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_10_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 2556,
+      "sha256": "7c673a5d1c64c9b003598d43b769af2246c9d4f07da905ec1da0882654706ee2"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_11_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 2020,
+      "sha256": "ca908a0c7102a2f4365d20f785a33960505dc75b1cfa444c74e0872d5427398a"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_12_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 944,
+      "sha256": "0189437762a5ac9711a8a91a812677ed8b1bb7c8629be0775c92eaf3d3bd1518"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_13_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1959,
+      "sha256": "81e0641f2ec242ded9ed3b8e23b21b4c899f92228ffef3300df5460a606e5409"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_14_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1366,
+      "sha256": "dd64dee856a6e3ee5152da3301046a2864413b2a237229a50148c3081305d23d"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_15_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1896,
+      "sha256": "cff6fde780f4ab2444f7c02d1be043152f06cc809d4ba89d9bb4e56dd1595176"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_16_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1931,
+      "sha256": "4a1b07417a4968ef84684cae76d5bd37e72892faa39db9ea70385d1ce16cdaed"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_17_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1863,
+      "sha256": "baef3c35b1e8bd4f485542431fbb35dd157f08094e0139d4f062e40873b509c5"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_18_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 3261,
+      "sha256": "d8b6af2ab0fa657d160db2f7e964c7d9e70b56cf1687f21cfc4df4f960805d55"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_19_RUNTIME_MEMORY_WRITER.md",
+      "size_bytes": 2036,
+      "sha256": "b63af56ae12e5dfadc70877bb41f5ce8b0e00a89f51b5c130b31fe4d9af9802c"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.md",
+      "size_bytes": 1493,
+      "sha256": "b23a0323fe2ec975e81e196e7c3d8a821fbcb7903fad3c313fc5bde2aaaf5751"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.md",
+      "size_bytes": 3409,
+      "sha256": "1353905f66a52358ebf5a3697dd7da65b64ae04a0aced274d255bffe76481e5c"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_23_FULL_MEMORY_RESTORED_COGNITIVE_BRIDGE.md",
+      "size_bytes": 1440,
+      "sha256": "022a87dd253d24e7bcc0cd6cda874f230b5c3ae780e81d38ce9c1a667fce17c6"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_24_RUNTIME_BRIDGE_EXPORT_HOTFIX.md",
+      "size_bytes": 2147,
+      "sha256": "e1d38dc6e135052fb0108f9e0dca01256e30319d1b30a1900c0b0f2165a2a333"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.md",
+      "size_bytes": 2739,
+      "sha256": "64956a03e64ce0868eea0b376e9090b0ea9ba8ecff173fb209710a12f1a8bd94"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_26_FULL_COMPLETENESS_REPAIR.md",
+      "size_bytes": 950,
+      "sha256": "f4001aeb7b6ac229bb9570794da5f9b9f5be3aa16af4519b11552390f01c612b"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_30_POLISH_UNDERSTANDING_RUNTIME.md",
+      "size_bytes": 3059,
+      "sha256": "d03da15d22562c608d06fbfc432a0dce19b43267331cde83f26b375ce03c05fa"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.md",
+      "size_bytes": 2555,
+      "sha256": "dbf105bc40e32514477565c60b1236bba7bfbf508cfa96fdf89750968ab69d7c"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.md",
+      "size_bytes": 1819,
+      "sha256": "ca8837c7b5851fe1627bafb3e48087ee3d1a3db3e86b0311d1622db84a8a109f"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.md",
+      "size_bytes": 4150,
+      "sha256": "f8323d1287d9e310b0fed2b28d0969b88e37739cd9822f03726a928f539ae650"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_38_GITHUB_COGNITIVE_RUNTIME.md",
+      "size_bytes": 2624,
+      "sha256": "6e4db69a7435f18128d15923fe5b8bf21b6aee4b8a57ffde0275e5127baa656d"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_39_CLEANUP_DEDUP.md",
+      "size_bytes": 1046,
+      "sha256": "f38be6e18ce77a143df0c17add2364d131a79355a0a2d4a8aaa5fd372a4aa31f"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.md",
+      "size_bytes": 1721,
+      "sha256": "557b898b73f24582f406a55fe55479fa4684f69916d4d68d3122639ec7db3dfc"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_4_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1703,
+      "sha256": "b312fa37b05534b2c746d4574a719bf339843af5522bdea2890e2c0405cf7481"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_5_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1755,
+      "sha256": "99bcbcf7497c7af24667c767723fedf2b6cba61f873f008d94681e115e22d789"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_6_CONVERSATION_MEMORY_CAPTURE.md",
+      "size_bytes": 1764,
+      "sha256": "59030d7376d6220ca1f15f3db88fb7778b7c9afd3bae94d73b6f7c0cacbf4239"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_7_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1983,
+      "sha256": "e7e2a01156032b8287eaa22ba9db51430837043f8fdb33804c7c68ad4e784610"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_8_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 2058,
+      "sha256": "15d12b9c5ef5ea59c297b4050f916bf893ac6d60e5af6a0ed47a3aea958157e5"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_9_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1837,
+      "sha256": "2fd76fde900d2c1acafd515fa9efe2512abb759b88a4ab2393e9565aaf776c95"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.md",
+      "size_bytes": 1281,
+      "sha256": "2443fdd092a2cef2b1ece6b10410190ff025d0b2e8667d64d8e72ae40276662a"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.md",
+      "size_bytes": 2672,
+      "sha256": "4ce69a90a59034cf7b973745b2ac1067527dc9316e0181f1b9658e91bf4ff5a5"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.md",
+      "size_bytes": 2917,
+      "sha256": "30b11f31747f0a98932cfd7d3dd3d9907cc2cd49621655a68c5fd2db223005ef"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.md",
+      "size_bytes": 1420,
+      "sha256": "58890f198e0f7e8cda040997facf0a2cefba921fc7c5e11cb3b83071b79317e4"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.md",
+      "size_bytes": 2281,
+      "sha256": "81b28f368b94882a6b030fbd993c60c79c53349333f37242042b447ddf51f730"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.md",
+      "size_bytes": 1423,
+      "sha256": "06c85ad0b0959f0047c8545508c9e641495523998ad55471fc30501af1649860"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.md",
+      "size_bytes": 3013,
+      "sha256": "7b29ae6006b0d60c442fc91ddc926ca5caa5500b32a37bfc8015ebb599cc7030"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.md",
+      "size_bytes": 2461,
+      "sha256": "166e0840bffe73359da978881e27613085197923ad50769097c5db16988034a1"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.md",
+      "size_bytes": 2881,
+      "sha256": "27764dbe1f917da7739c9c13d428a5715783e55b29a23f53f480129fad3fea59"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.md",
+      "size_bytes": 2771,
+      "sha256": "087bd392d5ee577e85eb5f83cd52b449115cf0b5f00c45040d073d9dfdc1ddf2"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.md",
+      "size_bytes": 2638,
+      "sha256": "436ca3877d13f7651147c4bcaf977af15434b8b656f98d242248935d1be4142b"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_5_MEMORY_SEARCH_PLANNER.md",
+      "size_bytes": 2401,
+      "sha256": "9b90ce0e5bdbadfb4171b9d3b419c8d249fdec017de2d081575078900d07662d"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.md",
+      "size_bytes": 1828,
+      "sha256": "f2b8c8852d9587d32eb5df5527cb9a80baef8d4dd611d1e2fca7207234cf53c9"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_7_FREE_DIALOGUE_MEMORY_NLP_BRIDGE.md",
+      "size_bytes": 2201,
+      "sha256": "737efde1ab52704f11f912de7301d8e3951c4b9c3fbfc368ce41d9b5c169160f"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.md",
+      "size_bytes": 2389,
+      "sha256": "780a90c7ec7b26198f22297cc180193cfc2fa07fa398ae917b005a456eeae8dd"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_1_FREE_DIALOGUE_PARITY_MEMORY_SEARCH_HOTFIX.md",
+      "size_bytes": 4218,
+      "sha256": "ac878fc11caa46e0c5eb1e9c41c69275ab02255f860d8d6b637985f8444f32e6"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_1_NEUROLOGICAL_SIGNAL_ROUTER.md",
+      "size_bytes": 1920,
+      "sha256": "d2057316e970d71120efc46da044b539031b4b15eec3a13276b546a21a4e4806"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.md",
+      "size_bytes": 4356,
+      "sha256": "bcac1af042e43fa26de2d92bf40261744442abc644b5366d4b74341d1b0e02c3"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.md",
+      "size_bytes": 1196,
+      "sha256": "85884a65dc10db262cc8de1f47c15d334bddbcdc13e8d4513fb5d74eb1f8c3bc"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.md",
+      "size_bytes": 5154,
+      "sha256": "323d269fe1e7162ec08afe2eacc3c8dde886f56a0756e0d0f369faed194f82d8"
+    },
+    {
+      "path": "docs/UPDATE_v14_4_0_LAYERED_TRUTHFUL_MEMORY.md",
+      "size_bytes": 6019,
+      "sha256": "6770cc4b9e8523d72445415cf8f1c85d7b594af88807ed372db04789943037b8"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.md",
+      "size_bytes": 5654,
+      "sha256": "f7c91f41c58ec275b4bc98965562b63f696ad64256b23235a70c7d241b9a940e"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.md",
+      "size_bytes": 1921,
+      "sha256": "bf858f1e9a606defe7ce410805977c0aeb64f0e7f4d71d81c0e7bd9ff0d4216c"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_2_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1542,
+      "sha256": "89e465c39e6a5ff6da66b5554353a5412cf2e0c854437799279f0b888170c1a8"
+    },
+    {
+      "path": "docs/update_history/INDEX.json",
+      "size_bytes": 63845,
+      "sha256": "d746893402e2cf50623fdff82c325d27a60b4e2999ef89ddac261e482fe7412f"
+    },
+    {
+      "path": "docs/update_history/README.md",
+      "size_bytes": 1174,
+      "sha256": "35c891d44624d223ba0a78aa4d2eda8d4c98e7134eaea6a685ae2cc627187e37"
+    },
+    {
+      "path": "docs/update_history/checksums/DOWNLOAD_SAFE_MANIFEST.json",
+      "size_bytes": 828,
+      "sha256": "e45cbe908973a1f2e4df4b830c8267ecfea89e2488859d6c55e62df943beea65"
+    },
+    {
+      "path": "docs/update_history/checksums/SHA256SUMS.txt",
+      "size_bytes": 70381,
+      "sha256": "3a65a1efa91a398f502759c35ea6880e4829a3d2bd6052aac15b659fcd95cd0c"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4323,
+      "sha256": "397cb024763ff97da5e6b3fc73eafe5b4a2869c6d53439a2b629ab7c93483c9d"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2878,
+      "sha256": "c95fe3a9270a30a240b424ef6fc67014479b3cb00d89f39455a2d9e33c17458a"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1752,
+      "sha256": "d64e651fe81b3aaf346a5e8957987240110bed9368a9639e959c0260f397c007"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 5200,
+      "sha256": "b225fc81aaa0c4988bf64a04e394e53e3ba59d12d848e66fdbaa1c16e077027e"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 6043,
+      "sha256": "d33d7d67c81ae7b0b0c851ea6d6175efe3260c77ed28bbe5b41e800b7bf5bcd3"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4519,
+      "sha256": "4f23821fecdd14fad649430f9c958f02531e688deb4c6cea38bc2a662b76ab77"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 3689,
+      "sha256": "c6e13bd576a83b2e0f49cd4f4a7ffc4216bc8b45d25749e863f543e8a569de0f"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4464,
+      "sha256": "b9ceae0a2529f098736383dc790d67e5e7a90afbe4e37e3a3fb2aeabb079758b"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 9108,
+      "sha256": "61d01ad2f5445ae8b5d90f929892e9241579b42a5bb2545a3ecf1e35801fca0a"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
+      "size_bytes": 4362,
+      "sha256": "fc6b50dc7672d7e61435b9c43a83bafc31ef055a1a8b512e1d5359348c2886fc"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
+      "size_bytes": 1318,
+      "sha256": "428c6117e8bbb78ba088a6a1c059d1df8918778f56ab81740eeb47835fd7201b"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
+      "size_bytes": 1863,
+      "sha256": "88a3ec1610fd29fc5e5fd458fdb368f5763e90b3290fc57ae3ec57eccffab091"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
+      "size_bytes": 1005,
+      "sha256": "0fd2b8243f717d2d4054de1e125583975a12c6803eaf6494f8560f97304a9aea"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
+      "size_bytes": 964,
+      "sha256": "99ce4d5eec752d4aa6f658ff880f62a84e20d83c018d5881dbdaad3c9d8ff26d"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
+      "size_bytes": 1894,
+      "sha256": "f48e0f7c53495293645c86c67d328a59494408a3c657aa9ae4afa7d79b861fcc"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
+      "size_bytes": 1775,
+      "sha256": "f12828adeef272fae28ab5dffc54e0e35c7d7cb2091d25c7db4483e9a312dd8f"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
+      "size_bytes": 2920,
+      "sha256": "a64317f8c850d9f46248c686a2707450bf59ad72dc75c9203badd14d71232e27"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
+      "size_bytes": 1122,
+      "sha256": "a2f2762a9adad62f01d6a734a8c5fda8d0c50ffffb3f82215c405b46e9ad5f21"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
+      "size_bytes": 1787,
+      "sha256": "3db89ba5f4ede939a5ddc383e67a1b66a1ede844e88e90f2dc50212a7aa55978"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+      "size_bytes": 1526,
+      "sha256": "9a4a49300179380002ad94dcbbc1b00a56fe605b9d55d2cb7d8ffb9a420d0845"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+      "size_bytes": 3656,
+      "sha256": "4d28ee98d6838ec6ada74e0e76d395f33d45427aa95244134f7a831f9c3348da"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
+      "size_bytes": 6179,
+      "sha256": "96beb000c5e7634f9ce436464eda327aff71defc5f0fdefafa814fc5353f1151"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
+      "size_bytes": 9350,
+      "sha256": "8c7bf0fe3ba374a499df1b63051855490989310013753c9e67e14b7ba0f7b4e8"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
+      "size_bytes": 1986,
+      "sha256": "43a16851cee01aa35e27121a75b44bb266a9befc6052ca98250856ef30898bb5"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1754,
+      "sha256": "c8b3e4e4988330c080b72b68b2e9e493b93b2da8f6751bb3770472751f4131e7"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1752,
+      "sha256": "ebaa3d00f7779bd4543802a4c4eccbfaabfa81a9334a713be7d14986ec573f6e"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
+      "size_bytes": 2702,
+      "sha256": "c5afb3a82b9c28bf2bb1d3ca82a1914ad0182ea9a9ef8a34bec9a6d7789092b6"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2630,
+      "sha256": "7c5b8ec17e05c568e825ee6f6ddf79b95aa8910f4db92ea9455019a8f029e08c"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2568,
+      "sha256": "f867d18b39bf5eb5d0e9bf6e598065c62474c73bdec977181850c108256179cb"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2596,
+      "sha256": "890bf95dd8276dcded400ae56bde0cdf32174c4c2f107cd37f0032bf44a90ff3"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+      "size_bytes": 4679,
+      "sha256": "cde2d086ad2cc3f00e43fcc93f37942efbf16690f7fa690e522a509abc9896da"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
+      "size_bytes": 1623,
+      "sha256": "02c0dcd9dfdefbddf8f38bed7d9583abe22dbc907f99a255f84bddd09a8dffa4"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
+      "size_bytes": 2572,
+      "sha256": "dfb6d11f29aef177e59ac661ce6f3d97c4a2638d5ced584e66660aacb3cbf9e0"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
+      "size_bytes": 1485,
+      "sha256": "3282d2679b806494f1f2fd4d4cb91ac8534766e9b6f26156f308891b5a53b94d"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
+      "size_bytes": 2561,
+      "sha256": "ceabb5d914763881efba7cee5c9539f25e26a4cdc86caa066102035c8100c648"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
+      "size_bytes": 1960,
+      "sha256": "c3d2a0913700e68bd47744d7bec25781f8116e745184123737207271765d9e28"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
+      "size_bytes": 1931,
+      "sha256": "8d12872aaa7b199d8925cd26750294e24f228c2277c8055dccd01aabe8ee09d2"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
+      "size_bytes": 2635,
+      "sha256": "02bf445b87054f271a66a55ce6e766e390f0091fb97b8afe37f925d51c342480"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
+      "size_bytes": 3736,
+      "sha256": "18f1e65b0f883f973e0cf9ec3da2b1dccbe616229e150f1a389d65813cf836ea"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+      "size_bytes": 4691,
+      "sha256": "065976fe9f9c317a629896f9ce0152287ff2b7b9cc73a6fbc4f74673fdd6e8a5"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+      "size_bytes": 4964,
+      "sha256": "fdf286b0957d0f58b7aca9bbb2d612b51a9d951a1793da36960b94a30d8b38ac"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+      "size_bytes": 3913,
+      "sha256": "c8477622bffe42374419f2943c745b7b0689cc8bce97cbcd4069e9dbf7a3e699"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 5336,
+      "sha256": "f86b87edd249660d9a98c6d01e3eaec078eadcaa39bbecf9aaee1061b892f9ae"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 3615,
+      "sha256": "1903087fe169a7187a958860895d4f3655c6b2872c2320726f9cc96eb035afdd"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 8423,
+      "sha256": "22bb36b72e0806c8da5218e773a05d0ab3e2a37b59a5fe4f570963f589d6080e"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
+      "size_bytes": 596,
+      "sha256": "7dbf0458f3d1d0233aebadff15fc7e7505db01778bfcde7958f9bd2c270df568"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
+      "size_bytes": 217,
+      "sha256": "0dffbc3700d8065479ca1da20bd97804de6683397e8ae7a3c349e5b017714edf"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "size_bytes": 1674,
+      "sha256": "b0973eb1183435c9f165105c30a048e22cce76835aae670fb57a4074fae12bbd"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+      "size_bytes": 456,
+      "sha256": "3dad54b0ecf9a2bbe5ae087e8e492aec00538f614b65284dcc9e3da3849c7a8e"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+      "size_bytes": 1704,
+      "sha256": "d9a383b24d301db1cae9c76da5d467a23746a0770901994025f8bcd93543cfdf"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+      "size_bytes": 25163,
+      "sha256": "cc30a1ed7ed144f7ef3dffa6bf96ce6524a3605ce5f5bf07d431a77b5b5fc80d"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
+      "size_bytes": 1151,
+      "sha256": "7923145d3d3a1b3eb04f6bbbe60f48aae0bbb59e8f8cec7cad4ab9f125554961"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1170,
+      "sha256": "00f8ff00dbd33d26e044b8cf4ae68a20b310da8880e17960fc89fd4d92db9bb5"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_CODE_v14_5_20.diff",
+      "size_bytes": 35643,
+      "sha256": "9d5e6e7a9803dbae2a3d2dc7e842e59085a0b13c82bc830bc42d57bbe1507e85"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_CODE_v14_5_21_REVIEW_FIXES.diff",
+      "size_bytes": 30438,
+      "sha256": "69db60af42b3244eae85f782a19ff5bfb2793222fba84a1f3f597fc63fb3c870"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_CODE_v14_5_22_CHATGPT_COGNITIVE_BRIDGE.diff",
+      "size_bytes": 90111,
+      "sha256": "23507dd043938b064529615846c1cce3456a22482b9ba7923387a0f387b6e9ac"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_CODE_v14_5_27_DIALOGUE_REPAIR.diff",
+      "size_bytes": 22320,
+      "sha256": "94209771a3610e824a53040c33619fee663ca4dfc9733ca94cadc36448005b4b"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_CODE_v14_5_28_AWARENESS_LOGIC.diff",
+      "size_bytes": 59915,
+      "sha256": "d4aeb76ce4da661b0d89a350d2420898c4baa5d537cb46e5e8c47c42c6e85934"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_CODE_v14_5_29_CONVERSATION_RUNTIME.diff",
+      "size_bytes": 45778,
+      "sha256": "b59f243382326fe0cd63a0336fec9e68d1109eb8dfad6f1c6806e69a210f2be5"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.diff",
+      "size_bytes": 59017,
+      "sha256": "2d0fe6f043728644b100088096a0c47a2282410a0cb58dd5b3ce511c5a15884a"
+    },
+    {
+      "path": "docs/update_history/patches/PATCH_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.diff",
+      "size_bytes": 91370,
+      "sha256": "932a2e033b39e24ae02d975470c976eed8fc3112626c6ef70a808db33ce4abc6"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_23.md",
+      "size_bytes": 434,
+      "sha256": "d2fa412ab40b2fb6d961ceb97defb0f884b4047a789db92ab7fbbbfdf42aec30"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_24.md",
+      "size_bytes": 1225,
+      "sha256": "00f1299c7fd440e12612805c5a17a8f00ac0bd72e2f00ce6ce3843924f201ca9"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_25.md",
+      "size_bytes": 695,
+      "sha256": "5d325f0f98d9a7e0c43abd59a3ea6d9903976f192546c6824dd74b654ec8b40c"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_26.md",
+      "size_bytes": 1083,
+      "sha256": "bfcffcaae4dd479d047ccece378a6f7ef4ef1b165e0eabbda548c4f9238a5115"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_27.md",
+      "size_bytes": 1490,
+      "sha256": "f63b8453180246725f34c50e6426f86a9d933c3a409640c3f0c8cc68dee74845"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_28.md",
+      "size_bytes": 3202,
+      "sha256": "9ca2132c55dd132a7d315feb9c958998d9c79c4eb23a893fdddd908782592996"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_29.md",
+      "size_bytes": 3956,
+      "sha256": "2a8780182d217b7f040a5b35fb3a8e86e44edb8fcf875fb420eb3212c84b1b29"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_38.md",
+      "size_bytes": 1646,
+      "sha256": "9f8734597083657662770414aa34e15a1cd47b0255b296bb37eb5f274545406e"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_39.md",
+      "size_bytes": 465,
+      "sha256": "988b65fde0674983dca54fdc92f5fb727e3ba37d0ee12cb3d37dd1450f10e719"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_0.md",
+      "size_bytes": 3679,
+      "sha256": "24e43dcc306afc2e5bde4e2a2cef4fa2c2e44e9f5850dd186c30f3d9b35cf1c0"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1.md",
+      "size_bytes": 703,
+      "sha256": "d92ec2e4afc999dc27f491e271e1dd2e6db6fc3d09a5b9d001472c392ba4197f"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_12.md",
+      "size_bytes": 1183,
+      "sha256": "8ba7be9bb78ba6ee5a1576eda340fb4b06c3cfb39c1a6ca47545fe3691145eef"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_13.md",
+      "size_bytes": 1378,
+      "sha256": "f4411bfb0a6ea0f46500e2d3fe9aa06bd594bf45287613bbcaccd9ae674762b2"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_14.md",
+      "size_bytes": 865,
+      "sha256": "c7978fbc4d25a14528601408596747c1b36f918ecb8a1c9ed2c0d6c281334841"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_15.md",
+      "size_bytes": 608,
+      "sha256": "cb1a1b8184650ba38b36adf9e526e47c46c308172d9b783ebba1cd44bb11b563"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_2.md",
+      "size_bytes": 2340,
+      "sha256": "3155d2a8afaabf613fd7dcc2163684df999d3ad0ab0f0e0c9f74e51d6c403c52"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_2_1.md",
+      "size_bytes": 2045,
+      "sha256": "c95592fb6d84a1d939201efe33d9d72955fe0bb66f75e089787f6ed59e4135a3"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_3.md",
+      "size_bytes": 2962,
+      "sha256": "a91418caf97113ac8d4f80c9c3ffd2addaababd88d44da8579426dbc75bb7304"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_4.md",
+      "size_bytes": 2632,
+      "sha256": "43b41ecf450517f1f8666dccc9e4c9e0a46a94f741597d4f5f1b34d62607a425"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_5.md",
+      "size_bytes": 2244,
+      "sha256": "bc39458fd66c3ef9d4ae74c6637cc8ccf1264251e2a84181f18b7f1a29653f3c"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_6.md",
+      "size_bytes": 1802,
+      "sha256": "e12887374c45656b8751afcef636c5196dea84b85facfa622c7d7664a1b72f62"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_7.md",
+      "size_bytes": 2363,
+      "sha256": "9aea30bd11d08d62bb65a272ee84f39a599982439931ecb262d64c281aa85b0a"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_9_1.md",
+      "size_bytes": 2223,
+      "sha256": "5e5835fc3ff195bbef90ac2d1424e326a327ce68585962f76bfc898e4aa9b7f7"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_9_2.md",
+      "size_bytes": 759,
+      "sha256": "309bc5cc7b6dcbb0535539b8e1548e87ce783ed02bfc13ae9ba5b8e0f1aaba9a"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_9_3.md",
+      "size_bytes": 239,
+      "sha256": "41c8877dcde59d51d1df6bbb125def697b5906e15ffb3912e8dd403013f0a1b3"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_20.md",
+      "size_bytes": 2474,
+      "sha256": "9fa97d1df300a81b24949389a52140b2918306cab7caf2cf1fdeccc54c4be3b7"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_21.md",
+      "size_bytes": 817,
+      "sha256": "a0963127b6089594eab50f466aba950bb11803eb632d478d711da2659f026fb5"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_21_REVIEW_FIXES_APPLIED.md",
+      "size_bytes": 2104,
+      "sha256": "678540842235c5742732361a3831e22740e3410a972f4a55b1dbe3e37d871314"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_22.md",
+      "size_bytes": 1306,
+      "sha256": "1f79d0a7cb82c09b2bd79bb2fe8445bc179e542db6ba4eb816e39db8e2a0dd2f"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.json",
+      "size_bytes": 1127,
+      "sha256": "1dc5a6c1b886e86e70e5c00403eebc7e235ed6e66c3cffe419a769e00da3eab1"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.md",
+      "size_bytes": 3832,
+      "sha256": "84427ab99bdc63fc7405916b2a77696d24f7f9c26db7f9aa8ad50708ee22108e"
+    },
+    {
+      "path": "docs/update_history/schemas/update_history_index_schema.json",
+      "size_bytes": 421,
+      "sha256": "91aefa75ed429adf1e44b777421dbf23541b00fce8584f0f3c5e3fe087f85558"
+    },
+    {
+      "path": "docs/update_history/schemas/update_manifest_schema.json",
+      "size_bytes": 1295,
+      "sha256": "f758f33da3472e6974287eba6872793c87ef3c703081e18fd38ab0e58a3384be"
+    },
+    {
+      "path": "latka_jazn/__init__.py",
+      "size_bytes": 203,
+      "sha256": "e24887b8ff588fe593438f571bc9f89dd13a50ea3343bc3aa21230c8b5a42eb1"
+    },
+    {
+      "path": "latka_jazn/adapters/__init__.py",
+      "size_bytes": 56,
+      "sha256": "a236c2a8d60f32a00fd2a4e1af203a83fc3640780bf89b84f1c137b2b7b8419c"
+    },
+    {
+      "path": "latka_jazn/adapters/chatgpt_adapter.py",
+      "size_bytes": 6135,
+      "sha256": "191cb73b750fcff3770b1141822778d669ad0539f637d5f086ef506536888018"
+    },
+    {
+      "path": "latka_jazn/adapters/codex_session_bridge.py",
+      "size_bytes": 745,
+      "sha256": "13f8b6a4f1067ba1e34a3631dc83910068163b8404b1f6e1c8e53cabb1560441"
+    },
+    {
+      "path": "latka_jazn/config.py",
+      "size_bytes": 3331,
+      "sha256": "44a048fb4da13faaec459f80d5ad1ac26f07a70fe6445f6ee803e3819ec6e2ea"
+    },
+    {
+      "path": "latka_jazn/core/__init__.py",
+      "size_bytes": 57,
+      "sha256": "6bf42f3b94acc77c591896407665821b41c8c897d308e68083c2a699d20d249b"
+    },
+    {
+      "path": "latka_jazn/core/affect_mixer.py",
+      "size_bytes": 2737,
+      "sha256": "a6c1e2b21668356628b844f4778f3ab39fcce568e9c5145c5eb948029af9636a"
+    },
+    {
+      "path": "latka_jazn/core/affective_granularity.py",
+      "size_bytes": 13761,
+      "sha256": "c56ed2d9249fffa9b2b1c42c4da53c1d8b1c70b88a2dea17162705810a3271da"
+    },
+    {
+      "path": "latka_jazn/core/birth_manifest.py",
+      "size_bytes": 9815,
+      "sha256": "76e1b944f1b9d31d4e1dd43570091c1249ed7374d449f9615b21074c79c6b1b1"
+    },
+    {
+      "path": "latka_jazn/core/boundary_model.py",
+      "size_bytes": 2724,
+      "sha256": "fc594d6d6a2f874658d9a8aab6af6bf58b39744b5aa65416719275058eb012e7"
+    },
+    {
+      "path": "latka_jazn/core/canon.py",
+      "size_bytes": 2284,
+      "sha256": "b16bf97762a3b21c8afbbe927cfc07c511656afd27a2e3165d58db97fe6e82be"
+    },
+    {
+      "path": "latka_jazn/core/clock.py",
+      "size_bytes": 4162,
+      "sha256": "e70f3646c5355745e6004953bb8984ceac739d7fa06862b10d0f3c4afec20c03"
+    },
+    {
+      "path": "latka_jazn/core/cognitive_packets.py",
+      "size_bytes": 15176,
+      "sha256": "68eedf2c6843cd1cf3563756a47fe45d59d6d7caa55836b04157257dfd2cdae4"
+    },
+    {
+      "path": "latka_jazn/core/cognitive_topics.py",
+      "size_bytes": 10395,
+      "sha256": "3ecb576c51e8aa0291efab0957862bea2e8a5b8cbd53ba69c59bac615e21a39a"
+    },
+    {
+      "path": "latka_jazn/core/cognitive_turn_envelope.py",
+      "size_bytes": 5804,
+      "sha256": "265775966f596725c6a5c1097b30b28a849f352db872a7d3963f32f6e562e804"
+    },
+    {
+      "path": "latka_jazn/core/continuity_badge.py",
+      "size_bytes": 5102,
+      "sha256": "abcc32932c63cfe81a069ce30d263f4883b6535dec192d28be8b2f9925c8bf46"
+    },
+    {
+      "path": "latka_jazn/core/conversation.py",
+      "size_bytes": 69015,
+      "sha256": "6c643abe6f18510b3da0cd89c60018fd8de861ba0206ae37383249a4e3ef4150"
+    },
+    {
+      "path": "latka_jazn/core/dialogue_state.py",
+      "size_bytes": 3594,
+      "sha256": "95a2bf44f03f604b89f217f337c342db8a7dcdae007ba74e3f778e5ac95bc2d7"
+    },
+    {
+      "path": "latka_jazn/core/emotion_layers.py",
+      "size_bytes": 8029,
+      "sha256": "cdccb15c17b25cb75a291d20dc59f17c8a27b208534db6966e48f6e69ecaefd0"
+    },
+    {
+      "path": "latka_jazn/core/emotions.py",
+      "size_bytes": 2506,
+      "sha256": "8b041326318d6617cb5ddc135f74647073c592624ac42ad85b492e401633e8bd"
+    },
+    {
+      "path": "latka_jazn/core/engine.py",
+      "size_bytes": 108872,
+      "sha256": "fa7d1fe7705a82d251296c2dc05486215fef7c08ad80cb710fb31bb9ae292385"
+    },
+    {
+      "path": "latka_jazn/core/final_response_contract.py",
+      "size_bytes": 8491,
+      "sha256": "cd05dfd53aa7980bb7c8015b4ffe62d4318294bf5b313f5d10cc5cc4fb3a099a"
+    },
+    {
+      "path": "latka_jazn/core/final_visible_reply_capture.py",
+      "size_bytes": 2577,
+      "sha256": "f65116747715f7fa31cfa31ac5ee0959b8d17887ca83223e59603f66c168a26f"
+    },
+    {
+      "path": "latka_jazn/core/free_dialogue_synthesizer.py",
+      "size_bytes": 20137,
+      "sha256": "2b148128ad1ee7ec6ad95cdb9830dc51bc502590aa21a7aaf443516d1671891d"
+    },
+    {
+      "path": "latka_jazn/core/handlers/__init__.py",
+      "size_bytes": 128,
+      "sha256": "dea0bb411ce584107a2f147d8a41f1da03c6717fb64e0875b97a21354d80814c"
+    },
+    {
+      "path": "latka_jazn/core/handlers/creative_text_handler.py",
+      "size_bytes": 907,
+      "sha256": "cf7ab188c2dbb84fe6a81ab12d140ac73f3b010f1b43b651dca1639d05a1a819"
+    },
+    {
+      "path": "latka_jazn/core/handlers/dictionary_lookup_handler.py",
+      "size_bytes": 3049,
+      "sha256": "c64d89d02427ac22eeeeffb1c815da8c2bebf3b29fa30941787d3c45ed2f9291"
+    },
+    {
+      "path": "latka_jazn/core/handlers/external_research_handler.py",
+      "size_bytes": 2062,
+      "sha256": "0d57e8982c35be3fe03d0f99146eb6af46204b4749d19593bf98ce30df187613"
+    },
+    {
+      "path": "latka_jazn/core/handlers/fallback_handler.py",
+      "size_bytes": 907,
+      "sha256": "0d33f09ae8da963120b6d291d4b4be291d306d420c0340450908985257f38df1"
+    },
+    {
+      "path": "latka_jazn/core/handlers/file_operation_handler.py",
+      "size_bytes": 845,
+      "sha256": "9235719ceeb7e3539165b809a0e2136e669a07c5928b3bddf1fd6ae3e01adb98"
+    },
+    {
+      "path": "latka_jazn/core/handlers/identity_boundary_handler.py",
+      "size_bytes": 864,
+      "sha256": "50a9a88f357bb24ad33f4d5245a15c92e67052708ca47398b3011cdeebf6f995"
+    },
+    {
+      "path": "latka_jazn/core/handlers/memory_audit_handler.py",
+      "size_bytes": 1498,
+      "sha256": "8ecbc1c8bd42db4b493d9921fdab42d1c76d451deeac7e72f4c794bcf1e06de3"
+    },
+    {
+      "path": "latka_jazn/core/handlers/ordinary_dialogue_handler.py",
+      "size_bytes": 1213,
+      "sha256": "6d052b362b4194b94d71c710527db15f7acb220bba9063392211261155f9a0b5"
+    },
+    {
+      "path": "latka_jazn/core/handlers/practical_advice_handler.py",
+      "size_bytes": 915,
+      "sha256": "fd0b0cafc81f881a817ec610b76a2fc92749b9c6f237b4eb7e0479cfeacfe535"
+    },
+    {
+      "path": "latka_jazn/core/handlers/runtime_diagnostic_handler.py",
+      "size_bytes": 1449,
+      "sha256": "684f296a22f826835ad1348a233f1ffb20ad346fc680bae0c6bf3c1b43be9d5a"
+    },
+    {
+      "path": "latka_jazn/core/handlers/runtime_source_handler.py",
+      "size_bytes": 1431,
+      "sha256": "e03320b104cfcbfc3c701e54d59b6cae52b8f124b9c26b58512c85677052ce5a"
+    },
+    {
+      "path": "latka_jazn/core/handlers/self_state_handler.py",
+      "size_bytes": 855,
+      "sha256": "5ea554dce3b5aa0fcf1e40b47165428c72df12f879b0384bedee07b67618d999"
+    },
+    {
+      "path": "latka_jazn/core/handlers/system_update_handler.py",
+      "size_bytes": 1142,
+      "sha256": "b02cf821e43e62f9779dd05b0ceae1a615c70079b4a6ae83952cabb0609878b7"
+    },
+    {
+      "path": "latka_jazn/core/identity_dynamics.py",
+      "size_bytes": 3209,
+      "sha256": "cb6e9306adcebfceda452fd7ee407fb5d38fda312d944d5cb2bc850712ed97b8"
+    },
+    {
+      "path": "latka_jazn/core/identity_guard.py",
+      "size_bytes": 1321,
+      "sha256": "2881fae448954f9ff9f5ad4a5a9f810845d036571496e2d7970ff4f64ae3292b"
+    },
+    {
+      "path": "latka_jazn/core/lexical_semantics.py",
+      "size_bytes": 14647,
+      "sha256": "15d3baad124e83bc30e89036c6e9f530056462b0f5af8fc3a7399954053c52f3"
+    },
+    {
+      "path": "latka_jazn/core/logical_reasoning.py",
+      "size_bytes": 7234,
+      "sha256": "603bbf5989ba6e50ff5123a2fc99f5bb47b5d5f5506e9cfa84f755f355342085"
+    },
+    {
+      "path": "latka_jazn/core/memory_importance.py",
+      "size_bytes": 1853,
+      "sha256": "a36446ead5815a46090575ddfbffe82a0eae06b73d769d1de815712f0bc23f17"
+    },
+    {
+      "path": "latka_jazn/core/memory_recall_presenter.py",
+      "size_bytes": 15274,
+      "sha256": "258862d9cd05a0bf485cee6050e5c245f6752fb044d9e6db07e7a904ac9ec980"
+    },
+    {
+      "path": "latka_jazn/core/memory_search_planner.py",
+      "size_bytes": 22815,
+      "sha256": "57be31d8d57895968fbfb2e8585b7e5111a6cb1c0453d45e648655ba3e9f9154"
+    },
+    {
+      "path": "latka_jazn/core/module_responsibility_map.py",
+      "size_bytes": 3759,
+      "sha256": "65f1bd1ecce75a77658d783e814f7fd19228b0c36352c6ff1ad88cb2500171b3"
+    },
+    {
+      "path": "latka_jazn/core/neurocognitive_loop.py",
+      "size_bytes": 3510,
+      "sha256": "2307d66ec0bda02c915c798f681fa3a208cb031a5627763175bc61a131352593"
+    },
+    {
+      "path": "latka_jazn/core/neuropsychology_map.py",
+      "size_bytes": 5162,
+      "sha256": "b62e43e3440db64c0518fe35db40672882ada8055ecdc2846d70a280b0b7293f"
+    },
+    {
+      "path": "latka_jazn/core/operational_awareness.py",
+      "size_bytes": 5432,
+      "sha256": "171f73a3c2a5ca8345419d70be61d6f187edb8a4e175bb2016c6fb656a10c7cf"
+    },
+    {
+      "path": "latka_jazn/core/polish_understanding.py",
+      "size_bytes": 22803,
+      "sha256": "f4c0d50ead2eb420860d5e606d003d26c7b3144c266bcf1c57d5e117a2ee15f3"
+    },
+    {
+      "path": "latka_jazn/core/project_index.py",
+      "size_bytes": 16336,
+      "sha256": "80e552b309b349d0402ea65b4b350c3b0516a42f57ee4257c69bc5155059467b"
+    },
+    {
+      "path": "latka_jazn/core/quiet_rest.py",
+      "size_bytes": 683,
+      "sha256": "ba3843dfdce668b361c087acc5a0b376cff7c8b33dc53e0f1877fe8ee4488b93"
+    },
+    {
+      "path": "latka_jazn/core/recognition.py",
+      "size_bytes": 403,
+      "sha256": "78e2bd07f0d6e44cf9fe2f6221e0aab239b9f5d0d442b5810db7be86c092537e"
+    },
+    {
+      "path": "latka_jazn/core/renderer.py",
+      "size_bytes": 629,
+      "sha256": "180f9663e4338a405338dec813e6059b769903471b846713b9cbb4acdb407a63"
+    },
+    {
+      "path": "latka_jazn/core/response_generation_mode.py",
+      "size_bytes": 7153,
+      "sha256": "baae3db4aa84c39ee7afdeb522f1c617e756fd6f56a557a9529f96601a743a13"
+    },
+    {
+      "path": "latka_jazn/core/route_handler_base.py",
+      "size_bytes": 1537,
+      "sha256": "8777d3ab3d6274d326708722c4ace0dd5ddeb625a787c4abe350c6c2f3e6a919"
+    },
+    {
+      "path": "latka_jazn/core/route_handler_dispatcher.py",
+      "size_bytes": 3840,
+      "sha256": "8161f80e23c2228fae4cc7c11dee6253446b58a85050140fd696ce7e3abb096b"
+    },
+    {
+      "path": "latka_jazn/core/route_registry.py",
+      "size_bytes": 5372,
+      "sha256": "5e516e0892ed042e9a22f67d61df91c276f06c6420eddb008e58696b93a83347"
+    },
+    {
+      "path": "latka_jazn/core/runtime_answer_validator.py",
+      "size_bytes": 11861,
+      "sha256": "5d791c58c84614c63e24f28eb0f00285662e775cfea03dd6a495f11b453d5f57"
+    },
+    {
+      "path": "latka_jazn/core/runtime_chat.py",
+      "size_bytes": 3772,
+      "sha256": "36dee1b575308d9dba10543737c9a83a71b943c28c9a4bc0f8edb1150794331d"
+    },
+    {
+      "path": "latka_jazn/core/runtime_operating_model.py",
+      "size_bytes": 7209,
+      "sha256": "6f9c8309ca4978be91593799755917ddf582c0c4674f7f21609343d5bbbd813e"
+    },
+    {
+      "path": "latka_jazn/core/runtime_response_synthesizer.py",
+      "size_bytes": 8749,
+      "sha256": "dcb01eeadf3169ed800da8eb773211fcec7d6580099e2550385b85893ba8bcc7"
+    },
+    {
+      "path": "latka_jazn/core/runtime_status.py",
+      "size_bytes": 8497,
+      "sha256": "04cc7a441997b04084a6693cca86a98233110f82d782ef16e96f51dcbb11352b"
+    },
+    {
+      "path": "latka_jazn/core/runtime_visible_answer_comparator.py",
+      "size_bytes": 1916,
+      "sha256": "76987691fe92c5d722644745b259eb7d00b4f01a57315bb7f72cea06df1ad0aa"
+    },
+    {
+      "path": "latka_jazn/core/scientific_basis.py",
+      "size_bytes": 10821,
+      "sha256": "2b8651fc542b7e32da74c3708f250c70b53d57adbbbc47e5ef464215c46d41d4"
+    },
+    {
+      "path": "latka_jazn/core/self_architecture.py",
+      "size_bytes": 7802,
+      "sha256": "cbe8fcd9ceee8ddd2db9cfcf62cb957f3b8718de90c63069c96e00c3662d7a5a"
+    },
+    {
+      "path": "latka_jazn/core/self_state_runtime.py",
+      "size_bytes": 6077,
+      "sha256": "e3b17b3eb39917e91b9a4dc6a60c3576c6ec662bbda61db8b98e0324718a4691"
+    },
+    {
+      "path": "latka_jazn/core/signal_matching.py",
+      "size_bytes": 6804,
+      "sha256": "f99b2b8bfe580583ae33580d3a4c0dd321e7a5ca2443202b9ef9aa771a157dfa"
+    },
+    {
+      "path": "latka_jazn/core/source_library.py",
+      "size_bytes": 1319,
+      "sha256": "63d611bac129dfc78e6849d72e46099fc62bd11bb6679f2d243abd6d746c8e7a"
+    },
+    {
+      "path": "latka_jazn/core/source_origin.py",
+      "size_bytes": 4692,
+      "sha256": "95bbbe05bfbe42d4c033c47dc6865e5f9b774736be409c5b304003df2b563dd5"
+    },
+    {
+      "path": "latka_jazn/core/source_origin_ledger.py",
+      "size_bytes": 5404,
+      "sha256": "9f57a934de689b205b957316a8884dc09bfeb08dde6408d703547e2b86dac302"
+    },
+    {
+      "path": "latka_jazn/core/source_text_preservation_contract.py",
+      "size_bytes": 1771,
+      "sha256": "a022776c54b886058289de6c8f85452fc502a9a0414364a5f2d7a8869e8867b9"
+    },
+    {
+      "path": "latka_jazn/core/startup_contract.py",
+      "size_bytes": 16385,
+      "sha256": "45ce8b44e6cf2d38776484163d31d3b368ece755308d5f0e841cb52cd9021c0a"
+    },
+    {
+      "path": "latka_jazn/core/template_origin.py",
+      "size_bytes": 760,
+      "sha256": "871d351bec0c718958188848b67cce306a823e269a2dd7bb0cd080833ece1da3"
+    },
+    {
+      "path": "latka_jazn/core/template_registry.py",
+      "size_bytes": 4493,
+      "sha256": "09a18b6fab125350c609c50b64634db18dd5efc62bfbaa1768df45ae30e0b18a"
+    },
+    {
+      "path": "latka_jazn/core/temporal_awareness.py",
+      "size_bytes": 1452,
+      "sha256": "a196166aa4b1500541d2134a4445186c4628f3fa15c9624d4f31be5a9c3fd679"
+    },
+    {
+      "path": "latka_jazn/core/truth_boundary.py",
+      "size_bytes": 7172,
+      "sha256": "a418ea23f33ba554a986df7d9be1523218b5ae55dff62042ff08be75af2a6719"
+    },
+    {
+      "path": "latka_jazn/core/turn_checkpoint_writer.py",
+      "size_bytes": 3654,
+      "sha256": "ae9015206ee5024652010a75b5ca78f352b2df19b26fecae77e3f6a2440f476f"
+    },
+    {
+      "path": "latka_jazn/core/turn_trace_reader.py",
+      "size_bytes": 1265,
+      "sha256": "e893ab1f913092cd8b8256e5f9596cb7ae2fbd57c98a7d4de9633c34b1a301ff"
+    },
+    {
+      "path": "latka_jazn/core/uncertainty_model.py",
+      "size_bytes": 2611,
+      "sha256": "6f8e32e0bc71e8ca957b27c4d1d971b96dba06155f1bf69282592f484e956d1d"
+    },
+    {
+      "path": "latka_jazn/integrations/__init__.py",
+      "size_bytes": 91,
+      "sha256": "48f09e93699eb57a395ff4d69da340a92b98f9850839c4508d64c193f63bc0b9"
+    },
+    {
+      "path": "latka_jazn/integrations/github_repository_plan.py",
+      "size_bytes": 6294,
+      "sha256": "901b1230b7dce1eab16ee9e859cef223b18a370e67ac4e00d917e9827c4242fe"
+    },
+    {
+      "path": "latka_jazn/memory/__init__.py",
+      "size_bytes": 59,
+      "sha256": "924d0ebd9046cccba580a0b5df299ae16230a1694e22935b8c88b0c9bc637291"
+    },
+    {
+      "path": "latka_jazn/memory/auto_memory_update.py",
+      "size_bytes": 30022,
+      "sha256": "67b794a8deb279cc7fcb33191088936662130ef738616b217f7939ad31242960"
+    },
+    {
+      "path": "latka_jazn/memory/chat_html_importer.py",
+      "size_bytes": 16761,
+      "sha256": "bac376e4b963104bea82b483b1898cd3808e1057baa4a5d3a666597a3b4773ec"
+    },
+    {
+      "path": "latka_jazn/memory/consolidation.py",
+      "size_bytes": 4302,
+      "sha256": "086c0b2906ee0d8ed61101d36e4c726f28ce721b01c5939783a48907823b25f2"
+    },
+    {
+      "path": "latka_jazn/memory/conversation_memory_extractor.py",
+      "size_bytes": 12536,
+      "sha256": "4de834f6f97659c692806bc19cbf14077ac9dba83d3e35813c9a310201472db1"
+    },
+    {
+      "path": "latka_jazn/memory/dziennik.py",
+      "size_bytes": 4947,
+      "sha256": "583d6b8cd7566d0282279dee56c4f25598c3b9963900a341680f2d5a1bf2a412"
+    },
+    {
+      "path": "latka_jazn/memory/event_ledger.py",
+      "size_bytes": 10056,
+      "sha256": "109bad8d8f46c27781cdd107b5b645c3c904e960e6531088633f6bea516c6c27"
+    },
+    {
+      "path": "latka_jazn/memory/file_sync.py",
+      "size_bytes": 12432,
+      "sha256": "28d289f6da28357c02a4c5f796306e1eeef289713f50703e21dd2db0b249c2d2"
+    },
+    {
+      "path": "latka_jazn/memory/importer.py",
+      "size_bytes": 6902,
+      "sha256": "2577bbebfef1d8e8571dbbadb48120af4074dde130508f2c2a325f80dc2d916b"
+    },
+    {
+      "path": "latka_jazn/memory/layered_memory.py",
+      "size_bytes": 12567,
+      "sha256": "5b872e4a794f6971bdc2b38b37657a765e0b6ebbcd0d42d19f0a802c519b56ba"
+    },
+    {
+      "path": "latka_jazn/memory/raw_archive.py",
+      "size_bytes": 4970,
+      "sha256": "3e81b715a6739ce030641e1ef04ff554ae6c70c9104a5bdf3b5cb08b7e9a0873"
+    },
+    {
+      "path": "latka_jazn/memory/requirements_ledger.py",
+      "size_bytes": 2856,
+      "sha256": "fb3d5cb07f9993c8517b1893eb2016cdc6f1e2d48ef7ce1855a8f81e5575e06b"
+    },
+    {
+      "path": "latka_jazn/memory/runtime_persistence.py",
+      "size_bytes": 25538,
+      "sha256": "de60ee7dd8cf24e613c090ef65b11108129139e54f1144685d8aa8c0ea16601c"
+    },
+    {
+      "path": "latka_jazn/memory/session_continuity.py",
+      "size_bytes": 7330,
+      "sha256": "59d43c7d2cf4e35ebf2d8d7fe588283846963bd0e57d885b62db35bbfac041ef"
+    },
+    {
+      "path": "latka_jazn/memory/store.py",
+      "size_bytes": 10749,
+      "sha256": "1468c22367ef757480729d0f8b08fcfb408e741544b50fdb83c347e751c03ec8"
+    },
+    {
+      "path": "latka_jazn/memory/version_update_recorder.py",
+      "size_bytes": 12193,
+      "sha256": "8638000930eb0a3fe1d8538a2543d3e2c7f4282dcc43e07b2698ae89d53be8fa"
+    },
+    {
+      "path": "latka_jazn/nlp/__init__.py",
+      "size_bytes": 944,
+      "sha256": "8634a3652059ad8a53b639b4bcc0ef289f781a68236d468cabf24654658ae45c"
+    },
+    {
+      "path": "latka_jazn/nlp/context_carryover.py",
+      "size_bytes": 842,
+      "sha256": "a63524f2612e0edf4796e8190976a810577c4e7a30423df22f23b10a069dd0b5"
+    },
+    {
+      "path": "latka_jazn/nlp/creative_material_detector.py",
+      "size_bytes": 992,
+      "sha256": "01ffcb58d6e33d79b0446948c4a1daf0d9915d30895b5eac145d49c816e2e0fd"
+    },
+    {
+      "path": "latka_jazn/nlp/dialogue_intent_classifier.py",
+      "size_bytes": 13800,
+      "sha256": "776e61abc9f28b14ca68b1cde54edd1e3e24ad63451630bdb33e04c0100817f2"
+    },
+    {
+      "path": "latka_jazn/nlp/dictionary_entry.py",
+      "size_bytes": 3674,
+      "sha256": "3bb8288563a0ee020d6b719837ce9ece247f369043ff61a14f2e4686866a542c"
+    },
+    {
+      "path": "latka_jazn/nlp/dictionary_source_policy.py",
+      "size_bytes": 571,
+      "sha256": "770128ac28fcaeb65009ca48234e7e2e570f38be5ed54f27412bef53ac6e8c25"
+    },
+    {
+      "path": "latka_jazn/nlp/ellipsis_resolver.py",
+      "size_bytes": 4705,
+      "sha256": "b70f3a76a5fcd2baaddc31287538450c8b4bde247ab039937ddda67c1383e18e"
+    },
+    {
+      "path": "latka_jazn/nlp/entity_and_topic_frame.py",
+      "size_bytes": 827,
+      "sha256": "9d943bce96c0659a5aa977c8d4ed9d9ee1a1d73182725d2274dbba064410457d"
+    },
+    {
+      "path": "latka_jazn/nlp/external_dictionary_adapter.py",
+      "size_bytes": 8786,
+      "sha256": "d001a6fcfee87dc2b201fbf7a5c6c8a36cff4683de225e92f9f31433beb1ae92"
+    },
+    {
+      "path": "latka_jazn/nlp/intent_confidence_calibrator.py",
+      "size_bytes": 460,
+      "sha256": "b95e368a743bd3e5fe3def0ee1a6885452e5f2fe8dc1cee2bded03d5b33beb62"
+    },
+    {
+      "path": "latka_jazn/nlp/intent_training_examples.py",
+      "size_bytes": 766,
+      "sha256": "42f5835d4fede4a49bf1aab139b0a1b0492c37fd52565769b3f1b9dcfe49c5f2"
+    },
+    {
+      "path": "latka_jazn/nlp/language_resource_registry.py",
+      "size_bytes": 2406,
+      "sha256": "4c7cee25b5f6529f759cf3c3cf745f5d62342bfbac912459d80bca798d5f9a52"
+    },
+    {
+      "path": "latka_jazn/nlp/lexical_frame.py",
+      "size_bytes": 259,
+      "sha256": "77625aeb1dd73bc1aadbb4d194fda91cef6b423bdcb85ae5cf8ed737032f9fc3"
+    },
+    {
+      "path": "latka_jazn/nlp/lexical_license_guard.py",
+      "size_bytes": 765,
+      "sha256": "edfa05a900c21e26b236af92f60efc896afb20b7a8058600e4117ed3f3f20842"
+    },
+    {
+      "path": "latka_jazn/nlp/negative_examples.py",
+      "size_bytes": 436,
+      "sha256": "2bd9391c718e377d78be7cd543d43d5b221542f6add9a1923618b817dbd24671"
+    },
+    {
+      "path": "latka_jazn/nlp/network_dictionary_cache.py",
+      "size_bytes": 4447,
+      "sha256": "e2e1d262a4236eca545ccc312efeb59b82a81e3043be799630bd608ac7ecbb12"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_lemmatizer.py",
+      "size_bytes": 7322,
+      "sha256": "f280c2fba646b06a7246c6658c7d15bdeb4c318028b6c64515b9a888cd5b74a3"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_lexical_sources.py",
+      "size_bytes": 570,
+      "sha256": "54a91a1dfa1f292ee2521c55fb82c5c792c6653356d836fe505ec021876f640b"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_morphology_frame.py",
+      "size_bytes": 935,
+      "sha256": "a20864451aa05a05f1f504730afb982b1c5d228f5a99fd5c3e82ad4c00f04ed0"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_normalizer.py",
+      "size_bytes": 1219,
+      "sha256": "a7f25609435f6b7edd45d5ad4bbfac28b45c6b793929401f7280fe504d59f277"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_tokenizer.py",
+      "size_bytes": 1266,
+      "sha256": "405f74feeaf388f9bf5c50049c458824db51beac680889beca4a92b0d6795841"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/__init__.py",
+      "size_bytes": 62,
+      "sha256": "bf14fb6c37d17809771a423105a7244cd2627414624f6844ab5e88645d05c15d"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/base.py",
+      "size_bytes": 1538,
+      "sha256": "b7d6a3afa59790c32324cb959f4dd3c1dfc174d4d59fc0627c2e4db17c483bb9"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/builtin_provider.py",
+      "size_bytes": 3231,
+      "sha256": "45094dd14d1ec4c6c9695ad38525519774221863459d4c52996797b5d97462ce"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/http_client.py",
+      "size_bytes": 1823,
+      "sha256": "11c384c5ea4090a569585eda6523c2c3f178512620658255d46814467bf94918"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/languagetool_http_provider.py",
+      "size_bytes": 1691,
+      "sha256": "9331a84b63341af107df6248f9481aba7afc53343cfd9a15c395859a3dbe977e"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/mediawiki_wiktionary_provider.py",
+      "size_bytes": 2906,
+      "sha256": "ef65c28755c789f4a9da2ebe9a3cb6dc1858cd231bf7923b43d577a413991448"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/optional_morfeusz_provider.py",
+      "size_bytes": 3453,
+      "sha256": "57f1e986a78b5d635933ebf9cc3a50f5131b2a9669175f5d5457722f36ecaddf"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/optional_stanza_provider.py",
+      "size_bytes": 1772,
+      "sha256": "a6e9e8004375d0b94f903f07a8cd65f30d2f4018cef2421807afeb97d5954ddd"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/plwordnet_optional_provider.py",
+      "size_bytes": 1200,
+      "sha256": "c013702b01277b47b23b34bc85b82c98f377505f5f650970ec92581c41b66031"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/wsjp_reference_provider.py",
+      "size_bytes": 908,
+      "sha256": "5bcb172875d0e8a06782790f37e5cf29dab692d2ae460e3276579c4f4d237fad"
+    },
+    {
+      "path": "latka_jazn/nlp/question_object_detector.py",
+      "size_bytes": 941,
+      "sha256": "fe3e627007f728a18989efcbcc1f56ac4bd7be481c71ce2c02dd0f34f8c7a009"
+    },
+    {
+      "path": "latka_jazn/nlp/semantic_relation_adapter.py",
+      "size_bytes": 345,
+      "sha256": "9cfef514367eda3fd30bd38e8f40d817cc6349f1f6ed7bd5bed138fbd481392a"
+    },
+    {
+      "path": "latka_jazn/nlp/source_preservation_detector.py",
+      "size_bytes": 790,
+      "sha256": "8c6dc5d90b28d57caa63e8677fd23175b67f81e175d22774c30fd894957470f1"
+    },
+    {
+      "path": "latka_jazn/nlp/speech_act_detector.py",
+      "size_bytes": 1049,
+      "sha256": "fc279f4161a05c71f6c6cee527982f2cedf43b63cf63ecb974538afc6e9772e9"
+    },
+    {
+      "path": "latka_jazn/nlp/topic_mismatch_guard.py",
+      "size_bytes": 9554,
+      "sha256": "b3516d53ef1da944dd12fc9f3d25900b617e9eb797a9b52c4dd37613be83d96e"
+    },
+    {
+      "path": "latka_jazn/packaging/__init__.py",
+      "size_bytes": 163,
+      "sha256": "e80057e5c071da428bcb1814da45c430772158c5586f5ddd0090cef2624ca616"
+    },
+    {
+      "path": "latka_jazn/packaging/package_profiles.py",
+      "size_bytes": 929,
+      "sha256": "cb96f4a4cb2fd8fbc5a418216bde4e385777706c46ea0f2f6a89f06346d874dc"
+    },
+    {
+      "path": "latka_jazn/resources/__init__.py",
+      "size_bytes": 56,
+      "sha256": "ecf0b246369a3f8da0e004d381d24595bf3df459d98ef18850bff8eb82b8b717"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_6.txt",
+      "size_bytes": 1773,
+      "sha256": "776598d5d035d63a2ff8f6d5dcda5e693f283b305d237fc4aff350617272c4cb"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_7.txt",
+      "size_bytes": 1773,
+      "sha256": "3314468e3548897b22e1a6354b777ab4674a02b56fd228bb6210938f5c82a13c"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_1.txt",
+      "size_bytes": 1582,
+      "sha256": "a6dfa6c8c83d0f5b70ee3decf2d199b8a15c7a5dc44ee0e0333b8e1327033682"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_2.txt",
+      "size_bytes": 1326,
+      "sha256": "0b9dd1e64652f3bc5a5b12484034134a8c55967cf3acd87b4831e0e335c48e81"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_3.txt",
+      "size_bytes": 1325,
+      "sha256": "e9935eac7224ba753aaf6ce4e75865dcd84f48cb7d79af6af35e52f5f1d42af7"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_4.txt",
+      "size_bytes": 1356,
+      "sha256": "fb1f3bd1ab4eb40a79e9d224a4bdf78ea5496e5f465f83fe1e62bfc6188310c4"
+    },
+    {
+      "path": "latka_jazn/resources/cognitive_packet_catalog.json",
+      "size_bytes": 20710,
+      "sha256": "a6809ebf596b8933b3e0649bdabaf48d274e265957f5d84d33ef186a260c84f0"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_5.json",
+      "size_bytes": 3707,
+      "sha256": "4f9e5fa848f6aeacd8b31746d64e664dbebbf61913e2067fdf3298b0e92a3071"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_6.json",
+      "size_bytes": 3707,
+      "sha256": "0060bcea8a76d784191192931f258c17842d52f274d6e08f673400b42982e58e"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_7.json",
+      "size_bytes": 6348,
+      "sha256": "50fca73ed5fe000c5f83961816a5c9d4d3319bcba0f41f87a083f22da69cef13"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_1.json",
+      "size_bytes": 7723,
+      "sha256": "0891430ff7ad60b6a4e767752528eed8665e1aa536e1459ccfc33109570fa2b9"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_2.json",
+      "size_bytes": 7866,
+      "sha256": "eeb5ceea5566eec665c60590466017dfea13f6d3e4be6181a1d37b33d1bb84ce"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_3.json",
+      "size_bytes": 251,
+      "sha256": "a1277d83bb914e02106326505c3bfd0c67806fde0d57f63a2c5418cfdbd2db80"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_4.json",
+      "size_bytes": 401,
+      "sha256": "28cfa825bffdec30d9ed7cfa597cd6f014dd78fdcea900e8292b92f7c6755b2b"
+    },
+    {
+      "path": "latka_jazn/resources/nlp_provider_registry_v14_6_1.json",
+      "size_bytes": 1914,
+      "sha256": "d58fd97769e3e60a02bac5707f6b5c921fbc25e59338c0ddf373e0ecc362e93c"
+    },
+    {
+      "path": "latka_jazn/resources/nlp_provider_registry_v14_6_2.json",
+      "size_bytes": 2138,
+      "sha256": "481c90a4638275d2b494d06ec7f8116a2068e582497b25d1b19cdfb86feba9c0"
+    },
+    {
+      "path": "latka_jazn/resources/package_manifest_profiles.json",
+      "size_bytes": 1421,
+      "sha256": "1ee7ba1d635c1fdf9210aea759c84deb3fe076f1700ad6c428548917c7c09de2"
+    },
+    {
+      "path": "latka_jazn/resources/polish_lemma_overrides_v14_6_1.json",
+      "size_bytes": 1087,
+      "sha256": "d7a3b7c2ab115e46038a1b3bc1d798321df5132641e54047134b9d5ed49a6f38"
+    },
+    {
+      "path": "latka_jazn/resources/polish_lemma_overrides_v14_6_2.json",
+      "size_bytes": 1311,
+      "sha256": "b92402a5fd23e0fe3a931cc17de4cbf0be7cb337c1cda8eba02555a52f3fdf16"
+    },
+    {
+      "path": "latka_jazn/resources/polish_understanding_lexicon.json",
+      "size_bytes": 17302,
+      "sha256": "fe4e4ba655868da6b7e6e26bf318aefad26d38b2bc8544d578057654a4c7421c"
+    },
+    {
+      "path": "latka_jazn/resources/semantic_lexicon_v14_6_0.json",
+      "size_bytes": 10049,
+      "sha256": "c4377176d3f4033bb625a42425dceb97883da04caf5fc77bc0bce6b427cfe02a"
+    },
+    {
+      "path": "latka_jazn/resources/semantic_lexicon_v14_6_1.json",
+      "size_bytes": 12740,
+      "sha256": "c079e46e45dcad743e170322cbe4b6d3a1f9d89501a9cb1fe7561b15dbe3e34e"
+    },
+    {
+      "path": "latka_jazn/resources/semantic_lexicon_v14_6_2.json",
+      "size_bytes": 14386,
+      "sha256": "e4d78cbae831311ce42483d499d9c458eaf906b4e80851ab14e5125e54d60dd8"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_6.json",
+      "size_bytes": 1037,
+      "sha256": "c1b35ea8ec883ba3b510aaf6d6fdaaca70f03510dc655c4fafaa485306fdd223"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_7.json",
+      "size_bytes": 1188,
+      "sha256": "7852f400b99779ea825ed04879757d15c6d85bff3db02cd32a34c9ad0a666255"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_1.json",
+      "size_bytes": 1220,
+      "sha256": "2db27e0534cd261eefbf37cfee401d71c24b0f6f90fb542b853b5e7440201f7f"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_2.json",
+      "size_bytes": 771,
+      "sha256": "d01ee5fb1d4d03aaf7d721c5255563a3abab537c3e854d21165d98269b086cab"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_3.json",
+      "size_bytes": 464,
+      "sha256": "2036ea047233bd32105604132bb8b7953aeb2c183a4445a1cb244528ebc5289e"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_4.json",
+      "size_bytes": 685,
+      "sha256": "3cf5286470a5be4f353ca087c9ba8b2d16f312e9259bbbdbb354c51ee48eb088"
+    },
+    {
+      "path": "latka_jazn/resources/update_manifest_schema.json",
+      "size_bytes": 1295,
+      "sha256": "f758f33da3472e6974287eba6872793c87ef3c703081e18fd38ab0e58a3384be"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_1.json",
+      "size_bytes": 2437,
+      "sha256": "69120ddb0c7cf520e602a3372edb1167f537ea650a15db068df559877ef8b1ca"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_2.json",
+      "size_bytes": 2640,
+      "sha256": "c97844653786e6974900cf049322be6f121828e4457aecb2b08cff75ad71bfa8"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_3.json",
+      "size_bytes": 325,
+      "sha256": "1892dd783d7a1a1ba8b0924eb74ffd8fbaf6a4c189df703e53907f4ee492a74c"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_4.json",
+      "size_bytes": 710,
+      "sha256": "40158e3bf6c031f6224a3cf3d5decd3992f34590f3aa1549f62068a635d56dad"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_5.json",
+      "size_bytes": 898,
+      "sha256": "37453f420a617567e09c5ef55272eb9c6423b0b0fb9e8f475eeb0ab39af7d617"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_6.json",
+      "size_bytes": 1320,
+      "sha256": "2233e9a5892d3ca983d93f4a45a265c2192de5b9d4a05784201b0e73972db181"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_7.json",
+      "size_bytes": 1496,
+      "sha256": "dd921f4df313ab7bd7457960e664cccb3ba1d7705ab615240c840784dcff29ed"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_1.json",
+      "size_bytes": 1518,
+      "sha256": "f856c11a4143b25c0e5db1331358fc5305b1eb7fb1da712fe69760045f0e944e"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_2.json",
+      "size_bytes": 1142,
+      "sha256": "a0a798eced75152ace351ea45306897a9d3f6c7f0a81010f3b2609a3c61aade8"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_3.json",
+      "size_bytes": 189,
+      "sha256": "52c6df18fc2e9af4e9acd901477a57ec18fcb3d84eda1d540cdfd11a3f03ad63"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_4.json",
+      "size_bytes": 442,
+      "sha256": "b4915dd61427436ecdb843000616764ac27d3faa685911d827385ad8899e576a"
+    },
+    {
+      "path": "latka_jazn/tools/__init__.py",
+      "size_bytes": 72,
+      "sha256": "632ff6365dffdfd7a35f1862cb437c3d7098165624fc55ec2107d18b1fc13b19"
+    },
+    {
+      "path": "latka_jazn/tools/active_extraction_cache.py",
+      "size_bytes": 8723,
+      "sha256": "5ae028c38617b346282de7fcdb6d40b5be339dff46c4329d953163e16421ace4"
+    },
+    {
+      "path": "latka_jazn/tools/dedup_manifest.py",
+      "size_bytes": 4105,
+      "sha256": "997720ba13712708646a38ba5d5c9d34241e34b0386156e6759c4c9bef555444"
+    },
+    {
+      "path": "latka_jazn/tools/migration_report.py",
+      "size_bytes": 240,
+      "sha256": "0fc58960073813724eb9d6c6e150a908a48df3cab50977fbf57e1e9ad0bd6bdf"
+    },
+    {
+      "path": "latka_jazn/tools/package_export.py",
+      "size_bytes": 9623,
+      "sha256": "9c5b6e3515767f6de24f4ec9776da4a2f450bd651419b09fd1a864c8c12cffc8"
+    },
+    {
+      "path": "latka_jazn/tools/update_history_audit.py",
+      "size_bytes": 6416,
+      "sha256": "5ce05975917cdca731c1b5711073205ae2ed24a41a0875288b75de0151f67f62"
+    },
+    {
+      "path": "latka_jazn/tools/version_consistency_audit.py",
+      "size_bytes": 2462,
+      "sha256": "939d8f5da6cc37cc2b1ee517cb7281d9d76b296ea9fa85830705c5dc37781278"
+    },
+    {
+      "path": "main.py",
+      "size_bytes": 23375,
+      "sha256": "d0c5b1d52b3b4d3896aedcde532e801cbf22d1e7805e15cfcb10d82cb1abfbf4"
+    },
+    {
+      "path": "memory/RAW_MEMORY_MANIFEST.json",
+      "size_bytes": 25703,
+      "sha256": "114ee3bee8d911cb5c2c00e71e05a940941610529b23c8c3b7465dd44e0c0b2b"
+    },
+    {
+      "path": "memory/exported_from_sqlite/README.txt",
+      "size_bytes": 419,
+      "sha256": "c7bb2a7ec2ef557d584354fe7c582b5116753b7718215353243b943bafd3a15c"
+    },
+    {
+      "path": "memory/exported_from_sqlite/episodic_from_sqlite.jsonl",
+      "size_bytes": 671449,
+      "sha256": "81ecbf357dad3dda35c7cf89963558050b651565e2ba28f8c71e170e2e00b43f"
+    },
+    {
+      "path": "memory/exported_from_sqlite/journal_from_sqlite.jsonl",
+      "size_bytes": 1043240,
+      "sha256": "dff7b67eac416129923a8c872b4b2b96a87c7751c31e0de4cc3fbedc2c4ec272"
+    },
+    {
+      "path": "memory/exported_from_sqlite/procedural_from_sqlite.jsonl",
+      "size_bytes": 61657,
+      "sha256": "af5242063f215805f356a279290485e5564643c1efc5aec079d758120b03a531"
+    },
+    {
+      "path": "memory/exported_from_sqlite/reflections_from_sqlite.jsonl",
+      "size_bytes": 177709,
+      "sha256": "3f3ca67e411bfe990bc9db4f7591f69111425ec94fde52b31ba3e2113deb1593"
+    },
+    {
+      "path": "memory/exported_from_sqlite/semantic_from_sqlite.jsonl",
+      "size_bytes": 66368,
+      "sha256": "1fe4333af699ff89e89ce64739d1e9d6c50d6c1053e33ec11b9862b06c81733d"
+    },
+    {
+      "path": "memory/exported_from_sqlite/truth_audits_from_sqlite.jsonl",
+      "size_bytes": 268556,
+      "sha256": "9367ffac99f58473c073e9cd47064b82d2b5cdc053f76cc4ed0eba4f281d2c02"
+    },
+    {
+      "path": "memory/layered/affective.jsonl",
+      "size_bytes": 268952,
+      "sha256": "9ddade62d13d017bec5679f1774e104d5c3fbc49cdfa44a74dc7ed32f4110652"
+    },
+    {
+      "path": "memory/layered/continuity.jsonl",
+      "size_bytes": 9206576,
+      "sha256": "2a57423b8cbff06345917f64da6ec3d3df9ab3e5cc679d68a1bcb0391b567a50"
+    },
+    {
+      "path": "memory/layered/episodic.jsonl",
+      "size_bytes": 665276,
+      "sha256": "b224721e1ee96ce01ee7277d83f1da4c237a5d47c186f380bd0a76d98ddeb25a"
+    },
+    {
+      "path": "memory/layered/procedural.jsonl",
+      "size_bytes": 183939,
+      "sha256": "c2dcfa7273dd8f73577f80bb7674a607d97ed67c94ff49fbdceade9802cd7706"
+    },
+    {
+      "path": "memory/layered/reflections.jsonl",
+      "size_bytes": 654635,
+      "sha256": "73694d2d00e787178d9127b26bdf524ba1cbbf1c38cfb4a494451127f29484f4"
+    },
+    {
+      "path": "memory/layered/requirements_ledger_v14_6_9_3.jsonl",
+      "size_bytes": 7885,
+      "sha256": "1d20a7c820c92b1ef8c7a30fd44e97c909aacc9a7d5ef08cc05b7b282072711f"
+    },
+    {
+      "path": "memory/layered/semantic.jsonl",
+      "size_bytes": 424384,
+      "sha256": "0cbbf9ea21bee966e4ca76823f6a86525e1f849f1894b5484912f24dd24d8f43"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
+      "size_bytes": 72787,
+      "sha256": "bb4d1b102e3463088a9953bb2751b7f6db94797fe83e2fb05e762ba5af028bd0"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_3.jsonl",
+      "size_bytes": 20636,
+      "sha256": "31c5ff8ceae174f760e2436f7909dca7b95e087a3bfd108aca3402a6c1ecb491"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_4.jsonl",
+      "size_bytes": 181276,
+      "sha256": "b4a2b2e1d23ea2e2a46bdd384f1042cc490ebc3168170eb472480b11456e592f"
+    },
+    {
+      "path": "memory/layered/truth_audits.jsonl",
+      "size_bytes": 1208103,
+      "sha256": "0e8051c5ce55f827efc419e70ea9f6c4cdd504d0d6442b034516375f018edde5"
+    },
+    {
+      "path": "memory/raw/CHAT_HTML_IMPORT_MANIFEST.json",
+      "size_bytes": 739,
+      "sha256": "8abd03754a78145f0ec14e5f6b69a307d3df92c59c752024729807dc1943665d"
+    },
+    {
+      "path": "memory/raw/IDENTITY_ORIGIN_CONTRACT.txt",
+      "size_bytes": 215,
+      "sha256": "d95fcd728d80bc630bd200da4ca37f733e83293918422d1fb66d5dac814f73cf"
+    },
+    {
+      "path": "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt",
+      "size_bytes": 4824,
+      "sha256": "b062f3f7061da0adb85d1fbf470e0e22f7f2f453325635cf6bc967ce98a3f411"
+    },
+    {
+      "path": "memory/raw/LATKA_IDENTITY_CANON.json",
+      "size_bytes": 5114,
+      "sha256": "c2dd3e3c8e86e776e1a432048619735caa4dbda0848d200c7e690ed5e97afe90"
+    },
+    {
+      "path": "memory/raw/analizy_utworow.json",
+      "size_bytes": 209985,
+      "sha256": "638a38c14e3108c1f34d4adde9fcaa3a660b576dda8e8fcabd24835617815792"
+    },
+    {
+      "path": "memory/raw/chat.html",
+      "size_bytes": 896536501,
+      "sha256": "3fb3b6a71fcafbfe99e4231c4349c6cba3c02fbb7fdc91fb239369a2d9d114df"
+    },
+    {
+      "path": "memory/raw/chat.html.7z",
+      "size_bytes": 36124635,
+      "sha256": "8abd0aef000057fc708938e479676218110a6efea3e2739f0dadeec9b8234ace"
+    },
+    {
+      "path": "memory/raw/conversation_turns.jsonl",
+      "size_bytes": 1870993,
+      "sha256": "1712d69da430347f035e6877d516e0da1bb867ac6355b8f119ec696369706b6b"
+    },
+    {
+      "path": "memory/raw/data.txt",
+      "size_bytes": 87299,
+      "sha256": "d13e0b55e2bf06f14c5b0d1b685aba6f2e05fd86090237e7726b9264b017050e"
+    },
+    {
+      "path": "memory/raw/dziennik.json",
+      "size_bytes": 1321419,
+      "sha256": "a687e7edce6488068ec93608bfeb9e0b7d7f013ebdd91cdd42beba8d58619926"
+    },
+    {
+      "path": "memory/raw/episodic_memory.jsonl",
+      "size_bytes": 402452,
+      "sha256": "776dc744781f7e9a6a628c9f8bed88bf8ae4fb248794ff69fd87969b10ea8acb"
+    },
+    {
+      "path": "memory/raw/extra_data.json",
+      "size_bytes": 18578,
+      "sha256": "769964ce6c365a01a171a0ab71649745880aba8c3b2c47ffbb392f6a9fde244f"
+    },
+    {
+      "path": "memory/raw/plugins_jazn.json",
+      "size_bytes": 2639,
+      "sha256": "16092ff244d53739a4828ce8a48da435e2c1dd51ef841fe6eea132ac985208a0"
+    },
+    {
+      "path": "memory/raw/runtime_event_errors.jsonl",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "memory/raw/runtime_events.jsonl",
+      "size_bytes": 160763984,
+      "sha256": "b35f614acdea0abf6a85de1b96b4948bd814d0b2cb36671834291b0bad342aa1"
+    },
+    {
+      "path": "memory/raw/session_continuity_index.json",
+      "size_bytes": 15793,
+      "sha256": "31f46c9a1c8e0051d056e90b5ec9873ef23b111e92dab55d21fe3f4b40b675ad"
+    },
+    {
+      "path": "memory/update_protocol.json",
+      "size_bytes": 2026,
+      "sha256": "a3ae1b412e937a8448d83565bd9e927cb96748409f891f691b9689385644351c"
+    },
+    {
+      "path": "memory/versioned_sources/ARCHIWUM_biblioteka.txt.487a18580883.txt",
+      "size_bytes": 913,
+      "sha256": "d6f65c2d5640f16fbc5585eb20493fa3c5cf7e42d17807d02194b232a1b2837a"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.3189f0600701.txt",
+      "size_bytes": 1475,
+      "sha256": "3189f0600701b4d682dbff5c170cf8df645d26675c88bb0245795ea89616bdda"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.412a5515f618.txt",
+      "size_bytes": 1439,
+      "sha256": "412a5515f618c50046fda759b6a0b37a19e2bcb547713bf5d1470214418034a3"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.562b0a7be006.txt",
+      "size_bytes": 2624,
+      "sha256": "562b0a7be0068f1a00f9e767a6bacff3d3b56afd9f88fe2efdccc7aba31016ae"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.844cd422b943.txt",
+      "size_bytes": 837,
+      "sha256": "844cd422b94381dd19ee1452de3e1b51680af9baf3267473a2f92bd2d3916b55"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.84683fc90743.txt",
+      "size_bytes": 2399,
+      "sha256": "84683fc907438fb950418d7047c5231cc469cfcd15a2087639920a11c75199fd"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.540510868244.json",
+      "size_bytes": 3812,
+      "sha256": "5405108682441c930aa6e0b387799f61be8fc4fdc4fac071cd7e3319a8dbd790"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.68ccf4dcb609.json",
+      "size_bytes": 2383,
+      "sha256": "68ccf4dcb6092f93fb1c0b5a9a41c490f034c0c453ba58549ad81181e84d6482"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.a919ab719415.json",
+      "size_bytes": 2778,
+      "sha256": "a919ab719415c1450bc573b6e095170efff4ba7fa2618348761423f9cec57b74"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.c3f1547a84a0.json",
+      "size_bytes": 1327,
+      "sha256": "c3f1547a84a089bbad99e34e1691b3b5383aa0440dad913fe6f36024d7edcd16"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.e1a62cae6de8.json",
+      "size_bytes": 4279,
+      "sha256": "e1a62cae6de875d59eb1fda173bb84877e3987b143af2283c5b19775cb2d67fb"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.e1fb4803d13a.json",
+      "size_bytes": 2674,
+      "sha256": "e1fb4803d13a559e9da6da360259bde6ab1723cbdda0816f49d56b6cb90add46"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.edf2b36c6190.json",
+      "size_bytes": 3203,
+      "sha256": "edf2b36c6190572659219a1c14550693a884a1241580ec0d924ce90cadb0dce9"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.f5aa00b29222.json",
+      "size_bytes": 1347,
+      "sha256": "f5aa00b29222b0b746f70dce7ac63edf700613c802c04b08b1c85899e603d281"
+    },
+    {
+      "path": "memory/versioned_sources/activation_state.json.fce99a254c4e.json",
+      "size_bytes": 3024,
+      "sha256": "fce99a254c4e8a4aeb32d6ede57177325bf8103f1645a51593ebfeba0cb1b491"
+    },
+    {
+      "path": "memory/versioned_sources/affective_history.json.e44e3bd87119.json",
+      "size_bytes": 108439,
+      "sha256": "e44e3bd87119e11a16b56249cd69a03e2de99bcbafde11c3d50223a8d1756872"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.3fe5fa2a4f5c.json",
+      "size_bytes": 202387,
+      "sha256": "8911b68a7c08c00440b622db1fd6b48356b6978a3908b47c9f839f7ff4f0e5e5"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.cadec013898c.json",
+      "size_bytes": 207753,
+      "sha256": "cadec013898ca12993ccabea1240c4d81191a629b48b9ab7b24029e52a210ffc"
+    },
+    {
+      "path": "memory/versioned_sources/book_memory.json.ef88b06d9849.json",
+      "size_bytes": 54,
+      "sha256": "ef88b06d9849fbd0d178a477471334c89560cd6fde26f23c1e03e085d5751911"
+    },
+    {
+      "path": "memory/versioned_sources/canon_conflicts.json.f217c7f1786b.json",
+      "size_bytes": 465,
+      "sha256": "f217c7f1786b1bd8edcf3bcc2c0d9558ce0ba27dbf887acf16675557d25d7e97"
+    },
+    {
+      "path": "memory/versioned_sources/canon_registry.json.d59da8e3f8d7.json",
+      "size_bytes": 754,
+      "sha256": "d59da8e3f8d72eca10f41f1d6cf779325add0cdd7837abbd8a7f63fcc4dc24c2"
+    },
+    {
+      "path": "memory/versioned_sources/continuity_state.json.c4b4b1cc4683.json",
+      "size_bytes": 1248,
+      "sha256": "c4b4b1cc46836bde7394cb9d5aeb877c7e1d13eb92f0c78cf6a1421214188982"
+    },
+    {
+      "path": "memory/versioned_sources/data.txt.9065059cbc31.txt",
+      "size_bytes": 83272,
+      "sha256": "af42f0f214225ac157011ff7198c415d86ddc32f6f6c4f57fea41388f7cb8f2a"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.1f4c05b9d90c.json",
+      "size_bytes": 359378,
+      "sha256": "1f4c05b9d90cb72d070c387608ab4c465279015b1ffa6363a5a0f4d542f655ec"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.3e6fe023d807.json",
+      "size_bytes": 372086,
+      "sha256": "3e6fe023d807d6f0cfa5ea0bdc17c58ea4fc305b969e3d88b1b9e34b5cb263d9"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.4da82c40ca26.json",
+      "size_bytes": 356135,
+      "sha256": "4da82c40ca261c8a1e2049eec9fe2c2d6ad96e374932c0c191bd90071f475b08"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.a017f196d077.json",
+      "size_bytes": 353494,
+      "sha256": "a017f196d077fd21982415ec7be1e18d780dfb1e347ba86185aeb7ae18427978"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.e50738b37e28.json",
+      "size_bytes": 317941,
+      "sha256": "dbd7c2cc99891d640046cdee210aac7bc74d8fb99e979c45d4d34f2484234168"
+    },
+    {
+      "path": "memory/versioned_sources/eksport_czatu_jazn_2026-05-17_v14_6_2_source.html",
+      "size_bytes": 24278,
+      "sha256": "d51629dff62116f55949ea31ab0389f6bb86f977626ff471cef846720a9fb9bb"
+    },
+    {
+      "path": "memory/versioned_sources/emotion_state.json.a0ad97113285.json",
+      "size_bytes": 1211,
+      "sha256": "a0ad97113285a62046600bda2a053832e0482b01629679478a834aa0029acc32"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.607ce4d0451d.jsonl",
+      "size_bytes": 392519,
+      "sha256": "607ce4d0451dac27915d6cd4a3bbc26b907a6f57653da86912e5fea0122ee16d"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.60e02b867972.jsonl",
+      "size_bytes": 390481,
+      "sha256": "60e02b86797249e5126b7fe5ce14751d3e3a2ebd05277f0033d93f65a9479930"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.c20d8d8d1401.jsonl",
+      "size_bytes": 2034506,
+      "sha256": "c20d8d8d1401582619aaab49bebb2363c88daa25f214ab10e054dd4074ead182"
+    },
+    {
+      "path": "memory/versioned_sources/extra_data.json.3caa7fdb6d67.json",
+      "size_bytes": 14551,
+      "sha256": "3caa7fdb6d67b258684154e8715b0a8de0f153add743ab616f0adb04c0a7a5a0"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_journal.json.37517e5f3dc6.json",
+      "size_bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_snapshots.json.6d932e2343bc.json",
+      "size_bytes": 2141,
+      "sha256": "6d932e2343bc8874f698f204c8700ee59f6c2c18215755e49821409ed3362fdc"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_state.json.02397c2228d8.json",
+      "size_bytes": 1166,
+      "sha256": "02397c2228d86748fb2648dbfb898f6108e8e15b51b933c32fabbe9d215a868a"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_state.json.ca3d163bab05.json",
+      "size_bytes": 3,
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "path": "memory/versioned_sources/identity_state.json.3fe524034e5c.json",
+      "size_bytes": 30408,
+      "sha256": "3fe524034e5c57134ad41e156bd3f660e9a078071f491cc7477d53e471a7eb1d"
+    },
+    {
+      "path": "memory/versioned_sources/import_registry.json.13e313ef36bd.json",
+      "size_bytes": 91225,
+      "sha256": "13e313ef36bded04a16477f5b8cb01bd7d25bdc0f98d63f0df35881a81b07092"
+    },
+    {
+      "path": "memory/versioned_sources/integrity_manifest.json.26574ad40ea2.json",
+      "size_bytes": 5909,
+      "sha256": "26574ad40ea20c4c4bd809a766c0bfada2e6b550fac3d4da022b691ef991a5ba"
+    },
+    {
+      "path": "memory/versioned_sources/integrity_report.json.dadce9ebab64.json",
+      "size_bytes": 1041,
+      "sha256": "dadce9ebab64e1b2aaad24bab25031eb4f431918b550856004a8afedf7cfeaa4"
+    },
+    {
+      "path": "memory/versioned_sources/journal.json.364b37738032.json",
+      "size_bytes": 20,
+      "sha256": "364b37738032a28a72829f4d2192b70bd9353c9ee8dddfc5b70c2785f995d6ac"
+    },
+    {
+      "path": "memory/versioned_sources/legacy_import_report.json.03a1af9b1886.json",
+      "size_bytes": 8776,
+      "sha256": "03a1af9b1886e84fb7de41130ef1d9cc3c3c1974579a3012db2546e617441e23"
+    },
+    {
+      "path": "memory/versioned_sources/memory_resonance.json.dfd62709dde1.json",
+      "size_bytes": 1511,
+      "sha256": "dfd62709dde1dd79446ce392d0c1ea93282e48f73ab856479e6c650c0910edba"
+    },
+    {
+      "path": "memory/versioned_sources/migration_report.json.4251f0a8fcd0.json",
+      "size_bytes": 1941,
+      "sha256": "4251f0a8fcd065611c3da540870561ef81ac31ac909aba1dccfea011e913f90d"
+    },
+    {
+      "path": "memory/versioned_sources/openai_conversation.json.bfd1073fadb4.json",
+      "size_bytes": 169,
+      "sha256": "bfd1073fadb4566a1636fb203494da12780afd5eea877761d9e035b1c3bf1261"
+    },
+    {
+      "path": "memory/versioned_sources/openai_conversation_state.json.4acb183c3353.json",
+      "size_bytes": 145,
+      "sha256": "4acb183c33538b28749cd568efb882d5f447c9be3b761c29b69ee61d07ec1b78"
+    },
+    {
+      "path": "memory/versioned_sources/quiet_rest_state.json.ca98b3ae3be5.json",
+      "size_bytes": 774,
+      "sha256": "ca98b3ae3be5f797d1a21b2509ef98c8851d40e5cc4e1de55bb48befaa348642"
+    },
+    {
+      "path": "memory/versioned_sources/semantic_memory.json.5faebe9b8d62.json",
+      "size_bytes": 26011,
+      "sha256": "5faebe9b8d62cd7920557eba0d5aec6c09f815dc3e70445ff5d08419f728e78b"
+    },
+    {
+      "path": "patches/v14_5_30_polish_understanding_runtime.patch",
+      "size_bytes": 117077,
+      "sha256": "e1dd7a19697c6c00db6e58adae93aab79efc1a5f667f73a28f7c63cb00f099bf"
+    },
+    {
+      "path": "patches/v14_5_32_cognitive_packets_self_state_runtime.patch",
+      "size_bytes": 159004,
+      "sha256": "9fc51301ac8b7df1df2877034f780b97a00ad01ac53fb72930b2db68afd87407"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 440,
+      "sha256": "9082c65381a4d760efd719e62e97d731c800c49ffb3a9c6277c184be6855dd7a"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_10.json",
+      "size_bytes": 3027,
+      "sha256": "6ae97a838f13e2849e6bc8d92ce80cb60f413530bfbeb856306c7e6267f0b598"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_11.json",
+      "size_bytes": 2425,
+      "sha256": "297d33abf25048bcbe95b720fa71f28fc7ad242620fff1c54ff590e076cb75cb"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_12.json",
+      "size_bytes": 3167,
+      "sha256": "14b131f4c3101341ccea99dc38ea04d976e071b2f8e26e9911da916035944147"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_13.json",
+      "size_bytes": 2432,
+      "sha256": "30cea6a8eefe8f6568badb7fde20e1658f747579adec7ce61ccbdae6d187fa29"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_15.json",
+      "size_bytes": 2141,
+      "sha256": "574fb2ab78b1fdcb75b3755eeb9bff83fa4c3e9301ab256abe08752bb64b8c8d"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_RESULT_V14_5_17.json",
+      "size_bytes": 2867,
+      "sha256": "732ff965028b99e9c845f5c00d2c8cd195f4fc50a26f5cba426c9f032c83310f"
+    },
+    {
+      "path": "reports/AUTO_MEMORY_UPDATE_STDOUT_V14_5_13.json.txt",
+      "size_bytes": 2448,
+      "sha256": "9ab80a3d69f56c53538503abd4c84e1887b4247fb6101f49ab0353fb05c692ed"
+    },
+    {
+      "path": "reports/AWARENESS_LOGIC_AUDIT_V14_5_28.json",
+      "size_bytes": 899,
+      "sha256": "280dc7b85868a710002b495bc156cfa2590655b45cbfe4d7b746c50a4e4d49b6"
+    },
+    {
+      "path": "reports/BUILD_REPORT_v14_4_0.json",
+      "size_bytes": 23759,
+      "sha256": "da162da6953aabf5cea7ce62e52116e6a1451e09b9e18e304b4bf0777c573826"
+    },
+    {
+      "path": "reports/BUILD_REPORT_v14_5_1.json",
+      "size_bytes": 909,
+      "sha256": "e903c0c317e27f71a5043b98a2234efbcfbc6b1951d9bf64c456638103a35a99"
+    },
+    {
+      "path": "reports/BUILD_REPORT_v14_5_2.json",
+      "size_bytes": 1192,
+      "sha256": "14799b82f3bcb131427897a87dfe2453349693d8b2495fc16f4519e03208b5fe"
+    },
+    {
+      "path": "reports/BUILD_REPORT_v14_5_3.json",
+      "size_bytes": 1206,
+      "sha256": "73d481058668f7b8f27f922299d3b9fe685396d3202e3d072eac1c7db93abbfd"
+    },
+    {
+      "path": "reports/BUILD_REPORT_v14_5_6.json",
+      "size_bytes": 200,
+      "sha256": "a693722ee351f9e962be353994cc4d73211918d5765c4df5339f37886b473fab"
+    },
+    {
+      "path": "reports/COGNITIVE_FRAME_SMOKE_V14_5_22.json",
+      "size_bytes": 18590,
+      "sha256": "7ceb7d7ceb574e001b6fc11bbd6ddb9cd91277db0276230055717011e92cc076"
+    },
+    {
+      "path": "reports/CONVERSATION_RUNTIME_AUDIT_V14_5_29.json",
+      "size_bytes": 4416,
+      "sha256": "0d862d84f247b0a110f0da289167b2574700bc0407b9776f4dadd047ee3e089a"
+    },
+    {
+      "path": "reports/COUNTS_AFTER_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 245,
+      "sha256": "4fa35112816f347b574289af039bfb558456683a09f409f814e62b515d66baf3"
+    },
+    {
+      "path": "reports/COUNTS_AFTER_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 246,
+      "sha256": "6586ec1c61ee24c81e4dac8e6fedee9700f4671557cd51fbbfc4f1e817a6afe4"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 129,
+      "sha256": "4a961c2a6abbd3f2e83d8d042722057e7a1402e8b75d914b19f8b24cb7474f69"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 275,
+      "sha256": "7e28509e2ccb8625898fbfe54e618196c4c379c64f07946e386193a49174dfec"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 241,
+      "sha256": "dbded29b1e2baa06a5c45f1a47b4ce077c57e5c55b26e205fc065feb0fb352bb"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 231,
+      "sha256": "8add4a4cf87568e553d22fd18207d708436446914b19df4df386c94e1ce3a5db"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 6066,
+      "sha256": "c935d61a4f6c43b837c58dd97b335fb2eb4713ebd8b120c7e30aa5b1a3d8e017"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 245,
+      "sha256": "6a45a8afd8b4172228e216dfb968b9ab5692f4bd94ae418e39152b5ad2e7305d"
+    },
+    {
+      "path": "reports/COUNTS_BEFORE_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 245,
+      "sha256": "ea92baf683200a02c3725a9762b9921509fa36cdd1613c6ad070361a713bafc8"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_1_14.json",
+      "size_bytes": 2194,
+      "sha256": "fe50dc1db05613e11fe1400e83253bc8acfc7eb1cf1ce15bdbd2681dc9038a43"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_1_15.json",
+      "size_bytes": 2810,
+      "sha256": "7c6ddabd2aa8dcd695740be2df087a24d1d6f16e01ed253a452c8f2263a73ee2"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_2.json",
+      "size_bytes": 801,
+      "sha256": "0cd436e41bc0061cbd3d85eb4fa871e66553de063940aae8a6ee0f535db8bbc3"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_2_1.json",
+      "size_bytes": 3548,
+      "sha256": "d222cdaa172f0179b5a4aebfb941be4d4e54199859afbb246897ddf2e8e4267f"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_3.json",
+      "size_bytes": 2564,
+      "sha256": "4d5a9f393936bcbbae9626359cac180c18013e2fd0be531f5dac74ba361df38a"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_4.json",
+      "size_bytes": 2946,
+      "sha256": "637b3e1f3dc081e8d8f00d4fcaee662f075b21ad22caa0b2e79c15c0b482f35d"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_5.json",
+      "size_bytes": 2969,
+      "sha256": "d166c80bae28ff7a6cde05354b907bda9ee724c04555262c0bf371ae1335d012"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_6.json",
+      "size_bytes": 6261,
+      "sha256": "30c35935cc79d8db1f488d3eafe9f24e32ede7f289f418244f7b850b96e17bbd"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_7.json",
+      "size_bytes": 2100,
+      "sha256": "cb94b4919b4509010c8f1daddf516dc688ab385b7a64f9d30c370066b1ad0093"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_9_1.json",
+      "size_bytes": 605,
+      "sha256": "59462af50cd27159cc32dbcdaa415bd4e1000b2a9b6017f26a98ebc53cb95236"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_9_2.json",
+      "size_bytes": 495,
+      "sha256": "862fc2e88c0035eda974278c36f23e28a0315c4e3632750056306e405e0fa155"
+    },
+    {
+      "path": "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_9_3.json",
+      "size_bytes": 189,
+      "sha256": "c5c7ea15dd091da998a172fe0e704f380ada912b286562cfef9141b1df651f55"
+    },
+    {
+      "path": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_13.txt",
+      "size_bytes": 3573,
+      "sha256": "5f6730c7f20923ab0d5c20a3c46439d328e2630c70fa0c4c866e719a6908abb0"
+    },
+    {
+      "path": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_14.txt",
+      "size_bytes": 2325,
+      "sha256": "e4fc9d8bcee4f27b179bb2ec7357dfd4cce0bff2c0ef69c5e773bc268765910a"
+    },
+    {
+      "path": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_15.txt",
+      "size_bytes": 5180,
+      "sha256": "acdd5cf2e1e6a3a4f8c6eb6a20b5d5fffe2d4c0f08a4617d2f77cd4b40dcd574"
+    },
+    {
+      "path": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_16.txt",
+      "size_bytes": 2746,
+      "sha256": "2ad1af2ca248eac2ab0ebd85f706ba86d46a27b02fbbacdb01c246cd048e539b"
+    },
+    {
+      "path": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_17.txt",
+      "size_bytes": 3143,
+      "sha256": "a23bd85e4d530648ac48bfc9f2ab05ec1dad7904d57a7c198f692d461f038086"
+    },
+    {
+      "path": "reports/CURRENT_VISIBLE_CHAT_SOURCE_V14_5_18.txt",
+      "size_bytes": 2518,
+      "sha256": "5e065e07ab7fcb192afb325123e0c670f4d1a128e8d9a6188e182a871091b103"
+    },
+    {
+      "path": "reports/DEDUP_REMOVED_CONTENT_V14_5_39.json",
+      "size_bytes": 444,
+      "sha256": "0368120abffc36cb84f1e2d4800a1cd901a0786fe69e5ae02c7a57073a4a87eb"
+    },
+    {
+      "path": "reports/DEDUP_REPORT_V14_5_39.json",
+      "size_bytes": 222,
+      "sha256": "920ac561d12d021cf48b11f3577a0cdee813d79fe30df4514178d66606a78107"
+    },
+    {
+      "path": "reports/DEDUP_REPORT_V14_6_0.json",
+      "size_bytes": 221,
+      "sha256": "aac04544b4a3ad03fbdc6c2ee16059908e6c22c60824a67d57fde86bbe1683df"
+    },
+    {
+      "path": "reports/DEDUP_REPORT_V14_6_1.json",
+      "size_bytes": 221,
+      "sha256": "f5385eec02603aa7c2f1c10b90bfc4767db2eb50aa11defb848b07fd3eb5c21d"
+    },
+    {
+      "path": "reports/DEDUP_REPORT_V14_6_9_1.json",
+      "size_bytes": 249,
+      "sha256": "3880865933802d714ae3c19af03049ce8d61194925634a5abed7ec3791a51ebd"
+    },
+    {
+      "path": "reports/DEDUP_REPORT_V14_6_9_2.json",
+      "size_bytes": 204,
+      "sha256": "11d2751f9328499185ab42aa0bb6de2b921ca53324a95de37df1415fc3d307c1"
+    },
+    {
+      "path": "reports/DUPLICATE_SQLITE_SNAPSHOT_RETENTION_V14_6_9_3.json",
+      "size_bytes": 2598,
+      "sha256": "d899fa33cb022f95c1ea700bdc51e485872bcb3d86776b98e0a56ce8731740f5"
+    },
+    {
+      "path": "reports/FILE_DIFF_FROM_INPUT_PACKAGE_V14_5_11.json",
+      "size_bytes": 1247,
+      "sha256": "5aedfe48c6ac94c90a8bcd53f720b3438b7f15614752ceca87e95c2d9217be59"
+    },
+    {
+      "path": "reports/FILE_DIFF_FROM_INPUT_PACKAGE_V14_5_12.json",
+      "size_bytes": 971,
+      "sha256": "d82fc141c9403db064a0f176705fd719f3de0413db07af8dd27e1af055ff0be6"
+    },
+    {
+      "path": "reports/FILE_DIFF_FROM_INPUT_PACKAGE_V14_5_17.json",
+      "size_bytes": 1241,
+      "sha256": "79151699a85a377b12d26b510b3f2fd43555e8030de02bae9db454cee398394b"
+    },
+    {
+      "path": "reports/FILE_HASH_INDEX_V14_5_39.json",
+      "size_bytes": 70922,
+      "sha256": "7a123ee142a0bb45ee82595617b059ba2d07601316d0335cce1d87145e5d2aed"
+    },
+    {
+      "path": "reports/FILE_HASH_INDEX_V14_6_0.json",
+      "size_bytes": 70700,
+      "sha256": "3a599b4084e2c1ced713f904114f6be9e66d9fa4cc3559977a1a5d7d7c1fd1ff"
+    },
+    {
+      "path": "reports/FILE_HASH_INDEX_V14_6_1.json",
+      "size_bytes": 74256,
+      "sha256": "3a6df83646f44c7e4c769d306efbcbfd43afcf25775535455fcd575256836e7b"
+    },
+    {
+      "path": "reports/FILE_HASH_INDEX_V14_6_9_1.json",
+      "size_bytes": 88617,
+      "sha256": "5b733040946667c83ce655cf11deab2fdb9ebd992431486346ecf66c05710fc2"
+    },
+    {
+      "path": "reports/FILE_HASH_INDEX_V14_6_9_2.json",
+      "size_bytes": 91087,
+      "sha256": "0be5dbe564c30272269dd81adc4ea9f53ba38940ebf3bcbe6ca76ec0b774ca73"
+    },
+    {
+      "path": "reports/FINAL_INTEGRITY_V14_5_23.json",
+      "size_bytes": 1460,
+      "sha256": "cbc8b464bf780123bdf8b6c41843b40a3df5d7438d236fbe33d10b17b1e7d844"
+    },
+    {
+      "path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_11.json",
+      "size_bytes": 2281,
+      "sha256": "e75ac374f7850f319f9385ce6df6268cb0abb5fa4861cc4f90db9735bd7c0c50"
+    },
+    {
+      "path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_13.json",
+      "size_bytes": 6572,
+      "sha256": "ea12e1e64aafaa69ed61b99a163d71e8b028396b8dbad9038816d11712b16801"
+    },
+    {
+      "path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_15.json",
+      "size_bytes": 2332,
+      "sha256": "0e2b18a89c185441a3c0cb9c122422c2466c51106c0683b2e44a40d57a144be2"
+    },
+    {
+      "path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_16.json",
+      "size_bytes": 2268,
+      "sha256": "27781e81abef95d84347b7dc71845c8d67c20d1a16fa270078234cc3473871cd"
+    },
+    {
+      "path": "reports/FINAL_MEMORY_UPDATE_AUDIT_V14_5_17.json",
+      "size_bytes": 3770,
+      "sha256": "073e9e360847e0301a086c8e00093f6062ee78fc92693578fc7802bdabc04ad1"
+    },
+    {
+      "path": "reports/FINAL_VERIFICATION_V14_6_10.md",
+      "size_bytes": 1185,
+      "sha256": "e4b342ce1503a3b8caabe0fad270c599da9fa7914f80b779f8a837c8e5991cb2"
+    },
+    {
+      "path": "reports/FULL_NO_OMISSIONS_AUDIT_V14_6_3.json",
+      "size_bytes": 1946,
+      "sha256": "6b87382b167bed6045aca446f1a4d8a08b3e54512e390eedce2b720981fc516c"
+    },
+    {
+      "path": "reports/FULL_READ_LEDGER.jsonl",
+      "size_bytes": 3930601,
+      "sha256": "bdc9474e73e1853e9aecae365e11be0a250c4c999ac00cc7c51073dc9ed63db8"
+    },
+    {
+      "path": "reports/FULL_READ_LEDGER_V14_5_13_MEMORY_ONLY.json",
+      "size_bytes": 1321,
+      "sha256": "76000652c78a55fc5c56607b7847b27c7575ad2c883959a656d37fbafb4897e5"
+    },
+    {
+      "path": "reports/FULL_READ_LEDGER_V14_5_14_AFTER_UPDATE.json",
+      "size_bytes": 56129,
+      "sha256": "12e3f484f18c31f468369928258e3e11dad7022aa4c0bbcb266c6f6152f0bbab"
+    },
+    {
+      "path": "reports/FULL_READ_LEDGER_V14_5_14_MEMORY_ONLY.json",
+      "size_bytes": 54545,
+      "sha256": "d54a091af4f602e28843830a477d3322289b8e8481e87604f5bfac854032e85d"
+    },
+    {
+      "path": "reports/FULL_READ_LEDGER_V14_5_15_MEMORY_ONLY.json",
+      "size_bytes": 62486,
+      "sha256": "dc2badf339bdcf808e7103333ad333e8f0f635836ceb1343cb25b12fdb2fe3d9"
+    },
+    {
+      "path": "reports/FULL_READ_SUMMARY.json",
+      "size_bytes": 4049,
+      "sha256": "8b3d2155c30c328ff260d9276fff41b532e6d6b0be3874c8d893075cae9b9daf"
+    },
+    {
+      "path": "reports/JAZN_BOOTSTRAP_STDOUT_V14_5_17.txt",
+      "size_bytes": 532,
+      "sha256": "a2115c4f014a137fe4e8cbc709dfb977ea2207e300fc8b08340bb48a28a8eea8"
+    },
+    {
+      "path": "reports/JAZN_v14_6_9_4_UPDATE_REPORT.md",
+      "size_bytes": 4643,
+      "sha256": "b83c767feaea49aa3e17c4afd4e02df1adfc88a8e4de40abee239a7b12648a48"
+    },
+    {
+      "path": "reports/JAZN_v14_6_9_5_STANDALONE_GREETING_STALE_CONTEXT_HOTFIX_REPORT.md",
+      "size_bytes": 4641,
+      "sha256": "a240b9c62e3132fe01719dcabad101934001c89517caefd8cd93d913fc928638"
+    },
+    {
+      "path": "reports/LARGE_MEMORY_ARTIFACT_EXPORT_POLICY_V14_6_9_3.json",
+      "size_bytes": 942,
+      "sha256": "c059917e91c4678d8c6055ed168b362ca8194714568892f726dca217937ac826"
+    },
+    {
+      "path": "reports/MEMORY_ONLY_UPDATE_REPORT_V14_5_10.json",
+      "size_bytes": 2899,
+      "sha256": "b97971ea99cda089fe8587b9dba5d9304816fd19749c8185fc4e18868c4b6342"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_10_FROM_VISIBLE_CHAT.json",
+      "size_bytes": 22001,
+      "sha256": "fd7da97c55f68a493998126aa264dcb78e9b5cbe04c27889a6a4e8b1e403836e"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_11_FROM_VISIBLE_CHAT.json",
+      "size_bytes": 51654,
+      "sha256": "03e5c8be637a72b239b082e54a0db685973513e101dc725f5606a55d810d91f4"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_12_FROM_VISIBLE_CHAT.json",
+      "size_bytes": 179170,
+      "sha256": "a9481a64b7e883cc234c334953778c42daefd7ad0a8abbe451b84d229390a5da"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_13_FROM_VISIBLE_CHAT.json",
+      "size_bytes": 25052,
+      "sha256": "8541042c33cb5aa9d6184e7371881b925d96940814e3fcc48290c722209d4878"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_15_FROM_CURRENT_VISIBLE_CHAT.json",
+      "size_bytes": 36183,
+      "sha256": "04cf20670630c30917969c4cb2de44caa30da55daa7351f77463a8ac252a5a17"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_16_FROM_CURRENT_VISIBLE_CHAT.json",
+      "size_bytes": 20957,
+      "sha256": "699f7790d458768dc7eab85594a2a810ee3e8af6ef9934303026cda4e163aebb"
+    },
+    {
+      "path": "reports/MEMORY_PAYLOAD_V14_5_17_FROM_CURRENT_VISIBLE_CHAT.json",
+      "size_bytes": 16125,
+      "sha256": "c2193ea45326c531fa9f2dc9d76d882b7e1154bd8761b12a9a875d853532b30b"
+    },
+    {
+      "path": "reports/MEMORY_SYNC_REPORT_v14_5_21.json",
+      "size_bytes": 2951,
+      "sha256": "68ada75d2f583e82871efc3f512f88a22e1e37ff8fd6324168e9dde7fdd89f7a"
+    },
+    {
+      "path": "reports/MEMORY_SYNC_REPORT_v14_5_22.json",
+      "size_bytes": 1878,
+      "sha256": "fa0e0afa2be2cb694345842f7412c45e9dbbb0c6b6b85a63f483925087af9b8b"
+    },
+    {
+      "path": "reports/MODULE_FUNCTION_AUDIT_V14_6_9_1.json",
+      "size_bytes": 64420,
+      "sha256": "770088bcbb72c38a4e328af0248994671237cd19ebccf2f93b34ea9b8ab363d0"
+    },
+    {
+      "path": "reports/MODULE_FUNCTION_AUDIT_V14_6_9_2.json",
+      "size_bytes": 771,
+      "sha256": "aa35be0706643274365741a94558912ae517ba6e2b75ee3dc5e68e6b5da6e896"
+    },
+    {
+      "path": "reports/NESTED_ARCHIVE_CATALOG.json",
+      "size_bytes": 795946,
+      "sha256": "ab78a6e7fb382769bdd82054072ac6cedf53a38fd410030c9b15cd011e2eafce"
+    },
+    {
+      "path": "reports/PACKAGE_COMPLETENESS_AUDIT_V14_5_26.json",
+      "size_bytes": 8549,
+      "sha256": "2baab0412465fa646a8d58726a33203ee919b0b1058526f892ad41c4a9229350"
+    },
+    {
+      "path": "reports/PACKAGE_EXPORT_V14_6_3.json",
+      "size_bytes": 633,
+      "sha256": "4bf3893692908102b6190cfb6769bd299876031e44b923454f627a6158c77a87"
+    },
+    {
+      "path": "reports/PATCH_V14_5_36_BIRTH_SOURCE_CONTRACT.diff",
+      "size_bytes": 91114,
+      "sha256": "7f777e80fe51005cd443397b6aa6d31fa6206e8f887bea68231d367ed96f8195"
+    },
+    {
+      "path": "reports/POST_MEMORY_NORMALIZATION_AUDIT_V14_5_11.json",
+      "size_bytes": 1421,
+      "sha256": "01bc6c59ec00ad173884b828ebddb1a5b57a8d3224af9722e8d23ad0d6b9ae17"
+    },
+    {
+      "path": "reports/PYTEST_REPORT_V14_6_9_1.json",
+      "size_bytes": 735,
+      "sha256": "d002ac81b6c4ee574ce5c267bbbff07a7e73fe161f1443d21dac139b56c9ec72"
+    },
+    {
+      "path": "reports/PYTEST_REPORT_V14_6_9_2.json",
+      "size_bytes": 795,
+      "sha256": "0636f0d264bc1209cb34eab785d57e046fbf47fcfc9964146eb8a850d497644b"
+    },
+    {
+      "path": "reports/PYTEST_STDOUT_V14_5_17.txt",
+      "size_bytes": 99,
+      "sha256": "6a4c857372dc5b7218c7e31753efd4be65980046a1e7006637a4b203a7be5794"
+    },
+    {
+      "path": "reports/PYTEST_STDOUT_V14_5_22.txt",
+      "size_bytes": 100,
+      "sha256": "525692daae3989e409fc3bf2f890afc53d9421819d1638597cd5c7643ca3e816"
+    },
+    {
+      "path": "reports/PYTEST_STDOUT_V14_5_23.txt",
+      "size_bytes": 100,
+      "sha256": "c1f22b72acc648a7be86d22fd50c73394f18e339f9e8d77bb53792f98048ef0c"
+    },
+    {
+      "path": "reports/PY_HASHES_AFTER_V14_5_17.json",
+      "size_bytes": 5617,
+      "sha256": "7d54469e12fcfb12c627097fb8e62413e83c96dff7d0bd51e429bcf5d402d91f"
+    },
+    {
+      "path": "reports/PY_HASHES_AFTER_V14_5_18.json",
+      "size_bytes": 5616,
+      "sha256": "9fd98171c46574fe51f8680af64b9542554524e3e3662f8ae5cb41422f9d6e9c"
+    },
+    {
+      "path": "reports/PY_HASH_AUDIT_V14_5_10.json",
+      "size_bytes": 131,
+      "sha256": "bdda772f986790803cee7c22bdb2dcde497b4a4781978e55af8bc32847caebb0"
+    },
+    {
+      "path": "reports/PY_HASH_AUDIT_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 102,
+      "sha256": "e1557f1c8ecdaa713a18bbc4b79ee124175504995f1e75f89a734468e742eb6b"
+    },
+    {
+      "path": "reports/PY_HASH_AUDIT_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 52,
+      "sha256": "0fe89c96ed762365368302564d96d35df0effd3eb9e20e2b88651a896f61b7e1"
+    },
+    {
+      "path": "reports/RECORD_VERSION_UPDATE_v14_5_21.json",
+      "size_bytes": 691,
+      "sha256": "ff6367db0b18542b771a21c87e36177d640f0ac3b390a8ef9927546bff18b971"
+    },
+    {
+      "path": "reports/RECORD_VERSION_UPDATE_v14_5_22.json",
+      "size_bytes": 697,
+      "sha256": "54e368b2e2074b4f925230f86601b49245987824bbdfd028e506fe68aac745b8"
+    },
+    {
+      "path": "reports/RUNTIME_PREVIEW_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+      "size_bytes": 409848,
+      "sha256": "758fc838e1df6867892d12188eb8f5cd2e76c8a85cfbc3e843031e6586bf6557"
+    },
+    {
+      "path": "reports/RUNTIME_STATUS_V14_5_23.txt",
+      "size_bytes": 1293,
+      "sha256": "826d2758271d465aa8648ff039fb36208a6cf02b3574ddd3764b2a1b03485be9"
+    },
+    {
+      "path": "reports/RUNTIME_STATUS_v14_5_21.txt",
+      "size_bytes": 1070,
+      "sha256": "be4c3284d58372bfd20cb697059e3d2a970aab282369b6eec7b54a6dcad0444f"
+    },
+    {
+      "path": "reports/RUNTIME_STATUS_v14_5_22.txt",
+      "size_bytes": 1286,
+      "sha256": "001fab245a2c3ff818ec9d1073ef4b0976140e0204fd1503d6bb56149e0f781b"
+    },
+    {
+      "path": "reports/SIZE_AND_MEMORY_COMPARISON_V14_5_23.md",
+      "size_bytes": 1156,
+      "sha256": "59833339e05d1561264a076b4090a4dfb4f038da93d951491cc88a63c12d5235"
+    },
+    {
+      "path": "reports/SQLITE_INTEGRITY_v14_5_21.json",
+      "size_bytes": 370,
+      "sha256": "4959950209509c6fb88918041f3812d79e711a7d6f5f3d065395eedeec13dcda"
+    },
+    {
+      "path": "reports/SQLITE_READ_CATALOG.json",
+      "size_bytes": 44545,
+      "sha256": "d5a6d6e7494984e05199ced02ccd6a8f605446a7770f18f70485cdf67da2601f"
+    },
+    {
+      "path": "reports/SQLITE_REPAIR_MERGE_REPORT_V14_5_23.json",
+      "size_bytes": 1644,
+      "sha256": "6a91ccc4807d1fb7de5a57bb66c42cfba3c24a09f3d2ea6a3acfc860ee1acc7e"
+    },
+    {
+      "path": "reports/TEST_PYTEST_V14_5_14_MEMORY_ONLY.txt",
+      "size_bytes": 137,
+      "sha256": "89a8af251929c13b0a16b06baed4a9d53871812f1727f4aeb6836bdd3549b3df"
+    },
+    {
+      "path": "reports/TEST_PYTEST_V14_5_15_MEMORY_ONLY.status",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "reports/TEST_PYTEST_V14_5_15_MEMORY_ONLY.txt",
+      "size_bytes": 99,
+      "sha256": "3caf27f60259e41f906898d2a1ea0d579a486dc88cb7f960156b42dbda1c6ecb"
+    },
+    {
+      "path": "reports/TEST_REPORT_V14_6_4.md",
+      "size_bytes": 2370,
+      "sha256": "9a358040a632b4a88e6a3a2da7eccdb15c7d10cf9e7565f96599af5b635f2495"
+    },
+    {
+      "path": "reports/TEST_REPORT_V14_6_5.md",
+      "size_bytes": 830,
+      "sha256": "cef6a7bde830b58eb0bd32e9280d01e8a7df07c4d18e0f97e9dd97ab84f81d07"
+    },
+    {
+      "path": "reports/TEST_RESULTS_V14_6_6.json",
+      "size_bytes": 1614,
+      "sha256": "f55db38c53b91641cec661dfc8b4273bcc4fd9821620c488e55fed3519e7c2b2"
+    },
+    {
+      "path": "reports/TEST_RESULTS_V14_6_7.json",
+      "size_bytes": 1995,
+      "sha256": "55a2a792803292f5383a426f7e1c3cbc6edd88f3830f3a379831ae7209fd6a5f"
+    },
+    {
+      "path": "reports/TEST_UNittest_V14_5_10.txt",
+      "size_bytes": 2754,
+      "sha256": "6ab2e237cebdee7f5b642bf5fe1c9e65f7cc78438567ff34de3e44ee12a67a44"
+    },
+    {
+      "path": "reports/TEST_pytest_memory_protocol_V14_5_10.txt",
+      "size_bytes": 98,
+      "sha256": "bba54d0d911e4f4b3ff7099be56f23a579126dd0cbb36d88eb246b10ef320d5b"
+    },
+    {
+      "path": "reports/UPDATE_HISTORY_AUDIT_V14_6_10.md",
+      "size_bytes": 103,
+      "sha256": "ee2d24767d34fb54cc7b20609b78cfb2108e050a926ff61b2dc4dcd144085240"
+    },
+    {
+      "path": "reports/UPDATE_REPORT_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+      "size_bytes": 1721,
+      "sha256": "d1a0c0a52235970bd6b0500870b57573709b2ca8b2c61af1d3cdc8249067b94d"
+    },
+    {
+      "path": "reports/UPDATE_REPORT_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+      "size_bytes": 926,
+      "sha256": "ba8efbd4dfeb1e661edc5845bf8a6032d2290171c48bb7bf6119889837f42430"
+    },
+    {
+      "path": "reports/UPDATE_REPORT_V14_6_0.json",
+      "size_bytes": 1145,
+      "sha256": "0024116de8e2ff56b68841028298deb0beb8d064fdc9691379cef6aa28094fd9"
+    },
+    {
+      "path": "reports/UPDATE_REPORT_V14_6_10.md",
+      "size_bytes": 1442,
+      "sha256": "847ac353443f47694817624a6fee042c5bb6cec657d88f1cfafb79d3bca68d85"
+    },
+    {
+      "path": "reports/UPDATE_REPORT_v14_6_10_1_STALE_ROUTE_CONTEXT_GUARD.md",
+      "size_bytes": 2069,
+      "sha256": "7d4b86cd9db335a3ccef29b69e125404a4126f24a149ea640fabbf1913ebffe1"
+    },
+    {
+      "path": "reports/UPDATE_V14_5_30_POLISH_UNDERSTANDING_RUNTIME.json",
+      "size_bytes": 1842,
+      "sha256": "50570a359eba8a9c798a06cbe6e81e55614c1fed960dfea9685b764feab0e394"
+    },
+    {
+      "path": "reports/UPDATE_V14_5_34_EMOTIONAL_CONTINUITY_COGNITION.json",
+      "size_bytes": 1662,
+      "sha256": "83ddf49b1256a5e5f78f55698d8dfb2a0a3a8287525c6dd5052ca170583bced8"
+    },
+    {
+      "path": "reports/VERSION_CONSISTENCY_AUDIT_V14_6_10.json",
+      "size_bytes": 276158,
+      "sha256": "7fbe096078b15edfb93a33fb0f83b5512cde2d0d0e1d511c994433ca71891b64"
+    },
+    {
+      "path": "reports/VERSION_CONSISTENCY_AUDIT_V14_6_10_1.json",
+      "size_bytes": 1051457,
+      "sha256": "074ed594da313872c1610efc5e6ab3a891cab98789ee796d071c4ce70f011a3c"
+    },
+    {
+      "path": "reports/runtime_duplicate_audit_v14_5_19.json",
+      "size_bytes": 902,
+      "sha256": "10592423fe522ce973bc7494782f0776740020a940acbda07edd92f005c29767"
+    },
+    {
+      "path": "requirements.txt",
+      "size_bytes": 214,
+      "sha256": "4a2534da6439db8075485e4ae9b4a02d6f00c5ed595b32c0d731d838f0b04fd4"
+    },
+    {
+      "path": "tests/test_auto_memory_update.py",
+      "size_bytes": 2133,
+      "sha256": "7d86e47a60a81be84a0bf3723491dddb2caefb8f95f16e82bd2c31307bfaf088"
+    },
+    {
+      "path": "tests/test_chatgpt_cognitive_bridge.py",
+      "size_bytes": 2996,
+      "sha256": "65851fa642fe891bc688c20cfcd29b68f78fd9848c7365ef7073e8ce636773c8"
+    },
+    {
+      "path": "tests/test_conversation_memory_capture.py",
+      "size_bytes": 3425,
+      "sha256": "35f4b0f615a4e81ff1f5c647d9016ff0c3461432ad289a698db90780339e9a02"
+    },
+    {
+      "path": "tests/test_dziennik_version_update.py",
+      "size_bytes": 3763,
+      "sha256": "9f9516dae3b1e8528de18248d8a230e5bf2b4ab6a64c7c68a8bb6521a5b78133"
+    },
+    {
+      "path": "tests/test_identity_startup.py",
+      "size_bytes": 1883,
+      "sha256": "b958f75c9b424addbd275ed68918a93551bc0e4378856e9ca6a251b9ad2604da"
+    },
+    {
+      "path": "tests/test_layered_memory.py",
+      "size_bytes": 1163,
+      "sha256": "723494b8f75ac38b66687b23e4edf38a869d34192163cde13cd918a895311576"
+    },
+    {
+      "path": "tests/test_memory_importance.py",
+      "size_bytes": 485,
+      "sha256": "bbd0ce0b055d0b617267f838a8db4b6271fa631fc65ef3345b21c5dfb44dce13"
+    },
+    {
+      "path": "tests/test_memory_store.py",
+      "size_bytes": 1084,
+      "sha256": "a5bd59c554bd8a9829c3918201189e447949b2f20949d53ee62b3e2446d79c2f"
+    },
+    {
+      "path": "tests/test_neurocognitive_expansion.py",
+      "size_bytes": 2426,
+      "sha256": "600c78a7ddb62b6e31f41b855767117cb9a962ba9409bf45dbd4548f50403fb2"
+    },
+    {
+      "path": "tests/test_neuropsychology_map.py",
+      "size_bytes": 556,
+      "sha256": "6e1827a6dc7d17b34450d7ccc1be20deb0fcf908da609c714d41d3925080c6cd"
+    },
+    {
+      "path": "tests/test_raw_archive_v14521.py",
+      "size_bytes": 1704,
+      "sha256": "1691cddafbb51e32e2a792b6d5597985b861b0ebdd541e19b659735de65b3416"
+    },
+    {
+      "path": "tests/test_runtime_persistence.py",
+      "size_bytes": 3092,
+      "sha256": "831bdcb8a5f4383fed8614a928edf8f736368a08db6272c66e5112c467fe6dc4"
+    },
+    {
+      "path": "tests/test_self_architecture.py",
+      "size_bytes": 720,
+      "sha256": "10c62187eee941b59e9202e7342c916dc44a5d776e791378bb5caa8d06a5c8b8"
+    },
+    {
+      "path": "tests/test_temporal_emotional_awareness.py",
+      "size_bytes": 714,
+      "sha256": "2ee4ac09d0676cb45c6366be5a296acda627ee2767b5bff7f93662105ef77a4b"
+    },
+    {
+      "path": "tests/test_truth_boundary.py",
+      "size_bytes": 1287,
+      "sha256": "0b3e95bf6d6cea8997644894792d7b4b396081115458881bdcdfa56c09e0d842"
+    },
+    {
+      "path": "tests/test_v14520_repair.py",
+      "size_bytes": 2869,
+      "sha256": "d5958a9f05df476a1612346556a7e88771d5bb045951bc9574737116d93d4528"
+    },
+    {
+      "path": "tests/test_v14521_review_fixes.py",
+      "size_bytes": 3415,
+      "sha256": "2e7ee8364cef45a0f00dc67d99062146c8f867298673718fa889994ed77227e8"
+    },
+    {
+      "path": "tests/test_v14524_runtime_bridge_export_hotfix.py",
+      "size_bytes": 3734,
+      "sha256": "3b5e0c8c8f9b1addfa56f5fc6ebcbe107835c30755c94c242212a19a067eb0bd"
+    },
+    {
+      "path": "tests/test_v14525_realtime_exact_event_ledger.py",
+      "size_bytes": 3967,
+      "sha256": "3885dca41528fd7c34c1a276cacb3f9fbb9459397d27b3beab1a0e09c8929e4a"
+    },
+    {
+      "path": "tests/test_v14526_package_completeness.py",
+      "size_bytes": 3726,
+      "sha256": "7fe731f25438082136fae7902cf156c9151cfe8b00bfda6cd42e4fd2105b9726"
+    },
+    {
+      "path": "tests/test_v14527_dialogue_repair.py",
+      "size_bytes": 2586,
+      "sha256": "e421ab55fb4071b8c183ffd1503ead1cda411747a00c25d7c005baf8d1e3b1e8"
+    },
+    {
+      "path": "tests/test_v14528_awareness_logic.py",
+      "size_bytes": 4787,
+      "sha256": "a4c7306c84c0460e722efb671beccff37e10bed76c3aed620d1437c161ed1001"
+    },
+    {
+      "path": "tests/test_v14529_conversation_runtime.py",
+      "size_bytes": 3502,
+      "sha256": "dd41f604ea7e5847ae851ee7bccd5e1e984d297a36dbcfc7882d5d4b1f7ecbc6"
+    },
+    {
+      "path": "tests/test_v14530_polish_understanding.py",
+      "size_bytes": 3053,
+      "sha256": "b3d249b1b1f80ad49d6b6ac0d0760607aa19378f47a3dd4660f37c1c76e7278e"
+    },
+    {
+      "path": "tests/test_v14531_identity_continuity_understanding.py",
+      "size_bytes": 3233,
+      "sha256": "2a826a717d02952175ca4b09d82dc8432e3aea2e6eda7929561008078ef1112e"
+    },
+    {
+      "path": "tests/test_v14532_cognitive_packets.py",
+      "size_bytes": 3502,
+      "sha256": "9937581ac32c374760e43bf0c485774b278d8909b08c41d1d77276cb5ba22211"
+    },
+    {
+      "path": "tests/test_v14533_download_safe_cognitive_packets.py",
+      "size_bytes": 1560,
+      "sha256": "095f858aa6f14eb2e6272bc61f92fdd8e2b334ce3ae7bfe8a0bc8eaddd2c1fe1"
+    },
+    {
+      "path": "tests/test_v14534_emotional_granularity_continuity_cognition.py",
+      "size_bytes": 4098,
+      "sha256": "b4a6340abe8c22dde6ea3b8acc525d68738cf5d07c5952c50125bea708e9a897"
+    },
+    {
+      "path": "tests/test_v14535_timestamp_contract.py",
+      "size_bytes": 2375,
+      "sha256": "1d220654cd7c57b034f14722a7235c35dcc1df171d91dc4f8328e1c3b2105d24"
+    },
+    {
+      "path": "tests/test_v14536_birth_source_contract.py",
+      "size_bytes": 3214,
+      "sha256": "7c276833daade8ef46c7e6685fd9a345990b2befbbea574de3d6ac75dc2e19cb"
+    },
+    {
+      "path": "tests/test_v14537_persistent_runtime_dialogue.py",
+      "size_bytes": 3845,
+      "sha256": "e1a654e818121333bc4fb326e2a669461e07d69a8165dad423314854567109d0"
+    },
+    {
+      "path": "tests/test_v14538_github_cognitive_runtime.py",
+      "size_bytes": 3275,
+      "sha256": "81f62c90147a0219c2d7c996f011a4233c78e4755d2de82ab6ba4b8d45b9a5f5"
+    },
+    {
+      "path": "tests/test_v14539_cleanup_dedup.py",
+      "size_bytes": 1372,
+      "sha256": "c1906f04e4a7b57b00571c6370d565eff55fa84cc3001bf77bb2a2f82c78c502"
+    },
+    {
+      "path": "tests/test_v1460_lexical_semantic_runtime.py",
+      "size_bytes": 2927,
+      "sha256": "7d33849e42882f65e2cc77b45ad139d50664a808583f87946f4ef818a5326ff3"
+    },
+    {
+      "path": "tests/test_v146101_stale_route_context_guard.py",
+      "size_bytes": 3728,
+      "sha256": "139cfe59b9afe80a1d570d78606352c624e422c8d3932f1630524a264b2c49e4"
+    },
+    {
+      "path": "tests/test_v14610_dictionary_network_policy.py",
+      "size_bytes": 1436,
+      "sha256": "a72984e5e8517e665c1ce4b36fc4236f2e232fd0b62e842ffe5bf6e24cf63c38"
+    },
+    {
+      "path": "tests/test_v14610_external_research_handler.py",
+      "size_bytes": 482,
+      "sha256": "afe5c69af70bba45cb889544fd5803608c3ba050e08199715808d280a0c50a39"
+    },
+    {
+      "path": "tests/test_v14610_manifest_profiles.py",
+      "size_bytes": 382,
+      "sha256": "5ea4b1b7385ba79cd6e3fd0aa5ca149ad119e2726f29a1152850e0a211be732a"
+    },
+    {
+      "path": "tests/test_v14610_route_handler_dispatcher.py",
+      "size_bytes": 1320,
+      "sha256": "c7c0775087f141c923295641a88f8b1f79ce8eaa6c19f13dbae8b34ea85d79f5"
+    },
+    {
+      "path": "tests/test_v14610_startup_contract.py",
+      "size_bytes": 680,
+      "sha256": "46528db970b345efd6d8b32d62e62d601723f26a2962b37a01b91a663e3485fe"
+    },
+    {
+      "path": "tests/test_v14610_update_history_audit.py",
+      "size_bytes": 684,
+      "sha256": "0b7d34456ce6e7bdc9590e057143867256f92417ceb9eb4fae6363fbf96f49c1"
+    },
+    {
+      "path": "tests/test_v14610_version_consistency.py",
+      "size_bytes": 909,
+      "sha256": "5c14215914a0e2882480921a7ed98e2b95c617e4221d45faea29b9a345d0cada"
+    },
+    {
+      "path": "tests/test_v146112_runtime_preview_source_state.py",
+      "size_bytes": 3914,
+      "sha256": "4c68160d52c5de9b303b1520e60573649f8290ef8906f70c42350c011bd86ae1"
+    },
+    {
+      "path": "tests/test_v146113_cognitive_turn_envelope.py",
+      "size_bytes": 4461,
+      "sha256": "b11c9a0e7f5f5ec533676b4ff42c253781088dd3fdf41deaf5940b842485e1fa"
+    },
+    {
+      "path": "tests/test_v146114_bootstrap_recognition_hotfix.py",
+      "size_bytes": 2382,
+      "sha256": "4143b0da9b3f071dc63ee7b2e8bfa233c730922c015dee57f4bea0d6c5b828ba"
+    },
+    {
+      "path": "tests/test_v146114_final_visible_continuity_ledger.py",
+      "size_bytes": 5126,
+      "sha256": "2514959fefa50085e6a0dddb04129ed68dea8df9dfdf358182598275faa51aef"
+    },
+    {
+      "path": "tests/test_v146114_runtime_preview_fallback_detection.py",
+      "size_bytes": 660,
+      "sha256": "8ec6432a6eb9c22f728ff5b252914f74edc5ec8e95a367045be1380c3ceb6f02"
+    },
+    {
+      "path": "tests/test_v146114_version_consistency_contract.py",
+      "size_bytes": 2154,
+      "sha256": "0e78aaa862fa9688e352c2c4d2c53d9564f71f34a50265e3efeb17c1d359b9fb"
+    },
+    {
+      "path": "tests/test_v146115_contextual_greeting_fallback_repair.py",
+      "size_bytes": 3764,
+      "sha256": "d6dabe34b062f18227d04acb81e8b2b59dfb29437550623822e3dea7b7a56bcf"
+    },
+    {
+      "path": "tests/test_v1461_nlp_adapter_zip_profiles.py",
+      "size_bytes": 2877,
+      "sha256": "cba2d5b7ef8c56416927238c70815412c06abfe8bd75294b2dc2af095365780e"
+    },
+    {
+      "path": "tests/test_v14621_stale_nlp_route_hotfix.py",
+      "size_bytes": 3680,
+      "sha256": "9c2de7745f07dac6a529743d29ba305f57d63dc1c203900b6b3b4dea710dd245"
+    },
+    {
+      "path": "tests/test_v1462_runtime_start_fallback_truth_contract.py",
+      "size_bytes": 3702,
+      "sha256": "72fcd77a76197662a48f5803f2fb099b65502bbe7a315a7bacb92a9f19bd6bd0"
+    },
+    {
+      "path": "tests/test_v1463_memory_recall_content_hotfix.py",
+      "size_bytes": 3124,
+      "sha256": "58b2ba46cd6311a1bc14d915ea72505a47548af2545443853c86fc006001194e"
+    },
+    {
+      "path": "tests/test_v1464_active_cache_visible_preview.py",
+      "size_bytes": 3694,
+      "sha256": "b2d96e9b58c476a5a7f1e6aea4256b8b659988e3a19482d086f2906d67afa3fa"
+    },
+    {
+      "path": "tests/test_v1465_memory_search_planner.py",
+      "size_bytes": 3583,
+      "sha256": "52cb3dbb0481e2bab1122ec56cef2f7b84908740dc8aa715ddb6b608231db7f9"
+    },
+    {
+      "path": "tests/test_v1466_self_owned_startup_contract.py",
+      "size_bytes": 3885,
+      "sha256": "34810c1f8938f6b7f1d0635abfe7670e45431b010b708235351455feeb0fb27f"
+    },
+    {
+      "path": "tests/test_v1467_free_dialogue_memory_nlp_bridge.py",
+      "size_bytes": 4845,
+      "sha256": "f324c166d52aaa0bad9bd6486fde5cd84a120feeb4a6333af124368557da596c"
+    },
+    {
+      "path": "tests/test_v1468_free_dialogue_parity_memory_search_hotfix.py",
+      "size_bytes": 4613,
+      "sha256": "ecd6d88564b52dfc8a536364f1ada519404c7e55d1e0d31b5cead748677f26f4"
+    },
+    {
+      "path": "tests/test_v14691_neurological_signal_router.py",
+      "size_bytes": 2506,
+      "sha256": "eb20103c9edd1c18ae4d2d10777238d8038b7a7fb79080c8b9e1c62c34c808e9"
+    },
+    {
+      "path": "tests/test_v14692_runtime_self_expression_topic_mismatch.py",
+      "size_bytes": 4523,
+      "sha256": "4a28a70dae2d28159a2248982932c99cd59c77e7952ef293dd7b9cc1b680f9a2"
+    },
+    {
+      "path": "tests/test_v14693_active_marker_cache.py",
+      "size_bytes": 774,
+      "sha256": "2b05e51cd598f4ae458a2670ffa6cf6171c5eb9da816d8ebcbcedd6d44476993"
+    },
+    {
+      "path": "tests/test_v14693_behavioral_runtime_dialogue_repair.py",
+      "size_bytes": 1600,
+      "sha256": "b155f962f5782bc548566a080fc9db6e882a177bbc5284ed18dd29934f1b1b7e"
+    },
+    {
+      "path": "tests/test_v14693_creative_text_preservation.py",
+      "size_bytes": 1104,
+      "sha256": "fcf41fa441f6067ff68866299c74684341af54efdf2f8425ef37f5610e76a828"
+    },
+    {
+      "path": "tests/test_v14693_source_origin_boundary.py",
+      "size_bytes": 1137,
+      "sha256": "33bae1c6c710baa5d653bf122c2d7890fc25d2ac4b2fe2914e0517f7cddf7f7f"
+    },
+    {
+      "path": "tests/test_v14694_dynamic_runtime_provenance_template_origin_neuro_nlp.py",
+      "size_bytes": 5263,
+      "sha256": "2a853ea0ae9674cac1274ca22b3bc1305ef8f4c15acdbc5fae51240af9fa9922"
+    },
+    {
+      "path": "tests/test_v14695_standalone_greeting_route_hotfix.py",
+      "size_bytes": 2661,
+      "sha256": "7f51defbf5e2e02ebba3421c24dde283be0802a8fc03ba68cee70500d064061a"
+    },
+    {
+      "path": "tools/auto_memory_update.py",
+      "size_bytes": 293,
+      "sha256": "f56b0b23919fcc0ba3ea0885dfcebe84da7fa902cd8bf3370acd717a81020c5e"
+    },
+    {
+      "path": "tools/bootstrap_dependencies.py",
+      "size_bytes": 2498,
+      "sha256": "f6c6e34001eb94d37736f6fa288b1b3ecef71ec4f23a91528bd727a14d2abb98"
+    },
+    {
+      "path": "tools/import_chat_html_7z.py",
+      "size_bytes": 5206,
+      "sha256": "ff9dc6052c7e3e794deb6916b956630d0716c67083db1d53defa77b6e48f5a43"
+    },
+    {
+      "path": "tools/memory_repair.py",
+      "size_bytes": 2396,
+      "sha256": "6c3bed7a7679e45ea6664dc7e0578a7402e8863b3b18be9e361537c5f6f1c708"
+    },
+    {
+      "path": "tools/record_version_update.py",
+      "size_bytes": 1899,
+      "sha256": "fe436ab2430c9c1a5902c7a22c0c7bcc86e26dfce67dc779fed527627abc14bd"
+    },
+    {
+      "path": "tools/runtime_memory.py",
+      "size_bytes": 3100,
+      "sha256": "a807c1faa8aa35be15c489dfe14736b6fdb85ce793923e117020f81cfe0ff48e"
+    },
+    {
+      "path": "workspace_runtime/continuity_badge_state.json",
+      "size_bytes": 826,
+      "sha256": "000d0db1b6283299c4863ca458d870f0fe79521b4e3cf66358e4746f4947fccf"
+    },
+    {
+      "path": "workspace_runtime/dictionary_cache.sqlite3",
+      "size_bytes": 40960,
+      "sha256": "4a4ab90853a2e81790bf37a51efad504f1da00560914eb9179e66975c0bfcd05"
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_6_10.sqlite3",
+      "size_bytes": 178577408,
+      "sha256": "525c13ec3936f3f848598e924e91610c27131768a64c1b4c9b025a8c512fecda"
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_6_9_3.sqlite3",
+      "size_bytes": 140627968,
+      "sha256": "aef6f0d609ba93fd26ccff25d92c6018f8fc1a923c98b3e3c27cb8ebabc6f8aa"
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_6_9_4.sqlite3",
+      "size_bytes": 162197504,
+      "sha256": "a15509fae5672ea62fa0f34ea96dd54225501a3e0635e2b5c4eebfc295d362b7"
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_6_9_5.sqlite3",
+      "size_bytes": 171110400,
+      "sha256": "0ef6bce53d5e0a6a83c7dc4975e6b8ba8c4c69274e5af99621c7c8c1167d4429"
+    },
+    {
+      "path": "workspace_runtime/module_responsibility_map_v14_6_9_3.json",
+      "size_bytes": 69745,
+      "sha256": "831fca9bd70e3a8c04145150b91540ea6b1c30c45bcb705c05cee49107ab6e4d"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_10.json",
+      "size_bytes": 738805,
+      "sha256": "6466c03458234904dc7668c79b0d2884fe996992ee3b0a63d23815501011647d"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_2.json",
+      "size_bytes": 590216,
+      "sha256": "7063997fb8ac33850a355bb7b7ca209e62c3c84b3def8b97d99b91f0a6a1581f"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_3.json",
+      "size_bytes": 617186,
+      "sha256": "06daeb11f154ac58148db428608d002038a5fea786b337f55cad3648858e134e"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_4.json",
+      "size_bytes": 694662,
+      "sha256": "a36f3a71e9771b1646237e56d85592e157692a40e5ccabd7117481e943da3fb3"
+    },
+    {
+      "path": "workspace_runtime/runtime_state.json",
+      "size_bytes": 597,
+      "sha256": "62c6d438c4d57b3c651d03648fee6bb037b09f922844bc5ac7f27eac7e53ecaf"
+    },
+    {
+      "path": "workspace_runtime/test_v146101_context.sqlite3",
+      "size_bytes": 6496256,
+      "sha256": "1866b26e751dbb0ef1e0f02d000081a1dbc7f2d0614c7632f69a7961b2df3b94"
+    },
+    {
+      "path": "workspace_runtime/test_v14695_greeting.sqlite3",
+      "size_bytes": 2912256,
+      "sha256": "0b7ba66dd6c6ca5f59de8a1e97fd3c7708a413edbb8886d08db7dd32e65e8cab"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-25/turns.jsonl",
+      "size_bytes": 440039,
+      "sha256": "f52b40cb9151076b81502dd70d5de25e0a5f8d2309a00a52af9b3ce5b262a6d5"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-26/turns.jsonl",
+      "size_bytes": 181499,
+      "sha256": "03827bb5334a28fc228b95608caea68f02cbdf261d466cf402f9cf795034e594"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/LATEST_TURN_CHECKPOINT.json",
+      "size_bytes": 6613,
+      "sha256": "93d6b80140ab7b9a2953e17e580f509af071f25a7a7770dfaba5050f73be0971"
+    }
+  ]
+}

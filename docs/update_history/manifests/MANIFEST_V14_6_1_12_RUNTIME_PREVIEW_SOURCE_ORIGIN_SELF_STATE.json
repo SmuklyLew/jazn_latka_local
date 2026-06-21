@@ -1,0 +1,35 @@
+{
+  "version": "v14.6.2-runtime-preview-source-origin-self-state",
+  "created_at_utc": "2026-05-17T00:17:25Z",
+  "base": "v14.6.1-nlp-adapter-zip-profiles",
+  "purpose": "Dopisać elementy, które można bezpiecznie wprowadzić przed v14.6.2: podgląd runtime, jawne source_origin, self_state_runtime, procedurę dobranoc-jako-troska oraz testy regresji.",
+  "runtime_startup": {
+    "active_folder": "/mnt/data/active_jazn_current_request_146112/v14_6_1",
+    "start_file": "main.py",
+    "raw_memory_archive": "memory/raw/chat.html.7z",
+    "raw_memory_unpacked_for_local_work": true
+  },
+  "added_files": [
+    "latka_jazn/core/source_origin.py",
+    "latka_jazn/core/self_state_runtime.py",
+    "tests/test_v146112_runtime_preview_source_state.py",
+    "docs/UPDATE_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.md",
+    "UPDATE_REPORT_V14_6_1_12.md"
+  ],
+  "modified_files": [
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/tools/package_export.py",
+    "latka_jazn/resources/nlp_provider_registry_v14_6_2.json",
+    "latka_jazn/resources/zip_package_profiles_v14_6_2.json",
+    "tests/test_v1461_nlp_adapter_zip_profiles.py"
+  ],
+  "cli": {
+    "runtime_preview": "python main.py --runtime-preview \"wiadomość\"",
+    "nlp_frame": "python main.py --nlp-frame \"tekst\"",
+    "cognitive_frame": "python main.py --cognitive-frame \"tekst\""
+  },
+  "truth_boundary": "Runtime preview jest diagnostyką i nie oznacza stałego procesu w tle. Pełna lematyzacja polskiego nadal pozostaje warstwą opcjonalnych providerów, nie udawanym stemmingiem."
+}

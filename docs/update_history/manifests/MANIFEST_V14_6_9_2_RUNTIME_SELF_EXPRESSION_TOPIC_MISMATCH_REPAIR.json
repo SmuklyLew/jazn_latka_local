@@ -1,0 +1,17 @@
+{
+  "schema_version": "manifest_delta/v14.6.9.2",
+  "version": "v14.6.9.2-runtime-self-expression-topic-mismatch-repair",
+  "start_file": "main.py",
+  "focus": [
+    "runtime_self_expression_after_silence",
+    "topic_mismatch_guard",
+    "project_startup_index",
+    "nlp_expansion"
+  ],
+  "new_files": [
+    "latka_jazn/core/project_index.py",
+    "latka_jazn/nlp/topic_mismatch_guard.py",
+    "tests/test_v14692_runtime_self_expression_topic_mismatch.py"
+  ],
+  "truth_boundary": "Manifest delta nie zastępuje MANIFEST_CURRENT; pełny manifest jest generowany po testach i przed eksportem."
+}

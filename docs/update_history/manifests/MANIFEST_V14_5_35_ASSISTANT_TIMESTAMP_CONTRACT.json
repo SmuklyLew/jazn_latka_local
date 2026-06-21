@@ -1,0 +1,40 @@
+{
+  "version": "v14.5.35-assistant-timestamp-contract-continuity-hotfix",
+  "type": "full_system_hotfix",
+  "created_for": "Naprawa znikającego timestampu w widocznych wiadomościach Łatki przez most ChatGPT/runtime.",
+  "diagnosis": {
+    "direct_runtime": "ResponseRenderer dodawał timestamp poprawnie w odpowiedziach CLI.",
+    "chatgpt_bridge": "Cognitive-frame miał pole timestamp, ale nie wymuszał przeniesienia go jako widocznego prefixu odpowiedzi ChatGPT.",
+    "root_cause": "Brak jawnego response_format.timestamp_required oraz brak timestamp_rule w ChatGPTCognitiveContract."
+  },
+  "changed_files": [
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "latka_jazn/__init__.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "tests/test_v14535_timestamp_contract.py",
+    "docs/UPDATE_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.md"
+  ],
+  "new_contract": {
+    "response_format_schema": "assistant_response_format/v1",
+    "timestamp_required": true,
+    "visible_prefix_source": "response_format.timestamp_prefix/current_timestamp",
+    "timezone": "Europe/Warsaw"
+  },
+  "tests": {
+    "command": "python -m pytest -q",
+    "result": "85 passed"
+  },
+  "memory_continuity": {
+    "current_sqlite": "workspace_runtime/latka_jazn_v14_5_35.sqlite3",
+    "preserved_previous_sqlite": [
+      "workspace_runtime/previous_versions/latka_jazn_v14_5_33.sqlite3",
+      "workspace_runtime/previous_versions/latka_jazn_v14_5_34.sqlite3"
+    ],
+    "raw_chat_archive": "memory/raw/chat.html.7z",
+    "expanded_chat_html": "memory/raw/chat.html was available during verification; exporter skips it when chat.html.7z exists to avoid duplicating 896 MB."
+  }
+}

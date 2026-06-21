@@ -1,0 +1,11 @@
+{
+  "version": "v14.3.1-no-raw-chat-local-7z-importer",
+  "contains_raw_chat_html": false,
+  "contains_chat_html_7z": false,
+  "local_importer": "tools/import_chat_html_7z.py",
+  "expected_user_archive_location": "memory/raw/chat.html.7z",
+  "final_raw_memory_location_after_import": "memory/raw/chat.html",
+  "entrypoint": "main.py",
+  "run_py_added": false,
+  "reason": "Paczka ma być mała i pobieralna; surowy chat.html użytkownik dodaje lokalnie."
+}

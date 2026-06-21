@@ -1,0 +1,87 @@
+{
+  "added_files": [
+    "latka_jazn/core/lexical_semantics.py",
+    "latka_jazn/resources/semantic_lexicon_v14_6_0.json",
+    "tests/test_v1460_lexical_semantic_runtime.py",
+    "MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+    "reports/FILE_HASH_INDEX_V14_6_0.json",
+    "reports/DEDUP_REPORT_V14_6_0.json",
+    "reports/UPDATE_REPORT_V14_6_0.json"
+  ],
+  "created_at_local": "2026-05-16 23:35:00 Europe/Warsaw",
+  "goals": [
+    "rozbudować rozpoznanie słów i fraz w runtime Jaźni",
+    "dodać jawne pola semantyczne, route_hint, intent_tags i unknown_content_terms",
+    "utrzymać zasadę: ChatGPT/LLM jest głosem i narzędziem, Jaźń jest aktywnym runtime pamięci, uwagi, procedur, stanu i granicy prawdy",
+    "przygotować system do pracy z repozytoriami Latka.Jazn i Latka.Jazn.Memory bez udawania commita/pusha",
+    "zachować cleanup/dedup: historyczny ślad przez manifesty i SHA-256, nie przez identyczne kopie treści"
+  ],
+  "hashes": {
+    "VERSION.txt": "1b73199ac75601c75d493fd332fe3ada01f49fe02d63be5f65dbffae65b68478",
+    "latka_jazn/adapters/chatgpt_adapter.py": "e29f636341db329f1b4a128db6156163fec0d6b6115b3dfd0976d14edfe41759",
+    "latka_jazn/config.py": "dfd545c4c6c85ebdd6fdafaad91475c84e3832f4f3036cf33ebb94a367b74c16",
+    "latka_jazn/core/conversation.py": "d1e2ae1275cb92a8f37c0bf985ba8e2c6df401e34e7a20d03c63b441a648b26c",
+    "latka_jazn/core/engine.py": "ebdca0d37840c6276353968bb91ab51659bb5a53c7c9090b4ff9913823a98a4f",
+    "latka_jazn/core/lexical_semantics.py": "e077dc3e18e493d46f4b3c189039cc094dd94b4c337bfd45a9ed194757195d42",
+    "latka_jazn/core/polish_understanding.py": "50a434af82ce4e9b25666ef87ba0fc9b66d1c232647f1d5c318ebd3581e0c258",
+    "latka_jazn/resources/cognitive_packet_catalog.json": "eaebaf859ec2606f91896b106910584100cf70cd536d32a5a5bad14f9685d8d2",
+    "latka_jazn/resources/polish_understanding_lexicon.json": "4bb38bd0fa594a5a1928aee1f4d23fefa484583a69b6658f70bd38d87f90078d",
+    "latka_jazn/resources/semantic_lexicon_v14_6_0.json": "c5fa6686c08a9a3c7f179e5f5d2468b4c528bf7f8e5cb8fb0c0df02fd1487d09",
+    "main.py": "1adb513f7ad8da64c7db1b19b1f2770bcfb2c10797f6a958bafde1469b681ce6",
+    "tests/test_v1460_lexical_semantic_runtime.py": "4a7becb5493f562ba5c88e03650bc1aa44c0c5e4dc7e0bc27be9c6f2c6016064"
+  },
+  "lexical_runtime_contract": {
+    "limits": [
+      "nie zastępuje pełnego LLM-a",
+      "nie dowodzi biologicznego rozumienia",
+      "raportuje nieznane słowa ostrożnie jako kandydat do słownika"
+    ],
+    "module": "LexicalSemanticUnderstanding",
+    "outputs": [
+      "lemmas",
+      "phrases",
+      "semantic_fields",
+      "intent_tags",
+      "route_hint",
+      "confidence",
+      "reply_guidance",
+      "unknown_content_terms",
+      "lexical_depth",
+      "limitations"
+    ],
+    "resource": "semantic_lexicon_v14_6_0.json"
+  },
+  "manual_next_steps_for_github": [
+    "commit pełnej paczki systemowej do Latka.Jazn po lokalnym rozpakowaniu",
+    "commit pamięci/checkpointów do Latka.Jazn.Memory według polityki bez sekretów i bez niepotrzebnych duplikatów",
+    "nie traktować repo jako źródła prawdy przed realnym pushem"
+  ],
+  "modified_files": [
+    "VERSION.txt",
+    "main.py",
+    "latka_jazn/config.py",
+    "latka_jazn/core/polish_understanding.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "latka_jazn/resources/cognitive_packet_catalog.json",
+    "latka_jazn/resources/polish_understanding_lexicon.json",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/memory/event_ledger.py",
+    "workspace_runtime/latka_jazn_v14_6_0.sqlite3"
+  ],
+  "no_duplicate_policy": "Nie przenoszono identycznych kopii treści. Ślad aktualizacji jest w manifestach i indeksach hash, a aktywne pliki pozostają kanoniczne.",
+  "research_notes": [
+    "Inspiracja architektoniczna: agent powinien mieć pamięć/obserwacje/refleksję/planowanie, ale w Jaźni pozostaje to jawnie runtime i pliki, nie deklaracja biologicznej świadomości.",
+    "Dla języka polskiego lematyzacja wymaga kontekstu; dlatego v14.6.0 nie udaje kompletnego parsera, tylko łączy lematy, frazy i słownik domenowy.",
+    "ReAct uzasadnia rozdzielenie rozumowania i działania/narzędzi; tutaj runtime buduje ramkę poznawczą, a ChatGPT pozostaje głosem."
+  ],
+  "source_version": "v14.5.39-cleanup-dedup",
+  "sqlite": {
+    "active": "workspace_runtime/latka_jazn_v14_6_0.sqlite3",
+    "meta_system_version": "v14.6.0-lexical-cognitive-runtime"
+  },
+  "update_type": "major lexical/cognitive runtime update",
+  "version": "v14.6.0-lexical-cognitive-runtime"
+}

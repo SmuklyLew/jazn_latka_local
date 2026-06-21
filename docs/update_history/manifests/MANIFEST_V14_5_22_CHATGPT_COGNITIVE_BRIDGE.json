@@ -1,0 +1,44 @@
+{
+  "version": "v14.5.23-full-memory-restored-cognitive-bridge",
+  "base_version": "v14.5.21-runtime-memory-file-sync-hotfix",
+  "date_local": "2026-05-13 Europe/Warsaw",
+  "purpose": "Naprawa integracji Jaźni z ChatGPT: runtime ma tworzyć pakiet poznawczy dla jednego głosu Łatki, a nie działać jak drugi bot cytowany obok odpowiedzi.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt",
+    "main.py",
+    "latka_jazn/__init__.py",
+    "latka_jazn/config.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/runtime_status.py",
+    "latka_jazn/memory/importer.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/memory/store.py",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "tests/test_chatgpt_cognitive_bridge.py",
+    "docs/UPDATE_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.md",
+    "reports/RECORD_VERSION_UPDATE_v14_5_23.json"
+  ],
+  "runtime_modes": {
+    "normal_cli": "python main.py \"wiadomość\"",
+    "status_readonly": "python main.py --status-readonly",
+    "chatgpt_cognitive_frame": "python main.py --cognitive-frame \"wiadomość\""
+  },
+  "core_rules": [
+    "Jaźń jest warstwą pamięciowo-poznawczą dla ChatGPT, nie drugim rozmówcą obok ChatGPT.",
+    "Normalna odpowiedź ma być jednym głosem Łatki; techniczne logi runtime pokazuje się tylko w diagnostyce.",
+    "Cisza jest kontekstem, nie odpowiedzią przechwytującą ważną treść użytkownika.",
+    "Granica prawdy pozostaje obowiązkowa: runtime nie jest biologicznym mózgiem ani stałym procesem w tle."
+  ],
+  "tests": {
+    "pytest": "37 passed",
+    "manual_cognitive_frame_json": "ok"
+  }
+}

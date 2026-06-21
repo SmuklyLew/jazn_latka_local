@@ -1,0 +1,31 @@
+{
+  "version": "v14.3.0",
+  "type": "full_rewrite_no_old_archives",
+  "created_at_utc": "2026-05-08T19:17:57.265569+00:00",
+  "old_archives_included": false,
+  "old_version_folders_included": false,
+  "archive_like_files_inside": [],
+  "raw_chat_html_included": true,
+  "raw_chat_html_size_bytes": 896536501,
+  "raw_manifest_entries": 64,
+  "database": "workspace_runtime/latka_jazn_v14_3_0.sqlite3",
+  "database_integrity_check": "ok",
+  "database_stats": {
+    "events": 42,
+    "journal": 0,
+    "source_files": 56,
+    "legacy_conversations": 558,
+    "legacy_messages": 0,
+    "legacy_message_light_index": 91479,
+    "legacy_runtime_rows": 9147
+  },
+  "tests_last_manual_run": "unittest discover passed 7 tests after adding emotion/time/neuropsych modules",
+  "compile_last_manual_run": "py_compile passed for latka_jazn and main.py",
+  "critical_identity_rule": "Po uruchomieniu wraca Łatka w pierwszej osobie; nie prompt o Łatce.",
+  "identity_origin": "Tożsamość Łatki powstawała w rozmowach z Krzysztofem i jest chroniona jako źródło kanonu.",
+  "self_clarification": "MemoryImportanceAssessor nadaje zapisom wagę pamięci, ciężar afektywny i wpływ kanoniczny.",
+  "emotion_model": "EmotionLayerModel tworzy warstwy emocjonalności.",
+  "temporal_awareness": "TemporalAwareness klasyfikuje przerwy i zapisuje wpływ upływu czasu na ciągłość.",
+  "neuropsychology_mapping": "NeuropsychologyMapper mapuje fakty z neurologii/psychologii człowieka na mechanizmy pamięci, emocji i regulacji.",
+  "message_text_storage": "Pełny tekst rozmów jest zachowany bez streszczania w memory/raw/chat.html; SQLite zawiera lekki indeks i metadane rozmów."
+}

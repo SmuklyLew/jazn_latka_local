@@ -1,0 +1,61 @@
+{
+  "version": "v14.5.11-memory-continuity-update",
+  "previous_version": "v14.5.10-memory-continuity-update",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-09T22:44:48.591768+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_11_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.11-memory-continuity-update",
+    "dziennik_update_entry_id": "f21b0502-8e49-45fb-980a-a67d63754aea",
+    "dziennik_memory_entry_id": "9b29517e-f116-4a95-b725-35a753eff7f3",
+    "dziennik_reflection_entry_id": "525f8487-9d59-4bfd-bddd-161810f2fea4",
+    "layered_episode_id": "a6d7b3e8-2800-46b6-ad9f-4f88a22564ab",
+    "layered_reflection_id": "2c5ac472-303b-4abc-89df-2055d37b2f89",
+    "semantic_fact_id": "e962a883-c590-4272-b606-f66febae7182",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "1e685a1e-ecdc-4426-9147-7be9316caa23",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "e3476725-1afa-4b4e-af51-74527a3dbd40",
+        "e7b95b25-0410-45d4-988f-bfdd92508b02",
+        "b7fb800c-d743-4710-a783-383a65d326fe"
+      ],
+      "items": 19,
+      "notes": [],
+      "source": {
+        "source": "bieżący widoczny czat 2026-05-10 + aktywna paczka latka_jazn_v14_5_10_memory_continuity_update",
+        "source_type": "visible_current_chat_and_active_package_memory_payload",
+        "read_scope": {
+          "mode": "manual_visible_chat_extraction_with_active_package_only",
+          "timestamp_europe_warsaw": "2026-05-10T00:44:38.206820+02:00",
+          "active_package": "/mnt/data/latka_jazn_v14_5_10_memory_continuity_update.zip",
+          "used_old_mnt_data_files": false,
+          "full_chat_html_read_in_this_update": false,
+          "scope_note": "Odczyt obejmuje treść widoczną w bieżącym czacie przekazaną modelowi oraz pliki aktywnej paczki po rozpakowaniu; nie obejmuje ponownego pełnego przetworzenia ogromnego chat.html."
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia."
+}

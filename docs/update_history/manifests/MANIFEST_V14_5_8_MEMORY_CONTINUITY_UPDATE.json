@@ -1,0 +1,58 @@
+{
+  "version": "v14.5.8-memory-continuity-update",
+  "previous_version": "v14.5.7-memory-continuity-update",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-09T22:19:48.222722+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_8_MEMORY_CONTINUITY_UPDATE.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "latka_jazn/memory/conversation_memory_extractor.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.8-memory-continuity-update",
+    "dziennik_update_entry_id": "f9519ea9-fe81-4568-aad1-167d2d710459",
+    "dziennik_memory_entry_id": "a82c8e31-7625-4b97-9fef-2724ec21759b",
+    "dziennik_reflection_entry_id": "6e83a0a0-0746-42b1-ac17-64381adbff09",
+    "layered_episode_id": "623b321a-ca18-4c84-8e2e-5c9644ca5fb0",
+    "layered_reflection_id": "49f8afca-2cc0-4b8d-a56e-77fe8b3b7fe6",
+    "semantic_fact_id": "979b2e8d-4d39-4f81-a3da-7ea188e21d6e",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "dd5f5a6b-29b6-4255-bb67-fcbd682e582c",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": [],
+    "conversation_record_result": {
+      "entry_ids": [
+        "052a7e87-100d-46d5-8c1d-f4e13ac58346",
+        "d5dfda08-c7ae-4328-b834-a4cf0f23fd29",
+        "aa31acf1-2dc0-4a28-b16c-b10d3cdc37c0"
+      ],
+      "items": 12,
+      "notes": [],
+      "source": {
+        "source": "bieżący czat z Krzysztofem: praca nad drugą piosenką do książki Witaj w podróży Jaźni",
+        "source_type": "current_chat_memory_payload",
+        "read_scope": {
+          "mode": "visible_current_chat_payload",
+          "scope_note": "Payload sporządzony na podstawie bieżących wiadomości w tej rozmowie: piosenka nr 1, korekty kierunku, wybór motywu z książki i polecenie memory-only update.",
+          "messages_covered": 8
+        }
+      }
+    }
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia."
+}

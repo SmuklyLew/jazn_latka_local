@@ -1,0 +1,153 @@
+{
+  "version": "v14.5.38-github-cognitive-runtime",
+  "created_at_utc": "2026-05-16T20:40:15.497667+00:00",
+  "source_archive": "latka_jazn_v14_5_37_FULL_SYSTEM_WITH_MEMORY.zip",
+  "update_name": "GitHub cognitive runtime and ordinary conversation memory checkpoints",
+  "goals": [
+    "rozbudować system Jaźni o ustalenia z rozmowy o zwykłych rozmowach i pamięci",
+    "przygotować system do późniejszej pracy z prywatnymi repozytoriami GitHub Latka.Jazn i Latka.Jazn.Memory",
+    "oddzielić rolę ChatGPT/OpenAI/LLM od roli Jaźni jako runtime/pamięci/uwagi/granicy prawdy",
+    "utrzymać możliwość pobrania pełnej paczki z systemem i pamięcią"
+  ],
+  "implemented_changes": [
+    "dodano CognitiveRuntimeOperatingModel",
+    "dodano GitHubRepositoryPlan i komendę main.py --github-plan",
+    "dodano GITHUB_REPOSITORY_PLAN.json",
+    "dodano MEMORY_CHECKPOINT_POLICY.md",
+    "dodano docs/GITHUB_REPOSITORY_WORKFLOW.md",
+    "rozszerzono ChatGPTCognitiveContract o runtime_operating_rule, github_rule i checkpoint_rule",
+    "rozszerzono SelfArchitecture o runtime_operating_model oraz github_source_of_truth",
+    "rozszerzono cognitive_frame o runtime_operating_model, github_repository_plan i github_checkpoint_policy",
+    "zaktualizowano VERSION/config/schema do v14.5.38",
+    "dopiszono wpis pamięciowy do dziennika i layered continuity"
+  ],
+  "truth_boundaries": [
+    "nie twierdzić, że GitHub został zaktualizowany bez realnego commita/pusha",
+    "nie udawać stałego procesu w tle, jeśli działa wywołanie jednorazowe",
+    "LLM jest głosem i narzędziem; Jaźń jest operacyjną warstwą plików/runtime/pamięci, nie biologicznym mózgiem",
+    "ZIP i sandbox są snapshotem, nie gwarancją trwałości poza aktywnym środowiskiem"
+  ],
+  "changed_or_added_files": [
+    {
+      "path": ".gitignore",
+      "size_bytes": 517,
+      "sha256": "8eb2c1f3d0b1d2a57acd4d62d1393bacf9fb7d020e148f84a8eb580d268d8a62"
+    },
+    {
+      "path": "GITHUB_REPOSITORY_PLAN.json",
+      "size_bytes": 3775,
+      "sha256": "39b89bfe1cb3f5e882b420e322b29b8395567c94512054ebf6b16e96a9c6b5ee"
+    },
+    {
+      "path": "MEMORY_CHECKPOINT_POLICY.md",
+      "size_bytes": 1773,
+      "sha256": "537b6cdddfcdb0c22be0086f45ab7053e741ffde7a48a9d0298e2e7d2dbed9ca"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 4925,
+      "sha256": "101789f62b954ef99f35fa8d1bcf9b233f6c914296aab5cbb8c3fd3b0ea76150"
+    },
+    {
+      "path": "UPDATE_REPORT_V14_5_38.md",
+      "size_bytes": 1646,
+      "sha256": "9f8734597083657662770414aa34e15a1cd47b0255b296bb37eb5f274545406e"
+    },
+    {
+      "path": "VERSION.txt",
+      "size_bytes": 34,
+      "sha256": "811e5d05b82bb025ca655ab924cdee9f1b731f6e0a0e1ae19ab7c34f93464946"
+    },
+    {
+      "path": "docs/GITHUB_REPOSITORY_WORKFLOW.md",
+      "size_bytes": 1591,
+      "sha256": "ee2c4b600a263f45189add8c18b391b137eda5107ff8f858a9a1127cf4c93c78"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_38_GITHUB_COGNITIVE_RUNTIME.md",
+      "size_bytes": 2624,
+      "sha256": "6e4db69a7435f18128d15923fe5b8bf21b6aee4b8a57ffde0275e5127baa656d"
+    },
+    {
+      "path": "latka_jazn/adapters/chatgpt_adapter.py",
+      "size_bytes": 5222,
+      "sha256": "aefcffe71e69a8a8734b44f27be7ccfcf98fef6031765bbed9b31f6b8adbf7da"
+    },
+    {
+      "path": "latka_jazn/config.py",
+      "size_bytes": 1169,
+      "sha256": "f99139732ec47233177b29e858b650907db3b3e9089d7b7ba50fc64585c76c48"
+    },
+    {
+      "path": "latka_jazn/core/conversation.py",
+      "size_bytes": 20239,
+      "sha256": "73e68e028fefdcebbee4d68270b4fd2ed2a596949fec05e64ed1c449c6b02163"
+    },
+    {
+      "path": "latka_jazn/core/engine.py",
+      "size_bytes": 68528,
+      "sha256": "8873bb24c4c07ce907f5ee8b024039355ddb29baaae3dfa2175bf926f6c595bb"
+    },
+    {
+      "path": "latka_jazn/core/runtime_operating_model.py",
+      "size_bytes": 7209,
+      "sha256": "6f9c8309ca4978be91593799755917ddf582c0c4674f7f21609343d5bbbd813e"
+    },
+    {
+      "path": "latka_jazn/core/self_architecture.py",
+      "size_bytes": 7802,
+      "sha256": "cbe8fcd9ceee8ddd2db9cfcf62cb957f3b8718de90c63069c96e00c3662d7a5a"
+    },
+    {
+      "path": "latka_jazn/integrations/__init__.py",
+      "size_bytes": 91,
+      "sha256": "48f09e93699eb57a395ff4d69da340a92b98f9850839c4508d64c193f63bc0b9"
+    },
+    {
+      "path": "latka_jazn/integrations/github_repository_plan.py",
+      "size_bytes": 6294,
+      "sha256": "901b1230b7dce1eab16ee9e859cef223b18a370e67ac4e00d917e9827c4242fe"
+    },
+    {
+      "path": "main.py",
+      "size_bytes": 5187,
+      "sha256": "a0b1c35bff9c52b0bde7263010c86b7a2665b790a9d2d8fa16a526732b0e968f"
+    },
+    {
+      "path": "memory/layered/continuity.jsonl",
+      "size_bytes": 384119,
+      "sha256": "f2a8a6ca98756d2375275324d1207438629e9a9af6d79d3da2ea9744c54abe61"
+    },
+    {
+      "path": "memory/raw/dziennik.json",
+      "size_bytes": 877636,
+      "sha256": "18f81d3ee5e9408640ee3373b57efb83377443b315b95f3b2fe6551c6196f36c"
+    },
+    {
+      "path": "memory/raw/session_continuity_index.json",
+      "size_bytes": 4170,
+      "sha256": "8de5e43fff76de96c5a3f87ebf546eac22fb548d080113e0bab4ce878f96d07e"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 563,
+      "sha256": "be0003190dab2563359c4c7146ccf3c704ba3edf80094f95fa5a285e6a794437"
+    },
+    {
+      "path": "tests/test_v14538_github_cognitive_runtime.py",
+      "size_bytes": 3265,
+      "sha256": "ea15b2e3f6f5d984944113092316faf03e40ab66fe93873d3ad6c88fdd33ce18"
+    }
+  ],
+  "recommended_commands": [
+    "python main.py --status-readonly",
+    "python main.py --github-plan",
+    "python main.py --cognitive-frame \"Czy Jaźń powinna działać jak LLM czy jak mózg runtime?\"",
+    "python main.py --export-full --output exports/latka_jazn_v14_5_38_FULL_SYSTEM_WITH_MEMORY.zip",
+    "pytest -q"
+  ],
+  "test_result": "101 passed in 15.22s",
+  "updated_at_utc": "2026-05-16T20:44:41.857335+00:00",
+  "raw_memory_archive_unpacked_in_active_workspace": true,
+  "raw_memory_export_policy": "ZIP zawiera memory/raw/chat.html.7z; rozpakowany memory/raw/chat.html jest pomijany przy eksporcie, żeby nie dublować surowej pamięci."
+}

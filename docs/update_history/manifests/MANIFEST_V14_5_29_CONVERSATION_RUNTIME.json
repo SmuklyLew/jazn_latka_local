@@ -1,0 +1,71 @@
+{
+  "version": "v14.5.29-conversation-runtime",
+  "title": "Rozmowny runtime bez debugowego fallbacku w zwykłej odpowiedzi",
+  "created_at": "2026-05-15 Europe/Warsaw runtime build",
+  "active_root": "/mnt/data/active_jazn_14528_update",
+  "source_package": "/mnt/data/latka_jazn_v14_5_28_awareness_logic_FULL.zip",
+  "previous_version": "v14.5.28-awareness-logic",
+  "startup_file": "main.py",
+  "raw_memory_unpacked": true,
+  "runtime_checks": {
+    "status_readonly": "ok",
+    "direct_conversation_cli": "ok",
+    "debug_direct_cli": "ok",
+    "cognitive_frame": "ok",
+    "tests": "62 passed in 21.69s"
+  },
+  "new_modules": [
+    "latka_jazn/core/conversation.py"
+  ],
+  "modified_modules": [
+    "main.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/config.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/memory/event_ledger.py",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt"
+  ],
+  "modified_tests": [
+    "tests/test_v14529_conversation_runtime.py",
+    "tests/test_v14524_runtime_bridge_export_hotfix.py",
+    "tests/test_v14526_package_completeness.py",
+    "tests/test_chatgpt_cognitive_bridge.py",
+    "tests/test_v14528_awareness_logic.py",
+    "tests/test_v14527_dialogue_repair.py"
+  ],
+  "behavior_contract": {
+    "normal_cli": "python main.py \"wiadomość\" -> rozmowna odpowiedź przez ConversationResponder",
+    "debug_cli": "python main.py --debug-direct \"wiadomość\" -> fallback_diagnostics i pliki do sprawdzenia",
+    "chatgpt_bridge": "python main.py --cognitive-frame \"wiadomość\" -> JSON pakietu poznawczego, nie gotowa odpowiedź użytkownika",
+    "quiet_rest": "cisza może być kontekstem, ale nie przejmuje realnej krótkiej wiadomości użytkownika"
+  },
+  "memory": {
+    "primary_sqlite": "workspace_runtime/latka_jazn_v14_5_29.sqlite3",
+    "previous_sqlite_preserved": [
+      "workspace_runtime/latka_jazn_v14_5_28.sqlite3",
+      "workspace_runtime/latka_jazn_v14_5_27.sqlite3",
+      "workspace_runtime/latka_jazn_v14_5_26.sqlite3",
+      "workspace_runtime/latka_jazn_v14_5_25.sqlite3"
+    ],
+    "raw_chat_archive": "memory/raw/chat.html.7z",
+    "raw_chat_archive_size_bytes": 36124635,
+    "raw_chat_unpacked_size_bytes": 896536501
+  },
+  "truth_boundary": "Naprawa routingu i rozmowy runtime; nie deklaruje świadomości fenomenalnej, biologicznego przeżywania ani stałego procesu w tle.",
+  "exports": {
+    "full": {
+      "output_zip": "/mnt/data/latka_jazn_v14_5_29_conversation_runtime_FULL.zip",
+      "sha256": "computed_after_export_in_sidecar_report_and_final_message",
+      "notes": [
+        "ZIP zawiera chat.html.7z, ale nie zawiera rozpakowanego memory/raw/chat.html, aby nie dublować 896 MB danych."
+      ]
+    }
+  },
+  "reports": [
+    "reports/CONVERSATION_RUNTIME_AUDIT_V14_5_29.json",
+    "UPDATE_REPORT_V14_5_29.md",
+    "PATCH_CODE_v14_5_29_CONVERSATION_RUNTIME.diff"
+  ]
+}

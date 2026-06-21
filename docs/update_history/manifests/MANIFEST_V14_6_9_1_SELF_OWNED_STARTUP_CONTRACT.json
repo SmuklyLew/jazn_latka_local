@@ -1,0 +1,188 @@
+{
+  "active_database": "workspace_runtime/latka_jazn_v14_6_9_2.sqlite3",
+  "affected_files": [
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "MANIFEST_CURRENT.json",
+    "MANIFEST_V14_6_9_2_SELF_OWNED_STARTUP_CONTRACT.json",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt",
+    "UPDATE_REPORT_V14_6_9_2.md",
+    "VERSION.txt",
+    "docs/UPDATE_V14_6_9_2_FREE_DIALOGUE_PARITY_MEMORY_SEARCH_HOTFIX.md",
+    "docs/UPDATE_V14_6_9_2_SELF_OWNED_STARTUP_CONTRACT.md",
+    "latka_jazn/config.py",
+    "latka_jazn/core/birth_manifest.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/core/free_dialogue_synthesizer.py",
+    "latka_jazn/core/memory_recall_presenter.py",
+    "latka_jazn/core/memory_search_planner.py",
+    "latka_jazn/core/runtime_chat.py",
+    "latka_jazn/core/startup_contract.py",
+    "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_2.txt",
+    "latka_jazn/resources/memory_search_topics_v14_6_9_2.json",
+    "latka_jazn/resources/startup_contract_v14_6_9_2.json",
+    "latka_jazn/resources/zip_package_profiles_v14_6_9_2.json",
+    "latka_jazn/tools/active_extraction_cache.py",
+    "latka_jazn/tools/package_export.py",
+    "main.py",
+    "pyproject.toml",
+    "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_9_2.json",
+    "tests/test_v1468_free_dialogue_parity_memory_search_hotfix.py",
+    "workspace_runtime/latka_jazn_v14_6_9_2.sqlite3"
+  ],
+  "base_preservation": "Full source tree preserved; files patched in place. Raw chat archive remains archived unless explicitly unpacked by runtime/user need.",
+  "created_at_utc": "2026-05-20T21:10:15.578273+00:00",
+  "dedup_identity_note_v14_6_9_2": "Preserved historical/current-transition manifest; MANIFEST_CURRENT.json is regenerated for v14.6.9.2.",
+  "file_index": {
+    "BOOTSTRAP_JAZN_CURRENT.json": {
+      "sha256": "58bf3a2d364c11a5571d4638e1f064f1125e10e1d5f510ff1739e62db2b21739",
+      "size": 1222
+    },
+    "MANIFEST_CURRENT.json": {
+      "sha256": "6affe1de82ef233ed95c16c687f92b9abce9edd33ba1b8b4d7f30b0640319622",
+      "size": 3493
+    },
+    "MANIFEST_V14_6_9_2_SELF_OWNED_STARTUP_CONTRACT.json": {
+      "sha256": "0d2c6b8e123aad21728bd03d8fba0b8d557c6a041ca1ffcda072a1d50deaef59",
+      "size": 3621
+    },
+    "README.md": {
+      "sha256": "0dee52d2d5c4dfd554e623541ba5a6f005754a03dbf3ed41d0f3df3dff91332d",
+      "size": 1298
+    },
+    "START_CHATGPT_FROM_HERE.txt": {
+      "sha256": "58310270acbe56ebf6e492585e72964cb12066adbd82d42df621f3eea714e885",
+      "size": 1087
+    },
+    "UPDATE_REPORT_V14_6_9_2.md": {
+      "sha256": "ba0b5051bc502b24e93a39eb4f361a26edd8fc3aed89e14eb0182413ed75a98c",
+      "size": 1560
+    },
+    "VERSION.txt": {
+      "sha256": "6a6c07f233af56a08facc5a77ed4c6eba5bc68d17db4d34007ed6d335051eb21",
+      "size": 50
+    },
+    "docs/UPDATE_V14_6_9_2_FREE_DIALOGUE_PARITY_MEMORY_SEARCH_HOTFIX.md": {
+      "sha256": "395a1ed82169562eea911c25ffc5697050458e0652518b9f2991a179f9fed2ba",
+      "size": 4206
+    },
+    "docs/UPDATE_V14_6_9_2_SELF_OWNED_STARTUP_CONTRACT.md": {
+      "sha256": "395a1ed82169562eea911c25ffc5697050458e0652518b9f2991a179f9fed2ba",
+      "size": 4206
+    },
+    "latka_jazn/config.py": {
+      "sha256": "f64f1b5f1222915a3844f27575238bdddd5b5769edd5e0075ecb7a3dfce63041",
+      "size": 1184
+    },
+    "latka_jazn/core/birth_manifest.py": {
+      "sha256": "8939e03bb77375c704e4b053610e4c7e5430396a091ba890272382bb0517733f",
+      "size": 9809
+    },
+    "latka_jazn/core/conversation.py": {
+      "sha256": "3c0ba414b4768c41156cb2074e79bf2baef4bcb6563ec6b6b8fc047f38a639fa",
+      "size": 50047
+    },
+    "latka_jazn/core/engine.py": {
+      "sha256": "206499495891611c09e1f9b8cf9a2698838a301a4a8b599e478d8b7caa293725",
+      "size": 89848
+    },
+    "latka_jazn/core/final_response_contract.py": {
+      "sha256": "11cf9ad72db1795d33f6d97d35208abd79b3bbb39fe2be27e6ecf815d4b0eda1",
+      "size": 6966
+    },
+    "latka_jazn/core/free_dialogue_synthesizer.py": {
+      "sha256": "5336e86ecd4a0ec4f1b5aabe79597c9b55bc8233f6dc5018c415ae11f0eec806",
+      "size": 20136
+    },
+    "latka_jazn/core/memory_recall_presenter.py": {
+      "sha256": "d31cdb0b792c846cb8ad68f741d9be499ecd3c28c1d3b76a322a53a76c95901d",
+      "size": 15273
+    },
+    "latka_jazn/core/memory_search_planner.py": {
+      "sha256": "e08e9cf061c4aef71fa89a3adfed9a9cbdae395eef808d6620b50302091b21b7",
+      "size": 22811
+    },
+    "latka_jazn/core/runtime_chat.py": {
+      "sha256": "36dee1b575308d9dba10543737c9a83a71b943c28c9a4bc0f8edb1150794331d",
+      "size": 3772
+    },
+    "latka_jazn/core/startup_contract.py": {
+      "sha256": "79ef2506bffc666bb69ab3e3274c83499e3da554a0c73e2e2a11e2c4a0151708",
+      "size": 12168
+    },
+    "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_2.txt": {
+      "sha256": "8a5033a5e214e848079146d86f81706f6bdeeb1e28e33efd061e2c6617fb38fe",
+      "size": 1581
+    },
+    "latka_jazn/resources/memory_search_topics_v14_6_9_2.json": {
+      "sha256": "a2fad6423fce9adc1d87184f7d87d9e7206b8b7ea5263b1e8541401c4fb00966",
+      "size": 7721
+    },
+    "latka_jazn/resources/startup_contract_v14_6_9_2.json": {
+      "sha256": "3c041c8d1ed1f2b2e4431aa51ec58f26021a3eaa7bec60b5398b81a237f22f56",
+      "size": 1208
+    },
+    "latka_jazn/resources/zip_package_profiles_v14_6_9_2.json": {
+      "sha256": "bc0e8ed9c35cd128447c3ae80ca2500ffa196f0545cad10c04456581c3b8ad29",
+      "size": 1506
+    },
+    "latka_jazn/tools/active_extraction_cache.py": {
+      "sha256": "5e277673d2aefdd669e0cf99861ef317c958c94a81a4ad941ebaf9121ae99c51",
+      "size": 8713
+    },
+    "latka_jazn/tools/package_export.py": {
+      "sha256": "dd26bd4541f90d804caeac3cfc95d54f90d26279c1b9645bdde6b5a7417d197e",
+      "size": 9622
+    },
+    "main.py": {
+      "sha256": "e9415dc30c05df40fedc0e44eab8e16d1f8c3bd86b1187ad4e219a7f48d738d8",
+      "size": 18011
+    },
+    "pyproject.toml": {
+      "sha256": "433129901609fbbd8c5089e467b0eb99dfd6fb928fa57c7d6ad3e2cd6623f590",
+      "size": 493
+    },
+    "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_9_2.json": {
+      "sha256": "00af552cef2247bee055d152bc7e550e4405a0b92f6a2c101b8186fb095c4997",
+      "size": 467
+    },
+    "tests/test_v1468_free_dialogue_parity_memory_search_hotfix.py": {
+      "sha256": "ecd6d88564b52dfc8a536364f1ada519404c7e55d1e0d31b5cead748677f26f4",
+      "size": 4613
+    },
+    "workspace_runtime/latka_jazn_v14_6_9_2.sqlite3": {
+      "sha256": "3d12d45d9e2e3958b0cbff93b652d1321afa3f44af997accf3f04b9f362a44ed",
+      "size": 97161216
+    }
+  },
+  "implemented": [
+    "RuntimeShell.default calls engine.process_turn",
+    "FreeDialogueSynthesizer handles curiosity/time-memory/technical-diagnosis routes",
+    "MemorySearchPlanner adds lake_symbolic_outing and better Polish variants/stopwords",
+    "Engine gathers a wider candidate pool, filters echoes, then applies visible memory limit",
+    "FinalResponseContract schema updated to v14.6.9.2",
+    "Package exporter skips transient SQLite sidecars without blocking on checkpoint"
+  ],
+  "manifest_role": "current_runtime_package_manifest",
+  "problem_fixed": [
+    "parity between one-shot process_turn and --chat runtime loop",
+    "generic no-source fallback replacing ordinary conversation",
+    "memory echo/runtime-preview hiding older lake/taras memories before visible limit",
+    "time/memory questions routed as update-scope instead of operational understanding",
+    "technical repetition diagnosis hidden by generic architecture wording"
+  ],
+  "regression_expectations": [
+    "Questions about time and memory return time_memory_operational_understanding.",
+    "Curiosity questions return free_curiosity_dialogue instead of generic no-source debug.",
+    "Lake memory questions prefer actual scene memory over runtime-preview echo.",
+    "Persistent --chat uses process_turn, not handle_user_message."
+  ],
+  "schema_version": "jazn_manifest_current/v14.6.9.2",
+  "source_base": "Latka_Jazn_v14_6_7_free_dialogue_memory_nlp_bridge_FULL.zip assembled from part_00..part_06 and SHA256-verified",
+  "start_file": "main.py",
+  "truth_boundary": "This hotfix improves runtime routing and memory use; it does not create biological experience or persistent background life outside one-shot/runtime --chat execution.",
+  "update_name": "free_dialogue_parity_memory_search_hotfix",
+  "version": "v14.6.9.2-runtime-self-expression-topic-mismatch-repair"
+}

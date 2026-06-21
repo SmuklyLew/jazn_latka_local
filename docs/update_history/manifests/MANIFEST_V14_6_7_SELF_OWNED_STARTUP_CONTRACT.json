@@ -1,0 +1,69 @@
+{
+  "active_database": "workspace_runtime/latka_jazn_v14_6_7.sqlite3",
+  "affected_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt",
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "MANIFEST_CURRENT.json",
+    "MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+    "UPDATE_REPORT_V14_6_7.md",
+    "docs/UPDATE_V14_6_7_FREE_DIALOGUE_MEMORY_NLP_BRIDGE.md",
+    "docs/UPDATE_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.md",
+    "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_7.json",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/free_dialogue_synthesizer.py",
+    "latka_jazn/core/polish_understanding.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/nlp/polish_lemmatizer.py",
+    "latka_jazn/core/startup_contract.py",
+    "latka_jazn/tools/active_extraction_cache.py",
+    "latka_jazn/core/memory_search_planner.py",
+    "latka_jazn/core/memory_recall_presenter.py",
+    "latka_jazn/resources/startup_contract_v14_6_7.json",
+    "latka_jazn/resources/chatgpt_startup_loader_v14_6_7.txt",
+    "latka_jazn/resources/memory_search_topics_v14_6_7.json",
+    "latka_jazn/resources/zip_package_profiles_v14_6_7.json",
+    "workspace_runtime/latka_jazn_v14_6_7.sqlite3",
+    "tests/test_v1467_free_dialogue_memory_nlp_bridge.py",
+    "latka_jazn/memory/store.py",
+    "reports/TEST_RESULTS_V14_6_7.json"
+  ],
+  "base_preservation": {
+    "base_version": "v14.6.6-self-owned-startup-contract",
+    "memory_database_preservation": "skopiowano workspace_runtime/latka_jazn_v14_6_6.sqlite3 do workspace_runtime/latka_jazn_v14_6_7.sqlite3 i zaktualizowano meta system_version",
+    "method": "pełna kopia aktywnego rozpakowanego folderu; bez streszczeń i bez pomniejszania pamięci",
+    "raw_memory_rule": "memory/raw/chat.html.7z pozostaje archiwum; rozpakowanie tylko na żądanie/test runtime"
+  },
+  "created_at_utc": "2026-05-19T21:47:13+00:00",
+  "dedup_identity_note_v14_6_9_2": "Zachowany historyczny manifest v14.6.7; nie jest kopią MANIFEST_CURRENT po hotfix v14.6.9.2.",
+  "implemented": [
+    "dodano latka_jazn/core/free_dialogue_synthesizer.py",
+    "podpięto syntezę do ConversationResponder i JaznEngine._memory_search_reply",
+    "rozszerzono PolishUnderstandingEngine o free_dialogue_memory_nlp_bridge_update",
+    "zaktualizowano zasoby v14_6_7 i aktywną bazę SQLite",
+    "dodano testy regresji v14.6.7"
+  ],
+  "manifest_role": "current_active_manifest",
+  "problem_fixed": [
+    "open_question nie zwraca już obligation_instead_of_answer",
+    "pytania o wspomnienia/sceny przechodzą przez FreeDialogueSynthesizer",
+    "echo runtime-preview i techniczny szum są filtrowane z odpowiedzi pamięciowej",
+    "diagnostyka powtarzania runtime ma osobną trasę runtime_template_diagnosis",
+    "bieżąca aktualizacja rozmowa+NLP nie spada do historycznej trasy v14_6_1_nlp_adapter_update"
+  ],
+  "regression_expectations": [
+    "runtime_preview pytania o jezioro/taras nie może zawierać tekstu o obowiązku odpowiedzi",
+    "fallback_classification dla naprawionych tras ma być not_fallback",
+    "polish_understanding.route_hint dla aktualizacji swobodnej rozmowy ma być free_dialogue_memory_nlp_bridge_update"
+  ],
+  "schema_version": "jazn_update_manifest/v14.6.7",
+  "start_file": "main.py",
+  "truth_boundary": "Aktualizacja poprawia routing i syntezę rozmowną; nie udaje biologicznej pamięci ani stałego procesu w tle.",
+  "update_name": "free dialogue memory NLP bridge",
+  "version": "v14.6.7-free-dialogue-memory-nlp-bridge"
+}

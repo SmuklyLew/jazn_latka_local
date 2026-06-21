@@ -1,0 +1,42 @@
+{
+  "version": "v14.5.27-dialogue-repair",
+  "base_version": "v14.5.26-full-completeness-repair",
+  "created_at_utc": "2026-05-14T21:33:26.535730+00:00",
+  "purpose": "Naprawa usterki rozmownej: Łatka ma prowadzić dialog, a nie zamieniać odpowiedzi w ciągłe opisywanie/parafrazowanie wypowiedzi użytkownika.",
+  "changes": [
+    {
+      "file": "latka_jazn/adapters/chatgpt_adapter.py",
+      "change": "Dodano dialogue_rule i anti_paraphrase_rule do kontraktu ChatGPT cognitive bridge."
+    },
+    {
+      "file": "latka_jazn/core/engine.py",
+      "change": "Dodano dialogue_context w cognitive-frame, intent tag dialogue_repair i reply_guidance wymuszające nowy wkład rozmowny po krótkim uznaniu sensu wypowiedzi."
+    },
+    {
+      "file": "latka_jazn/memory/runtime_persistence.py",
+      "change": "Korekta typu dialogue repair jest zapisywana jako reguła proceduralna, nie jako zwykłe wspomnienie."
+    },
+    {
+      "file": "latka_jazn/config.py / VERSION.txt",
+      "change": "Podniesiono wersję do v14.5.27-dialogue-repair oraz wskazano nową bazę latka_jazn_v14_5_27.sqlite3."
+    },
+    {
+      "file": "tests/test_v14527_dialogue_repair.py",
+      "change": "Dodano testy kontraktu anti-paraphrase, cognitive-frame dialogue_context oraz zapisu reguły proceduralnej."
+    }
+  ],
+  "runtime_validation": {
+    "main_py_invoked": true,
+    "cognitive_frame_invoked_after_patch": true,
+    "runtime_version_returned": "v14.5.27-dialogue-repair",
+    "dialogue_context_mode": "balanced_dialogue",
+    "dialogue_repair_detected": true,
+    "persistence_candidate_kind": "reguła_proceduralna"
+  },
+  "test_result": "52 passed",
+  "raw_memory": {
+    "chat_html_7z_present": true,
+    "chat_html_extracted_during_work": true,
+    "zip_export_policy": "Eksport pomija rozpakowany chat.html, jeśli obok istnieje chat.html.7z, aby nie dublować około 896 MB danych."
+  }
+}

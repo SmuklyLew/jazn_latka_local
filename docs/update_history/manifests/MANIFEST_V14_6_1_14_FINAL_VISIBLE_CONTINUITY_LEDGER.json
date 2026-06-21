@@ -1,0 +1,40 @@
+{
+  "version": "v14.6.2-final-visible-continuity-ledger",
+  "date": "2026-05-17",
+  "type": "stabilization_update",
+  "purpose": "Domknięcie etapu cognitive-turn-envelope: finalna widoczna odpowiedź, timestamp, turn_id/trace_id i indeks ciągłości mają być zapisywane razem, bez tworzenia wrażenia dwóch Łatek.",
+  "core_contract": "Jedna tura -> jeden trace -> jeden timestamp -> jedna finalna widoczna odpowiedź -> ledger -> session_continuity_index.",
+  "added_files": [
+    "latka_jazn/core/final_visible_reply_capture.py",
+    "tests/test_v146114_final_visible_continuity_ledger.py",
+    "docs/UPDATE_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.md",
+    "MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json"
+  ],
+  "modified_files": [
+    "VERSION.txt",
+    "latka_jazn/config.py",
+    "main.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/cognitive_turn_envelope.py",
+    "latka_jazn/core/final_response_contract.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "tests/test_v146113_cognitive_turn_envelope.py",
+    "tests/test_v146112_runtime_preview_source_state.py"
+  ],
+  "runtime_changes": [
+    "JaznEngine.process_turn() po zapisie final_response_contract dopisuje final_visible_assistant_reply do ledgera i aktualizuje session_continuity_index powodem final_visible_reply_persisted.",
+    "Dodano JaznEngine.persist_final_visible_reply() dla warstwy ChatGPT, gdy finalny tekst powstaje po wyjściu z runtime.",
+    "Dodano CLI --record-final-reply z parametrami --turn-id, --trace-id, --timestamp-header, --state-emoticon i --final-text-file.",
+    "FinalResponseContract dostał walidację validate_visible_text().",
+    "FinalVisibleReplyCapture naprawia brakujący timestamp przed zapisem i zapisuje hash oryginału oraz finalnego tekstu."
+  ],
+  "truth_boundary": "Aktualizacja nie udaje stałego procesu w tle. Dopisuje dokładne ślady zdarzeń wtedy, gdy runtime lub widoczna warstwa ChatGPT zostaną realnie wywołane.",
+  "tests_added": [
+    "test_process_turn_persists_final_visible_reply_and_continuity_index",
+    "test_external_chatgpt_final_visible_reply_can_be_captured_with_same_trace",
+    "test_capture_object_and_contract_validation_detect_missing_timestamp",
+    "test_cli_record_final_reply_repairs_and_persists"
+  ],
+  "version_consistency_contract": "Bieżące pliki sterujące, README, START, pyproject, config, manifest current, raporty i testy muszą wskazywać spójną wersję v14.6.2; starsze manifesty pozostają wyłącznie historią wersji."
+}

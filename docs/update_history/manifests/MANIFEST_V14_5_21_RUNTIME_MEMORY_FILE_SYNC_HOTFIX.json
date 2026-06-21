@@ -1,0 +1,21 @@
+{
+  "version": "v14.5.21-runtime-memory-file-sync-hotfix",
+  "created_at": "2026-05-12T23:08:00+02:00",
+  "base_version": "v14.5.20-runtime-memory-file-sync",
+  "purpose": "Domknięcie hotfixu po ocenie v14.5.20: py7zr jako jawna zależność, diagnostyka chat.html.7z, zgodna nazwa folderu, odświeżona dokumentacja i test raw_archive.",
+  "changes": [
+    "requirements.txt i pyproject.toml zawierają py7zr>=0.21.0",
+    "katalog paczki ma nazwę latka_jazn_v14_5_21_runtime_memory_file_sync_hotfix",
+    "VERSION.txt, config.py i runtime wskazują v14.5.21",
+    "/status pokazuje stan chat.html, chat.html.7z, py7zr, systemowego 7z i możliwość pełnego importu raw",
+    "MemoryImporter.import_raw_chat_html próbuje najpierw rozpakować chat.html.7z, gdy chat.html nie istnieje",
+    "synchAll próbuje importu, gdy istnieje chat.html albo samo chat.html.7z",
+    "README.md, START_CHATGPT_FROM_HERE.txt i README_CHAT_HTML_7Z_IMPORT.txt zostały zsynchronizowane z v14.5.21",
+    "tests/test_raw_archive_v14521.py pokrywa brak py7zr i diagnostykę archiwum"
+  ],
+  "truth_boundary": "Paczka nadal zawiera chat.html.7z, a nie rozpakowany 896 MB chat.html. Pełna surowa pamięć jest dostępna po instalacji zależności i imporcie.",
+  "tests": {
+    "pytest": "31 passed",
+    "sqlite_integrity": "ok"
+  }
+}

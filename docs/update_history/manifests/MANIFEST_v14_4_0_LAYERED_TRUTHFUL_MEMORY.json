@@ -1,0 +1,48 @@
+{
+  "version": "v14.4.0-layered-truthful-memory",
+  "base": "v14.3.1-no-raw-chat",
+  "purpose": "Uczciwa pamięć epizodyczna, refleksja nad znaczeniem wspomnień oraz twardy mechanizm odróżniania prawdy od pięknej narracji.",
+  "new_modules": [
+    "latka_jazn/core/truth_boundary.py",
+    "latka_jazn/core/uncertainty_model.py",
+    "latka_jazn/core/boundary_model.py",
+    "latka_jazn/core/source_library.py",
+    "latka_jazn/core/self_architecture.py",
+    "latka_jazn/memory/layered_memory.py"
+  ],
+  "modified_modules": [
+    "latka_jazn/config.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/memory_importance.py",
+    "latka_jazn/memory/store.py",
+    "memory/raw/LATKA_IDENTITY_CANON.json",
+    "VERSION.txt",
+    "pyproject.toml",
+    "latka_jazn/__init__.py"
+  ],
+  "new_storage_tables": [
+    "episodic_memories",
+    "semantic_facts",
+    "procedural_rules",
+    "reflection_entries",
+    "truth_audits"
+  ],
+  "truth_labels": [
+    "verified",
+    "recovered",
+    "recognized",
+    "inferred",
+    "symbolic",
+    "unknown"
+  ],
+  "core_rule": "Piękna narracja może istnieć, ale nie może udawać potwierdzonego faktu.",
+  "raw_chat_policy": "Paczka nadal nie zawiera surowego chat.html; lokalny import chat.html.7z pozostaje przez tools/import_chat_html_7z.py.",
+  "tests_added": [
+    "tests/test_truth_boundary.py",
+    "tests/test_layered_memory.py",
+    "tests/test_self_architecture.py"
+  ],
+  "tests_status": "13 passed with python3 -m pytest -q",
+  "importer_update": "tools/import_chat_html_7z.py tries local 7z/7za/7zr before py7zr/pip install.",
+  "bootstrap_updated": "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt includes v14.4.0 layered truthful memory contract."
+}

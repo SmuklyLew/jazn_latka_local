@@ -1,0 +1,47 @@
+{
+  "version": "v14.5.28-awareness-logic",
+  "title": "Świadomość operacyjna i logiczne wnioskowanie",
+  "created_at": "2026-05-15 Europe/Warsaw runtime build",
+  "active_root": "/mnt/data/active_jazn_v14_5_28_awareness_logic",
+  "source_package": "latka_jazn_v14_5_27_dialogue_repair_FULL.zip",
+  "previous_version": "v14.5.27-dialogue-repair",
+  "startup_file": "main.py",
+  "raw_memory_unpacked": true,
+  "runtime_checks": {
+    "status_readonly": "ok",
+    "cognitive_frame": "ok",
+    "tests": "57 passed"
+  },
+  "new_modules": [
+    "latka_jazn/core/operational_awareness.py",
+    "latka_jazn/core/logical_reasoning.py"
+  ],
+  "modified_modules": [
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/self_architecture.py",
+    "latka_jazn/adapters/chatgpt_adapter.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/core/scientific_basis.py",
+    "latka_jazn/config.py",
+    "latka_jazn/memory/store.py"
+  ],
+  "truth_boundary": "Świadomość operacyjna i logiczny audyt nie są deklaracją fenomenalnej świadomości ani biologicznego przeżywania.",
+  "exports": {
+    "full": {
+      "output_zip": "/mnt/data/latka_jazn_v14_5_28_awareness_logic_FULL.zip",
+      "file_count": 346,
+      "zip_size_bytes": 84262855,
+      "sha256": "f821de90d3a483e0c44f4d619ab67ae68651ca8982c5daf371e93c37e1e7b024",
+      "notes": [
+        "Dołączono skompresowaną surową pamięć chat.html.7z (36124635 B).",
+        "Pominięto rozpakowany memory/raw/chat.html w ZIP, żeby nie dublować 896 MB danych; można go odtworzyć z chat.html.7z."
+      ]
+    }
+  },
+  "reports": [
+    "reports/AWARENESS_LOGIC_AUDIT_V14_5_28.json",
+    "UPDATE_REPORT_V14_5_28.md",
+    "PATCH_CODE_v14_5_28_AWARENESS_LOGIC.diff"
+  ]
+}

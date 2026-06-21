@@ -1,0 +1,102 @@
+{
+  "schema_version": "jazn_manifest_current/v14.6.3",
+  "version": "v14.6.3-memory-recall-runtime-contract",
+  "created_at_utc": "2026-05-18T20:46:50.084825+00:00",
+  "start_file": "main.py",
+  "update_name": "memory recall content runtime contract",
+  "active_database": "workspace_runtime/latka_jazn_v14_6_3.sqlite3",
+  "fact_based_design_basis": [
+    {
+      "source": "AWS RAG explanation",
+      "use": "retrieval should add external/current knowledge to the generation context, not only report counts"
+    },
+    {
+      "source": "LangChain memory documentation",
+      "use": "long-term memory should distinguish semantic, episodic and procedural memory"
+    },
+    {
+      "source": "Google Research on sufficient context",
+      "use": "retrieval needs enough relevant context for answerability; weak/insufficient context must be signalled"
+    }
+  ],
+  "ten_point_update_plan": [
+    {
+      "point": 1,
+      "name": "Memory Recall Content Contract",
+      "implemented": "Dodano MemoryRecallPresenter i schema memory_recall_content/v14.6.3; liczby są diagnostyką, a odpowiedź pamięciowa dostaje realne fragmenty."
+    },
+    {
+      "point": 2,
+      "name": "Cognitive-frame payload",
+      "implemented": "_memory_context_for_chatgpt dodaje memory_recall_payload z items, source, timestamp, type, confidence, grounding, relevance i meaning_assessment."
+    },
+    {
+      "point": 3,
+      "name": "ConversationResponder route",
+      "implemented": "compose(...) przyjmuje memory_context i używa trasy memory_recall_content dla pytań o tropy/wspomnienia/przypomnienie."
+    },
+    {
+      "point": 4,
+      "name": "Direct runtime path",
+      "implemented": "_memory_search_reply używa tego samego renderera treści; CLI i runtime-preview nie rozjeżdżają się."
+    },
+    {
+      "point": 5,
+      "name": "Relevance and meaning assessment",
+      "implemented": "Każdy trop ma relevance_score, relevance_label oraz opis, czy jest użytecznym wspomnieniem, tropem częściowym czy słabym dopasowaniem."
+    },
+    {
+      "point": 6,
+      "name": "Sensitive legacy guard",
+      "implemented": "Przypadkowo znalezione dane PESEL/telefon/e-mail/treści kliniczne są maskowane lub ukrywane w excerptach."
+    },
+    {
+      "point": 7,
+      "name": "No count-only memory fallback",
+      "implemented": "Ogólny counts_note nie wypisuje już samych episodes=/legacy_messages=; przy pytaniu o pamięć wymusza treść."
+    },
+    {
+      "point": 8,
+      "name": "Version and database continuity",
+      "implemented": "Zmieniono VERSION/config/pyproject oraz utworzono aktywną kopię SQLite latka_jazn_v14_6_3.sqlite3 z meta system_version."
+    },
+    {
+      "point": 9,
+      "name": "Regression tests",
+      "implemented": "Dodano tests/test_v1463_memory_recall_content_hotfix.py i zaktualizowano oczekiwania wersji w testach bieżącej paczki."
+    },
+    {
+      "point": 10,
+      "name": "Docs, manifests, export readiness",
+      "implemented": "Dodano manifest, raport aktualizacji, audit wersji oraz pełny ZIP z systemem i pamięcią."
+    }
+  ],
+  "affected_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "latka_jazn/config.py",
+    "latka_jazn/core/engine.py",
+    "latka_jazn/core/conversation.py",
+    "latka_jazn/core/memory_recall_presenter.py",
+    "latka_jazn/memory/store.py",
+    "latka_jazn/memory/version_update_recorder.py",
+    "latka_jazn/memory/event_ledger.py",
+    "latka_jazn/memory/runtime_persistence.py",
+    "main.py",
+    "README.md",
+    "START_CHATGPT_FROM_HERE.txt",
+    "BOOTSTRAP_JAZN_CURRENT.json",
+    "MANIFEST_CURRENT.json",
+    "MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+    "docs/UPDATE_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.md",
+    "UPDATE_REPORT_V14_6_3.md",
+    "reports/CURRENT_VERSION_CONSISTENCY_AUDIT_V14_6_3.json",
+    "tests/test_v1463_memory_recall_content_hotfix.py",
+    "workspace_runtime/latka_jazn_v14_6_3.sqlite3"
+  ],
+  "runtime_truth_boundary": "Runtime CLI jest realnym jednorazowym wywołaniem programu, chyba że lokalnie uruchomiono python main.py --chat jako pętlę rozmowy. Aktualizacja nie deklaruje biologicznej świadomości ani stałego procesu w tle.",
+  "memory_truth_boundary": "Pamięć oznacza odczyt i interpretację zapisów. Każdy trop musi mieć źródło, typ, czas/unknown, pewność/unknown i ocenę trafności; słabe dopasowanie nie może udawać przeżycia.",
+  "privacy_boundary": "Legacy memory może zawierać prywatne dane; excerpty pamięciowe maskują PESEL, e-mail, telefon i ukrywają przypadkowe treści medyczne/kliniczne.",
+  "current_alias": true,
+  "archival_manifest": "MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json"
+}

@@ -1,0 +1,49 @@
+{
+  "version": "v14.5.3-auto-memory-update-command",
+  "previous_version": "v14.5.2-memory-continuity-update",
+  "type": "auto_memory_update_command_hotfix",
+  "created_at_utc": "2026-05-09T21:38:36.678548+00:00",
+  "purpose": "Umożliwić prostą, krótką komendę do aktualizacji pamięciowej i automatycznego podbijania wersji.",
+  "changed_files": [
+    "VERSION.txt",
+    "pyproject.toml",
+    "README.md",
+    "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+    "docs/UPDATE_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.md",
+    "memory/update_protocol.json",
+    "memory/raw/dziennik.json",
+    "memory/layered/episodic.jsonl",
+    "memory/layered/reflections.jsonl",
+    "memory/layered/semantic.jsonl",
+    "memory/layered/procedural.jsonl",
+    "memory/layered/truth_audits.jsonl",
+    "latka_jazn/memory/auto_memory_update.py",
+    "tools/auto_memory_update.py"
+  ],
+  "recorder_result": {
+    "version": "v14.5.3-auto-memory-update-command",
+    "dziennik_update_entry_id": "80dd5f99-61a3-4e74-8f82-01631ff2eb9c",
+    "dziennik_memory_entry_id": "874d685f-4f73-463a-a2a2-8b5d1ed451b1",
+    "dziennik_reflection_entry_id": "9eaa4a81-cdcf-4476-90ef-d0328f9d623d",
+    "layered_episode_id": "d21f159d-e2db-41c6-bfbd-f8f7c76bd99e",
+    "layered_reflection_id": "e17c32eb-7342-45f1-92de-1634cb251de9",
+    "semantic_fact_id": "6e6eda83-b9d2-43e7-89fd-8116e5a7b449",
+    "procedural_rule_id": "759e6545-0dcb-4340-aedd-26e1eb282683",
+    "sql_journal_id": "c3cbd0d1-2868-45aa-9cbb-5b08b43fc3e9",
+    "appended_update": true,
+    "appended_memory": true,
+    "appended_reflection": true,
+    "notes": []
+  },
+  "truth_boundary": "Pamięć może być systemowa, symboliczna, relacyjna lub odzyskana; nie wolno jej automatycznie traktować jako biologicznego przeżycia.",
+  "tests": [
+    "pytest: 21 passed",
+    "compileall: OK",
+    "zip testzip: OK (wykonane po spakowaniu)"
+  ],
+  "verification": {
+    "pytest": "21 passed",
+    "compileall": "OK",
+    "zip_testzip": "OK after packaging"
+  }
+}
