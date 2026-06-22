@@ -52,7 +52,7 @@ def test_cognitive_frame_exposes_canonical_source_context(tmp_path) -> None:
         engine.shutdown()
 
     ctx = frame["canonical_source_context"]
-    assert ctx["source_mode"] == "source_controlled_canon_plus_optional_private_override"
+    assert ctx["source_mode"] == "source_controlled_python_canon_first_plus_optional_local_private_extension"
     assert ctx["identity_canon"]["identity_name"] == "Łatka"
     assert "cannot be the only identity source" in ctx["source_contract"]["private_memory_role"]
 

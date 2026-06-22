@@ -17,6 +17,7 @@ def _configure_stdio_utf8() -> None:
 
 
 from latka_jazn.config import JaznConfig
+from latka_jazn.core.canon.extraction import run_canon_extraction
 from latka_jazn.core.clock import WarsawClock
 from latka_jazn.core.emotions import AffectiveState
 from latka_jazn.core.identity_guard import IdentityPerspectiveGuard
@@ -122,6 +123,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--truth-boundary-check", action="store_true", dest="truth_boundary_check", help="Pokaż granicę prawdy runtime/ChatGPT/pliki/pamięć/ZIP.")
     parser.add_argument("--fallback-audit", action="store_true", dest="fallback_audit", help="Zbadaj tekst jako możliwy fallback, stale route albo kontrakt zamiast odpowiedzi.")
     parser.add_argument("--memory-plan", action="store_true", dest="memory_plan", help="Pokaż plan wyszukiwania pamięci i trafienia plików kanonicznych bez generowania zwykłej odpowiedzi.")
+    parser.add_argument("--canon-extraction-preview", action="store_true", dest="canon_extraction_preview", help="Przeskanuj prywatne źródła kanonu i zapisz raport/progress bez modyfikowania kanonu runtime.")
+    parser.add_argument("--canon-extraction-write-private", action="store_true", dest="canon_extraction_write_private", help="Przeskanuj źródła i zapisz lokalny prywatny moduł .py canon extension; nie commitować bez recenzji.")
+    parser.add_argument("--canon-extraction-progress", type=Path, default=None, help="Opcjonalna ścieżka JSONL postępu dla ekstrakcji kanonu.")
+    parser.add_argument("--canon-extraction-verbose-progress", action="store_true", dest="canon_extraction_verbose_progress", help="Wypisuj zdarzenia progress JSONL na stdout oprócz zapisu do pliku.")
+    parser.add_argument("--canon-extra-source", action="append", default=[], help="Dodatkowe źródło kanonu względne wobec root; można powtórzyć.")
     parser.add_argument("--memory-normalization-status", action="store_true", dest="memory_normalization_status", help="Pokaż status niedestrukcyjnego sidecara normalizacji pamięci.")
     parser.add_argument("--normalize-memory-sidecar", action="store_true", dest="normalize_memory_sidecar", help="Zbuduj lub zaktualizuj sidecar normalizacji pamięci bez modyfikowania aktywnej bazy rozmów.")
     parser.add_argument("--wake-state-status", action="store_true", dest="wake_state_status", help="Pokaż status aktywnego wake_state z sidecara pamięci.")
@@ -259,6 +265,23 @@ def main(argv: list[str] | None = None) -> int:
             "conversation_archive_status": archive_store.status(check_integrity=False).to_dict(),
             "conversation_archive_hits": archive_store.search(archive_query, limit=8, include_snippets=False).to_dict(),
             "truth_boundary": "To jest plan, kanoniczne trafienia plików i metadane trafień conversation_archive/FTS, nie pełna rozmowna odpowiedź ani dowód pełnego odczytu całej pamięci.",
+        }
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.canon_extraction_preview or ns.canon_extraction_write_private:
+        cfg = config or JaznConfig()
+        mode = "write-private-extension" if ns.canon_extraction_write_private else "preview"
+        payload = {
+            "runtime_version": cfg.version,
+            "canon_extraction": run_canon_extraction(
+                cfg.root,
+                mode=mode,
+                progress_path=ns.canon_extraction_progress,
+                verbose_progress=ns.canon_extraction_verbose_progress,
+                extra_sources=ns.canon_extra_source or [],
+            ),
+            "truth_boundary": "Raport i progress są artefaktem patcha. Właściwy runtime canon jest w plikach .py; lokalny prywatny extension .py wymaga recenzji przed commitem.",
         }
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0

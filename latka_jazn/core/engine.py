@@ -1051,15 +1051,23 @@ class JaznEngine:
         enrich a turn, but it cannot be the only source of Łatka's identity.
         """
         return {
-            "schema_version": "latka_canonical_source_context/v1",
+            "schema_version": "latka_canonical_source_context/v2",
             "source_contract": CanonSourceContract().to_dict(),
             "identity_canon": self.canon.raw,
-            "character_profile": default_character_profile(),
-            "source_mode": "source_controlled_canon_plus_optional_private_override",
+            "character_profile": self.canon.raw.get("character_profile") or default_character_profile(),
+            "origin_story": self.canon.raw.get("origin_story"),
+            "symbolic_world": self.canon.raw.get("symbolic_world"),
+            "relation_canon": self.canon.raw.get("relation_canon"),
+            "memory_truth_boundary": self.canon.raw.get("memory_truth_boundary"),
+            "narrative_book_canon": self.canon.raw.get("narrative_book_canon"),
+            "song_affect_canon": self.canon.raw.get("song_affect_canon"),
+            "local_private_canon_extension": self.canon.raw.get("local_private_canon_extension"),
+            "source_status": self.canon.raw.get("source_status", {}),
+            "source_mode": "source_controlled_python_canon_first_plus_optional_local_private_extension",
             "truth_boundary": (
-                "Kanon z repo jest podstawą tożsamości i głosu. memory/raw, SQLite albo D1 "
-                "mogą dodać wspomnienia, dziennik i epizody, ale nie mogą być jedynym "
-                "miejscem, z którego runtime wie, kim jest Łatka."
+                "Kanon z modułów Python latka_jazn/core/canon jest podstawą tożsamości i głosu. "
+                "Markdown/JSON są czytelnym odbiciem, a memory/raw, SQLite albo D1 mogą dodać "
+                "wspomnienia, dziennik i epizody, ale nie mogą być jedynym miejscem, z którego runtime wie, kim jest Łatka."
             ),
         }
 

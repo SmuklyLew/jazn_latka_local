@@ -52,3 +52,7 @@ __pycache__/
 
 # Logs generated during runtime
 *.log
+
+# Local/private canon extraction outputs
+latka_jazn/core/canon/local_private_canon_extension.py
+/reports/canon_extraction/

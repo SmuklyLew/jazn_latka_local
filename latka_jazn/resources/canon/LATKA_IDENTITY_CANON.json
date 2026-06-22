@@ -1,7 +1,7 @@
 {
   "schema_version": "latka_identity_canon/v1",
-  "version": "v14.8.3.1.3-canon-source-refactor",
-  "canon_version": "v14.8.3.1.3-source-controlled-canon",
+  "version": "v14.8.3.4-python-canon-consolidation",
+  "canon_version": "v14.8.3.4-python-canon-first",
   "identity_name": "Łatka",
   "display_name": "Łatka",
   "grammar_gender": "feminine",
@@ -60,7 +60,15 @@
     "latka_jazn/resources/canon/LATKA_SYMBOLIC_WORLD.md",
     "latka_jazn/core/canon/core_canon.py",
     "latka_jazn/core/canon/identity_canon.py",
-    "latka_jazn/core/canon/character_profile.py"
+    "latka_jazn/core/canon/character_profile.py",
+    "latka_jazn/core/canon/origin_story.py",
+    "latka_jazn/core/canon/symbolic_world.py",
+    "latka_jazn/core/canon/relation_canon.py",
+    "latka_jazn/core/canon/memory_truth_boundary.py",
+    "latka_jazn/core/canon/narrative_book_canon.py",
+    "latka_jazn/core/canon/song_affect_canon.py",
+    "latka_jazn/core/canon/canon_registry.py",
+    "latka_jazn/core/canon/extraction.py"
   ],
   "private_memory_sources": [
     "memory/raw/LATKA_IDENTITY_CANON.json",
@@ -72,5 +80,6 @@
     "memory/raw/extra_data.json",
     "memory/sqlite/"
   ],
-  "source_control_policy": "Ten plik jest twardym, source-controlled kanonem repo. Prywatne memory/raw i bazy mogą go rozszerzać, ale nie mogą być jedynym źródłem tożsamości Łatki."
+  "source_control_policy": "Twardy kanon runtime jest w modułach Python latka_jazn/core/canon/*.py. Ten JSON jest source-controlled human-readable mirror/overlay; prywatne memory/raw i bazy mogą rozszerzać pamięć, ale nie mogą być jedynym źródłem tożsamości Łatki.",
+  "source_mode": "source_controlled_python_canon_first"
 }

@@ -5,8 +5,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any, TypeVar
 
-from .core_canon import LATKA_CORE_CANON
-from .identity_canon import default_identity_canon_data
+from .canon_registry import load_python_canon_registry
 from .schema import IdentityCanon, RecognitionProtocol
 from .validator import validate_identity_canon_data
 
@@ -50,13 +49,15 @@ def _private_override_path_for(path: Path) -> Path | None:
 
 
 def load_identity_canon_data(path: Path, *, include_private_override: bool = True) -> dict[str, Any]:
-    """Load source-controlled canon, then optional private memory override.
+    """Load Python-first source-controlled canon, then optional JSON/private overlays.
 
     The runtime must know who Łatka is even when memory/raw or SQLite are absent.
-    Therefore the built-in source-controlled canon is always the base.
+    Therefore the full Python canon registry is always the base. JSON/Markdown
+    resources mirror or extend it for humans, and memory/raw is only an optional
+    private override/import layer.
     """
-    data = _deep_merge(LATKA_CORE_CANON, default_identity_canon_data())
     source_path = Path(path)
+    data = load_python_canon_registry(root=_infer_project_root(source_path.resolve()), include_local_private_extension=include_private_override)
     if source_path.exists():
         data = _deep_merge(data, _read_json(source_path))
     if include_private_override:
