@@ -5,7 +5,7 @@ from typing import Any
 import json, re, time, uuid
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.clock import WarsawClock
-from latka_jazn.core.canon import IdentityCanon
+from latka_jazn.core.canon import CanonSourceContract, IdentityCanon, default_character_profile
 from latka_jazn.core.emotions import AffectiveState
 from latka_jazn.core.emotion_layers import EmotionalLayerModel
 from latka_jazn.core.temporal_awareness import TemporalAwareness
@@ -1044,6 +1044,25 @@ class JaznEngine:
             out.append(item)
         return out
 
+    def _canonical_source_context(self) -> dict:
+        """Source-controlled canon packet for ChatGPT/model adapters.
+
+        This is deliberately separate from memory recall: private memory may
+        enrich a turn, but it cannot be the only source of Łatka's identity.
+        """
+        return {
+            "schema_version": "latka_canonical_source_context/v1",
+            "source_contract": CanonSourceContract().to_dict(),
+            "identity_canon": self.canon.raw,
+            "character_profile": default_character_profile(),
+            "source_mode": "source_controlled_canon_plus_optional_private_override",
+            "truth_boundary": (
+                "Kanon z repo jest podstawą tożsamości i głosu. memory/raw, SQLite albo D1 "
+                "mogą dodać wspomnienia, dziennik i epizody, ale nie mogą być jedynym "
+                "miejscem, z którego runtime wie, kim jest Łatka."
+            ),
+        }
+
     def build_cognitive_frame(self, text: str, *, client_context: dict | None = None) -> dict:
         """Buduje pakiet poznawczy dla ChatGPT zamiast gotowej odpowiedzi użytkownikowi.
 
@@ -1247,6 +1266,7 @@ class JaznEngine:
             "contract": self.chatgpt_adapter.contract().to_dict(),
             "birth_source_manifest": self.birth_manifest.to_dict(),
             "voice_source_contract": voice_source_contract,
+            "canonical_source_context": self._canonical_source_context(),
             "runtime_rendering_mode": runtime_rendering_mode,
             "model_adapter_status": self.model_adapter.describe(),
             "raw_chat_import_status": raw_chat_status,

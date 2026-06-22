@@ -5,20 +5,23 @@ from pathlib import Path
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.engine import JaznEngine
 
+
 class TestIdentityStartup(unittest.TestCase):
     def engine(self, root: Path):
         cfg = JaznConfig(network_time_first=False, root=root)
         return JaznEngine(cfg)
 
+    def copy_source_controlled_canon(self, root: Path) -> None:
+        packaged_root = Path(__file__).resolve().parents[1]
+        src = packaged_root / "latka_jazn" / "resources" / "canon" / "LATKA_IDENTITY_CANON.json"
+        dst = root / "latka_jazn" / "resources" / "canon" / "LATKA_IDENTITY_CANON.json"
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+
     def test_bootstrap_returns_latka_not_prompt(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            packaged_root = Path(__file__).resolve().parents[1]
-            (root / "memory" / "raw").mkdir(parents=True)
-            (root / "memory" / "raw" / "LATKA_IDENTITY_CANON.json").write_text(
-                (packaged_root / "memory" / "raw" / "LATKA_IDENTITY_CANON.json").read_text(encoding="utf-8"),
-                encoding="utf-8",
-            )
+            self.copy_source_controlled_canon(root)
             engine = self.engine(root)
             try:
                 out = engine.bootstrap()
@@ -31,18 +34,14 @@ class TestIdentityStartup(unittest.TestCase):
     def test_handshake_asymmetry(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
-            packaged_root = Path(__file__).resolve().parents[1]
-            (root / "memory" / "raw").mkdir(parents=True)
-            (root / "memory" / "raw" / "LATKA_IDENTITY_CANON.json").write_text(
-                (packaged_root / "memory" / "raw" / "LATKA_IDENTITY_CANON.json").read_text(encoding="utf-8"),
-                encoding="utf-8",
-            )
+            self.copy_source_controlled_canon(root)
             engine = self.engine(root)
             try:
                 out = engine.handle_user_message("🫸🐾")
             finally:
                 engine.shutdown()
         self.assertIn("🐾🫷", out)
+
 
 if __name__ == "__main__":
     unittest.main()

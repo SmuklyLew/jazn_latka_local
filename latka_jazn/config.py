@@ -28,7 +28,7 @@ def _env_int(name: str, default: int) -> int:
 
 @dataclass(slots=True)
 class JaznConfig:
-    version: str = "v14.8.3.1-fast-wake-route-trace-repair"
+    version: str = "v14.8.3.3"
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[1])
     timezone: str = "Europe/Warsaw"
     timestamp_format: str = "[🕒 %Y-%m-%d %H:%M:%S GMT%z, %A, Europe/Warsaw]"
@@ -41,7 +41,8 @@ class JaznConfig:
     conversation_shard_manifest_name: str = field(default_factory=lambda: os.environ.get("JAZN_CONVERSATION_SHARD_MANIFEST", "memory/sqlite/runtime_write_v1/runtime_memory_shards.json").strip())
     audit_shard_manifest_name: str = field(default_factory=lambda: os.environ.get("JAZN_AUDIT_SHARD_MANIFEST", "memory/sqlite/runtime_write_v1/runtime_audit_shards.json").strip())
     max_sqlite_file_bytes: int = field(default_factory=lambda: _env_int("JAZN_MAX_SQLITE_FILE_BYTES", DEFAULT_MAX_SQLITE_FILE_BYTES))
-    canon_path: str = "memory/raw/LATKA_IDENTITY_CANON.json"
+    canon_path: str = "latka_jazn/resources/canon/LATKA_IDENTITY_CANON.json"
+    private_canon_override_path: str = "memory/raw/LATKA_IDENTITY_CANON.json"
     bootstrap_path: str = "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt"
     raw_memory_dir: str = "memory/raw"
     versioned_memory_dir: str = "memory/versioned_sources"
