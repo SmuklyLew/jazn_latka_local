@@ -61,6 +61,54 @@ def default_canon_registry_data() -> dict[str, Any]:
     return registry
 
 
+def canon_source_summary(*, root: Path | None = None) -> dict[str, Any]:
+    """Return a non-executing summary of canon source layers.
+
+    This function deliberately does not import or execute
+    ``local_private_canon_extension.py``. It only reports whether the local
+    private extension path exists, so a diagnostic question cannot run private
+    local code just to answer where the canon comes from.
+    """
+    registry = default_canon_registry_data()
+    local_extension_path = None
+    local_extension_exists = False
+    if root is not None:
+        local_extension_path = root / "latka_jazn" / "core" / "canon" / LOCAL_PRIVATE_EXTENSION_NAME
+        local_extension_exists = local_extension_path.exists()
+
+    return {
+        "schema_version": "latka_canon_source_summary/v1",
+        "source_mode": registry.get("source_mode"),
+        "python_canon_modules": list(registry.get("python_canon_modules", [])),
+        "public_resource_mirrors": [
+            "latka_jazn/resources/canon/LATKA_IDENTITY_CANON.json",
+            "latka_jazn/resources/canon/LATKA_CHARACTER_PROFILE.md",
+            "latka_jazn/resources/canon/LATKA_ORIGIN_STORY.md",
+            "latka_jazn/resources/canon/LATKA_SYMBOLIC_WORLD.md",
+        ],
+        "private_candidate_sources": [
+            "memory/raw/LATKA_IDENTITY_CANON.json",
+            "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt",
+            "memory/raw/data.txt",
+            "memory/raw/dziennik.json",
+            "memory/raw/episodic_memory.json",
+            "memory/raw/episodic_memory.jsonl",
+            "memory/raw/analizy_utworow.json",
+            "memory/raw/extra_data.json",
+        ],
+        "extraction_reports": [
+            "reports/canon_extraction/canon_candidates.jsonl",
+            "reports/canon_extraction/canon_extraction_report.json",
+            "reports/canon_extraction/canon_extraction_report.md",
+            "reports/canon_extraction/progress.jsonl",
+        ],
+        "local_private_extension_name": LOCAL_PRIVATE_EXTENSION_NAME,
+        "local_private_extension_path": str(local_extension_path) if local_extension_path else None,
+        "local_private_extension_exists": bool(local_extension_exists),
+        "truth_boundary": "Source-controlled Python canon is authoritative. Private memory/raw and canon_extraction reports are review candidates, not automatic canon. local_private_canon_extension.py is local/private and must not be committed without review.",
+    }
+
+
 def _load_local_private_extension(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None

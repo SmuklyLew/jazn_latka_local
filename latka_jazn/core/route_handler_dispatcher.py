@@ -9,6 +9,7 @@ from latka_jazn.core.handlers.external_research_handler import ExternalResearchH
 from latka_jazn.core.handlers.ordinary_dialogue_handler import OrdinaryDialogueHandler
 from latka_jazn.core.handlers.runtime_diagnostic_handler import RuntimeDiagnosticHandler
 from latka_jazn.core.handlers.runtime_source_handler import RuntimeSourceHandler
+from latka_jazn.core.handlers.canon_source_handler import CanonSourceHandler
 from latka_jazn.core.handlers.memory_audit_handler import MemoryAuditHandler
 from latka_jazn.core.handlers.system_update_handler import SystemUpdateHandler
 from latka_jazn.core.handlers.creative_text_handler import CreativeTextHandler
@@ -42,7 +43,7 @@ class RouteDispatchReport:
 class RouteHandlerDispatcher:
     def __init__(self) -> None:
         handlers=[
-            DictionaryLookupHandler(), ExternalResearchHandler(), OrdinaryDialogueHandler(), RuntimeDiagnosticHandler(), RuntimeSourceHandler(), MemoryAuditHandler(), SystemUpdateHandler(),
+            DictionaryLookupHandler(), ExternalResearchHandler(), OrdinaryDialogueHandler(), RuntimeDiagnosticHandler(), RuntimeSourceHandler(), CanonSourceHandler(), MemoryAuditHandler(), SystemUpdateHandler(),
             CreativeTextHandler(), FileOperationHandler(), IdentityBoundaryHandler(), IdentityRuntimeTruthHandler(), PracticalAdviceHandler(), SelfStateHandler(), RuntimeActivationStatusHandler(), RuntimeChatModeHandler(), SystemRepairPlanHandler(), CapabilityStatusHandler(), SelfMemoryRecallHandler(), DirectLatkaVoiceHandler(), IdentityMemoryExistenceHandler(), FallbackHandler(),
         ]
         self.handlers_by_name={h.name:h for h in handlers}

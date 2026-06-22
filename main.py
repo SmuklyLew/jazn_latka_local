@@ -85,6 +85,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lexical-frame", action="store_true", dest="lexical_frame", help="Pokaż raport leksykalny aktualnej Jaźni: polskie rozumienie + rozszerzona semantyka słów i fraz.")
     parser.add_argument("--nlp-frame", action="store_true", dest="nlp_frame", help="Pokaż raport NLP aktualnej Jaźni: tokeny, lemma_candidates, selected_lemma, confidence i provider.")
     parser.add_argument("--runtime-preview", action="store_true", dest="runtime_preview", help="Pokaż dokładną odpowiedź runtime oraz pakiet cognitive-frame/source_origin/self_state dla mostu ChatGPT.")
+    parser.add_argument("--runtime-preview-output", type=Path, default=None, help="Opcjonalna ścieżka pliku JSON dla --runtime-preview; pełny payload trafia do pliku, a stdout zwraca krótkie potwierdzenie.")
     parser.add_argument("--active-cache-status", action="store_true", dest="active_cache_status", help="Pokaż status aktywnego rozpakowanego folderu i decyzję, czy trzeba ponownie rozpakować ZIP.")
     parser.add_argument("--project-startup-index", action="store_true", dest="project_startup_index", help="Zbuduj i pokaż mapę plików oraz modułów/funkcji Jaźni przy rozruchu.")
     parser.add_argument("--topic-guard", action="store_true", dest="topic_guard", help="Pokaż raport TopicMismatchGuard dla wiadomości bez generowania pełnej odpowiedzi.")
@@ -192,6 +193,12 @@ def main(argv: list[str] | None = None) -> int:
     _configure_stdio_utf8()
     parser = _build_parser()
     ns = parser.parse_args(argv)
+    if ns.runtime_preview_output is None and "--runtime-preview-output" in ns.message:
+        idx = ns.message.index("--runtime-preview-output")
+        if idx + 1 >= len(ns.message):
+            parser.error("--runtime-preview-output requires a path")
+        ns.runtime_preview_output = Path(ns.message[idx + 1])
+        ns.message = ns.message[:idx] + ns.message[idx + 2:]
     root = ns.root.resolve() if ns.root else None
 
     if ns.status_readonly:
@@ -638,7 +645,18 @@ def main(argv: list[str] | None = None) -> int:
                 "free_dialogue_memory_nlp_bridge": build_startup_summary(engine.config),
                 "truth_boundary": "Ten tryb wykonuje jedno zintegrowane wywołanie process_turn: runtime buduje cognitive-frame i z tej samej koperty tworzy finalną odpowiedź. Nie udaje stałego procesu w tle.",
             }
-            print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+            payload_json = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
+            if ns.runtime_preview_output:
+                ns.runtime_preview_output.parent.mkdir(parents=True, exist_ok=True)
+                ns.runtime_preview_output.write_text(payload_json + "\n", encoding="utf-8")
+                print(json.dumps({
+                    "runtime_version": engine.config.version,
+                    "runtime_preview_output": str(ns.runtime_preview_output),
+                    "written": True,
+                    "truth_boundary": "Pełny runtime-preview zapisano do pliku; stdout zawiera tylko krótkie potwierdzenie.",
+                }, ensure_ascii=False, indent=2, sort_keys=True))
+            else:
+                print(payload_json)
         finally:
             engine.shutdown()
         return 0

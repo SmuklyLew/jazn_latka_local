@@ -18,7 +18,7 @@ class RouteRegistry:
     """Priorytetowy rejestr tras: DialogueIntentClassifier > RouteRegistry > LegacyMarkers."""
     PRIORITIES = {
         "runtime_behavior_diagnostic_request": 100, "runtime_exact_quote_request": 99,
-        "runtime_source_question": 98, "runtime_activation_status_question": 97, "runtime_chat_mode_request": 97, "system_repair_plan_request": 96, "logic_reasoning_audit_request": 96, "memory_grounding_status_question": 96, "system_diagnostic_question": 96,
+        "runtime_source_question": 98, "canon_source_question": 98, "runtime_activation_status_question": 97, "runtime_chat_mode_request": 97, "system_repair_plan_request": 96, "logic_reasoning_audit_request": 96, "memory_grounding_status_question": 96, "system_diagnostic_question": 96,
         "system_update_execution_request": 95, "system_update_manifest_request": 94,
         "creative_text_formatting": 92, "creative_text_analysis": 90,
         "creative_source_preservation_request": 89, "identity_boundary_question": 88, "identity_direct_question": 88,
@@ -39,6 +39,7 @@ class RouteRegistry:
     }
     HANDLERS = {
         "runtime_source_question": ("runtime_source", "RuntimeSourceHandler"),
+        "canon_source_question": ("canon_source", "CanonSourceHandler"),
         "runtime_exact_quote_request": ("runtime_source", "RuntimeSourceHandler"),
         "runtime_activation_status_question": ("runtime_activation_status", "RuntimeActivationStatusHandler"),
         "runtime_restart_request": ("runtime_restart_request", "RuntimeActivationStatusHandler"),
@@ -123,6 +124,8 @@ class RouteRegistry:
             return ["problem", "target_files", "code_steps", "tests", "acceptance_criteria"]
         if intent in {"memory_grounding_status_question"}:
             return ["memory_status", "source_or_index_status", "truth_boundary"]
+        if intent == "canon_source_question":
+            return ["python_canon_modules", "public_resource_boundary", "private_memory_candidate_boundary", "local_private_extension_boundary", "review_required_boundary", "source_origin_detail"]
         if intent in {"runtime_source_question", "runtime_exact_quote_request"}:
             return ["exact_runtime_text", "template_origin", "runtime_vs_visible_boundary", "source_origin_detail"]
         if intent in {"runtime_behavior_diagnostic_request", "system_diagnostic_question"}:

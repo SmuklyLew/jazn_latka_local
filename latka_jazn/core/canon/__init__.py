@@ -11,7 +11,7 @@ from .relation_canon import LATKA_RELATION_CANON, default_relation_canon
 from .memory_truth_boundary import LATKA_MEMORY_TRUTH_BOUNDARY, default_memory_truth_boundary
 from .narrative_book_canon import LATKA_NARRATIVE_BOOK_CANON, default_narrative_book_canon
 from .song_affect_canon import LATKA_SONG_AFFECT_CANON, default_song_affect_canon
-from .canon_registry import default_canon_registry_data, load_python_canon_registry
+from .canon_registry import canon_source_summary, default_canon_registry_data, load_python_canon_registry
 
 __all__ = [
     "IdentityCanon",
@@ -35,6 +35,7 @@ __all__ = [
     "default_narrative_book_canon",
     "LATKA_SONG_AFFECT_CANON",
     "default_song_affect_canon",
+    "canon_source_summary",
     "default_canon_registry_data",
     "load_python_canon_registry",
 ]
