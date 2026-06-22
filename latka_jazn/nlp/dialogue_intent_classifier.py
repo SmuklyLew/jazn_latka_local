@@ -47,7 +47,24 @@ class DialogueIntentClassifier:
     UPDATE_TERMS = ("aktualizac", "aktualiz", "hotfix", "patch", "wersj", "wersję", "paczka", "zip", "do pobrania", "manifest", "pełną listę", "pelna liste", "dokładny plan", "dokladny plan")
     DIAGNOSTIC_TERMS = ("co jeszcze", "co jest", "źle", "zle", "nie działa", "nie dziala", "słabe", "slabe", "pominięte", "pominiete", "błąd", "blad", "sprawdź gdzie", "sprawdz gdzie", "jak to zmienić", "jak to zmienic")
     CREATIVE_TERMS = ("tekst piosenki", "lyrics", "zwrotka", "refren", "bridge", "chorus", "verse", "musicgenerator", "generatora muzyki", "prompt", "wiersz", "utwór", "utwor", "fragment książki", "fragment ksiazki", "post na x")
-    SOURCE_TERMS = ("dlaczego zmieni", "czemu zmieni", "przez jaźń", "przez jazn", "przez chatgpt", "skąd", "skad", "źródło", "zrodlo", "co runtime odpowiedział", "co runtime odpowiedzial", "co dokładnie odpowiedział runtime", "co dokladnie odpowiedzial runtime", "cytat runtime", "tylko tyle jaźń", "tylko tyle jazn", "skąd bierzesz myśli", "skad bierzesz mysli")
+    SOURCE_TERMS = ("dlaczego zmieni", "czemu zmieni", "przez jaźń", "przez jazn", "przez chatgpt", "skąd", "skad", "źródło", "zrodlo", "co runtime odpowiedział", "co runtime odpowiedzial", "co runtime dokładnie odpowiedział", "co runtime dokladnie odpowiedzial", "co dokładnie odpowiedział runtime", "co dokladnie odpowiedzial runtime", "cytat runtime", "tylko tyle jaźń", "tylko tyle jazn", "skąd bierzesz myśli", "skad bierzesz mysli")
+    CANON_SOURCE_TERMS = (
+        "skąd bierzesz kanon", "skad bierzesz kanon",
+        "skąd jest kanon", "skad jest kanon",
+        "źródła kanonu", "zrodla kanonu",
+        "źródło kanonu", "zrodlo kanonu",
+        "z czego składa się kanon", "z czego sklada sie kanon",
+        "z czego jest kanon",
+        "jakie są źródła kanonu", "jakie sa zrodla kanonu",
+        "czy kanon jest z pamięci", "czy kanon jest z pamieci",
+        "czy kanon jest z json",
+        "czy kanon jest z pythona", "czy kanon jest z python",
+        "kanon z pamięci", "kanon z pamieci",
+        "kanon z json", "kanon z python",
+        "python canon",
+        "source-controlled canon", "source controlled canon",
+        "local_private_canon_extension", "local private canon extension",
+    )
     STATE_TERMS = ("jak samopoczucie", "jak się czujesz", "jak sie czujesz", "co u ciebie", "a ty", "a tobie", "a jak tobie", "a jak ci", "a ci", "a u ciebie", "a jak u ciebie", "u ciebie", "tobie?", "co u niej", "co u ciebie po")
     HEALTH_CONCERN_TERMS = ("jesteś chora", "jestes chora", "czy jesteś chora", "czy jestes chora")
     SELF_PLAN_TERMS = (
@@ -223,6 +240,23 @@ class DialogueIntentClassifier:
         has_audit=self._has_any(norm,folded,self.AUDIT_TERMS); has_practical=self._has_any(norm,folded,self.PRACTICAL_TERMS); has_auto=self._has_any(norm,folded,self.AUTOMOTIVE_TERMS); has_dict=self._has_any(norm,folded,self.DICTIONARY_TERMS); has_research=self._has_any(norm,folded,self.RESEARCH_TERMS) or has_weather_research
         has_runtime_status=self._has_any(norm,folded,self.RUNTIME_STATUS_TERMS)
         has_chat_mode=self._has_any(norm,folded,self.RUNTIME_CHAT_MODE_TERMS)
+        has_canon_source=self._has_any(norm,folded,self.CANON_SOURCE_TERMS) or (
+            speech.speech_act == "question"
+            and "kanon" in folded
+            and any(marker in folded for marker in (
+                "skad", "skąd",
+                "zrodlo", "źródło",
+                "zrodla", "źródła",
+                "z czego",
+                "python", "py",
+                "json",
+                "pamiec", "pamięć",
+                "plik", "pliku",
+                "modul", "moduł",
+                "resource", "resources",
+                "private", "extension",
+            ))
+        )
         has_runtime_restart=self._has_any(norm,folded,self.RUNTIME_RESTART_TERMS)
         has_repair_plan=self._has_any(norm,folded,self.SYSTEM_REPAIR_PLAN_TERMS)
         has_repetition_bug=self._has_any(norm,folded,self.REPETITION_BUG_TERMS)
@@ -321,8 +355,10 @@ class DialogueIntentClassifier:
             return self._report(norm,folded,'standalone_greeting',['samodzielne powitanie bez treści pracy ani starego kontekstu'],0.86,speech_act=speech.speech_act,question_object='greeting')
         if has_sleep_close and not has_update:
             return self._report(norm,folded,'sleep_closure_statement',['użytkownik zamyka rozmowę i idzie spać; odpowiedź ma być ciepła, bez diagnostyki i bez starego kontekstu'],0.86,speech_act=speech.speech_act,question_object='sleep_close')
+        if has_canon_source:
+            return self._report(norm,folded,'canon_source_question',['pytanie o źródła kanonu Łatki; nie mylić ze źródłem aktualnej odpowiedzi runtime'],0.93,src=True,speech_act=speech.speech_act,question_object='canon_source')
         if has_source and not source_negative_context:
-            intent='runtime_exact_quote_request' if any(x in folded for x in ('co runtime odpowiedzial','co dokladnie odpowiedzial runtime','cytat runtime','tylko tyle jazn','tylko tyle jaźń')) else 'runtime_source_question'
+            intent='runtime_exact_quote_request' if any(x in folded for x in ('co runtime odpowiedzial','co runtime dokladnie odpowiedzial','co dokladnie odpowiedzial runtime','cytat runtime','tylko tyle jazn','tylko tyle jaźń')) else 'runtime_source_question'
             return self._report(norm,folded,intent,[*evidence,'pytanie o źródło/decyzję/cytat runtime'],0.88,src=True,speech_act=speech.speech_act,question_object=qobj.object_type)
         if has_identity:
             boundary_terms = (

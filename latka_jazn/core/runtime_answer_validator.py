@@ -33,7 +33,7 @@ class RuntimeAnswerValidator:
         "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone",
     )
     SPECIFIC_INTENTS = {
-        "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "runtime_exact_quote_request",
+        "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",
         "system_update_execution_request", "system_update_manifest_request", "update_manifest_request", "creative_text_formatting", "creative_text_analysis",
         "practical_repair_advice", "automotive_warning_light_question", "dictionary_lookup_request", "language_question", "external_research_request",
         "identity_boundary_question", "identity_direct_question", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check_after_update", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question",
@@ -56,6 +56,7 @@ class RuntimeAnswerValidator:
         "capability_status_question",
         "internet_access_question",
         "runtime_health_check_after_update",
+        "canon_source_question",
         "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question",
     }
 
@@ -85,6 +86,11 @@ class RuntimeAnswerValidator:
         "runtime_vs_visible_boundary": ("chatgpt", "interpretac", "widoczn", "warstwa"),
         "source_origin_detail": ("źród", "zrod", "source"),
         "source_origin": ("źród", "zrod", "source-origin", "source_origin", "handler"),
+        "python_canon_modules": ("latka_jazn/core/canon", "core_canon.py", "identity_canon.py", "canon_registry.py", "python canon"),
+        "public_resource_boundary": ("resources/canon", "publiczn", "audyt", "json", "md"),
+        "private_memory_candidate_boundary": ("memory/raw", "kandydat", "pamię", "pamie", "nie automatycz"),
+        "local_private_extension_boundary": ("local_private_canon_extension.py", "lokaln", "private", "prywatn", "nie commit"),
+        "review_required_boundary": ("recenz", "nie stają się", "nie staja sie", "nie automatycz", "source-safe"),
         "module_or_file": (".py", "plik", "moduł", "modul"),
         "problem": ("problem", "błąd", "blad", "źle", "zle"),
         "change_plan": ("zmieni", "napraw", "popraw", "dodać", "dodac"),
@@ -166,6 +172,13 @@ class RuntimeAnswerValidator:
             return "potrafię" in low and "--chat" in low and ("nie potrafię" in low or "nie udaj" in low)
         if detected_intent == "self_memory_recall_request":
             return any(x in low for x in ("z pamięci", "szukałam w pamięci", "trop", "liczniki diagnostyczne")) and "trzy rdzenie" not in low
+        if detected_intent == "canon_source_question":
+            return (
+                "latka_jazn/core/canon" in low
+                and "local_private_canon_extension.py" in low
+                and "memory/raw" in low
+                and ("nie stają się" in low or "nie staja sie" in low or "recenz" in low)
+            )
         return False
 
     def _missing_components(self, body: str, components: list[str]) -> list[str]:
@@ -258,7 +271,7 @@ class RuntimeAnswerValidator:
             return self._bad('stale_workday_detail_injected_without_current_grounding', repair_route, repair_body, detected_intent, route, checks, ['current_user_text_grounding'])
         if detected_intent in {'system_diagnostic_question','runtime_behavior_diagnostic_request'} and route_low in {'correction_acknowledged','positive_continuation'}:
             return self._bad('diagnostic_routed_as_feedback', 'system_diagnostic_repair', 'To jest pytanie diagnostyczne, nie sama korekta ani pozytywna kontynuacja. Wymagana odpowiedź: moduł/plik, problem, zmiana, test regresji, source-origin.', detected_intent, route, checks, entry.required_components)
-        if (not stale_route_question) and detected_intent not in {'system_diagnostic_question','runtime_behavior_diagnostic_request','system_update_execution_request','runtime_source_question','runtime_exact_quote_request'} and self._contains_legacy_route_marker(low_body) and not self._contains_legacy_route_marker(user_low):
+        if (not stale_route_question) and detected_intent not in {'system_diagnostic_question','runtime_behavior_diagnostic_request','system_update_execution_request','runtime_source_question','canon_source_question','runtime_exact_quote_request'} and self._contains_legacy_route_marker(low_body) and not self._contains_legacy_route_marker(user_low):
             checks.append('legacy_route_marker_without_current_grounding')
             repair_body = 'Nie będę przenosiła starej trasy ani historycznej wersji do bieżącej odpowiedzi bez aktualnego uziemienia w wiadomości użytkownika albo jawnie użytym poprzednim kontekście.'
             return self._bad('legacy_route_marker_without_current_grounding', 'stale_route_context_guard_repair', repair_body, detected_intent, route, checks, ['current_user_text_grounding'])

@@ -1555,7 +1555,7 @@ class JaznEngine:
         decision_dict["handler_missing_components"] = handler_result.missing_components
         if handler_result.source_origin_detail:
             decision_dict["source_origin_detail"] = handler_result.source_origin_detail
-        dedicated_preserve_handlers = {"CapabilityStatusHandler", "SelfMemoryRecallHandler", "DirectLatkaVoiceHandler", "IdentityMemoryExistenceHandler"}
+        dedicated_preserve_handlers = {"CapabilityStatusHandler", "SelfMemoryRecallHandler", "DirectLatkaVoiceHandler", "IdentityMemoryExistenceHandler", "CanonSourceHandler"}
         handler_required = list(handler_result.required_components or route_entry.required_components or [])
         handler_satisfied = set(handler_result.satisfied_components or [])
         handler_missing = list(handler_result.missing_components or [])
