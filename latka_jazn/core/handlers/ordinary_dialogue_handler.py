@@ -18,6 +18,10 @@ class OrdinaryDialogueHandler:
         'nie znalazłam teraz w aktywnej pamięci', 'nie znalazlam teraz w aktywnej pamieci',
         'szukałam po hasłach', 'szukalam po haslach', 'potrzebuję konkretnego śladu', 'potrzebuje konkretnego sladu',
         'żeby nie zrobić fałszywego wspomnienia', 'zeby nie zrobic falszywego wspomnienia',
+        'cognitive-frame', 'cognitive frame', 'techniczny fallback', 'technicznego fallbacku',
+        'domyślnym routingu', 'domyslnym routingu', 'usterka do naprawy',
+        'normalna ścieżka odpowiada rozmownie', 'normalna sciezka odpowiada rozmownie',
+        'bezpośredni runtime nie może kończyć', 'bezposredni runtime nie moze konczyc',
     )
 
     def _is_bad_passthrough(self, body: str, intent: str) -> bool:

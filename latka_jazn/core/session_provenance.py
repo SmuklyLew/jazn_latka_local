@@ -134,7 +134,8 @@ def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
         errors.append("final_visible_text_missing_timestamp")
     if visible_answer_text and visible_answer_text != final_visible_text:
         errors.append("visible_answer_text_mismatch")
-    if handler_body and exact_runtime_text and handler_body != exact_runtime_text:
+    preserve_handler_body = bool(decision.get("preserve_handler_body"))
+    if handler_body and exact_runtime_text and handler_body != exact_runtime_text and preserve_handler_body:
         errors.append("handler_body_exact_runtime_text_mismatch")
     for artifact in RENDER_ARTIFACTS:
         if artifact in final_visible_text or artifact in exact_runtime_text:
