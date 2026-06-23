@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from typing import Any
 
-SCHEMA_VERSION = "affect_mixer/v14.6.2"
+SCHEMA_VERSION = "affect_mixer/v14.8.3.4.093"
 
 
 @dataclass(slots=True)
@@ -46,7 +46,10 @@ class AffectMixer:
                 operational_need="najpierw ulga i bezpieczeństwo użytkownika; technika bez presji",
                 confidence=0.84,
             )
-        if "correction" in tags or "architecture" in tags or "runtime" in low or "timestamp" in low:
+        technical_timestamp_context = "timestamp" in low and any(
+            x in low for x in ("runtime", "technicz", "diagnost", "raport", "padł", "padl", "nie działa", "nie dziala", "napraw", "patch")
+        )
+        if "correction" in tags or "architecture" in tags or "runtime" in low or technical_timestamp_context:
             return AffectMix(
                 primary="skupienie naprawcze i czujność spójności",
                 state_emoticon="🛠️",
