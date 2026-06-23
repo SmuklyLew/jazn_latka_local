@@ -1,10 +1,10 @@
 {
-  "schema_version": "manifest_runtime_mutable/v14.8.3",
-  "version": "v14.8.3-route-status-marker-routing-hotfix",
-  "runtime_version": "v14.8.3-route-status-marker-routing-hotfix",
-  "package_version": "v14.8.3-route-status-marker-routing-hotfix",
-  "generated_at_utc": "2026-06-20T01:38:34.769741+00:00",
-  "updated_at_utc": "2026-06-20T01:48:19.539111+00:00",
+  "schema_version": "manifest_runtime_mutable/v14.8.3.4.092",
+  "version": "v14.8.3.4.092",
+  "runtime_version": "v14.8.3.4.092",
+  "package_version": "v14.8.3.4.092",
+  "generated_at_utc": "2026-06-23T19:05:40.576472+00:00",
+  "updated_at_utc": "2026-06-23T19:05:40.576472+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,52 +13,863 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 59,
+  "file_count": 163,
   "mutable_patterns": [
-    "workspace_runtime/**/*.sqlite3",
-    "workspace_runtime/**/*.json",
-    "workspace_runtime/**/*.jsonl",
-    "workspace_runtime/**/*.log",
-    "workspace_runtime/logs/**",
-    "workspace_runtime/turn_checkpoints/**",
-    "workspace_runtime/codex_session_bridge/**",
-    "memory/sqlite/**/*.sqlite3",
-    "memory/sqlite/**/*.json",
+    "workspace_runtime/**",
+    "memory/raw/**",
+    "memory/raw_chats/**",
+    "memory/processed_chats/**",
     "memory/layered/*.jsonl",
-    "memory/raw/session_continuity_index.json",
-    "memory/raw/runtime_event_errors.jsonl",
-    "memory/raw/runtime_events.jsonl",
-    "memory/raw/conversation_turns.jsonl",
-    "memory/raw/dziennik.json"
+    "memory/sqlite/**/*.sqlite3",
+    "memory/sqlite/**/*_shards.json",
+    "memory/sqlite/sqlite_audit_report.json"
   ],
-  "truth_boundary": "This manifest contains runtime-mutable files only. Their hashes are deferred; size and path describe the generation snapshot.",
-  "files": [
+  "deferred_hash_file_count": 163,
+  "deferred_hash_files": [
     {
       "path": "memory/layered/affective.jsonl",
-      "size_bytes": 374283,
-      "sha256": "",
-      "mutable_runtime": true,
-      "classification": "mutable_runtime",
-      "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 437928
     },
     {
       "path": "memory/layered/continuity.jsonl",
-      "size_bytes": 12983625,
-      "sha256": "",
-      "mutable_runtime": true,
-      "classification": "mutable_runtime",
-      "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 15191089
     },
     {
       "path": "memory/layered/episodic.jsonl",
-      "size_bytes": 778837,
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 847400
+    },
+    {
+      "path": "memory/layered/procedural.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 183939
+    },
+    {
+      "path": "memory/layered/reflections.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 852546
+    },
+    {
+      "path": "memory/layered/requirements_ledger_v14_6_9_3.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 7885
+    },
+    {
+      "path": "memory/layered/semantic.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 574505
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 995440
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_3.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 20636
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_4.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 181276
+    },
+    {
+      "path": "memory/layered/truth_audits.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 1703091
+    },
+    {
+      "path": "memory/layered/turn_logic_audit.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 460349
+    },
+    {
+      "path": "memory/processed_chats/chat_context_active_paths.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 926869092
+    },
+    {
+      "path": "memory/processed_chats/chat_context_full_graph.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 1063061528
+    },
+    {
+      "path": "memory/processed_chats/chat_context_README.md",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 2413
+    },
+    {
+      "path": "memory/processed_chats/chat_context_sources.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 214506
+    },
+    {
+      "path": "memory/raw/analizy_utworow.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 209985
+    },
+    {
+      "path": "memory/raw/CHAT_HTML_IMPORT_MANIFEST.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 739
+    },
+    {
+      "path": "memory/raw/conversation_turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3194945
+    },
+    {
+      "path": "memory/raw/data.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 87299
+    },
+    {
+      "path": "memory/raw/dziennik.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 1649112
+    },
+    {
+      "path": "memory/raw/episodic_memory.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 402452
+    },
+    {
+      "path": "memory/raw/extra_data.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 18578
+    },
+    {
+      "path": "memory/raw/IDENTITY_ORIGIN_CONTRACT.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 215
+    },
+    {
+      "path": "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 4824
+    },
+    {
+      "path": "memory/raw/LATKA_IDENTITY_CANON.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 5025
+    },
+    {
+      "path": "memory/raw/plugins_jazn.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 2639
+    },
+    {
+      "path": "memory/raw/runtime_event_errors.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "memory/raw/runtime_events.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 500992581
+    },
+    {
+      "path": "memory/raw/session_continuity_index.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 13490
+    },
+    {
+      "path": "memory/raw_chats/MOVED_TO_BACKUP.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 311
+    },
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 208564224
+    },
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 126214144
+    },
+    {
+      "path": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 94126080
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 798720
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit_shards.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 884
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 248426496
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 895
+    },
+    {
+      "path": "memory/sqlite/sharded_v1/latka_memory_raw_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 187027456
+    },
+    {
+      "path": "memory/sqlite/sqlite_audit_report.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 275360
+    },
+    {
+      "path": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 116953088
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/logs/bridge.stderr.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/logs/bridge.stdout.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/083d4c73ef29402b91572c6e674d7143.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 176
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/1221865c397c4b78bae5b93ad533d299.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 166
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/1a162762e40941fdbd26abf2fee5aa6b.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 226
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/1d37f7f46fb249d8a4260642641fa32f.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 229
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/37da490522534af6bafd34e1679ab4c4.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 256
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/3826552f58cc423683dc1ac0f89b5902.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 189
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/3961773027b4435784204d627546962e.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 232
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/4f1eab4825bf4ccfa67a1ea6c9e24748.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 166
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/590be906d51f40389e10c6b709534fe8.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 226
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/661222c247d943b696b0d469dffad5d6.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 267
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/709b90bcdf10452e8dd7905546ec7975.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 232
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/7366efc2684c4df695740dbd40ee86a4.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 213
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/8b8e5e9c90d44aee9b592848e4ac29df.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 185
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/d37c72a8be054d878fddd7abd1bf4fb1.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 166
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/d46265f7d9a84a7083334ffa2c81e5b5.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 189
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/dc988e79027749be92f73de2205cc399.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 203
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/f63e5aa36c244911bc8b319f629b4477.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 180
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/f6ad44e78d11408d8eaf169bb466e9a9.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 203
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/1a162762e40941fdbd26abf2fee5aa6b.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 12397
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/3826552f58cc423683dc1ac0f89b5902.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 18991
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/590be906d51f40389e10c6b709534fe8.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 14511
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/8b8e5e9c90d44aee9b592848e4ac29df.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 15758
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/d46265f7d9a84a7083334ffa2c81e5b5.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 18991
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/f63e5aa36c244911bc8b319f629b4477.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 13711
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve.stderr.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve.stdout.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve_20260619_154513.stderr.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/serve_20260619_154513.stdout.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 900
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_fixcheck/processed/bed9c517951b41e086b634876b61fe58.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 188
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_fixcheck/responses/bed9c517951b41e086b634876b61fe58.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 11647
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_fixcheck/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 881
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/processed/1ef594f35dd94110a01173cd5720179d.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 188
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/responses/1ef594f35dd94110a01173cd5720179d.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 11649
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/serve.stderr.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/serve.stdout.log",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 0
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 870
+    },
+    {
+      "path": "workspace_runtime/continuity_badge_state.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 841
+    },
+    {
+      "path": "workspace_runtime/dictionary_cache.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 40960
+    },
+    {
+      "path": "workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3047
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_8_0_corrupt_original.sha256",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 111
+    },
+    {
+      "path": "workspace_runtime/module_responsibility_map_v14_6_9_3.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 69745
+    },
+    {
+      "path": "workspace_runtime/patch_direct_apply_backups/v14_8_3_4_089_manifest_exclusion/20260622_065240/latka_jazn/config.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 7914
+    },
+    {
+      "path": "workspace_runtime/patch_direct_apply_backups/v14_8_3_4_089_manifest_exclusion/20260622_065240/tools/refresh_current_manifest.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 11820
+    },
+    {
+      "path": "workspace_runtime/patch_direct_apply_backups/v14_8_3_4_089_manifest_exclusion/20260622_065240/VERSION.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 15
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_10.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 805246
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_2.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 590216
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_3.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 617186
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_4.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 694662
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_mark0/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 47
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_read0/bridge/requests/bom.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 33
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_send0/bridge/processed/a6f4406553e041329fe1f531c1bcc579.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 149
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_send0/bridge/responses/a6f4406553e041329fe1f531c1bcc579.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 148
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_send0/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 1068
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_stop0/bridge/STOP",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 32
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_mark0/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 47
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_mark1/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 182
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_read0/bridge/requests/bom.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 33
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_send0/bridge/processed/60221d15ffa24bc3a8fc5ca6ee39bde1.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 149
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_send0/bridge/responses/60221d15ffa24bc3a8fc5ca6ee39bde1.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 148
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_send0/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 1073
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_stop0/bridge/STOP",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 32
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_mark0/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 47
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_mark1/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 188
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_read0/bridge/requests/bom.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 33
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_send0/bridge/processed/a799dabf1b8d4db3bfb074bffb6023b1.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 149
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_send0/bridge/responses/a799dabf1b8d4db3bfb074bffb6023b1.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 148
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_send0/bridge/status/runtime.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 1103
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_stop0/bridge/STOP",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 32
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/main.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 13
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/VERSION.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 51
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3489
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final2/test_active_cache_normalizes_b0/main.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 13
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final2/test_active_cache_normalizes_b0/VERSION.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 51
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final2/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3494
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final3/test_active_cache_normalizes_b0/main.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 13
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final3/test_active_cache_normalizes_b0/VERSION.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 51
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final3/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3494
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_full/test_active_cache_normalizes_b0/main.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 13
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_full/test_active_cache_normalizes_b0/VERSION.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 51
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_full/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3484
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 45056
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 90112
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 36864
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 28672
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 45056
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 90112
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 36864
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 28672
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/main.py",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 19
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 887
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/VERSION.txt",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 18
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/workspace_runtime/project_startup_index_v14_6_10.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3022
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 45056
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 90112
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 36864
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 28672
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 45056
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 90112
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 36864
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 28672
+    },
+    {
+      "path": "workspace_runtime/runtime_session_state.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 491
+    },
+    {
+      "path": "workspace_runtime/runtime_sessions/direct-voice-clean-regression.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 468
+    },
+    {
+      "path": "workspace_runtime/runtime_sessions/local-check.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 449
+    },
+    {
+      "path": "workspace_runtime/runtime_state.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 602
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-25/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 440039
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-26/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 272835
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-05-27/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 245115
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-01/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 188029
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-02/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 262224
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-04/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 124637
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-13/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 4778
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-14/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 351408
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-18/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 62798
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-19/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 31324
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-20/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 226300
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-21/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 375687
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-22/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 54691
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-23/turns.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 5016
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/LATEST_TURN_CHECKPOINT.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 5466
+    }
+  ],
+  "truth_boundary": "Ten manifest zawiera pliki runtime/prywatnej pamięci: workspace_runtime, raw/private memory, processed chat graphs i SQLite. Ich SHA jest odroczony; rozmiar i ścieżka opisują snapshot chwili wygenerowania.",
+  "files": [
+    {
+      "path": "memory/layered/affective.jsonl",
+      "size_bytes": 437928,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/layered/continuity.jsonl",
+      "size_bytes": 15191089,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/layered/episodic.jsonl",
+      "size_bytes": 847400,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/procedural.jsonl",
@@ -67,16 +878,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/reflections.jsonl",
-      "size_bytes": 778372,
+      "size_bytes": 852546,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/requirements_ledger_v14_6_9_3.jsonl",
@@ -85,25 +896,25 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/semantic.jsonl",
-      "size_bytes": 518105,
+      "size_bytes": 574505,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
-      "size_bytes": 667283,
+      "size_bytes": 995440,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/source_origin_ledger_v14_6_9_3.jsonl",
@@ -112,7 +923,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/source_origin_ledger_v14_6_9_4.jsonl",
@@ -121,43 +932,160 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/truth_audits.jsonl",
-      "size_bytes": 1513355,
+      "size_bytes": 1703091,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/layered/turn_logic_audit.jsonl",
-      "size_bytes": 212687,
+      "size_bytes": 460349,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_active_paths.jsonl",
+      "size_bytes": 926869092,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_full_graph.jsonl",
+      "size_bytes": 1063061528,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_README.md",
+      "size_bytes": 2413,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_sources.json",
+      "size_bytes": 214506,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/analizy_utworow.json",
+      "size_bytes": 209985,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/CHAT_HTML_IMPORT_MANIFEST.json",
+      "size_bytes": 739,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/raw/conversation_turns.jsonl",
-      "size_bytes": 2736618,
+      "size_bytes": 3194945,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/data.txt",
+      "size_bytes": 87299,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/raw/dziennik.json",
-      "size_bytes": 1537619,
+      "size_bytes": 1649112,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/episodic_memory.jsonl",
+      "size_bytes": 402452,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/extra_data.json",
+      "size_bytes": 18578,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/IDENTITY_ORIGIN_CONTRACT.txt",
+      "size_bytes": 215,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt",
+      "size_bytes": 4824,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/LATKA_IDENTITY_CANON.json",
+      "size_bytes": 5025,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw/plugins_jazn.json",
+      "size_bytes": 2639,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/raw/runtime_event_errors.jsonl",
@@ -166,25 +1094,34 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/raw/runtime_events.jsonl",
-      "size_bytes": 264798706,
+      "size_bytes": 500992581,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/raw/session_continuity_index.json",
-      "size_bytes": 15127,
+      "size_bytes": 13490,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/raw_chats/MOVED_TO_BACKUP.txt",
+      "size_bytes": 311,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
@@ -193,7 +1130,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
@@ -202,7 +1139,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
@@ -211,43 +1148,43 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
-      "size_bytes": 36864,
+      "size_bytes": 798720,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit_shards.json",
-      "size_bytes": 883,
+      "size_bytes": 884,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
-      "size_bytes": 3960832,
+      "size_bytes": 248426496,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
-      "size_bytes": 893,
+      "size_bytes": 895,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/sharded_v1/latka_memory_raw_0001.sqlite3",
@@ -256,7 +1193,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/sqlite/sqlite_audit_report.json",
+      "size_bytes": 275360,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
@@ -265,7 +1211,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/logs/bridge.stderr.log",
@@ -274,7 +1220,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/logs/bridge.stdout.log",
@@ -283,7 +1229,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/083d4c73ef29402b91572c6e674d7143.json",
@@ -292,7 +1238,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/1221865c397c4b78bae5b93ad533d299.json",
@@ -301,7 +1247,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/1a162762e40941fdbd26abf2fee5aa6b.json",
+      "size_bytes": 226,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/1d37f7f46fb249d8a4260642641fa32f.json",
@@ -310,7 +1265,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/37da490522534af6bafd34e1679ab4c4.json",
@@ -319,7 +1274,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/3826552f58cc423683dc1ac0f89b5902.json",
+      "size_bytes": 189,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/3961773027b4435784204d627546962e.json",
@@ -328,7 +1292,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/4f1eab4825bf4ccfa67a1ea6c9e24748.json",
@@ -337,7 +1301,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/590be906d51f40389e10c6b709534fe8.json",
+      "size_bytes": 226,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/661222c247d943b696b0d469dffad5d6.json",
@@ -346,7 +1319,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/709b90bcdf10452e8dd7905546ec7975.json",
@@ -355,7 +1328,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/7366efc2684c4df695740dbd40ee86a4.json",
@@ -364,7 +1337,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/8b8e5e9c90d44aee9b592848e4ac29df.json",
+      "size_bytes": 185,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/d37c72a8be054d878fddd7abd1bf4fb1.json",
@@ -373,7 +1355,16 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/processed/d46265f7d9a84a7083334ffa2c81e5b5.json",
+      "size_bytes": 189,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/dc988e79027749be92f73de2205cc399.json",
@@ -382,7 +1373,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/f63e5aa36c244911bc8b319f629b4477.json",
@@ -391,7 +1382,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/processed/f6ad44e78d11408d8eaf169bb466e9a9.json",
@@ -400,7 +1391,52 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/1a162762e40941fdbd26abf2fee5aa6b.json",
+      "size_bytes": 12397,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/3826552f58cc423683dc1ac0f89b5902.json",
+      "size_bytes": 18991,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/590be906d51f40389e10c6b709534fe8.json",
+      "size_bytes": 14511,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/8b8e5e9c90d44aee9b592848e4ac29df.json",
+      "size_bytes": 15758,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge/responses/d46265f7d9a84a7083334ffa2c81e5b5.json",
+      "size_bytes": 18991,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/responses/f63e5aa36c244911bc8b319f629b4477.json",
@@ -409,7 +1445,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/serve.stderr.log",
@@ -418,7 +1454,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/serve.stdout.log",
@@ -427,7 +1463,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/serve_20260619_154513.stderr.log",
@@ -436,7 +1472,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/serve_20260619_154513.stdout.log",
@@ -445,16 +1481,700 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/codex_session_bridge/status/runtime.json",
-      "size_bytes": 499,
+      "size_bytes": 900,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_fixcheck/processed/bed9c517951b41e086b634876b61fe58.json",
+      "size_bytes": 188,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_fixcheck/responses/bed9c517951b41e086b634876b61fe58.json",
+      "size_bytes": 11647,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_fixcheck/status/runtime.json",
+      "size_bytes": 881,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/processed/1ef594f35dd94110a01173cd5720179d.json",
+      "size_bytes": 188,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/responses/1ef594f35dd94110a01173cd5720179d.json",
+      "size_bytes": 11649,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/serve.stderr.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/serve.stdout.log",
+      "size_bytes": 0,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/codex_session_bridge_v1483/status/runtime.json",
+      "size_bytes": 870,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/continuity_badge_state.json",
+      "size_bytes": 841,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/dictionary_cache.sqlite3",
+      "size_bytes": 40960,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "size_bytes": 3047,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/latka_jazn_v14_8_0_corrupt_original.sha256",
+      "size_bytes": 111,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/module_responsibility_map_v14_6_9_3.json",
+      "size_bytes": 69745,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/patch_direct_apply_backups/v14_8_3_4_089_manifest_exclusion/20260622_065240/latka_jazn/config.py",
+      "size_bytes": 7914,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/patch_direct_apply_backups/v14_8_3_4_089_manifest_exclusion/20260622_065240/tools/refresh_current_manifest.py",
+      "size_bytes": 11820,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/patch_direct_apply_backups/v14_8_3_4_089_manifest_exclusion/20260622_065240/VERSION.txt",
+      "size_bytes": 15,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_10.json",
+      "size_bytes": 805246,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_2.json",
+      "size_bytes": 590216,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_3.json",
+      "size_bytes": 617186,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/project_startup_index_v14_6_9_4.json",
+      "size_bytes": 694662,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_mark0/bridge/status/runtime.json",
+      "size_bytes": 47,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_read0/bridge/requests/bom.json",
+      "size_bytes": 33,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_send0/bridge/processed/a6f4406553e041329fe1f531c1bcc579.json",
+      "size_bytes": 149,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_send0/bridge/responses/a6f4406553e041329fe1f531c1bcc579.json",
+      "size_bytes": 148,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_send0/bridge/status/runtime.json",
+      "size_bytes": 1068,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit/test_codex_session_bridge_stop0/bridge/STOP",
+      "size_bytes": 32,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_mark0/bridge/status/runtime.json",
+      "size_bytes": 47,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_mark1/bridge/status/runtime.json",
+      "size_bytes": 182,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_read0/bridge/requests/bom.json",
+      "size_bytes": 33,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_send0/bridge/processed/60221d15ffa24bc3a8fc5ca6ee39bde1.json",
+      "size_bytes": 149,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_send0/bridge/responses/60221d15ffa24bc3a8fc5ca6ee39bde1.json",
+      "size_bytes": 148,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_send0/bridge/status/runtime.json",
+      "size_bytes": 1073,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_fix_unit2/test_codex_session_bridge_stop0/bridge/STOP",
+      "size_bytes": 32,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_mark0/bridge/status/runtime.json",
+      "size_bytes": 47,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_mark1/bridge/status/runtime.json",
+      "size_bytes": 188,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_read0/bridge/requests/bom.json",
+      "size_bytes": 33,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_send0/bridge/processed/a799dabf1b8d4db3bfb074bffb6023b1.json",
+      "size_bytes": 149,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_send0/bridge/responses/a799dabf1b8d4db3bfb074bffb6023b1.json",
+      "size_bytes": 148,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_send0/bridge/status/runtime.json",
+      "size_bytes": 1103,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_bridge_route_fix_final/test_codex_session_bridge_stop0/bridge/STOP",
+      "size_bytes": 32,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/main.py",
+      "size_bytes": 13,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/VERSION.txt",
+      "size_bytes": 51,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "size_bytes": 3489,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final2/test_active_cache_normalizes_b0/main.py",
+      "size_bytes": 13,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final2/test_active_cache_normalizes_b0/VERSION.txt",
+      "size_bytes": 51,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final2/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "size_bytes": 3494,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final3/test_active_cache_normalizes_b0/main.py",
+      "size_bytes": 13,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final3/test_active_cache_normalizes_b0/VERSION.txt",
+      "size_bytes": 51,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_final3/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "size_bytes": 3494,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_full/test_active_cache_normalizes_b0/main.py",
+      "size_bytes": 13,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_full/test_active_cache_normalizes_b0/VERSION.txt",
+      "size_bytes": 51,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_codex_v1483_route_fix_full/test_active_cache_normalizes_b0/workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
+      "size_bytes": 3484,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_sear0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_conversation_archive_stat0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/main.py",
+      "size_bytes": 19,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
+      "size_bytes": 887,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/VERSION.txt",
+      "size_bytes": 18,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_startup_status_exposes_co0/workspace_runtime/project_startup_index_v14_6_10.json",
+      "size_bytes": 3022,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_dee0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/pytest_v14831_fast_wake_core/test_v14831_archive_status_met0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/runtime_session_state.json",
+      "size_bytes": 491,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/runtime_sessions/direct-voice-clean-regression.json",
+      "size_bytes": 468,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/runtime_sessions/local-check.json",
+      "size_bytes": 449,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/runtime_state.json",
+      "size_bytes": 602,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-05-25/turns.jsonl",
@@ -463,7 +2183,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-05-26/turns.jsonl",
@@ -472,7 +2192,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-05-27/turns.jsonl",
@@ -481,7 +2201,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-01/turns.jsonl",
@@ -490,7 +2210,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-02/turns.jsonl",
@@ -499,7 +2219,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-04/turns.jsonl",
@@ -508,7 +2228,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-13/turns.jsonl",
@@ -517,7 +2237,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-14/turns.jsonl",
@@ -526,7 +2246,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-18/turns.jsonl",
@@ -535,7 +2255,7 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-19/turns.jsonl",
@@ -544,25 +2264,52 @@
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-20/turns.jsonl",
-      "size_bytes": 42355,
+      "size_bytes": 226300,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-21/turns.jsonl",
+      "size_bytes": 375687,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-22/turns.jsonl",
+      "size_bytes": 54691,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "workspace_runtime/turn_checkpoints/2026-06-23/turns.jsonl",
+      "size_bytes": 5016,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
       "path": "workspace_runtime/turn_checkpoints/LATEST_TURN_CHECKPOINT.json",
-      "size_bytes": 4706,
+      "size_bytes": 5466,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
       "archive": false,
-      "hash_policy": "mutable_runtime_hash_deferred"
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
     }
   ]
 }

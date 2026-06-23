@@ -50,6 +50,7 @@ from latka_jazn.memory.event_ledger import RuntimeEventLedger
 from latka_jazn.memory.session_continuity import SessionContinuityManager
 from latka_jazn.memory.chat_html_importer import search_raw_chat_html_snippets
 from latka_jazn.memory.raw_archive import chat_archive_diagnostics
+from latka_jazn.memory.conversation_archive import ConversationArchiveStore
 from latka_jazn.core.runtime_status import build_runtime_status
 from latka_jazn.core.memory_recall_presenter import MemoryRecallPresenter
 from latka_jazn.core.free_dialogue_synthesizer import FreeDialogueSynthesizer
@@ -898,11 +899,18 @@ class JaznEngine:
             "episodes": [],
             "legacy_messages": [],
             "source_file_hits": [],
+            "conversation_archive_hits": [],
+            "conversation_archive_search": {
+                "status": "skipped_by_memory_gate",
+                "issues": [],
+                "truth_boundary": "Conversation archive nie było odpytywane, bo brama pamięci zablokowała treściowy recall dla tej intencji.",
+            },
             "raw_chat_fallback": [],
             "counts": {
                 "episodes": 0,
                 "legacy_messages": 0,
                 "source_file_hits": 0,
+                "conversation_archive_hits": 0,
                 "raw_chat_fallback": 0,
             },
             "memory_gate": memory_gate,
@@ -913,6 +921,54 @@ class JaznEngine:
                 "truth_boundary": "Brak aktywnego wyszukiwania pamięci w tej turze; pytanie dotyczy statusu/możliwości/internetu, nie wspomnień.",
             },
         }
+
+    def _conversation_archive_context_hits(self, phrases: list[str], *, limit: int = 5) -> tuple[list[dict], dict]:
+        """Pobiera treściowe trafienia z conversation_archive/FTS jako normalną warstwę pamięci.
+
+        Wcześniejsze wersje miały osobną komendę --conversation-archive-search,
+        ale zwykły memory recall nadal mógł skończyć na licznikach albo source_file_hits.
+        Ten helper włącza archive do tego samego kontraktu pamięci, bez wybuchu gdy
+        baza jest niepełna, niezaimportowana albo środowisko ma tylko częściową paczkę.
+        """
+        query = " ".join(str(x).strip() for x in (phrases or []) if str(x).strip())
+        if not query:
+            return [], {"status": "empty_query", "issues": ["empty_query"]}
+        try:
+            store = ConversationArchiveStore(self.config.root)
+            search_result = store.search(query, limit=max(1, limit), include_snippets=True).to_dict()
+        except Exception as exc:
+            return [], {
+                "status": "error",
+                "issues": [f"conversation_archive_error:{type(exc).__name__}:{exc}"],
+                "truth_boundary": "Błąd archive search nie może blokować rozmowy ani udawać pamięci.",
+            }
+        hits = []
+        for hit in search_result.get("hits") or []:
+            if not isinstance(hit, dict):
+                continue
+            excerpt = str(hit.get("excerpt") or "").strip()
+            if not excerpt:
+                continue
+            hits.append({
+                "phrase": query,
+                "search_pass": "conversation_archive_fts",
+                "text": excerpt,
+                "excerpt": excerpt,
+                "conversation_title": hit.get("title"),
+                "author_role": hit.get("role"),
+                "create_time_warsaw": hit.get("create_time"),
+                "source_name": hit.get("source_name"),
+                "source_locator": hit.get("source_locator"),
+                "message_uid": hit.get("message_uid"),
+                "conversation_uid": hit.get("conversation_uid"),
+                "content_hash": hit.get("content_hash"),
+                "identity_confidence": hit.get("identity_confidence"),
+                "privacy_scope": hit.get("privacy_scope"),
+                "review_status": hit.get("review_status"),
+                "rank": hit.get("rank"),
+                "grounding": "conversation_archive_v1+fts_v1",
+            })
+        return hits[:limit], search_result
 
     def _memory_context_for_chatgpt(self, text: str, limit: int = 5) -> dict:
         """Buduje kontekst pamięci przez planer wyszukiwania, nie przez gołe tokeny.
@@ -985,12 +1041,13 @@ class JaznEngine:
         legacy = self._filter_memory_context_candidates(legacy, user_text=text, kind="legacy_message")[:limit]
 
         source_file_hits = [hit.to_dict() for hit in self.memory_search_planner.search_source_files(search_plan, limit=limit)]
+        conversation_archive_hits, conversation_archive_search = self._conversation_archive_context_hits(phrases, limit=limit)
 
         raw_fallback: list[dict] = []
         raw_path = self.config.root / "memory" / "raw" / "chat.html"
-        # Surowe chat.html jest ostatecznością: uruchamia się dopiero, gdy indeksy
-        # i pliki kanoniczne nie zwróciły treści.
-        if not legacy and not episodes and not source_file_hits and raw_path.exists():
+        # Surowe chat.html jest ostatecznością: uruchamia się dopiero, gdy indeksy,
+        # conversation_archive i pliki kanoniczne nie zwróciły treści.
+        if not legacy and not episodes and not source_file_hits and not conversation_archive_hits and raw_path.exists():
             raw_fallback = search_raw_chat_html_snippets(raw_path, phrases, limit=3)
 
         context = {
@@ -999,11 +1056,21 @@ class JaznEngine:
             "episodes": episodes,
             "legacy_messages": legacy,
             "source_file_hits": source_file_hits[:limit],
+            "conversation_archive_hits": conversation_archive_hits[:limit],
+            "conversation_archive_search": {
+                "status": conversation_archive_search.get("status"),
+                "query": conversation_archive_search.get("query"),
+                "fts_query": conversation_archive_search.get("fts_query"),
+                "searched_shards": conversation_archive_search.get("searched_shards"),
+                "issues": conversation_archive_search.get("issues") or [],
+                "truth_boundary": conversation_archive_search.get("truth_boundary"),
+            },
             "raw_chat_fallback": raw_fallback[:3],
             "counts": {
                 "episodes": len(episodes),
                 "legacy_messages": len(legacy),
                 "source_file_hits": len(source_file_hits[:limit]),
+                "conversation_archive_hits": len(conversation_archive_hits[:limit]),
                 "raw_chat_fallback": len(raw_fallback[:3]),
             },
         }

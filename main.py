@@ -1,4 +1,4 @@
-# Current package version: v14.8.3.4.090-chatgpt-bridge-primary
+# Current package version: v14.8.3.4.092-manifest-runtime-split-hotfix
 from __future__ import annotations
 
 import argparse
@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-ACTIVE_PACKAGE_VERSION = "v14.8.3.4.090"
+ACTIVE_PACKAGE_VERSION = "v14.8.3.4.092"
 
 
 def _configure_stdio_utf8() -> None:
@@ -671,7 +671,7 @@ def main(argv: list[str] | None = None) -> int:
         generated_session: JaznRuntimeSession | None = None
         default_client = "chatgpt_bridge"
         default_lifecycle = "chatgpt_bridge_jsonl"
-        bridge_protocol_version = "chatgpt_bridge_jsonl/v14.8.3.4.090"
+        bridge_protocol_version = "chatgpt_bridge_jsonl/v14.8.3.4.092"
         accepted_input_fields = ["message", "text", "user_text", "content", "prompt"]
 
         def bridge_meta(
@@ -717,7 +717,7 @@ def main(argv: list[str] | None = None) -> int:
             line_index: int | None = None,
         ) -> dict:
             return {
-                "schema_version": "chatgpt_bridge_error/v14.8.3.4.090",
+                "schema_version": "chatgpt_bridge_error/v14.8.3.4.092",
                 "chatgpt_bridge": bridge_meta(
                     client=client,
                     input_kind=input_kind,
@@ -851,13 +851,24 @@ def main(argv: list[str] | None = None) -> int:
                     continue
 
                 session, session_id_source = get_session(payload_session_id, client=client)
-                result = session.process_user_text(
-                    user_text,
-                    client=client,
-                    lifecycle=default_lifecycle,
-                    session_id_source=session_id_source,
-                    process_reused=True,
-                )
+                try:
+                    result = session.process_user_text(
+                        user_text,
+                        client=client,
+                        lifecycle=default_lifecycle,
+                        session_id_source=session_id_source,
+                        process_reused=True,
+                    )
+                except Exception as exc:
+                    print(json.dumps(error_payload(
+                        error_code="runtime_turn_failed",
+                        error=f"Runtime Jaźni przerwał turę: {type(exc).__name__}: {exc}",
+                        client=client,
+                        input_kind=input_kind,
+                        input_field=input_field,
+                        line_index=line_index,
+                    ), ensure_ascii=False, sort_keys=True), flush=True)
+                    continue
                 result["chatgpt_bridge"] = bridge_meta(
                     client=client,
                     input_kind=input_kind,

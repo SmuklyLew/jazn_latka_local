@@ -43,6 +43,11 @@ class MemoryRecallContractBuilder:
             content=str(hit.get('snippet') or hit.get('text') or hit.get('path') or '')
             if content:
                 items.append(MemoryRecallItem(content=content[:1800], source=str(hit.get('path') or 'source_file'), memory_type='source_file_hit', timestamp=hit.get('modified_at'), confidence=float(hit.get('confidence') or 0.55), relevance=float(hit.get('score') or hit.get('relevance') or 0.50), metadata=hit).to_dict())
+        for hit in ctx.get('conversation_archive_hits') or []:
+            content=str(hit.get('excerpt') or hit.get('text') or '')
+            if content:
+                source = str(hit.get('source_name') or hit.get('source_locator') or 'conversation_archive_v1')
+                items.append(MemoryRecallItem(content=content[:1800], source=source, memory_type='conversation_archive_hit', timestamp=hit.get('create_time_warsaw') or hit.get('create_time'), confidence=float(hit.get('identity_confidence') or 0.58), relevance=float(hit.get('relevance') or 0.58), metadata=hit).to_dict())
         for raw in ctx.get('raw_chat_fallback') or []:
             content=str(raw.get('snippet') or raw.get('text') or '')
             if content:
