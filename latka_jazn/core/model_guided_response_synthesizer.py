@@ -5,7 +5,9 @@ import re
 from typing import Any
 
 from latka_jazn.model_adapters.base import ModelAdapterRequest
+from latka_jazn.core.model_context_compiler import compile_model_context
 from latka_jazn.core.nlg_planner import build_nlg_plan
+from latka_jazn.core.operational_thought_frame import build_operational_thought_frame
 
 
 @dataclass(slots=True)
@@ -89,7 +91,6 @@ class ModelGuidedResponseSynthesizer:
         response_policy: dict[str, Any],
     ) -> dict[str, Any]:
         packets = cognitive_frame.get("cognitive_packets") or {}
-        memory = cognitive_frame.get("memory_recall_contract") or {}
         nlg_plan = build_nlg_plan(
             user_text=user_text,
             cognitive_frame=cognitive_frame,
@@ -97,29 +98,40 @@ class ModelGuidedResponseSynthesizer:
             route=route,
             detected_intent=detected_intent,
         )
-        return {
-            "user_message": user_text,
-            "detected_intent": detected_intent,
-            "route": route,
-            "response_policy": response_policy,
-            "nlg_plan": nlg_plan.to_dict(),
-            "draft_runtime_body": draft_body,
-            "voice_source_contract": cognitive_frame.get("voice_source_contract") or {},
-            "identity_continuity": cognitive_frame.get("identity_continuity") or {},
-            "truth_boundary": cognitive_frame.get("truth_boundary") or cognitive_frame.get("truth_boundary_check") or {},
-            "logical_reasoning": cognitive_frame.get("logical_reasoning") or {},
-            "operational_awareness": cognitive_frame.get("operational_awareness") or {},
-            "self_state_runtime": cognitive_frame.get("self_state_runtime") or {},
-            "neurocognitive_cycle": cognitive_frame.get("neurocognitive_cycle") or {},
-            "cognitive_packets": {
-                "dominant_packet": packets.get("dominant_packet"),
-                "packets": (packets.get("packets") or [])[:6],
-                "reply_guidance": (packets.get("reply_guidance") or [])[:8],
-            },
-            "polish_reasoning": cognitive_frame.get("polish_reasoning") or {},
-            "memory_recall_contract": {
-                "items": (memory.get("items") or [])[:8],
-                "truth_boundary": memory.get("truth_boundary"),
-            },
-            "dialogue_context": cognitive_frame.get("dialogue_context") or {},
-        }
+        thought_frame = build_operational_thought_frame(
+            user_text=user_text,
+            nlg_plan=nlg_plan,
+            cognitive_frame=cognitive_frame,
+            response_policy=response_policy,
+        )
+        packet = compile_model_context(
+            user_text=user_text,
+            cognitive_frame=cognitive_frame,
+            nlg_plan=nlg_plan,
+            thought_frame=thought_frame,
+            response_policy=response_policy,
+        )
+        context = packet.to_dict()
+        context.update(
+            {
+                "user_message": user_text,
+                "detected_intent": detected_intent,
+                "route": route,
+                "response_policy": response_policy,
+                "draft_runtime_body": draft_body,
+                "identity_continuity": cognitive_frame.get("identity_continuity") or {},
+                "truth_boundary": cognitive_frame.get("truth_boundary") or cognitive_frame.get("truth_boundary_check") or {},
+                "logical_reasoning": cognitive_frame.get("logical_reasoning") or {},
+                "operational_awareness": cognitive_frame.get("operational_awareness") or {},
+                "self_state_runtime": cognitive_frame.get("self_state_runtime") or {},
+                "neurocognitive_cycle": cognitive_frame.get("neurocognitive_cycle") or {},
+                "cognitive_packets": {
+                    "dominant_packet": packets.get("dominant_packet"),
+                    "packets": (packets.get("packets") or [])[:6],
+                    "reply_guidance": (packets.get("reply_guidance") or [])[:8],
+                },
+                "polish_reasoning": cognitive_frame.get("polish_reasoning") or {},
+                "dialogue_context": cognitive_frame.get("dialogue_context") or {},
+            }
+        )
+        return context
