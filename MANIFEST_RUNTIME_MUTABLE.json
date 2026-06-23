@@ -3,8 +3,8 @@
   "version": "v14.8.3.4.093",
   "runtime_version": "v14.8.3.4.093",
   "package_version": "v14.8.3.4.093",
-  "generated_at_utc": "2026-06-23T21:18:10.258736+00:00",
-  "updated_at_utc": "2026-06-23T21:18:10.258736+00:00",
+  "generated_at_utc": "2026-06-23T21:37:24.863106+00:00",
+  "updated_at_utc": "2026-06-23T21:37:24.863106+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -439,7 +439,7 @@
     {
       "path": "workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 3047
+      "size_bytes": 3078
     },
     {
       "path": "workspace_runtime/latka_jazn_v14_8_0_corrupt_original.sha256",
@@ -1609,7 +1609,7 @@
     },
     {
       "path": "workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
-      "size_bytes": 3047,
+      "size_bytes": 3078,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",

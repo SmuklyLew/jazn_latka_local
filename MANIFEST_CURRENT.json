@@ -3,8 +3,8 @@
   "version": "v14.8.3.4.093",
   "runtime_version": "v14.8.3.4.093",
   "package_version": "v14.8.3.4.093",
-  "generated_at_utc": "2026-06-23T21:18:10.258736+00:00",
-  "updated_at_utc": "2026-06-23T21:18:10.258736+00:00",
+  "generated_at_utc": "2026-06-23T21:37:24.863106+00:00",
+  "updated_at_utc": "2026-06-23T21:37:24.863106+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,12 +13,12 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 733,
-  "static_file_count": 733,
+  "file_count": 739,
+  "static_file_count": 739,
   "mutable_runtime_file_count": 0,
   "runtime_mutable_file_count": 168,
-  "archive_file_count": 169,
-  "excluded_file_count": 1172,
+  "archive_file_count": 170,
+  "excluded_file_count": 1187,
   "deferred_hash_file_count": 0,
   "hash_size_limit_bytes": 67108864,
   "runtime_mutable_manifest": "MANIFEST_RUNTIME_MUTABLE.json",
@@ -27,13 +27,13 @@
     "runtime_manifest": "MANIFEST_RUNTIME_MUTABLE.json contains workspace_runtime, raw/private memory, processed chat graphs and SQLite stores.",
     "why": "Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code."
   },
-  "excluded_file_detail_count": 9,
-  "excluded_file_detail_suppressed_count": 1163,
+  "excluded_file_detail_count": 13,
+  "excluded_file_detail_suppressed_count": 1174,
   "excluded_file_detail_suppressed_summary": [
     {
       "reason": "generated_cache_directory",
-      "count": 1163,
-      "size_bytes": 67802586
+      "count": 1174,
+      "size_bytes": 67935218
     }
   ],
   "mutable_patterns": [
@@ -2055,6 +2055,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "docs/UPDATE_V14_8_4_001_NLG_CONTRACTS_AND_PLANNER.md",
+      "size_bytes": 2917,
+      "sha256": "02cd3c536023310f570cad93aa7134a29d256a40ddd2d189af57e15b72f3774e",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "docs/VOICE_AND_AUDIO_FUTURE_ADAPTERS_v14_7_0.md",
       "size_bytes": 913,
       "sha256": "3c88615c55935b7605f7af0060b0d002b21d263f5ee0631bc135343fb9d6c577",
@@ -2785,8 +2794,8 @@
     },
     {
       "path": "latka_jazn/core/model_guided_response_synthesizer.py",
-      "size_bytes": 5068,
-      "sha256": "74560415054a353f238444e2f20abf83d12e48e655cde052b837734450e386c1",
+      "size_bytes": 5405,
+      "sha256": "5df21313397100dc09395c53e242b35366c14a2a15108999b18a7c87fa594d39",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -2814,6 +2823,24 @@
       "path": "latka_jazn/core/neuropsychology_map.py",
       "size_bytes": 5162,
       "sha256": "b62e43e3440db64c0518fe35db40672882ada8055ecdc2846d70a280b0b7293f",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "latka_jazn/core/nlg_plan.py",
+      "size_bytes": 3682,
+      "sha256": "7a0f129adb24618d8f33ae305b2576379b29637bd0566a78f09932b3ce6fee26",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "latka_jazn/core/nlg_planner.py",
+      "size_bytes": 12413,
+      "sha256": "8725680281f470475a151a6d09dc933169627eb211e677cfc58954be9fd857c3",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -4746,6 +4773,24 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "LATKA_JAZN_v14_8_4_001_NLG_CONTRACTS_AND_PLANNER.patch",
+      "size_bytes": 27675,
+      "sha256": "6d53e3104e7766f092a3bb422d2538a0c679b22f07ee23f5586d59c6f8be94d7",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "LATKA_JAZN_v14_8_4_001_REPORT.md",
+      "size_bytes": 4187,
+      "sha256": "f78501816d448baa6205ad6079120cbf830138367578237a410cfcbbbc7b8cbd",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "main.py",
       "size_bytes": 56408,
       "sha256": "e7b6ff45f38b191f4f9d8a02bb8cebe389628c1d72b6fb8c8d8afa490cff8d27",
@@ -6582,6 +6627,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "tests/test_v1484_nlg_plan.py",
+      "size_bytes": 5819,
+      "sha256": "4b71eafab246d97912d6f7c8b5d8d109693124f75b7aae2fabb02676addab846",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "tests/test_v1484_polish_morphology_cli.py",
       "size_bytes": 1422,
       "sha256": "4bc87393580ea44534b11acd1967dbf6190e1da25426f12d18568013ddbfda25",
@@ -6775,22 +6829,42 @@
     {
       "path": "MANIFEST_CURRENT.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 255928
+      "size_bytes": 256636
     },
     {
       "path": "MANIFEST_RUNTIME_MUTABLE.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85949
+      "size_bytes": 87424
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3-shm",
+      "reason": "transient_runtime_sidecar",
+      "size_bytes": 32768
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3-wal",
+      "reason": "transient_runtime_sidecar",
+      "size_bytes": 0
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-shm",
+      "reason": "transient_runtime_sidecar",
+      "size_bytes": 32768
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-wal",
+      "reason": "transient_runtime_sidecar",
+      "size_bytes": 0
     },
     {
       "path": "SHA256SUMS",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85385
+      "size_bytes": 85624
     },
     {
       "path": "SHA256SUMS_STATIC",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85385
+      "size_bytes": 85624
     },
     {
       "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/MANIFEST_CURRENT.json",

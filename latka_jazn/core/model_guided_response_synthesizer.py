@@ -5,6 +5,7 @@ import re
 from typing import Any
 
 from latka_jazn.model_adapters.base import ModelAdapterRequest
+from latka_jazn.core.nlg_planner import build_nlg_plan
 
 
 @dataclass(slots=True)
@@ -89,11 +90,19 @@ class ModelGuidedResponseSynthesizer:
     ) -> dict[str, Any]:
         packets = cognitive_frame.get("cognitive_packets") or {}
         memory = cognitive_frame.get("memory_recall_contract") or {}
+        nlg_plan = build_nlg_plan(
+            user_text=user_text,
+            cognitive_frame=cognitive_frame,
+            response_policy=response_policy,
+            route=route,
+            detected_intent=detected_intent,
+        )
         return {
             "user_message": user_text,
             "detected_intent": detected_intent,
             "route": route,
             "response_policy": response_policy,
+            "nlg_plan": nlg_plan.to_dict(),
             "draft_runtime_body": draft_body,
             "voice_source_contract": cognitive_frame.get("voice_source_contract") or {},
             "identity_continuity": cognitive_frame.get("identity_continuity") or {},
