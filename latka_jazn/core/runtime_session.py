@@ -4,7 +4,7 @@ from typing import Any
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.engine import JaznEngine
 from latka_jazn.core.runtime_session_state import RuntimeSessionStateStore
-from latka_jazn.core.session_provenance import build_session_provenance, validate_final_visible_integrity
+from latka_jazn.core.session_provenance import build_session_provenance, repair_final_visible_integrity, validate_final_visible_integrity
 
 SCHEMA_VERSION = "runtime_session/v14.8.3.2"
 
@@ -70,7 +70,10 @@ class JaznRuntimeSession:
                 save_status=save_status,
             ),
         }
+        result, integrity_repairs = repair_final_visible_integrity(result)
         result["final_visible_integrity"] = validate_final_visible_integrity(result)
+        if integrity_repairs:
+            result["final_visible_integrity"]["repairs"] = integrity_repairs
         return result
 
     def close(self) -> None:
