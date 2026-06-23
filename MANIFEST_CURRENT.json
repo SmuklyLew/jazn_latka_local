@@ -3,8 +3,8 @@
   "version": "v14.8.3.4.093",
   "runtime_version": "v14.8.3.4.093",
   "package_version": "v14.8.3.4.093",
-  "generated_at_utc": "2026-06-23T21:37:24.863106+00:00",
-  "updated_at_utc": "2026-06-23T21:37:24.863106+00:00",
+  "generated_at_utc": "2026-06-23T22:11:59.382392+00:00",
+  "updated_at_utc": "2026-06-23T22:11:59.382392+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,12 +13,12 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 739,
-  "static_file_count": 739,
+  "file_count": 742,
+  "static_file_count": 742,
   "mutable_runtime_file_count": 0,
-  "runtime_mutable_file_count": 168,
+  "runtime_mutable_file_count": 169,
   "archive_file_count": 170,
-  "excluded_file_count": 1187,
+  "excluded_file_count": 1198,
   "deferred_hash_file_count": 0,
   "hash_size_limit_bytes": 67108864,
   "runtime_mutable_manifest": "MANIFEST_RUNTIME_MUTABLE.json",
@@ -27,13 +27,13 @@
     "runtime_manifest": "MANIFEST_RUNTIME_MUTABLE.json contains workspace_runtime, raw/private memory, processed chat graphs and SQLite stores.",
     "why": "Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code."
   },
-  "excluded_file_detail_count": 13,
-  "excluded_file_detail_suppressed_count": 1174,
+  "excluded_file_detail_count": 9,
+  "excluded_file_detail_suppressed_count": 1189,
   "excluded_file_detail_suppressed_summary": [
     {
       "reason": "generated_cache_directory",
-      "count": 1174,
-      "size_bytes": 67935218
+      "count": 1189,
+      "size_bytes": 68057257
     }
   ],
   "mutable_patterns": [
@@ -98,7 +98,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
       "exists": true,
-      "size_bytes": 827392,
+      "size_bytes": 831488,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
@@ -109,7 +109,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
       "exists": true,
-      "size_bytes": 382140416,
+      "size_bytes": 404348928,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
@@ -211,8 +211,8 @@
     },
     {
       "path": ".vscode/settings.json",
-      "size_bytes": 291,
-      "sha256": "24b5bdbb7c87e7eca788e2173f81a2156e889f70e47c1510e2867f43ae8fd2a4",
+      "size_bytes": 350,
+      "sha256": "34ac700726a4568bd0dccd509d4358249b579b648555abb0b3e9ca2eec80a50d",
       "mutable_runtime": false,
       "classification": "static_project_file",
       "archive": false,
@@ -2064,6 +2064,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "docs/UPDATE_V14_8_4_002_OPERATIONAL_THOUGHT_FRAME.md",
+      "size_bytes": 2593,
+      "sha256": "8d59fb9e1783d88abee76b8f017a54a7de2efb1063c6dad05d30ebacde04dbd6",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "docs/VOICE_AND_AUDIO_FUTURE_ADAPTERS_v14_7_0.md",
       "size_bytes": 913,
       "sha256": "3c88615c55935b7605f7af0060b0d002b21d263f5ee0631bc135343fb9d6c577",
@@ -2859,6 +2868,15 @@
       "path": "latka_jazn/core/operational_self_model.py",
       "size_bytes": 4241,
       "sha256": "c39d43c3c8a35d99204cfaf9c999c0c9ff826839f4ac4620196a1e8b92b0bce1",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "latka_jazn/core/operational_thought_frame.py",
+      "size_bytes": 10266,
+      "sha256": "835a29c984dac28ce90d55b0915cc2ade5cd4e5c61c2ebf8350d51e660017726",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -4773,18 +4791,18 @@
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_4_001_NLG_CONTRACTS_AND_PLANNER.patch",
-      "size_bytes": 27675,
-      "sha256": "6d53e3104e7766f092a3bb422d2538a0c679b22f07ee23f5586d59c6f8be94d7",
+      "path": "LATKA_JAZN_v14_8_4_002_OPERATIONAL_THOUGHT_FRAME.patch",
+      "size_bytes": 19204,
+      "sha256": "e6f2cf72a0839149eb221f004a92768d6ee6ed87b7e8c045dee2c08c2392414a",
       "mutable_runtime": false,
       "classification": "archive_or_backup",
       "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_4_001_REPORT.md",
-      "size_bytes": 4187,
-      "sha256": "f78501816d448baa6205ad6079120cbf830138367578237a410cfcbbbc7b8cbd",
+      "path": "LATKA_JAZN_v14_8_4_002_REPORT.md",
+      "size_bytes": 3163,
+      "sha256": "57e52f0b7d0cbebe3abf0b41158387bb5fee5ade2b462b5576105885fb04fb4e",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
@@ -6636,6 +6654,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "tests/test_v1484_operational_thought_frame.py",
+      "size_bytes": 5196,
+      "sha256": "8dc2fc8076933408dd34a77ebe9890e150586995232a2101b745990c72dd7b20",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "tests/test_v1484_polish_morphology_cli.py",
       "size_bytes": 1422,
       "sha256": "4bc87393580ea44534b11acd1967dbf6190e1da25426f12d18568013ddbfda25",
@@ -6829,7 +6856,7 @@
     {
       "path": "MANIFEST_CURRENT.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 256636
+      "size_bytes": 259259
     },
     {
       "path": "MANIFEST_RUNTIME_MUTABLE.json",
@@ -6837,34 +6864,14 @@
       "size_bytes": 87424
     },
     {
-      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3-shm",
-      "reason": "transient_runtime_sidecar",
-      "size_bytes": 32768
-    },
-    {
-      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3-wal",
-      "reason": "transient_runtime_sidecar",
-      "size_bytes": 0
-    },
-    {
-      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-shm",
-      "reason": "transient_runtime_sidecar",
-      "size_bytes": 32768
-    },
-    {
-      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-wal",
-      "reason": "transient_runtime_sidecar",
-      "size_bytes": 0
-    },
-    {
       "path": "SHA256SUMS",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85624
+      "size_bytes": 86255
     },
     {
       "path": "SHA256SUMS_STATIC",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85624
+      "size_bytes": 86255
     },
     {
       "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/MANIFEST_CURRENT.json",
