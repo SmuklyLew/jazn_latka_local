@@ -3,8 +3,8 @@
   "version": "v14.8.3.4.093",
   "runtime_version": "v14.8.3.4.093",
   "package_version": "v14.8.3.4.093",
-  "generated_at_utc": "2026-06-23T19:38:28.680278+00:00",
-  "updated_at_utc": "2026-06-23T19:38:28.680278+00:00",
+  "generated_at_utc": "2026-06-23T21:18:10.258736+00:00",
+  "updated_at_utc": "2026-06-23T21:18:10.258736+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,12 +13,12 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 731,
-  "static_file_count": 731,
+  "file_count": 733,
+  "static_file_count": 733,
   "mutable_runtime_file_count": 0,
-  "runtime_mutable_file_count": 165,
+  "runtime_mutable_file_count": 168,
   "archive_file_count": 169,
-  "excluded_file_count": 1147,
+  "excluded_file_count": 1172,
   "deferred_hash_file_count": 0,
   "hash_size_limit_bytes": 67108864,
   "runtime_mutable_manifest": "MANIFEST_RUNTIME_MUTABLE.json",
@@ -28,12 +28,12 @@
     "why": "Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code."
   },
   "excluded_file_detail_count": 9,
-  "excluded_file_detail_suppressed_count": 1138,
+  "excluded_file_detail_suppressed_count": 1163,
   "excluded_file_detail_suppressed_summary": [
     {
       "reason": "generated_cache_directory",
-      "count": 1138,
-      "size_bytes": 67675366
+      "count": 1163,
+      "size_bytes": 67802586
     }
   ],
   "mutable_patterns": [
@@ -98,7 +98,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
       "exists": true,
-      "size_bytes": 815104,
+      "size_bytes": 827392,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
@@ -109,7 +109,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
       "exists": true,
-      "size_bytes": 315408384,
+      "size_bytes": 382140416,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
@@ -381,6 +381,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "docs/NLG_CONTRACT_V14_8_4.md",
+      "size_bytes": 11801,
+      "sha256": "b9a20711856504591f3eca49e6795af8cd50a9eaa2f7183e320ce3f3bbd3954b",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
       "size_bytes": 51513,
       "sha256": "ed82095ef9917c9fa16c07debc0fb11ecbd0bc3fa17990a1ff822a12e32cefe8",
@@ -402,6 +411,15 @@
       "path": "docs/PLAN_AKTUALIZACJI_v14_8_1_DUZA_AKTUALIZACJA.md",
       "size_bytes": 3270,
       "sha256": "4d2e763177af3b43bf68b4bdb0fb543db2c969cce6f120b1ff860ea569b57ff3",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "docs/PLAN_V14_8_4_MODEL_GUIDED_NLG_OPERATIONAL_THOUGHTS.md",
+      "size_bytes": 29911,
+      "sha256": "b9d5469d928a2de0fbe4fb345113bb1ea687d600978bbc0c57af2293cc6f10f3",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
@@ -2020,8 +2038,17 @@
     },
     {
       "path": "docs/UPDATE_V14_8_3_4_093_ORDINARY_DIALOGUE_NATURAL_PRESENCE.md",
-      "size_bytes": 1214,
-      "sha256": "81b43edda9620af52928bedc9209e8eb507e2da1b780a08b67ec6a80f3d8e7e5",
+      "size_bytes": 1232,
+      "sha256": "5b27f9227e234ad4af8ad5937cdf5fa7219dcac1940d17b14ad13a86ecca1c33",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "docs/UPDATE_V14_8_4_000_PLAN.md",
+      "size_bytes": 4588,
+      "sha256": "b86d6a075b3052100262189d42acbaeb11c5c9ae9554966f649bff549ba9791c",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
@@ -2056,8 +2083,8 @@
     },
     {
       "path": "latka_jazn/__init__.py",
-      "size_bytes": 107,
-      "sha256": "a55e48047925c31edda0ac3e67ea8c758540f71e1cde18f6d1c6655224f4831c",
+      "size_bytes": 109,
+      "sha256": "155eaed3f235769da37f3714ad4922de25274dee5d9f4bb8a396eb0fe88a331e",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -2128,8 +2155,8 @@
     },
     {
       "path": "latka_jazn/config.py",
-      "size_bytes": 7772,
-      "sha256": "3a1573fd9c9e85d34b674753b2d16576292a0d836ceb35d9e5250ba882b03386",
+      "size_bytes": 7914,
+      "sha256": "c53854167fa9e54a7a842907712afe2938617f60e30734ca49543581503337ef",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -2164,8 +2191,8 @@
     },
     {
       "path": "latka_jazn/core/affect_mixer.py",
-      "size_bytes": 2969,
-      "sha256": "df1ad3acdfbb070f36a8dcbf4f35c38b90b8a5e6e61c4750e08edf7fab4ee19f",
+      "size_bytes": 3043,
+      "sha256": "acba600c5796b8b7bcddbafc7e1bcfdf398b08504bc41640d1e08594b70f6cba",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -2470,8 +2497,8 @@
     },
     {
       "path": "latka_jazn/core/free_dialogue_synthesizer.py",
-      "size_bytes": 33446,
-      "sha256": "fbc7dd5133588f830b226f6317a0ea2929d2737d4cef4b0ca133c780550c6b2b",
+      "size_bytes": 34007,
+      "sha256": "829921e7a3d852e4ea67b0f4300f79ed57ed178c92672fb82b189598a8ef3739",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -2596,8 +2623,8 @@
     },
     {
       "path": "latka_jazn/core/handlers/ordinary_dialogue_handler.py",
-      "size_bytes": 6531,
-      "sha256": "d097501087ddcda4b2d4a334d1d3c05191be9e35971496e393e37bbec9d725bc",
+      "size_bytes": 6612,
+      "sha256": "5737f5bc466e7061b139627893d2446c822be19fc633c0cba54ae1a177057f27",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -4674,45 +4701,9 @@
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_3_4_089_CHATGPT_BRIDGE_PRIMARY_GITHUB.patch",
-      "size_bytes": 37872,
-      "sha256": "479e05cf5108a1c57963b320a15b8411e2b54a3599d4196b247a3e9f64681d89",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY_GITHUB_REBASED.patch",
-      "size_bytes": 37872,
-      "sha256": "e462cf5f9948847683011683447453d3423e9eaeed1508a39b6252dc7aab1021",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY_GITHUB_REBASED_v2.patch",
-      "size_bytes": 37802,
-      "sha256": "45f44ed0ef97ec5aa3000e1c02af9ac2ae6a1111d82c77369cd9a81b8eaac69a",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY_GITHUB_REBASED_v3.patch",
-      "size_bytes": 37801,
-      "sha256": "659e595769f981912d161531ef233ad5fd22aea75576f4d1cb1a39f44ab0e3e8",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
       "path": "LATKA_JAZN_v14_8_3_4_091_AUDIT.json",
-      "size_bytes": 129721,
-      "sha256": "b5e1cea6a69fa32c50c5571057dd3555ca9a9933cb2b7d59ee21e84d312659d1",
+      "size_bytes": 125021,
+      "sha256": "d641b98be9ee5729e90a4739426af0cb4aeb0258b65f2425b25a82ef1a15b8ce",
       "mutable_runtime": false,
       "classification": "static_project_file",
       "archive": false,
@@ -4720,56 +4711,29 @@
     },
     {
       "path": "LATKA_JAZN_v14_8_3_4_091_CHANGED_FILES.txt",
-      "size_bytes": 525,
-      "sha256": "72158c30ba29d25d331d42e6d0a1c44702a7d7012fdb13e43e5fa2ea8d721712",
+      "size_bytes": 509,
+      "sha256": "410500541835f92daebfabeb52d6a1477890faa0ae198c6c92d4fb15289521d6",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_3_4_091_MEMORY_TIMESTAMP_BRIDGE_REPAIR.patch",
-      "size_bytes": 1667817,
-      "sha256": "8f04959ad7cc76280ad17c816a9a3da45a65eb35419b24d74f7f1d342c59aa4d",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
       "path": "LATKA_JAZN_v14_8_3_4_091_REPORT.md",
-      "size_bytes": 4431,
-      "sha256": "c67347203414a2e54bb9300c8eef137817b6ff974fbec4011b83054c7867b6a2",
+      "size_bytes": 4344,
+      "sha256": "343ca62922817f493919c3517b0d129ab8500870a9b1968792cbc13525a075d3",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_3_4_092_MANIFEST_RUNTIME_SPLIT_HOTFIX.patch",
-      "size_bytes": 19965,
-      "sha256": "6162e2c075dccb6d60a6d95b42f12bf506a590d8e8237e5dc7c1f5633140d0f4",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
       "path": "LATKA_JAZN_v14_8_3_4_092_REPORT.md",
-      "size_bytes": 2641,
-      "sha256": "462010e7744fdb1c1d2af588315e7e7f640c0b0ff5a837da9b0865d17f742c24",
+      "size_bytes": 2591,
+      "sha256": "1755e5ee139fefad054432b0ec701d3e1ba0e5714037194008bd1655c6f23d5f",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_3_4_093_ORDINARY_DIALOGUE_NATURAL_PRESENCE.patch",
-      "size_bytes": 15752,
-      "sha256": "ccb1f4e986b0ffaccda5a8dd94442eccfc36121ed2c94041af6b7414d75ea47a",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
@@ -4783,8 +4747,8 @@
     },
     {
       "path": "main.py",
-      "size_bytes": 55479,
-      "sha256": "5a25e9a9c90d0812f03a400c0126bd07e7f24f3758e86e244fc5a444569b7a13",
+      "size_bytes": 56408,
+      "sha256": "e7b6ff45f38b191f4f9d8a02bb8cebe389628c1d72b6fb8c8d8afa490cff8d27",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -5418,6 +5382,69 @@
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_089_CHATGPT_BRIDGE_PRIMARY_GITHUB.patch",
+      "size_bytes": 37872,
+      "sha256": "479e05cf5108a1c57963b320a15b8411e2b54a3599d4196b247a3e9f64681d89",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY_GITHUB_REBASED.patch",
+      "size_bytes": 37872,
+      "sha256": "e462cf5f9948847683011683447453d3423e9eaeed1508a39b6252dc7aab1021",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY_GITHUB_REBASED_v2.patch",
+      "size_bytes": 37802,
+      "sha256": "45f44ed0ef97ec5aa3000e1c02af9ac2ae6a1111d82c77369cd9a81b8eaac69a",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY_GITHUB_REBASED_v3.patch",
+      "size_bytes": 37801,
+      "sha256": "659e595769f981912d161531ef233ad5fd22aea75576f4d1cb1a39f44ab0e3e8",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_091_MEMORY_TIMESTAMP_BRIDGE_REPAIR.patch",
+      "size_bytes": 1667817,
+      "sha256": "8f04959ad7cc76280ad17c816a9a3da45a65eb35419b24d74f7f1d342c59aa4d",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_092_MANIFEST_RUNTIME_SPLIT_HOTFIX.patch",
+      "size_bytes": 19965,
+      "sha256": "6162e2c075dccb6d60a6d95b42f12bf506a590d8e8237e5dc7c1f5633140d0f4",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "patchs/LATKA_JAZN_v14_8_3_4_093_ORDINARY_DIALOGUE_NATURAL_PRESENCE.patch",
+      "size_bytes": 15752,
+      "sha256": "ccb1f4e986b0ffaccda5a8dd94442eccfc36121ed2c94041af6b7414d75ea47a",
+      "mutable_runtime": false,
+      "classification": "archive_or_backup",
+      "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
@@ -6511,8 +6538,8 @@
     },
     {
       "path": "tests/test_v14834_ordinary_dialogue_natural_presence.py",
-      "size_bytes": 2585,
-      "sha256": "c2b51d408af357b54b9fb61f5bcca2472daff10ea1e035f20b32f57b0bc56e2a",
+      "size_bytes": 2647,
+      "sha256": "d5689730a6ac96aece57fba46b552408ead3b037aea6fff9619177f8aaa62c7b",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -6663,15 +6690,6 @@
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "tools/LATKA_JAZN_v14_8_2_5_refresh_manifest_mainpy_root_fix.zip",
-      "size_bytes": 8964,
-      "sha256": "84761f8a6fa25245d47eaf8ca4e902dc049f885179fe69fb7f515db7ca97b15a",
-      "mutable_runtime": false,
-      "classification": "static_code",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
       "path": "tools/memory_repair.py",
       "size_bytes": 2396,
       "sha256": "6c3bed7a7679e45ea6664dc7e0578a7402e8863b3b18be9e361537c5f6f1c708",
@@ -6745,8 +6763,8 @@
     },
     {
       "path": "VERSION.txt",
-      "size_bytes": 14,
-      "sha256": "914802b8a6c74341f9a3e9d05d6f0b581abe48e4d8aaf7e80b989c45970fb565",
+      "size_bytes": 15,
+      "sha256": "bcc00bc93c9cec99069e55f49e679c4299320c8e7bc4ca0cdc8ad8161a4e2312",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
@@ -6757,22 +6775,22 @@
     {
       "path": "MANIFEST_CURRENT.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 256210
+      "size_bytes": 255928
     },
     {
       "path": "MANIFEST_RUNTIME_MUTABLE.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 84967
+      "size_bytes": 85949
     },
     {
       "path": "SHA256SUMS",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85238
+      "size_bytes": 85385
     },
     {
       "path": "SHA256SUMS_STATIC",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 85238
+      "size_bytes": 85385
     },
     {
       "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/MANIFEST_CURRENT.json",
