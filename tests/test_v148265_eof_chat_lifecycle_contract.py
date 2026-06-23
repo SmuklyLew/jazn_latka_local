@@ -38,7 +38,7 @@ def test_chat_loop_reports_stdin_eof_without_claiming_background_process():
     assert payload["process_persistence"] == "ephemeral_stdin_pipe"
     assert payload["background_process_claim_allowed"] is False
     assert payload["session_id"] == "pytest-eof"
-    assert "--chat-jsonl" in payload["recommended_chatgpt_mode"]
+    assert "--chat-gpt" in payload["recommended_chatgpt_mode"]
 
 
 def test_chat_loop_reports_user_exit_command():

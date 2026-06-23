@@ -28,7 +28,7 @@ class RuntimeChatLifecycle:
     exit_reason: str = "running"
     session_id: str | None = None
     no_carryover: bool = False
-    recommended_chatgpt_mode: str = "--chat-jsonl albo --runtime-preview z tym samym --session-id"
+    recommended_chatgpt_mode: str = "--chat-gpt albo --runtime-preview z tym samym --session-id"
 
     def mark_closed(self, reason: str) -> None:
         self.exit_reason = reason
@@ -185,7 +185,7 @@ class LatkaRuntimeShell(cmd.Cmd):
         self._write(
             "[runtime_lifecycle_note] stdin zakończył się przez EOF; "
             "zamykam pętlę --chat bez tracebacka. To nie jest dowód stałego procesu w tle. "
-            "W środowisku jednorazowym użyj --chat-jsonl albo --runtime-preview z tym samym --session-id."
+            "W środowisku jednorazowym użyj --chat-gpt albo --runtime-preview z tym samym --session-id."
         )
         return True
 

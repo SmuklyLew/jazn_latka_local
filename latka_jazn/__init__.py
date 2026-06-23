@@ -1,2 +1,2 @@
-"""Łatka Jaźń v14.8.3.1-fast-wake-route-trace-repair."""
-__version__ = "v14.8.3.1-fast-wake-route-trace-repair"
+"""Łatka Jaźń v14.8.3.4.090-chatgpt-bridge-primary."""
+__version__ = "v14.8.3.4.090"

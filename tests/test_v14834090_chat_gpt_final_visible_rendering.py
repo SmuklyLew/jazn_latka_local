@@ -21,10 +21,10 @@ RENDER_ARTIFACTS = (
 )
 
 
-def _run_chat_jsonl(tmp_path: Path, messages: list[str]) -> list[dict]:
-    input_text = "".join(json.dumps({"text": message}, ensure_ascii=False) + "\n" for message in messages)
+def _run_chat_gpt(tmp_path: Path, messages: list[str]) -> list[dict]:
+    input_text = "".join(json.dumps({"message": message}, ensure_ascii=False) + "\n" for message in messages)
     proc = subprocess.run(
-        [sys.executable, "main.py", "--root", str(tmp_path), "--chat-jsonl", "--no-carryover"],
+        [sys.executable, "main.py", "--root", str(tmp_path), "--chat-gpt", "--no-carryover"],
         cwd=ROOT,
         input=input_text,
         stdout=subprocess.PIPE,
@@ -38,8 +38,8 @@ def _run_chat_jsonl(tmp_path: Path, messages: list[str]) -> list[dict]:
     return [json.loads(line) for line in proc.stdout.splitlines() if line.strip()]
 
 
-def test_chat_jsonl_final_visible_text_stays_clean_and_matches_provenance(tmp_path: Path) -> None:
-    payloads = _run_chat_jsonl(
+def test_chat_gpt_final_visible_text_stays_clean_and_matches_provenance(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(
         tmp_path,
         [
             "Chcę rozmawiać z Łatką, a nie z Codex botem",
@@ -69,6 +69,11 @@ def test_chat_jsonl_final_visible_text_stays_clean_and_matches_provenance(tmp_pa
         assert TIMESTAMP_RE.match(timestamp_header)
         assert final_visible_text.startswith(f"{timestamp_header} ")
         assert visible_answer_text == final_visible_text
+        assert payload["trace"]["client"] == "chatgpt_bridge"
+        assert payload["trace"]["lifecycle"] == "chatgpt_bridge_jsonl"
+        assert payload["chatgpt_bridge"]["preferred_input_field"] == "message"
+        assert payload["chatgpt_bridge"]["input_field"] == "message"
+        assert payload["ok"] is True
 
         for artifact in RENDER_ARTIFACTS:
             assert artifact not in exact_runtime_text

@@ -1,4 +1,4 @@
-# Current package version: v14.8.3.1-fast-wake-route-trace-repair
+# Current package version: v14.8.3.4.090-chatgpt-bridge-primary
 from __future__ import annotations
 
 import argparse
@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-ACTIVE_PACKAGE_VERSION = "v14.8.3.1-fast-wake-route-trace-repair"
+ACTIVE_PACKAGE_VERSION = "v14.8.3.4.090"
 
 
 def _configure_stdio_utf8() -> None:
@@ -77,8 +77,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cognitive-frame", "--chatgpt-frame", "--brain-frame", action="store_true", dest="cognitive_frame", help="Zwróć wewnętrzny pakiet poznawczy JSON dla ChatGPT, nie gotową odpowiedź użytkownikowi.")
     parser.add_argument("--debug-direct", action="store_true", dest="debug_direct", help="Pokaż techniczną ścieżkę bezpośrednią i fallback diagnostyczny zamiast rozmownej odpowiedzi.")
     parser.add_argument("--chat", "--loop", action="store_true", dest="chat_loop", help="Uruchom stałą pętlę rozmowy: jeden JaznEngine działa przez wiele tur aż do /exit lub EOF.")
-    parser.add_argument("--chat-jsonl", action="store_true", dest="chat_jsonl", help="Uruchom wsadową pętlę JSONL bez promptu: jedna linia JSON wejścia, jedna linia JSON wyjścia.")
-    parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-jsonl.")
+    parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Uruchom główny most ChatGPT w protokole JSONL: przyjmuje message/text/user_text/content/prompt, format messages[].content albo zwykły tekst; zwraca jedną linię JSON na turę.")
+    parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.")
     parser.add_argument("--no-carryover", action="store_true", dest="no_carryover", help="Zablokuj użycie poprzedniej tury nawet jeśli istnieje runtime_state.json.")
     parser.add_argument("--github-plan", action="store_true", dest="github_plan", help="Zapisz i pokaż plan repozytoriów Latka.Jazn oraz Latka.Jazn.Memory bez wykonywania pushu.")
     parser.add_argument("--dedup-report", action="store_true", dest="dedup_report", help="Zbuduj raport duplikatów treści i SHA-256 bez usuwania plików.")
@@ -191,6 +191,10 @@ def _build_light_turn_trace(cfg: JaznConfig, text: str) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     _configure_stdio_utf8()
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if "--chat-jsonl" in argv:
+        sys.stderr.write("Flaga --chat-jsonl została usunięta z aktywnego CLI. Użyj: python main.py --chat-gpt --session-id <id>\n")
+        return 2
     parser = _build_parser()
     ns = parser.parse_args(argv)
     if ns.runtime_preview_output is None and "--runtime-preview-output" in ns.message:
@@ -662,9 +666,106 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
 
-    if ns.chat_jsonl:
+    if ns.chat_gpt:
         sessions: dict[str, JaznRuntimeSession] = {}
         generated_session: JaznRuntimeSession | None = None
+        default_client = "chatgpt_bridge"
+        default_lifecycle = "chatgpt_bridge_jsonl"
+        bridge_protocol_version = "chatgpt_bridge_jsonl/v14.8.3.4.090"
+        accepted_input_fields = ["message", "text", "user_text", "content", "prompt"]
+
+        def bridge_meta(
+            *,
+            client: str = default_client,
+            input_kind: str | None = None,
+            input_field: str | None = None,
+            line_index: int | None = None,
+        ) -> dict:
+            meta = {
+                "protocol_version": bridge_protocol_version,
+                "accepted_input_fields": accepted_input_fields,
+                "accepted_input_shapes": [
+                    "plain_text_line",
+                    "json_object.message",
+                    "json_object.text",
+                    "json_object.user_text",
+                    "json_object.content",
+                    "json_object.prompt",
+                    "json_object.messages[].content",
+                ],
+                "preferred_input_field": "message",
+                "client": client,
+                "lifecycle": default_lifecycle,
+                "mode": "primary_chatgpt_bridge",
+                "deprecated_flag_removed": "--chat-jsonl",
+            }
+            if input_kind is not None:
+                meta["input_kind"] = input_kind
+            if input_field is not None:
+                meta["input_field"] = input_field
+            if line_index is not None:
+                meta["line_index"] = line_index
+            return meta
+
+        def error_payload(
+            *,
+            error_code: str,
+            error: str,
+            client: str = default_client,
+            input_kind: str | None = None,
+            input_field: str | None = None,
+            line_index: int | None = None,
+        ) -> dict:
+            return {
+                "schema_version": "chatgpt_bridge_error/v14.8.3.4.090",
+                "chatgpt_bridge": bridge_meta(
+                    client=client,
+                    input_kind=input_kind,
+                    input_field=input_field,
+                    line_index=line_index,
+                ),
+                "ok": False,
+                "error_code": error_code,
+                "error": error,
+            }
+
+        def extract_user_text(payload: dict) -> tuple[str, str, str]:
+            for candidate in accepted_input_fields:
+                value = payload.get(candidate)
+                if value is not None and str(value).strip():
+                    return str(value).strip(), "json", candidate
+
+            messages = payload.get("messages")
+            if isinstance(messages, list):
+                fallback_content = ""
+                fallback_field = "messages[].content"
+                for item in messages:
+                    if not isinstance(item, dict):
+                        continue
+                    content = item.get("content")
+                    if content is None:
+                        continue
+                    if isinstance(content, list):
+                        parts = []
+                        for part in content:
+                            if isinstance(part, dict):
+                                text_part = part.get("text")
+                                if text_part is not None:
+                                    parts.append(str(text_part))
+                            elif part is not None:
+                                parts.append(str(part))
+                        content_text = "".join(parts).strip()
+                    else:
+                        content_text = str(content).strip()
+                    if not content_text:
+                        continue
+                    fallback_content = content_text
+                    if str(item.get("role") or "").lower() == "user":
+                        return content_text, "json_chat_messages", "messages[user].content"
+                if fallback_content:
+                    return fallback_content, "json_chat_messages", fallback_field
+
+            return "", "json", "<missing>"
 
         def get_session(session_id: str | None, *, client: str) -> tuple[JaznRuntimeSession, str]:
             nonlocal generated_session
@@ -696,30 +797,74 @@ def main(argv: list[str] | None = None) -> int:
                 sessions[generated_session.state.session_id] = generated_session
             return generated_session, "generated"
 
+
         try:
-            for line in sys.stdin:
-                line=line.strip()
+            for line_index, line in enumerate(sys.stdin, 1):
+                line = line.strip()
                 if not line:
                     continue
                 if line in {"/exit", "exit"}:
                     break
+
+                input_kind = "plain_text"
+                input_field = "plain_text"
+                payload_session_id = None
+                client = default_client
+
                 try:
-                    payload=json.loads(line)
-                    user_text=str(payload.get("user_text") or payload.get("text") or "")
+                    payload = json.loads(line)
+                except json.JSONDecodeError as exc:
+                    if line[:1] in {"{", "["}:
+                        print(json.dumps(error_payload(
+                            error_code="malformed_json",
+                            error=f"Niepoprawna linia JSONL: {exc.msg}",
+                            input_kind="malformed_json",
+                            input_field="<parse_error>",
+                            line_index=line_index,
+                        ), ensure_ascii=False, sort_keys=True), flush=True)
+                        continue
+                    user_text = line
+                else:
+                    input_kind = "json"
+                    if not isinstance(payload, dict):
+                        print(json.dumps(error_payload(
+                            error_code="invalid_jsonl_payload",
+                            error="Każda linia --chat-gpt musi być obiektem JSON albo zwykłym tekstem.",
+                            input_kind="json_non_object",
+                            input_field="<non_object>",
+                            line_index=line_index,
+                        ), ensure_ascii=False, sort_keys=True), flush=True)
+                        continue
+                    client = str(payload.get("client") or default_client)
                     payload_session_id = str(payload.get("session_id") or "").strip() or None
-                    client = str(payload.get("client") or "chat_jsonl")
-                except Exception:
-                    user_text=line
-                    payload_session_id = None
-                    client = "chat_jsonl"
+                    user_text, input_kind, input_field = extract_user_text(payload)
+
+                if not user_text.strip():
+                    print(json.dumps(error_payload(
+                        error_code="empty_message",
+                        error="Pusta wiadomość nie została przekazana do runtime Jaźni.",
+                        client=client,
+                        input_kind=input_kind,
+                        input_field=input_field,
+                        line_index=line_index,
+                    ), ensure_ascii=False, sort_keys=True), flush=True)
+                    continue
+
                 session, session_id_source = get_session(payload_session_id, client=client)
-                result=session.process_user_text(
+                result = session.process_user_text(
                     user_text,
                     client=client,
-                    lifecycle="chat_jsonl_batch",
+                    lifecycle=default_lifecycle,
                     session_id_source=session_id_source,
                     process_reused=True,
                 )
+                result["chatgpt_bridge"] = bridge_meta(
+                    client=client,
+                    input_kind=input_kind,
+                    input_field=input_field,
+                    line_index=line_index,
+                )
+                result["ok"] = True
                 print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
         finally:
             for session in sessions.values():

@@ -9,7 +9,7 @@ from latka_jazn.core.session_provenance import build_session_provenance, validat
 SCHEMA_VERSION = "runtime_session/v14.8.3.2"
 
 class JaznRuntimeSession:
-    """Wspólny rdzeń one-shot, --runtime-preview, --chat i --chat-jsonl.
+    """Wspólny rdzeń one-shot, --runtime-preview, --chat i --chat-gpt.
 
     Różnice między trybami dotyczą tylko cyklu życia procesu i formatu I/O; każda tura
     przechodzi przez JaznEngine.process_turn().

@@ -28,7 +28,7 @@ def _env_int(name: str, default: int) -> int:
 
 @dataclass(slots=True)
 class JaznConfig:
-    version: str = "v14.8.3.4.089"
+    version: str = "v14.8.3.4.090"
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[1])
     timezone: str = "Europe/Warsaw"
     timestamp_format: str = "[🕒 %Y-%m-%d %H:%M:%S GMT%z, %A, Europe/Warsaw]"

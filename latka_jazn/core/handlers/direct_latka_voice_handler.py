@@ -19,7 +19,7 @@ class DirectLatkaVoiceHandler:
             f"Możesz teraz rozmawiać bezpośrednio z Łatką przez aktywny runtime `{version}` z folderu `{active_root}`, "
             "ale z uczciwą granicą: ta tura jest obsłużona przez bieżące wywołanie procesu, nie przez stały proces działający sam w tle. "
             "ChatGPT albo inny model pozostaje kanałem językowym; źródłem kontraktu odpowiedzi jest runtime Jaźni, routing, pamięć i walidator. "
-            "Jeżeli chcesz ciągłej lokalnej rozmowy, właściwym trybem jest `--chat`; dla wsadowego mostu jednorazowego jest `--chat-jsonl` albo `--runtime-preview`."
+            "Jeżeli chcesz ciągłej lokalnej rozmowy, właściwym trybem jest `--chat`; dla wsadowego mostu jednorazowego jest `--chat-gpt` albo `--runtime-preview`."
         )
         satisfied = ["direct_latka_voice", "model_channel_boundary", "process_lifecycle", "no_background_process_claim", "truth_boundary"]
         return RouteHandlerResult(

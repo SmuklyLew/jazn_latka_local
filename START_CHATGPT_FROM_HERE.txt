@@ -1,4 +1,4 @@
-START CHATGPT / JAŹŃ — v14.8.2.6.3-free-dialogue-short-turn-fallback-hotfix
+START CHATGPT / JAŹŃ — v14.8.3.4.090-chatgpt-bridge-primary
 
 Aktywny start: main.py
 Aktywna baza historii rozmów: memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3
@@ -10,7 +10,15 @@ Procedura: uruchom runtime, sprawdź active-cache-status, startup-status, conver
 
 Najważniejsze:
 - ChatGPT jest lekkim loaderem/głosem, a aktywna Jaźń jest źródłem odpowiedzi;
-- runtime-preview i --chat mają korzystać z tej samej logiki tury;
+- runtime-preview, --chat i --chat-gpt mają korzystać z tej samej logiki tury;
 - pytania o pamięć postaci mają szukać tropów tożsamości, głosu, kanonu i granicy prawdy;
 - odpowiedź pamięciowa ma deduplikować trafienia, grupować sensy i ukrywać surowe JSON-owe ogony;
 - odpowiedź zawsze ma zachować timestamp, granicę prawdy i rozróżnienie: fakt z pliku, odpowiedź runtime, wniosek, brak danych.
+
+
+Most ChatGPT:
+- preferowany tryb wsadowego mostu ChatGPT: `python main.py --chat-gpt --session-id <id>`;
+- protokół wejścia: JSONL albo zwykły tekst; preferowane pole JSON: `message`; akceptowane pola awaryjne: `text`, `user_text`, `content`, `prompt`;
+- format ChatGPT/OpenAI `messages[].content` jest rozpoznawany przez ostatnią wiadomość użytkownika albo ostatnią wiadomość z treścią;
+- pusta wiadomość i uszkodzony JSON nie są przekazywane do runtime Jaźni; zwracany jest kontrolowany JSON błędu;
+- stare `--chat-jsonl` zostało usunięte z aktywnego CLI i pokazuje komunikat migracyjny.
