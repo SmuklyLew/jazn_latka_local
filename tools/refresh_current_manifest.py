@@ -64,6 +64,7 @@ CONTROL_EXCLUDED = {'MANIFEST_CURRENT.json','MANIFEST_RUNTIME_MUTABLE.json','SHA
 EXCLUDE_DIR_PARTS = {'__pycache__','.pytest_cache','.git','.mypy_cache','.ruff_cache'}
 TRANSIENT_SUFFIXES = ('-wal','-shm','.sqlite3-wal','.sqlite3-shm','.tmp','.tmp_extract_part','.partial')
 EXCLUDE_PREFIXES = ('exports/',)
+EXCLUDED_DETAIL_SUPPRESSED_REASONS = {'generated_cache_directory'}
 MUTABLE_PATTERNS = (
     'workspace_runtime/**/*.sqlite3','workspace_runtime/**/*.json','workspace_runtime/**/*.jsonl','workspace_runtime/**/*.log',
     'workspace_runtime/logs/**','workspace_runtime/turn_checkpoints/**','workspace_runtime/codex_session_bridge/**',
@@ -123,13 +124,21 @@ def build(root: Path) -> tuple[dict[str,Any],dict[str,Any]]:
     semver=version.split('-',1)[0].lstrip('v')
     now=datetime.now(timezone.utc).isoformat()
     entries=[]; excluded=[]; deferred=[]
+    excluded_file_count=0
+    excluded_detail_suppressed: dict[str, dict[str, Any]] = {}
     for path in sorted(root.rglob('*')):
         if not path.is_file(): continue
         rel=path.relative_to(root).as_posix()
         reason=exclusion_reason(rel)
         st=path.stat()
         if reason:
-            excluded.append({'path':rel,'reason':reason,'size_bytes':st.st_size})
+            excluded_file_count += 1
+            if reason in EXCLUDED_DETAIL_SUPPRESSED_REASONS:
+                summary = excluded_detail_suppressed.setdefault(reason, {'reason':reason,'count':0,'size_bytes':0})
+                summary['count'] += 1
+                summary['size_bytes'] += st.st_size
+            else:
+                excluded.append({'path':rel,'reason':reason,'size_bytes':st.st_size})
             continue
         classification=classify(rel)
         mutable=classification=='mutable_runtime'
@@ -156,8 +165,11 @@ def build(root: Path) -> tuple[dict[str,Any],dict[str,Any]]:
     }
     manifest={
         'schema_version':f'manifest_current/v{semver}',**common,
-        'file_count':len(entries),'static_file_count':len(static_entries),'mutable_runtime_file_count':len(mutable_entries),'archive_file_count':len(archive_entries),'excluded_file_count':len(excluded),'deferred_hash_file_count':len(deferred),
+        'file_count':len(entries),'static_file_count':len(static_entries),'mutable_runtime_file_count':len(mutable_entries),'archive_file_count':len(archive_entries),'excluded_file_count':excluded_file_count,'deferred_hash_file_count':len(deferred),
         'hash_size_limit_bytes':HASH_SIZE_LIMIT,
+        'excluded_file_detail_count':len(excluded),
+        'excluded_file_detail_suppressed_count':sum(item['count'] for item in excluded_detail_suppressed.values()),
+        'excluded_file_detail_suppressed_summary':list(excluded_detail_suppressed.values()),
         'mutable_patterns':list(MUTABLE_PATTERNS),
         'excluded_policy':{'control_files_excluded_from_own_hash':sorted(CONTROL_EXCLUDED),'directory_parts_excluded':sorted(EXCLUDE_DIR_PARTS),'transient_suffixes_excluded':list(TRANSIENT_SUFFIXES),'prefixes_excluded':list(EXCLUDE_PREFIXES),'truth_boundary':'MANIFEST_CURRENT.json, MANIFEST_RUNTIME_MUTABLE.json i SHA256SUMS są wyłączone z listy hashowanej, żeby uniknąć samoreferencyjnego SHA. WAL/SHM, cache i eksporty są runtime/transient.'},
         'sqlite_diagnostics':sqlite_diag(root),
@@ -192,7 +204,7 @@ def main() -> int:
     out=root
     write_json(out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json', manifest)
     write_json(out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json', mutable_manifest)
-    report={'generated_at_utc':manifest['generated_at_utc'],'root':str(root),'version':manifest['version'],'file_count':manifest['file_count'],'static_file_count':manifest['static_file_count'],'mutable_runtime_file_count':manifest['mutable_runtime_file_count'],'archive_file_count':manifest['archive_file_count'],'excluded_file_count':manifest['excluded_file_count'],'deferred_hash_file_count':manifest['deferred_hash_file_count'],'active_database':manifest['active_database'],'audit_database':manifest['audit_database'],'sqlite_diagnostics':manifest['sqlite_diagnostics'],'outputs':[str((out/'MANIFEST_CURRENT.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.json').resolve()),str((out/'SHA256SUMS').resolve()),str((out/'SHA256SUMS_STATIC').resolve()),str((out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json').resolve())]}
+    report={'generated_at_utc':manifest['generated_at_utc'],'root':str(root),'version':manifest['version'],'file_count':manifest['file_count'],'static_file_count':manifest['static_file_count'],'mutable_runtime_file_count':manifest['mutable_runtime_file_count'],'archive_file_count':manifest['archive_file_count'],'excluded_file_count':manifest['excluded_file_count'],'excluded_file_detail_count':manifest.get('excluded_file_detail_count', len(manifest.get('excluded_files', []))),'excluded_file_detail_suppressed_count':manifest.get('excluded_file_detail_suppressed_count', 0),'deferred_hash_file_count':manifest['deferred_hash_file_count'],'active_database':manifest['active_database'],'audit_database':manifest['audit_database'],'sqlite_diagnostics':manifest['sqlite_diagnostics'],'outputs':[str((out/'MANIFEST_CURRENT.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.json').resolve()),str((out/'SHA256SUMS').resolve()),str((out/'SHA256SUMS_STATIC').resolve()),str((out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json').resolve())]}
     write_json(out/'LATKA_JAZN_MANIFEST_REPAIR_REPORT.v14_8_2_5.json', report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
