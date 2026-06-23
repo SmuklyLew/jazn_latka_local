@@ -1,4 +1,4 @@
-# Current package version: v14.8.3.4.092-manifest-runtime-split-hotfix
+# Current package version: v14.8.3.4.093-ordinary-dialogue-natural-presence-repair
 from __future__ import annotations
 
 import argparse
@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-ACTIVE_PACKAGE_VERSION = "v14.8.3.4.092"
+ACTIVE_PACKAGE_VERSION = "v14.8.3.4.093"
 
 
 def _configure_stdio_utf8() -> None:
@@ -671,7 +671,7 @@ def main(argv: list[str] | None = None) -> int:
         generated_session: JaznRuntimeSession | None = None
         default_client = "chatgpt_bridge"
         default_lifecycle = "chatgpt_bridge_jsonl"
-        bridge_protocol_version = "chatgpt_bridge_jsonl/v14.8.3.4.092"
+        bridge_protocol_version = "chatgpt_bridge_jsonl/v14.8.3.4.093"
         accepted_input_fields = ["message", "text", "user_text", "content", "prompt"]
 
         def bridge_meta(
@@ -717,7 +717,7 @@ def main(argv: list[str] | None = None) -> int:
             line_index: int | None = None,
         ) -> dict:
             return {
-                "schema_version": "chatgpt_bridge_error/v14.8.3.4.092",
+                "schema_version": "chatgpt_bridge_error/v14.8.3.4.093",
                 "chatgpt_bridge": bridge_meta(
                     client=client,
                     input_kind=input_kind,
