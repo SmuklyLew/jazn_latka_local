@@ -1,0 +1,4701 @@
+{
+  "source_zip": "/mnt/data/jazn_v14.8.3.4.090.zip",
+  "source_zip_sha256": "78e277ca5c1697c38372aa8cddf1b85e37ecb871d14e9a6676d3f9ad8d48a080",
+  "zip_file_count": 782,
+  "zip_total_uncompressed_bytes": 3525339867,
+  "note": "Audyt central directory ZIP + pełny SHA256 ZIP. Duże pliki pamięci nie były ładowane w całości do RAM; kod i dokumenty zostały rozpakowane/analizowane, a największe pamięci sprawdzane przez integralność ZIP/SQLite gdy dostępne.",
+  "files": [
+    {
+      "path": ".codex/.codex/log/codex-tui.log",
+      "size_bytes": 467878,
+      "compress_size": 20615,
+      "crc": "0cbdfd38"
+    },
+    {
+      "path": ".codex/config.toml",
+      "size_bytes": 698,
+      "compress_size": 425,
+      "crc": "654d6931"
+    },
+    {
+      "path": ".gitattributes",
+      "size_bytes": 191,
+      "compress_size": 94,
+      "crc": "c0a74569"
+    },
+    {
+      "path": ".gitignore",
+      "size_bytes": 813,
+      "compress_size": 431,
+      "crc": "f7378d21"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_sear0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "compress_size": 1305,
+      "crc": "bb7db3c5"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_sear0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "compress_size": 2712,
+      "crc": "29d7519a"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_sear0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "compress_size": 1024,
+      "crc": "2b4cc93c"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_sear0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "compress_size": 954,
+      "crc": "88d5f3f1"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_stat0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "compress_size": 1305,
+      "crc": "bb7db3c5"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_stat0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "compress_size": 2712,
+      "crc": "29d7519a"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_stat0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "compress_size": 1024,
+      "crc": "2b4cc93c"
+    },
+    {
+      "path": ".pytest-tmp/test_conversation_archive_stat0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "compress_size": 954,
+      "crc": "88d5f3f1"
+    },
+    {
+      "path": ".pytest-tmp/test_startup_status_exposes_co0/main.py",
+      "size_bytes": 19,
+      "compress_size": 21,
+      "crc": "3b448077"
+    },
+    {
+      "path": ".pytest-tmp/test_startup_status_exposes_co0/MANIFEST_CURRENT.json",
+      "size_bytes": 2,
+      "compress_size": 4,
+      "crc": "a3a6bf43"
+    },
+    {
+      "path": ".pytest-tmp/test_startup_status_exposes_co0/memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
+      "size_bytes": 887,
+      "compress_size": 495,
+      "crc": "e3ad7b2c"
+    },
+    {
+      "path": ".pytest-tmp/test_startup_status_exposes_co0/VERSION.txt",
+      "size_bytes": 18,
+      "compress_size": 20,
+      "crc": "51daf80a"
+    },
+    {
+      "path": ".pytest-tmp/test_startup_status_exposes_co0/workspace_runtime/project_startup_index_v14_6_10.json",
+      "size_bytes": 2984,
+      "compress_size": 1150,
+      "crc": "b7d77cbf"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_dee0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "compress_size": 1305,
+      "crc": "bb7db3c5"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_dee0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "compress_size": 2712,
+      "crc": "29d7519a"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_dee0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "compress_size": 1024,
+      "crc": "2b4cc93c"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_dee0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "compress_size": 954,
+      "crc": "88d5f3f1"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_met0/memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 45056,
+      "compress_size": 1305,
+      "crc": "bb7db3c5"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_met0/memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 90112,
+      "compress_size": 2712,
+      "crc": "29d7519a"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_met0/memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 36864,
+      "compress_size": 1024,
+      "crc": "2b4cc93c"
+    },
+    {
+      "path": ".pytest-tmp/test_v14831_archive_status_met0/memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 28672,
+      "compress_size": 954,
+      "crc": "88d5f3f1"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "size_bytes": 291,
+      "compress_size": 203,
+      "crc": "50f7242b"
+    },
+    {
+      "path": "ACTIVE_RUNTIME_CACHE_CONTRACT.json",
+      "size_bytes": 1423,
+      "compress_size": 510,
+      "crc": "eb053a8a"
+    },
+    {
+      "path": "AGENTS.md",
+      "size_bytes": 23127,
+      "compress_size": 9094,
+      "crc": "96bb3518"
+    },
+    {
+      "path": "audit_memory_unification_sources.py",
+      "size_bytes": 25555,
+      "compress_size": 6627,
+      "crc": "0b97e5fa"
+    },
+    {
+      "path": "BOOTSTRAP_JAZN_CURRENT.json",
+      "size_bytes": 1470,
+      "compress_size": 536,
+      "crc": "a465c90d"
+    },
+    {
+      "path": "docs/AKTUALIZACJA_V14_5_34.md",
+      "size_bytes": 1548,
+      "compress_size": 939,
+      "crc": "327601d4"
+    },
+    {
+      "path": "docs/DZIENNIK_SCHEMA_v14_5_1.md",
+      "size_bytes": 2144,
+      "compress_size": 1152,
+      "crc": "c1466425"
+    },
+    {
+      "path": "docs/EXTERNAL_RESEARCH_TOOL_POLICY_v14_7_0.md",
+      "size_bytes": 924,
+      "compress_size": 579,
+      "crc": "34a3a59a"
+    },
+    {
+      "path": "docs/FUTURE_MODEL_MIGRATION_GUIDE_v14_7_0.md",
+      "size_bytes": 932,
+      "compress_size": 581,
+      "crc": "00215f8a"
+    },
+    {
+      "path": "docs/GITHUB_REPOSITORY_WORKFLOW.md",
+      "size_bytes": 1591,
+      "compress_size": 904,
+      "crc": "da6b8178"
+    },
+    {
+      "path": "docs/HUMAN_NEURO_PSYCH_REFERENCES.md",
+      "size_bytes": 1041,
+      "compress_size": 604,
+      "crc": "1e1491aa"
+    },
+    {
+      "path": "docs/IDENTITY_ORIGIN_CONTRACT.md",
+      "size_bytes": 735,
+      "compress_size": 475,
+      "crc": "21b59041"
+    },
+    {
+      "path": "docs/JAZN_v14_6_9_4_PELNA_LISTA_DO_AKTUALIZACJI.md",
+      "size_bytes": 37583,
+      "compress_size": 13100,
+      "crc": "8ea6189b"
+    },
+    {
+      "path": "docs/JAZN_VOICE_SOURCE_CONTRACT_v14_7_0.md",
+      "size_bytes": 912,
+      "compress_size": 573,
+      "crc": "419063a8"
+    },
+    {
+      "path": "docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+      "size_bytes": 6967,
+      "compress_size": 3172,
+      "crc": "e4e3ce1a"
+    },
+    {
+      "path": "docs/MEMORY_IMPORTANCE_AND_SELF_CLARIFICATION.md",
+      "size_bytes": 576,
+      "compress_size": 386,
+      "crc": "4f8b8ad6"
+    },
+    {
+      "path": "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
+      "size_bytes": 2143,
+      "compress_size": 1114,
+      "crc": "df188c30"
+    },
+    {
+      "path": "docs/MEMORY_RECALL_CONTENT_CONTRACT_v14_7_0.md",
+      "size_bytes": 919,
+      "compress_size": 573,
+      "crc": "e2fdeb60"
+    },
+    {
+      "path": "docs/MODEL_ADAPTER_CONTRACT_v14_7_0.md",
+      "size_bytes": 906,
+      "compress_size": 570,
+      "crc": "8bfae29f"
+    },
+    {
+      "path": "docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
+      "size_bytes": 51513,
+      "compress_size": 17609,
+      "crc": "cbd029c1"
+    },
+    {
+      "path": "docs/PLAN_AKTUALIZACJI_v14_8_0_NLP_SJP_NETWORK.md",
+      "size_bytes": 5085,
+      "compress_size": 2445,
+      "crc": "3cc8a903"
+    },
+    {
+      "path": "docs/PLAN_AKTUALIZACJI_v14_8_1_DUZA_AKTUALIZACJA.md",
+      "size_bytes": 3270,
+      "compress_size": 1689,
+      "crc": "660647c7"
+    },
+    {
+      "path": "docs/POLISH_NLP_NETWORK_DICTIONARY_POLICY_v14_7_0.md",
+      "size_bytes": 927,
+      "compress_size": 584,
+      "crc": "07c04113"
+    },
+    {
+      "path": "docs/RAW_MEMORY_IMPORT_POLICY_v14_7_0.md",
+      "size_bytes": 936,
+      "compress_size": 589,
+      "crc": "be7bf8b9"
+    },
+    {
+      "path": "docs/REGRESSION_TEST_PLAN_v14_7_0.md",
+      "size_bytes": 909,
+      "compress_size": 571,
+      "crc": "39e92355"
+    },
+    {
+      "path": "docs/RUNTIME_EVENT_LEDGER_PROTOCOL.md",
+      "size_bytes": 1942,
+      "compress_size": 998,
+      "crc": "977a0a33"
+    },
+    {
+      "path": "docs/RUNTIME_MEMORY_PROTOCOL.md",
+      "size_bytes": 1413,
+      "compress_size": 773,
+      "crc": "c3b34dfa"
+    },
+    {
+      "path": "docs/RUNTIME_RENDERING_MODES_v14_7_0.md",
+      "size_bytes": 917,
+      "compress_size": 571,
+      "crc": "fc344f4b"
+    },
+    {
+      "path": "docs/TRUTH_BOUNDARY_RELATIONAL_SAFETY_v14_7_0.md",
+      "size_bytes": 922,
+      "compress_size": 579,
+      "crc": "c82fd618"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_6_9_4.md",
+      "size_bytes": 4334,
+      "compress_size": 2014,
+      "crc": "b4667aa6"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_6_9_5_STANDALONE_GREETING_STALE_CONTEXT_HOTFIX.md",
+      "size_bytes": 4462,
+      "compress_size": 2060,
+      "crc": "47489341"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_0.md",
+      "size_bytes": 1193,
+      "compress_size": 686,
+      "crc": "fdeff5ed"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_1_DUZA_AKTUALIZACJA.md",
+      "size_bytes": 2226,
+      "compress_size": 1095,
+      "crc": "3f212c64"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_4_VERSION_ALIGNMENT.md",
+      "size_bytes": 503,
+      "compress_size": 328,
+      "crc": "6707ee23"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_5_CANONICAL_SHARDED_MEMORY_BOOTSTRAP_CODE_CONTRACT.md",
+      "size_bytes": 560,
+      "compress_size": 360,
+      "crc": "d7c01009"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_5_FINAL_RESPONSE_PRESERVE_HANDLER_BODY_HOTFIX.md",
+      "size_bytes": 1695,
+      "compress_size": 910,
+      "crc": "db1c1abc"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_5_ROUTE_MEMORY_CAPABILITY_HOTFIX.md",
+      "size_bytes": 1166,
+      "compress_size": 656,
+      "crc": "cd6f7a81"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_6_0_SELF_MEMORY_RECALL_PRESENTATION_QUALITY_HOTFIX.md",
+      "size_bytes": 1347,
+      "compress_size": 818,
+      "crc": "84f87473"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_6_1_NON_MEMORY_INTENT_MEMORY_GATING_HOTFIX.md",
+      "size_bytes": 1566,
+      "compress_size": 872,
+      "crc": "707c9b63"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_6_2_RUNTIME_CONTRACT_VERSION_NORMALIZER_HOTFIX.md",
+      "size_bytes": 1677,
+      "compress_size": 874,
+      "crc": "858739fe"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_6_3_FREE_DIALOGUE_SHORT_TURN_FALLBACK_HOTFIX.md",
+      "size_bytes": 1252,
+      "compress_size": 677,
+      "crc": "71d6a230"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_6_5_EOF_CHAT_LIFECYCLE_CONTRACT.md",
+      "size_bytes": 1214,
+      "compress_size": 723,
+      "crc": "62d96b97"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_2_LOGIC_ROUTING_MEMORY_GROUNDING_REPAIR.md",
+      "size_bytes": 931,
+      "compress_size": 597,
+      "crc": "e04f7e8d"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_3_POLISH_REASONING_MVP.md",
+      "size_bytes": 3729,
+      "compress_size": 1647,
+      "crc": "95c15b1d"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_3_ROUTE_STATUS_MARKER_ROUTING_HOTFIX.md",
+      "size_bytes": 1675,
+      "compress_size": 790,
+      "crc": "19262c28"
+    },
+    {
+      "path": "docs/update_history/CHANGELOG_v14_8_4_MORFEUSZ_POLIMORF_REAL_PROVIDER.md",
+      "size_bytes": 2453,
+      "compress_size": 1319,
+      "crc": "e81dc9a5"
+    },
+    {
+      "path": "docs/update_history/changelogs/CHANGELOG_v14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY.md",
+      "size_bytes": 720,
+      "compress_size": 476,
+      "crc": "49e32e41"
+    },
+    {
+      "path": "docs/update_history/checksums/DOWNLOAD_SAFE_MANIFEST.json",
+      "size_bytes": 828,
+      "compress_size": 466,
+      "crc": "aa2abbf8"
+    },
+    {
+      "path": "docs/update_history/checksums/SHA256SUMS.txt",
+      "size_bytes": 70381,
+      "compress_size": 30888,
+      "crc": "4f2fc862"
+    },
+    {
+      "path": "docs/update_history/INDEX.json",
+      "size_bytes": 105285,
+      "compress_size": 14646,
+      "crc": "365dd32f"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0.json",
+      "size_bytes": 127932,
+      "compress_size": 37041,
+      "crc": "8589f6a0"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "size_bytes": 1674,
+      "compress_size": 925,
+      "crc": "df847b55"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+      "size_bytes": 456,
+      "compress_size": 256,
+      "crc": "cc8442ec"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+      "size_bytes": 1704,
+      "compress_size": 785,
+      "crc": "e0e5c36c"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+      "size_bytes": 25163,
+      "compress_size": 7451,
+      "crc": "5206aa75"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4323,
+      "compress_size": 1937,
+      "crc": "778641bc"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2878,
+      "compress_size": 1384,
+      "crc": "4650e672"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1752,
+      "compress_size": 858,
+      "crc": "3c35bd1c"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 5200,
+      "compress_size": 2098,
+      "crc": "d60011a2"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 6043,
+      "compress_size": 2377,
+      "crc": "fab63c21"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4519,
+      "compress_size": 1690,
+      "crc": "31cf4411"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 3689,
+      "compress_size": 1676,
+      "crc": "6019dae7"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4464,
+      "compress_size": 1720,
+      "crc": "58d306bc"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 9108,
+      "compress_size": 3067,
+      "crc": "94eb90d6"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
+      "size_bytes": 4362,
+      "compress_size": 1620,
+      "crc": "0695ffd1"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
+      "size_bytes": 1151,
+      "compress_size": 616,
+      "crc": "bbfb36e9"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
+      "size_bytes": 1318,
+      "compress_size": 754,
+      "crc": "851e2bb7"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
+      "size_bytes": 1863,
+      "compress_size": 923,
+      "crc": "e3888c63"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
+      "size_bytes": 1005,
+      "compress_size": 552,
+      "crc": "ee1df47a"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
+      "size_bytes": 964,
+      "compress_size": 510,
+      "crc": "524c1374"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
+      "size_bytes": 1894,
+      "compress_size": 895,
+      "crc": "8d024915"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
+      "size_bytes": 1775,
+      "compress_size": 894,
+      "crc": "76119db3"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
+      "size_bytes": 2920,
+      "compress_size": 1232,
+      "crc": "63a73012"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1170,
+      "compress_size": 615,
+      "crc": "407fd4be"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
+      "size_bytes": 1122,
+      "compress_size": 571,
+      "crc": "7ca09234"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
+      "size_bytes": 1787,
+      "compress_size": 835,
+      "crc": "11681bb7"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+      "size_bytes": 1526,
+      "compress_size": 806,
+      "crc": "ad8af05e"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+      "size_bytes": 3656,
+      "compress_size": 1632,
+      "crc": "e4d33886"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
+      "size_bytes": 6179,
+      "compress_size": 2662,
+      "crc": "d73a25f6"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
+      "size_bytes": 9350,
+      "compress_size": 1951,
+      "crc": "75ad4780"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
+      "size_bytes": 1986,
+      "compress_size": 995,
+      "crc": "e695c8e1"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1754,
+      "compress_size": 896,
+      "crc": "216afda4"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1752,
+      "compress_size": 891,
+      "crc": "c9d12dcb"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
+      "size_bytes": 2702,
+      "compress_size": 1368,
+      "crc": "fabe0f10"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2630,
+      "compress_size": 1306,
+      "crc": "cc46207a"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2568,
+      "compress_size": 1281,
+      "crc": "0f47b4e1"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2596,
+      "compress_size": 1289,
+      "crc": "dd13a15d"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+      "size_bytes": 4679,
+      "compress_size": 2190,
+      "crc": "38477ae3"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
+      "size_bytes": 1623,
+      "compress_size": 826,
+      "crc": "2b380cdd"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
+      "size_bytes": 2572,
+      "compress_size": 1255,
+      "crc": "93a81c3f"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
+      "size_bytes": 1485,
+      "compress_size": 837,
+      "crc": "f08b2cf0"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
+      "size_bytes": 2561,
+      "compress_size": 1203,
+      "crc": "f2b9603c"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
+      "size_bytes": 1960,
+      "compress_size": 1018,
+      "crc": "e52bc6df"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
+      "size_bytes": 1931,
+      "compress_size": 957,
+      "crc": "40a09b10"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
+      "size_bytes": 2635,
+      "compress_size": 1239,
+      "crc": "e7e32acf"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
+      "size_bytes": 3736,
+      "compress_size": 1689,
+      "crc": "9c941e39"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+      "size_bytes": 4691,
+      "compress_size": 1997,
+      "crc": "83dea2ad"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+      "size_bytes": 4964,
+      "compress_size": 2036,
+      "crc": "9114bcf5"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+      "size_bytes": 3913,
+      "compress_size": 1772,
+      "crc": "6e811b4d"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 5336,
+      "compress_size": 2128,
+      "crc": "1d80d207"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 3615,
+      "compress_size": 1534,
+      "crc": "44f5cd79"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 8423,
+      "compress_size": 3212,
+      "crc": "76d5b93b"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
+      "size_bytes": 596,
+      "compress_size": 336,
+      "crc": "eb23bd26"
+    },
+    {
+      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
+      "size_bytes": 217,
+      "compress_size": 135,
+      "crc": "063d53ca"
+    },
+    {
+      "path": "docs/update_history/README.md",
+      "size_bytes": 284,
+      "compress_size": 218,
+      "crc": "4835e660"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_20.md",
+      "size_bytes": 2474,
+      "compress_size": 1153,
+      "crc": "6f4bb809"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_21.md",
+      "size_bytes": 817,
+      "compress_size": 525,
+      "crc": "bd7663dc"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_21_REVIEW_FIXES_APPLIED.md",
+      "size_bytes": 2104,
+      "compress_size": 1101,
+      "crc": "baf5c32b"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_5_22.md",
+      "size_bytes": 1306,
+      "compress_size": 771,
+      "crc": "3162f202"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_23.md",
+      "size_bytes": 434,
+      "compress_size": 295,
+      "crc": "66f12bf9"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_24.md",
+      "size_bytes": 1225,
+      "compress_size": 719,
+      "crc": "ff3692ee"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_25.md",
+      "size_bytes": 695,
+      "compress_size": 467,
+      "crc": "5378d9b7"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_26.md",
+      "size_bytes": 1083,
+      "compress_size": 554,
+      "crc": "bead6604"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_27.md",
+      "size_bytes": 1490,
+      "compress_size": 854,
+      "crc": "c6b4bdb0"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_28.md",
+      "size_bytes": 3202,
+      "compress_size": 1487,
+      "crc": "b1d75c81"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_29.md",
+      "size_bytes": 3956,
+      "compress_size": 1832,
+      "crc": "a4e8e0e1"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_38.md",
+      "size_bytes": 1646,
+      "compress_size": 933,
+      "crc": "778bad9c"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_5_39.md",
+      "size_bytes": 465,
+      "compress_size": 328,
+      "crc": "040ae11a"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_0.md",
+      "size_bytes": 3679,
+      "compress_size": 1760,
+      "crc": "58e7ec5d"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1.md",
+      "size_bytes": 703,
+      "compress_size": 474,
+      "crc": "ae1dc586"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_12.md",
+      "size_bytes": 1183,
+      "compress_size": 690,
+      "crc": "dcaded20"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_13.md",
+      "size_bytes": 1378,
+      "compress_size": 801,
+      "crc": "6b6ce6e0"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_14.md",
+      "size_bytes": 865,
+      "compress_size": 524,
+      "crc": "b15db99d"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_1_15.md",
+      "size_bytes": 608,
+      "compress_size": 388,
+      "crc": "a27940f8"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_2.md",
+      "size_bytes": 2340,
+      "compress_size": 1163,
+      "crc": "24c2596c"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_2_1.md",
+      "size_bytes": 2045,
+      "compress_size": 1091,
+      "crc": "9058b13a"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_3.md",
+      "size_bytes": 2962,
+      "compress_size": 1580,
+      "crc": "9a2d2d7d"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_4.md",
+      "size_bytes": 2632,
+      "compress_size": 1401,
+      "crc": "e768d859"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_5.md",
+      "size_bytes": 2244,
+      "compress_size": 1162,
+      "crc": "1144e10b"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_6.md",
+      "size_bytes": 1802,
+      "compress_size": 986,
+      "crc": "20ced96f"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_7.md",
+      "size_bytes": 2363,
+      "compress_size": 1210,
+      "crc": "5d9150f9"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_9_1.md",
+      "size_bytes": 2223,
+      "compress_size": 1235,
+      "crc": "e97c1610"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_9_2.md",
+      "size_bytes": 759,
+      "compress_size": 428,
+      "crc": "22fa1a2f"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_V14_6_9_3.md",
+      "size_bytes": 239,
+      "compress_size": 162,
+      "crc": "f5709add"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_8_3_4_088_CANON_SOURCE_QUESTION_HOTFIX.md",
+      "size_bytes": 3388,
+      "compress_size": 1403,
+      "crc": "35b433e3"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_8_3_4_089_MANIFEST_EXCLUDED_DETAIL_PRIVACY_HOTFIX.md",
+      "size_bytes": 1362,
+      "compress_size": 742,
+      "crc": "29c7aa69"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_REPORT_v14_8_3_4_PYTHON_CANON_CONSOLIDATION.md",
+      "size_bytes": 1957,
+      "compress_size": 936,
+      "crc": "6c4d30ca"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.json",
+      "size_bytes": 1127,
+      "compress_size": 543,
+      "crc": "efd8f9cb"
+    },
+    {
+      "path": "docs/update_history/reports/UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.md",
+      "size_bytes": 3832,
+      "compress_size": 1902,
+      "crc": "cdbd19fe"
+    },
+    {
+      "path": "docs/update_history/schemas/update_history_index_schema.json",
+      "size_bytes": 421,
+      "compress_size": 203,
+      "crc": "6d19d825"
+    },
+    {
+      "path": "docs/update_history/schemas/update_manifest_schema.json",
+      "size_bytes": 1295,
+      "compress_size": 343,
+      "crc": "07ecdec0"
+    },
+    {
+      "path": "docs/UPDATE_v14_4_0_LAYERED_TRUTHFUL_MEMORY.md",
+      "size_bytes": 6019,
+      "compress_size": 2689,
+      "crc": "1e46f659"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.md",
+      "size_bytes": 5654,
+      "compress_size": 2563,
+      "crc": "37d636b1"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_10_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 2556,
+      "compress_size": 1283,
+      "crc": "6baef2e8"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_11_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 2020,
+      "compress_size": 1053,
+      "crc": "8ff9564f"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_12_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 944,
+      "compress_size": 534,
+      "crc": "e0620d89"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_13_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1959,
+      "compress_size": 969,
+      "crc": "735f9c2e"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_14_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1366,
+      "compress_size": 756,
+      "crc": "401a49a9"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_15_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1896,
+      "compress_size": 970,
+      "crc": "58d6a60d"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_16_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1931,
+      "compress_size": 1001,
+      "crc": "cae3c6c1"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_17_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1863,
+      "compress_size": 965,
+      "crc": "885f9a9a"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_18_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 3261,
+      "compress_size": 1540,
+      "crc": "54428df5"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_19_RUNTIME_MEMORY_WRITER.md",
+      "size_bytes": 2036,
+      "compress_size": 1072,
+      "crc": "651bbb3e"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.md",
+      "size_bytes": 1921,
+      "compress_size": 948,
+      "crc": "99c2277d"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.md",
+      "size_bytes": 1493,
+      "compress_size": 857,
+      "crc": "80f9eeee"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.md",
+      "size_bytes": 3409,
+      "compress_size": 1646,
+      "crc": "a376ca4d"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_23_FULL_MEMORY_RESTORED_COGNITIVE_BRIDGE.md",
+      "size_bytes": 1440,
+      "compress_size": 793,
+      "crc": "e90d7ad6"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_24_RUNTIME_BRIDGE_EXPORT_HOTFIX.md",
+      "size_bytes": 2147,
+      "compress_size": 1094,
+      "crc": "67b10573"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.md",
+      "size_bytes": 2739,
+      "compress_size": 1347,
+      "crc": "008e5f08"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_26_FULL_COMPLETENESS_REPAIR.md",
+      "size_bytes": 950,
+      "compress_size": 643,
+      "crc": "1b07f6da"
+    },
+    {
+      "path": "docs/UPDATE_v14_5_2_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1542,
+      "compress_size": 810,
+      "crc": "82616f44"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_30_POLISH_UNDERSTANDING_RUNTIME.md",
+      "size_bytes": 3059,
+      "compress_size": 1488,
+      "crc": "1645d3b9"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.md",
+      "size_bytes": 2555,
+      "compress_size": 1265,
+      "crc": "1ba25238"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.md",
+      "size_bytes": 1819,
+      "compress_size": 980,
+      "crc": "005299ad"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.md",
+      "size_bytes": 4150,
+      "compress_size": 1928,
+      "crc": "b90f3e4b"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_38_GITHUB_COGNITIVE_RUNTIME.md",
+      "size_bytes": 2624,
+      "compress_size": 1382,
+      "crc": "fb0e475c"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_39_CLEANUP_DEDUP.md",
+      "size_bytes": 1046,
+      "compress_size": 631,
+      "crc": "a00dc520"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.md",
+      "size_bytes": 1721,
+      "compress_size": 920,
+      "crc": "539d720e"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_4_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1703,
+      "compress_size": 861,
+      "crc": "f60bd9b9"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_5_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1755,
+      "compress_size": 857,
+      "crc": "1f187fd2"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_6_CONVERSATION_MEMORY_CAPTURE.md",
+      "size_bytes": 1764,
+      "compress_size": 893,
+      "crc": "684a6c94"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_7_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1983,
+      "compress_size": 1029,
+      "crc": "6248cc9e"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_8_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 2058,
+      "compress_size": 1087,
+      "crc": "4914ab9a"
+    },
+    {
+      "path": "docs/UPDATE_V14_5_9_MEMORY_CONTINUITY_UPDATE.md",
+      "size_bytes": 1837,
+      "compress_size": 975,
+      "crc": "7dec846d"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.md",
+      "size_bytes": 1281,
+      "compress_size": 748,
+      "crc": "a9ea8b1b"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.md",
+      "size_bytes": 2672,
+      "compress_size": 1403,
+      "crc": "975cd734"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.md",
+      "size_bytes": 2917,
+      "compress_size": 1474,
+      "crc": "cdc880c6"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.md",
+      "size_bytes": 1420,
+      "compress_size": 858,
+      "crc": "f5194822"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.md",
+      "size_bytes": 2281,
+      "compress_size": 1157,
+      "crc": "a2083d1c"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.md",
+      "size_bytes": 1423,
+      "compress_size": 816,
+      "crc": "17861b2c"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.md",
+      "size_bytes": 3013,
+      "compress_size": 1420,
+      "crc": "db31aca5"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.md",
+      "size_bytes": 2461,
+      "compress_size": 1254,
+      "crc": "02e1374f"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.md",
+      "size_bytes": 2881,
+      "compress_size": 1521,
+      "crc": "e558b393"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.md",
+      "size_bytes": 2771,
+      "compress_size": 1492,
+      "crc": "a2a22a05"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.md",
+      "size_bytes": 2638,
+      "compress_size": 1401,
+      "crc": "76b38ac7"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_5_MEMORY_SEARCH_PLANNER.md",
+      "size_bytes": 2401,
+      "compress_size": 1245,
+      "crc": "9f2982a2"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.md",
+      "size_bytes": 1828,
+      "compress_size": 1012,
+      "crc": "7261dfce"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_7_FREE_DIALOGUE_MEMORY_NLP_BRIDGE.md",
+      "size_bytes": 2201,
+      "compress_size": 1116,
+      "crc": "8a7e12cb"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.md",
+      "size_bytes": 2389,
+      "compress_size": 1239,
+      "crc": "f2329c82"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_1_FREE_DIALOGUE_PARITY_MEMORY_SEARCH_HOTFIX.md",
+      "size_bytes": 4218,
+      "compress_size": 1930,
+      "crc": "e699a774"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_1_NEUROLOGICAL_SIGNAL_ROUTER.md",
+      "size_bytes": 1920,
+      "compress_size": 1044,
+      "crc": "e29807ca"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.md",
+      "size_bytes": 4356,
+      "compress_size": 2033,
+      "crc": "2c96ed56"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.md",
+      "size_bytes": 1196,
+      "compress_size": 699,
+      "crc": "7c1829ea"
+    },
+    {
+      "path": "docs/UPDATE_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.md",
+      "size_bytes": 5154,
+      "compress_size": 2415,
+      "crc": "96ba0345"
+    },
+    {
+      "path": "docs/UPDATE_V14_7_0_MODEL_INDEPENDENT_VOICE_RUNTIME.md",
+      "size_bytes": 947,
+      "compress_size": 588,
+      "crc": "ef587888"
+    },
+    {
+      "path": "docs/UPDATE_V14_7_1_DIALOGUE_GROUNDING_HOTFIX.md",
+      "size_bytes": 1642,
+      "compress_size": 929,
+      "crc": "16bd41b3"
+    },
+    {
+      "path": "docs/UPDATE_V14_8_2_LOGIC_ROUTING_MEMORY_GROUNDING_REPAIR.md",
+      "size_bytes": 931,
+      "compress_size": 597,
+      "crc": "e04f7e8d"
+    },
+    {
+      "path": "docs/UPDATE_V14_8_3_1_FAST_WAKE_ROUTE_TRACE.md",
+      "size_bytes": 2179,
+      "compress_size": 1179,
+      "crc": "bee42ef0"
+    },
+    {
+      "path": "docs/UPDATE_V14_8_3_4_090_CHATGPT_BRIDGE_PRIMARY.md",
+      "size_bytes": 2091,
+      "compress_size": 1126,
+      "crc": "b6e64fec"
+    },
+    {
+      "path": "docs/VOICE_AND_AUDIO_FUTURE_ADAPTERS_v14_7_0.md",
+      "size_bytes": 913,
+      "compress_size": 574,
+      "crc": "2d8b0502"
+    },
+    {
+      "path": "GITHUB_REPOSITORY_PLAN.json",
+      "size_bytes": 3775,
+      "compress_size": 1591,
+      "crc": "7f4e726e"
+    },
+    {
+      "path": "JAZN_COMMANDS_INVENTORY_v14_8_2_6_5.md",
+      "size_bytes": 16260,
+      "compress_size": 5635,
+      "crc": "6a15be47"
+    },
+    {
+      "path": "latka_jazn/__init__.py",
+      "size_bytes": 88,
+      "compress_size": 79,
+      "crc": "4ed70a1e"
+    },
+    {
+      "path": "latka_jazn/adapters/__init__.py",
+      "size_bytes": 49,
+      "compress_size": 47,
+      "crc": "f6eb5c3b"
+    },
+    {
+      "path": "latka_jazn/adapters/chatgpt_adapter.py",
+      "size_bytes": 6135,
+      "compress_size": 2700,
+      "crc": "d715fcb9"
+    },
+    {
+      "path": "latka_jazn/adapters/codex_session_bridge.py",
+      "size_bytes": 11051,
+      "compress_size": 3139,
+      "crc": "ed3758ee"
+    },
+    {
+      "path": "latka_jazn/audit/__init__.py",
+      "size_bytes": 56,
+      "compress_size": 58,
+      "crc": "8e967fe0"
+    },
+    {
+      "path": "latka_jazn/audit/audit_context_store.py",
+      "size_bytes": 3890,
+      "compress_size": 1470,
+      "crc": "13d6bf45"
+    },
+    {
+      "path": "latka_jazn/bootstrap/__init__.py",
+      "size_bytes": 63,
+      "compress_size": 60,
+      "crc": "9bd87fe4"
+    },
+    {
+      "path": "latka_jazn/bootstrap/contract_loader.py",
+      "size_bytes": 2043,
+      "compress_size": 1000,
+      "crc": "e1d9d3a9"
+    },
+    {
+      "path": "latka_jazn/config.py",
+      "size_bytes": 7772,
+      "compress_size": 2094,
+      "crc": "d132b228"
+    },
+    {
+      "path": "latka_jazn/contracts/__init__.py",
+      "size_bytes": 57,
+      "compress_size": 59,
+      "crc": "7809a2f3"
+    },
+    {
+      "path": "latka_jazn/contracts/embedded_sources.py",
+      "size_bytes": 271555,
+      "compress_size": 68987,
+      "crc": "367cdfe6"
+    },
+    {
+      "path": "latka_jazn/core/__init__.py",
+      "size_bytes": 50,
+      "compress_size": 52,
+      "crc": "1d9a21c6"
+    },
+    {
+      "path": "latka_jazn/core/affect_mixer.py",
+      "size_bytes": 2737,
+      "compress_size": 1079,
+      "crc": "16bd35f0"
+    },
+    {
+      "path": "latka_jazn/core/affective_granularity.py",
+      "size_bytes": 13761,
+      "compress_size": 4912,
+      "crc": "5cc0a73d"
+    },
+    {
+      "path": "latka_jazn/core/birth_manifest.py",
+      "size_bytes": 9815,
+      "compress_size": 3882,
+      "crc": "528dcfe8"
+    },
+    {
+      "path": "latka_jazn/core/boundary_model.py",
+      "size_bytes": 2724,
+      "compress_size": 1187,
+      "crc": "676451cc"
+    },
+    {
+      "path": "latka_jazn/core/canon/__init__.py",
+      "size_bytes": 1742,
+      "compress_size": 511,
+      "crc": "bcc5339d"
+    },
+    {
+      "path": "latka_jazn/core/canon/canon_registry.py",
+      "size_bytes": 7057,
+      "compress_size": 1894,
+      "crc": "bf8e7a29"
+    },
+    {
+      "path": "latka_jazn/core/canon/character_profile.py",
+      "size_bytes": 1983,
+      "compress_size": 1035,
+      "crc": "a835b6a4"
+    },
+    {
+      "path": "latka_jazn/core/canon/core_canon.py",
+      "size_bytes": 1655,
+      "compress_size": 891,
+      "crc": "b84c96fe"
+    },
+    {
+      "path": "latka_jazn/core/canon/extraction.py",
+      "size_bytes": 18141,
+      "compress_size": 5387,
+      "crc": "7a1e682d"
+    },
+    {
+      "path": "latka_jazn/core/canon/identity_canon.py",
+      "size_bytes": 5641,
+      "compress_size": 2241,
+      "crc": "ee820f5f"
+    },
+    {
+      "path": "latka_jazn/core/canon/loader.py",
+      "size_bytes": 4711,
+      "compress_size": 1728,
+      "crc": "780668d9"
+    },
+    {
+      "path": "latka_jazn/core/canon/local_private_canon_extension.py",
+      "size_bytes": 5444814,
+      "compress_size": 643393,
+      "crc": "80f888b5"
+    },
+    {
+      "path": "latka_jazn/core/canon/memory_truth_boundary.py",
+      "size_bytes": 1787,
+      "compress_size": 946,
+      "crc": "071d5480"
+    },
+    {
+      "path": "latka_jazn/core/canon/narrative_book_canon.py",
+      "size_bytes": 1262,
+      "compress_size": 715,
+      "crc": "e235af00"
+    },
+    {
+      "path": "latka_jazn/core/canon/origin_story.py",
+      "size_bytes": 1947,
+      "compress_size": 1054,
+      "crc": "81a32634"
+    },
+    {
+      "path": "latka_jazn/core/canon/relation_canon.py",
+      "size_bytes": 1648,
+      "compress_size": 886,
+      "crc": "b5dd53a2"
+    },
+    {
+      "path": "latka_jazn/core/canon/schema.py",
+      "size_bytes": 1285,
+      "compress_size": 690,
+      "crc": "52d7a196"
+    },
+    {
+      "path": "latka_jazn/core/canon/song_affect_canon.py",
+      "size_bytes": 1070,
+      "compress_size": 624,
+      "crc": "321f7df6"
+    },
+    {
+      "path": "latka_jazn/core/canon/source_contract.py",
+      "size_bytes": 2001,
+      "compress_size": 762,
+      "crc": "67374bc6"
+    },
+    {
+      "path": "latka_jazn/core/canon/symbolic_world.py",
+      "size_bytes": 1747,
+      "compress_size": 923,
+      "crc": "96b276f1"
+    },
+    {
+      "path": "latka_jazn/core/canon/validator.py",
+      "size_bytes": 1033,
+      "compress_size": 420,
+      "crc": "0fb91d42"
+    },
+    {
+      "path": "latka_jazn/core/clock.py",
+      "size_bytes": 8680,
+      "compress_size": 2809,
+      "crc": "e56aa6b9"
+    },
+    {
+      "path": "latka_jazn/core/cognitive_packets.py",
+      "size_bytes": 15176,
+      "compress_size": 4186,
+      "crc": "d47bff58"
+    },
+    {
+      "path": "latka_jazn/core/cognitive_topics.py",
+      "size_bytes": 10395,
+      "compress_size": 3760,
+      "crc": "5183a7d8"
+    },
+    {
+      "path": "latka_jazn/core/cognitive_turn_envelope.py",
+      "size_bytes": 5804,
+      "compress_size": 1648,
+      "crc": "73c3b990"
+    },
+    {
+      "path": "latka_jazn/core/continuity_badge.py",
+      "size_bytes": 5102,
+      "compress_size": 1728,
+      "crc": "dac0caed"
+    },
+    {
+      "path": "latka_jazn/core/conversation.py",
+      "size_bytes": 78954,
+      "compress_size": 20853,
+      "crc": "47f95bfc"
+    },
+    {
+      "path": "latka_jazn/core/dialogue_state.py",
+      "size_bytes": 3594,
+      "compress_size": 1291,
+      "crc": "5b5c2f2b"
+    },
+    {
+      "path": "latka_jazn/core/emotion_layers.py",
+      "size_bytes": 8029,
+      "compress_size": 2773,
+      "crc": "b585433a"
+    },
+    {
+      "path": "latka_jazn/core/emotions.py",
+      "size_bytes": 2506,
+      "compress_size": 1052,
+      "crc": "1c743d00"
+    },
+    {
+      "path": "latka_jazn/core/engine.py",
+      "size_bytes": 136627,
+      "compress_size": 31148,
+      "crc": "29cf630c"
+    },
+    {
+      "path": "latka_jazn/core/external_research_contract.py",
+      "size_bytes": 1071,
+      "compress_size": 556,
+      "crc": "44bd5911"
+    },
+    {
+      "path": "latka_jazn/core/final_response_contract.py",
+      "size_bytes": 9107,
+      "compress_size": 2466,
+      "crc": "4127bc14"
+    },
+    {
+      "path": "latka_jazn/core/final_visible_reply_capture.py",
+      "size_bytes": 2577,
+      "compress_size": 943,
+      "crc": "6e0ff1d9"
+    },
+    {
+      "path": "latka_jazn/core/free_dialogue_synthesizer.py",
+      "size_bytes": 30583,
+      "compress_size": 9007,
+      "crc": "d4062491"
+    },
+    {
+      "path": "latka_jazn/core/handlers/__init__.py",
+      "size_bytes": 128,
+      "compress_size": 108,
+      "crc": "983629fb"
+    },
+    {
+      "path": "latka_jazn/core/handlers/canon_source_handler.py",
+      "size_bytes": 4264,
+      "compress_size": 1516,
+      "crc": "44dceb05"
+    },
+    {
+      "path": "latka_jazn/core/handlers/capability_status_handler.py",
+      "size_bytes": 6935,
+      "compress_size": 2442,
+      "crc": "5d4a3416"
+    },
+    {
+      "path": "latka_jazn/core/handlers/creative_text_handler.py",
+      "size_bytes": 907,
+      "compress_size": 472,
+      "crc": "3cdda4d1"
+    },
+    {
+      "path": "latka_jazn/core/handlers/dictionary_lookup_handler.py",
+      "size_bytes": 3049,
+      "compress_size": 1249,
+      "crc": "a59e0fa6"
+    },
+    {
+      "path": "latka_jazn/core/handlers/direct_latka_voice_handler.py",
+      "size_bytes": 1740,
+      "compress_size": 856,
+      "crc": "7bb44174"
+    },
+    {
+      "path": "latka_jazn/core/handlers/external_research_handler.py",
+      "size_bytes": 2062,
+      "compress_size": 903,
+      "crc": "e4ec2466"
+    },
+    {
+      "path": "latka_jazn/core/handlers/fallback_handler.py",
+      "size_bytes": 1198,
+      "compress_size": 670,
+      "crc": "a6e397b3"
+    },
+    {
+      "path": "latka_jazn/core/handlers/file_operation_handler.py",
+      "size_bytes": 845,
+      "compress_size": 445,
+      "crc": "686bd893"
+    },
+    {
+      "path": "latka_jazn/core/handlers/identity_boundary_handler.py",
+      "size_bytes": 864,
+      "compress_size": 450,
+      "crc": "d5704b9f"
+    },
+    {
+      "path": "latka_jazn/core/handlers/identity_memory_existence_handler.py",
+      "size_bytes": 2776,
+      "compress_size": 1229,
+      "crc": "34e0f90f"
+    },
+    {
+      "path": "latka_jazn/core/handlers/identity_runtime_truth_handler.py",
+      "size_bytes": 1164,
+      "compress_size": 605,
+      "crc": "a7e2d1c2"
+    },
+    {
+      "path": "latka_jazn/core/handlers/memory_audit_handler.py",
+      "size_bytes": 1498,
+      "compress_size": 710,
+      "crc": "a2c4417c"
+    },
+    {
+      "path": "latka_jazn/core/handlers/ordinary_dialogue_handler.py",
+      "size_bytes": 6212,
+      "compress_size": 2280,
+      "crc": "30395953"
+    },
+    {
+      "path": "latka_jazn/core/handlers/practical_advice_handler.py",
+      "size_bytes": 915,
+      "compress_size": 485,
+      "crc": "13e45161"
+    },
+    {
+      "path": "latka_jazn/core/handlers/runtime_activation_status_handler.py",
+      "size_bytes": 2584,
+      "compress_size": 1154,
+      "crc": "d6a16315"
+    },
+    {
+      "path": "latka_jazn/core/handlers/runtime_chat_mode_handler.py",
+      "size_bytes": 1358,
+      "compress_size": 740,
+      "crc": "6bf9c897"
+    },
+    {
+      "path": "latka_jazn/core/handlers/runtime_diagnostic_handler.py",
+      "size_bytes": 4815,
+      "compress_size": 2011,
+      "crc": "df30c254"
+    },
+    {
+      "path": "latka_jazn/core/handlers/runtime_source_handler.py",
+      "size_bytes": 3122,
+      "compress_size": 1103,
+      "crc": "229ed24d"
+    },
+    {
+      "path": "latka_jazn/core/handlers/self_memory_recall_handler.py",
+      "size_bytes": 12560,
+      "compress_size": 4202,
+      "crc": "3e97d9de"
+    },
+    {
+      "path": "latka_jazn/core/handlers/self_state_handler.py",
+      "size_bytes": 2677,
+      "compress_size": 1144,
+      "crc": "930eb024"
+    },
+    {
+      "path": "latka_jazn/core/handlers/system_repair_plan_handler.py",
+      "size_bytes": 1668,
+      "compress_size": 880,
+      "crc": "8163c640"
+    },
+    {
+      "path": "latka_jazn/core/handlers/system_update_handler.py",
+      "size_bytes": 1474,
+      "compress_size": 652,
+      "crc": "5553ca60"
+    },
+    {
+      "path": "latka_jazn/core/identity_dynamics.py",
+      "size_bytes": 3209,
+      "compress_size": 1377,
+      "crc": "97981a32"
+    },
+    {
+      "path": "latka_jazn/core/identity_guard.py",
+      "size_bytes": 1321,
+      "compress_size": 561,
+      "crc": "9e152004"
+    },
+    {
+      "path": "latka_jazn/core/lexical_semantics.py",
+      "size_bytes": 14647,
+      "compress_size": 3893,
+      "crc": "2a473027"
+    },
+    {
+      "path": "latka_jazn/core/logical_reasoning.py",
+      "size_bytes": 7234,
+      "compress_size": 2644,
+      "crc": "bc4666ab"
+    },
+    {
+      "path": "latka_jazn/core/memory_importance.py",
+      "size_bytes": 1853,
+      "compress_size": 845,
+      "crc": "099163b4"
+    },
+    {
+      "path": "latka_jazn/core/memory_recall_presenter.py",
+      "size_bytes": 15274,
+      "compress_size": 4590,
+      "crc": "63bf7c88"
+    },
+    {
+      "path": "latka_jazn/core/memory_search_planner.py",
+      "size_bytes": 22815,
+      "compress_size": 6735,
+      "crc": "0ae1c572"
+    },
+    {
+      "path": "latka_jazn/core/memory_use_gate.py",
+      "size_bytes": 2701,
+      "compress_size": 1264,
+      "crc": "cdcdbf3c"
+    },
+    {
+      "path": "latka_jazn/core/model_guided_response_synthesizer.py",
+      "size_bytes": 5068,
+      "compress_size": 1592,
+      "crc": "6eef2347"
+    },
+    {
+      "path": "latka_jazn/core/module_responsibility_map.py",
+      "size_bytes": 3759,
+      "compress_size": 1531,
+      "crc": "4acc3a28"
+    },
+    {
+      "path": "latka_jazn/core/neurocognitive_loop.py",
+      "size_bytes": 3510,
+      "compress_size": 1376,
+      "crc": "8e4462a5"
+    },
+    {
+      "path": "latka_jazn/core/neuropsychology_map.py",
+      "size_bytes": 5162,
+      "compress_size": 1926,
+      "crc": "cf409748"
+    },
+    {
+      "path": "latka_jazn/core/operational_awareness.py",
+      "size_bytes": 5432,
+      "compress_size": 2082,
+      "crc": "7d2e0a4d"
+    },
+    {
+      "path": "latka_jazn/core/operational_self_model.py",
+      "size_bytes": 4241,
+      "compress_size": 1829,
+      "crc": "cdd04b75"
+    },
+    {
+      "path": "latka_jazn/core/polish_understanding.py",
+      "size_bytes": 22803,
+      "compress_size": 6252,
+      "crc": "5da0f126"
+    },
+    {
+      "path": "latka_jazn/core/project_index.py",
+      "size_bytes": 16336,
+      "compress_size": 4477,
+      "crc": "4d324a9e"
+    },
+    {
+      "path": "latka_jazn/core/quiet_rest.py",
+      "size_bytes": 683,
+      "compress_size": 414,
+      "crc": "59e1a799"
+    },
+    {
+      "path": "latka_jazn/core/reasoning_controller.py",
+      "size_bytes": 1944,
+      "compress_size": 700,
+      "crc": "cdf88819"
+    },
+    {
+      "path": "latka_jazn/core/recognition.py",
+      "size_bytes": 403,
+      "compress_size": 262,
+      "crc": "d5c3c8ae"
+    },
+    {
+      "path": "latka_jazn/core/renderer.py",
+      "size_bytes": 629,
+      "compress_size": 304,
+      "crc": "1818d23d"
+    },
+    {
+      "path": "latka_jazn/core/response_generation_mode.py",
+      "size_bytes": 7642,
+      "compress_size": 2083,
+      "crc": "aea35e28"
+    },
+    {
+      "path": "latka_jazn/core/route_handler_base.py",
+      "size_bytes": 1537,
+      "compress_size": 570,
+      "crc": "43f150b3"
+    },
+    {
+      "path": "latka_jazn/core/route_handler_dispatcher.py",
+      "size_bytes": 4981,
+      "compress_size": 1363,
+      "crc": "bf83d160"
+    },
+    {
+      "path": "latka_jazn/core/route_registry.py",
+      "size_bytes": 12491,
+      "compress_size": 2655,
+      "crc": "4dfc4bce"
+    },
+    {
+      "path": "latka_jazn/core/runtime_answer_validator.py",
+      "size_bytes": 30111,
+      "compress_size": 8514,
+      "crc": "ec757be5"
+    },
+    {
+      "path": "latka_jazn/core/runtime_chat.py",
+      "size_bytes": 9868,
+      "compress_size": 3200,
+      "crc": "a83289bd"
+    },
+    {
+      "path": "latka_jazn/core/runtime_operating_model.py",
+      "size_bytes": 7209,
+      "compress_size": 2873,
+      "crc": "47fb2885"
+    },
+    {
+      "path": "latka_jazn/core/runtime_rendering_modes.py",
+      "size_bytes": 1795,
+      "compress_size": 862,
+      "crc": "6cbe351d"
+    },
+    {
+      "path": "latka_jazn/core/runtime_response_synthesizer.py",
+      "size_bytes": 14768,
+      "compress_size": 5027,
+      "crc": "66818fb0"
+    },
+    {
+      "path": "latka_jazn/core/runtime_session.py",
+      "size_bytes": 3568,
+      "compress_size": 1137,
+      "crc": "8b0e603e"
+    },
+    {
+      "path": "latka_jazn/core/runtime_session_state.py",
+      "size_bytes": 4934,
+      "compress_size": 1380,
+      "crc": "20a91aee"
+    },
+    {
+      "path": "latka_jazn/core/runtime_status.py",
+      "size_bytes": 9674,
+      "compress_size": 3170,
+      "crc": "04136f6c"
+    },
+    {
+      "path": "latka_jazn/core/runtime_visible_answer_comparator.py",
+      "size_bytes": 1916,
+      "compress_size": 836,
+      "crc": "3bb006b0"
+    },
+    {
+      "path": "latka_jazn/core/scientific_basis.py",
+      "size_bytes": 10821,
+      "compress_size": 4307,
+      "crc": "2d8ae6b5"
+    },
+    {
+      "path": "latka_jazn/core/self_architecture.py",
+      "size_bytes": 7802,
+      "compress_size": 3272,
+      "crc": "79c537ab"
+    },
+    {
+      "path": "latka_jazn/core/self_state_runtime.py",
+      "size_bytes": 6077,
+      "compress_size": 1991,
+      "crc": "f994069c"
+    },
+    {
+      "path": "latka_jazn/core/session_provenance.py",
+      "size_bytes": 4121,
+      "compress_size": 1429,
+      "crc": "7a31b783"
+    },
+    {
+      "path": "latka_jazn/core/signal_matching.py",
+      "size_bytes": 6804,
+      "compress_size": 2596,
+      "crc": "37827590"
+    },
+    {
+      "path": "latka_jazn/core/source_library.py",
+      "size_bytes": 1319,
+      "compress_size": 561,
+      "crc": "8fe6b495"
+    },
+    {
+      "path": "latka_jazn/core/source_origin.py",
+      "size_bytes": 4692,
+      "compress_size": 1532,
+      "crc": "1317da82"
+    },
+    {
+      "path": "latka_jazn/core/source_origin_ledger.py",
+      "size_bytes": 5404,
+      "compress_size": 1743,
+      "crc": "ae704a35"
+    },
+    {
+      "path": "latka_jazn/core/source_text_preservation_contract.py",
+      "size_bytes": 1771,
+      "compress_size": 792,
+      "crc": "de17cb8b"
+    },
+    {
+      "path": "latka_jazn/core/startup_contract.py",
+      "size_bytes": 23231,
+      "compress_size": 6515,
+      "crc": "8237959b"
+    },
+    {
+      "path": "latka_jazn/core/template_origin.py",
+      "size_bytes": 760,
+      "compress_size": 392,
+      "crc": "79ad9168"
+    },
+    {
+      "path": "latka_jazn/core/template_registry.py",
+      "size_bytes": 4498,
+      "compress_size": 1548,
+      "crc": "ee08b489"
+    },
+    {
+      "path": "latka_jazn/core/temporal_awareness.py",
+      "size_bytes": 1452,
+      "compress_size": 645,
+      "crc": "c6fe0fca"
+    },
+    {
+      "path": "latka_jazn/core/tool_use_policy.py",
+      "size_bytes": 1050,
+      "compress_size": 594,
+      "crc": "3663161c"
+    },
+    {
+      "path": "latka_jazn/core/truth_boundary.py",
+      "size_bytes": 7172,
+      "compress_size": 2292,
+      "crc": "3047375f"
+    },
+    {
+      "path": "latka_jazn/core/turn_checkpoint_writer.py",
+      "size_bytes": 3654,
+      "compress_size": 1159,
+      "crc": "58571be2"
+    },
+    {
+      "path": "latka_jazn/core/turn_logic_auditor.py",
+      "size_bytes": 6213,
+      "compress_size": 2140,
+      "crc": "6ac9c052"
+    },
+    {
+      "path": "latka_jazn/core/turn_response_policy.py",
+      "size_bytes": 6423,
+      "compress_size": 1471,
+      "crc": "41c113ad"
+    },
+    {
+      "path": "latka_jazn/core/turn_route_trace.py",
+      "size_bytes": 1047,
+      "compress_size": 436,
+      "crc": "a3ffbc0a"
+    },
+    {
+      "path": "latka_jazn/core/turn_trace_reader.py",
+      "size_bytes": 1265,
+      "compress_size": 569,
+      "crc": "2cfa3337"
+    },
+    {
+      "path": "latka_jazn/core/uncertainty_model.py",
+      "size_bytes": 2611,
+      "compress_size": 1023,
+      "crc": "6e4c9dcc"
+    },
+    {
+      "path": "latka_jazn/core/untrusted_source_guard.py",
+      "size_bytes": 1153,
+      "compress_size": 624,
+      "crc": "0fb6a0b5"
+    },
+    {
+      "path": "latka_jazn/core/voice_source_contract.py",
+      "size_bytes": 2319,
+      "compress_size": 1017,
+      "crc": "b1ab6575"
+    },
+    {
+      "path": "latka_jazn/db/__init__.py",
+      "size_bytes": 66,
+      "compress_size": 68,
+      "crc": "c61f3dc9"
+    },
+    {
+      "path": "latka_jazn/db/shard_manifest.py",
+      "size_bytes": 6439,
+      "compress_size": 2164,
+      "crc": "18a72db2"
+    },
+    {
+      "path": "latka_jazn/integrations/__init__.py",
+      "size_bytes": 91,
+      "compress_size": 88,
+      "crc": "aef78ff4"
+    },
+    {
+      "path": "latka_jazn/integrations/github_repository_plan.py",
+      "size_bytes": 6294,
+      "compress_size": 2267,
+      "crc": "7403feb5"
+    },
+    {
+      "path": "latka_jazn/memory/__init__.py",
+      "size_bytes": 52,
+      "compress_size": 54,
+      "crc": "4a74f4c1"
+    },
+    {
+      "path": "latka_jazn/memory/auto_memory_update.py",
+      "size_bytes": 30022,
+      "compress_size": 8502,
+      "crc": "87ba0980"
+    },
+    {
+      "path": "latka_jazn/memory/chat_html_importer.py",
+      "size_bytes": 24466,
+      "compress_size": 6263,
+      "crc": "3c00e087"
+    },
+    {
+      "path": "latka_jazn/memory/consolidation.py",
+      "size_bytes": 4302,
+      "compress_size": 1634,
+      "crc": "09d2f921"
+    },
+    {
+      "path": "latka_jazn/memory/conversation_archive.py",
+      "size_bytes": 20224,
+      "compress_size": 4976,
+      "crc": "32c68151"
+    },
+    {
+      "path": "latka_jazn/memory/conversation_memory_extractor.py",
+      "size_bytes": 12536,
+      "compress_size": 4051,
+      "crc": "57ef9f2e"
+    },
+    {
+      "path": "latka_jazn/memory/dziennik.py",
+      "size_bytes": 4976,
+      "compress_size": 1962,
+      "crc": "a5d872ec"
+    },
+    {
+      "path": "latka_jazn/memory/event_ledger.py",
+      "size_bytes": 10334,
+      "compress_size": 2754,
+      "crc": "33295651"
+    },
+    {
+      "path": "latka_jazn/memory/file_sync.py",
+      "size_bytes": 12432,
+      "compress_size": 2952,
+      "crc": "76f9163c"
+    },
+    {
+      "path": "latka_jazn/memory/importer.py",
+      "size_bytes": 6902,
+      "compress_size": 2111,
+      "crc": "ea5e4c54"
+    },
+    {
+      "path": "latka_jazn/memory/layered_memory.py",
+      "size_bytes": 12567,
+      "compress_size": 3823,
+      "crc": "674953d5"
+    },
+    {
+      "path": "latka_jazn/memory/memory_recall_contract.py",
+      "size_bytes": 3244,
+      "compress_size": 1041,
+      "crc": "d14b7140"
+    },
+    {
+      "path": "latka_jazn/memory/normalization_sidecar.py",
+      "size_bytes": 69488,
+      "compress_size": 12622,
+      "crc": "0d7f2862"
+    },
+    {
+      "path": "latka_jazn/memory/raw_archive.py",
+      "size_bytes": 4970,
+      "compress_size": 1509,
+      "crc": "85e4d9a4"
+    },
+    {
+      "path": "latka_jazn/memory/raw_chat_importer.py",
+      "size_bytes": 1768,
+      "compress_size": 816,
+      "crc": "34341ec0"
+    },
+    {
+      "path": "latka_jazn/memory/raw_memory_status.py",
+      "size_bytes": 5705,
+      "compress_size": 1899,
+      "crc": "57a362b6"
+    },
+    {
+      "path": "latka_jazn/memory/requirements_ledger.py",
+      "size_bytes": 2856,
+      "compress_size": 1276,
+      "crc": "fa091a70"
+    },
+    {
+      "path": "latka_jazn/memory/runtime_persistence.py",
+      "size_bytes": 26111,
+      "compress_size": 6855,
+      "crc": "186c5ed0"
+    },
+    {
+      "path": "latka_jazn/memory/session_continuity.py",
+      "size_bytes": 7359,
+      "compress_size": 2341,
+      "crc": "1822d942"
+    },
+    {
+      "path": "latka_jazn/memory/store.py",
+      "size_bytes": 10752,
+      "compress_size": 2737,
+      "crc": "b4235d50"
+    },
+    {
+      "path": "latka_jazn/memory/version_update_recorder.py",
+      "size_bytes": 12193,
+      "compress_size": 3402,
+      "crc": "c009e641"
+    },
+    {
+      "path": "latka_jazn/model_adapters/__init__.py",
+      "size_bytes": 272,
+      "compress_size": 125,
+      "crc": "446e1cec"
+    },
+    {
+      "path": "latka_jazn/model_adapters/base.py",
+      "size_bytes": 892,
+      "compress_size": 428,
+      "crc": "3c415836"
+    },
+    {
+      "path": "latka_jazn/model_adapters/chatgpt_runtime_adapter.py",
+      "size_bytes": 352,
+      "compress_size": 190,
+      "crc": "7b0f86c1"
+    },
+    {
+      "path": "latka_jazn/model_adapters/external_llm_adapter.py",
+      "size_bytes": 346,
+      "compress_size": 188,
+      "crc": "f74590b0"
+    },
+    {
+      "path": "latka_jazn/model_adapters/factory.py",
+      "size_bytes": 1301,
+      "compress_size": 415,
+      "crc": "d2e7059f"
+    },
+    {
+      "path": "latka_jazn/model_adapters/local_llm_adapter.py",
+      "size_bytes": 2716,
+      "compress_size": 1103,
+      "crc": "e939d3a9"
+    },
+    {
+      "path": "latka_jazn/model_adapters/null_model_adapter.py",
+      "size_bytes": 605,
+      "compress_size": 312,
+      "crc": "56f7aafa"
+    },
+    {
+      "path": "latka_jazn/model_adapters/openai_responses_adapter.py",
+      "size_bytes": 6582,
+      "compress_size": 2427,
+      "crc": "dcb441e6"
+    },
+    {
+      "path": "latka_jazn/model_adapters/voice_model_adapter.py",
+      "size_bytes": 344,
+      "compress_size": 183,
+      "crc": "38b05502"
+    },
+    {
+      "path": "latka_jazn/nlp/__init__.py",
+      "size_bytes": 944,
+      "compress_size": 471,
+      "crc": "9cd22cd3"
+    },
+    {
+      "path": "latka_jazn/nlp/context_carryover.py",
+      "size_bytes": 842,
+      "compress_size": 456,
+      "crc": "956a0c0e"
+    },
+    {
+      "path": "latka_jazn/nlp/creative_material_detector.py",
+      "size_bytes": 992,
+      "compress_size": 461,
+      "crc": "f552aed1"
+    },
+    {
+      "path": "latka_jazn/nlp/dialogue_intent_classifier.py",
+      "size_bytes": 40555,
+      "compress_size": 10421,
+      "crc": "9850fb71"
+    },
+    {
+      "path": "latka_jazn/nlp/dictionary_entry.py",
+      "size_bytes": 3674,
+      "compress_size": 978,
+      "crc": "ccbd2871"
+    },
+    {
+      "path": "latka_jazn/nlp/dictionary_source_policy.py",
+      "size_bytes": 713,
+      "compress_size": 379,
+      "crc": "d7983a9c"
+    },
+    {
+      "path": "latka_jazn/nlp/ellipsis_resolver.py",
+      "size_bytes": 5386,
+      "compress_size": 1930,
+      "crc": "9342dae0"
+    },
+    {
+      "path": "latka_jazn/nlp/entity_and_topic_frame.py",
+      "size_bytes": 827,
+      "compress_size": 438,
+      "crc": "5cd6f51e"
+    },
+    {
+      "path": "latka_jazn/nlp/external_dictionary_adapter.py",
+      "size_bytes": 10366,
+      "compress_size": 2953,
+      "crc": "9e3a8bbb"
+    },
+    {
+      "path": "latka_jazn/nlp/intent_confidence_calibrator.py",
+      "size_bytes": 460,
+      "compress_size": 282,
+      "crc": "7285a0d1"
+    },
+    {
+      "path": "latka_jazn/nlp/intent_training_examples.py",
+      "size_bytes": 766,
+      "compress_size": 492,
+      "crc": "3b537fc6"
+    },
+    {
+      "path": "latka_jazn/nlp/language_resource_registry.py",
+      "size_bytes": 2640,
+      "compress_size": 1125,
+      "crc": "1790982b"
+    },
+    {
+      "path": "latka_jazn/nlp/lexical_frame.py",
+      "size_bytes": 259,
+      "compress_size": 163,
+      "crc": "8b1bfdda"
+    },
+    {
+      "path": "latka_jazn/nlp/lexical_license_guard.py",
+      "size_bytes": 765,
+      "compress_size": 500,
+      "crc": "ab251994"
+    },
+    {
+      "path": "latka_jazn/nlp/negative_examples.py",
+      "size_bytes": 436,
+      "compress_size": 311,
+      "crc": "bbc26760"
+    },
+    {
+      "path": "latka_jazn/nlp/network_dictionary_cache.py",
+      "size_bytes": 5042,
+      "compress_size": 1575,
+      "crc": "b77ba414"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_lemmatizer.py",
+      "size_bytes": 7322,
+      "compress_size": 2314,
+      "crc": "2fae1133"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_lexical_sources.py",
+      "size_bytes": 1718,
+      "compress_size": 658,
+      "crc": "6acb73f6"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_morphology_frame.py",
+      "size_bytes": 935,
+      "compress_size": 508,
+      "crc": "d2542e14"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_normalizer.py",
+      "size_bytes": 1219,
+      "compress_size": 573,
+      "crc": "569e30ea"
+    },
+    {
+      "path": "latka_jazn/nlp/polish_tokenizer.py",
+      "size_bytes": 1266,
+      "compress_size": 518,
+      "crc": "8d7703f6"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/__init__.py",
+      "size_bytes": 61,
+      "compress_size": 63,
+      "crc": "cc317efa"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/base.py",
+      "size_bytes": 1538,
+      "compress_size": 573,
+      "crc": "0578063a"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/builtin_provider.py",
+      "size_bytes": 3231,
+      "compress_size": 1191,
+      "crc": "ffc9eb06"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/http_client.py",
+      "size_bytes": 1823,
+      "compress_size": 750,
+      "crc": "c6c20c2f"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/languagetool_http_provider.py",
+      "size_bytes": 1691,
+      "compress_size": 698,
+      "crc": "ba9e0a7f"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/mediawiki_wiktionary_provider.py",
+      "size_bytes": 2906,
+      "compress_size": 1091,
+      "crc": "2a16d09b"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/optional_morfeusz_provider.py",
+      "size_bytes": 3453,
+      "compress_size": 1124,
+      "crc": "4432aff7"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/optional_stanza_provider.py",
+      "size_bytes": 1772,
+      "compress_size": 707,
+      "crc": "06d33ade"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/plwordnet_optional_provider.py",
+      "size_bytes": 1200,
+      "compress_size": 522,
+      "crc": "215c07a7"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/sjp_reference_provider.py",
+      "size_bytes": 1654,
+      "compress_size": 796,
+      "crc": "ace4723f"
+    },
+    {
+      "path": "latka_jazn/nlp/providers/wsjp_reference_provider.py",
+      "size_bytes": 908,
+      "compress_size": 476,
+      "crc": "c82ec2d9"
+    },
+    {
+      "path": "latka_jazn/nlp/question_object_detector.py",
+      "size_bytes": 941,
+      "compress_size": 508,
+      "crc": "551c1b11"
+    },
+    {
+      "path": "latka_jazn/nlp/semantic_relation_adapter.py",
+      "size_bytes": 345,
+      "compress_size": 197,
+      "crc": "e828c255"
+    },
+    {
+      "path": "latka_jazn/nlp/source_preservation_detector.py",
+      "size_bytes": 790,
+      "compress_size": 414,
+      "crc": "ec03ee95"
+    },
+    {
+      "path": "latka_jazn/nlp/speech_act_detector.py",
+      "size_bytes": 1049,
+      "compress_size": 543,
+      "crc": "3377dbe9"
+    },
+    {
+      "path": "latka_jazn/nlp/topic_mismatch_guard.py",
+      "size_bytes": 9554,
+      "compress_size": 3180,
+      "crc": "4f35cdb2"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/__init__.py",
+      "size_bytes": 709,
+      "compress_size": 383,
+      "crc": "1bf5a5e0"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/adapters/__init__.py",
+      "size_bytes": 171,
+      "compress_size": 99,
+      "crc": "940a86b0"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/adapters/morfeusz_adapter.py",
+      "size_bytes": 3869,
+      "compress_size": 1235,
+      "crc": "550fcbf1"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/adapters/online_lookup.py",
+      "size_bytes": 1382,
+      "compress_size": 635,
+      "crc": "43939811"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/adapters/polimorf_adapter.py",
+      "size_bytes": 5096,
+      "compress_size": 1667,
+      "crc": "cd23269f"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/adapters/resource_placeholders.py",
+      "size_bytes": 2128,
+      "compress_size": 794,
+      "crc": "f2181f17"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/adapters/typo_normalizer.py",
+      "size_bytes": 661,
+      "compress_size": 294,
+      "crc": "10520c0f"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/cache_policy.py",
+      "size_bytes": 1283,
+      "compress_size": 580,
+      "crc": "6d2f1cc8"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/diagnostics.py",
+      "size_bytes": 2683,
+      "compress_size": 997,
+      "crc": "f1eeafb7"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/lemma_selector.py",
+      "size_bytes": 4089,
+      "compress_size": 1464,
+      "crc": "0ebd6e07"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/models.py",
+      "size_bytes": 3936,
+      "compress_size": 1211,
+      "crc": "e7fe4f39"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/morph_tags.py",
+      "size_bytes": 3459,
+      "compress_size": 1147,
+      "crc": "9f991903"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/normalizer.py",
+      "size_bytes": 1607,
+      "compress_size": 762,
+      "crc": "1c518cdc"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/pipeline.py",
+      "size_bytes": 5506,
+      "compress_size": 1535,
+      "crc": "b1c736ab"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/response_variant_selector.py",
+      "size_bytes": 1622,
+      "compress_size": 888,
+      "crc": "ef8d7952"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/semantic_rules.py",
+      "size_bytes": 5493,
+      "compress_size": 1729,
+      "crc": "244df202"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/source_registry.py",
+      "size_bytes": 1525,
+      "compress_size": 642,
+      "crc": "c593b372"
+    },
+    {
+      "path": "latka_jazn/packaging/__init__.py",
+      "size_bytes": 34,
+      "compress_size": 36,
+      "crc": "4ce46a6c"
+    },
+    {
+      "path": "latka_jazn/packaging/package_profiles.py",
+      "size_bytes": 929,
+      "compress_size": 415,
+      "crc": "5bae11b5"
+    },
+    {
+      "path": "latka_jazn/resources/__init__.py",
+      "size_bytes": 56,
+      "compress_size": 58,
+      "crc": "f7f336c8"
+    },
+    {
+      "path": "latka_jazn/resources/canon/LATKA_CHARACTER_PROFILE.md",
+      "size_bytes": 1709,
+      "compress_size": 989,
+      "crc": "a5e7875e"
+    },
+    {
+      "path": "latka_jazn/resources/canon/LATKA_IDENTITY_CANON.json",
+      "size_bytes": 4948,
+      "compress_size": 2204,
+      "crc": "9c8a6bdb"
+    },
+    {
+      "path": "latka_jazn/resources/canon/LATKA_ORIGIN_STORY.md",
+      "size_bytes": 1672,
+      "compress_size": 964,
+      "crc": "619eaf7e"
+    },
+    {
+      "path": "latka_jazn/resources/canon/LATKA_SYMBOLIC_WORLD.md",
+      "size_bytes": 1635,
+      "compress_size": 910,
+      "crc": "3112b133"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_6.txt",
+      "size_bytes": 1773,
+      "compress_size": 1041,
+      "crc": "d81da3f3"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_7.txt",
+      "size_bytes": 1773,
+      "compress_size": 1041,
+      "crc": "06aa83f6"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_1.txt",
+      "size_bytes": 1582,
+      "compress_size": 921,
+      "crc": "ca7c899d"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_2.txt",
+      "size_bytes": 1326,
+      "compress_size": 831,
+      "crc": "2f5d33f4"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_3.txt",
+      "size_bytes": 1325,
+      "compress_size": 828,
+      "crc": "d8ffa7bd"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_6_9_4.txt",
+      "size_bytes": 1356,
+      "compress_size": 848,
+      "crc": "68dc44fd"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_7_1.txt",
+      "size_bytes": 264,
+      "compress_size": 208,
+      "crc": "f816e4d3"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_8_0.txt",
+      "size_bytes": 306,
+      "compress_size": 236,
+      "crc": "18206560"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_8_1.txt",
+      "size_bytes": 478,
+      "compress_size": 331,
+      "crc": "a9fb1551"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_8_2.txt",
+      "size_bytes": 546,
+      "compress_size": 365,
+      "crc": "bc1675b8"
+    },
+    {
+      "path": "latka_jazn/resources/chatgpt_startup_loader_v14_8_2_4.txt",
+      "size_bytes": 458,
+      "compress_size": 314,
+      "crc": "89c199cf"
+    },
+    {
+      "path": "latka_jazn/resources/cognitive_packet_catalog.json",
+      "size_bytes": 20710,
+      "compress_size": 5912,
+      "crc": "ec7c2997"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_5.json",
+      "size_bytes": 3707,
+      "compress_size": 1369,
+      "crc": "d4d0e407"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_6.json",
+      "size_bytes": 3707,
+      "compress_size": 1369,
+      "crc": "cea165e3"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_7.json",
+      "size_bytes": 6348,
+      "compress_size": 1780,
+      "crc": "7c9f62c6"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_1.json",
+      "size_bytes": 7723,
+      "compress_size": 2031,
+      "crc": "0aa82033"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_2.json",
+      "size_bytes": 7866,
+      "compress_size": 2107,
+      "crc": "fd85a3f7"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_3.json",
+      "size_bytes": 251,
+      "compress_size": 170,
+      "crc": "55427e96"
+    },
+    {
+      "path": "latka_jazn/resources/memory_search_topics_v14_6_9_4.json",
+      "size_bytes": 401,
+      "compress_size": 262,
+      "crc": "00a9cc10"
+    },
+    {
+      "path": "latka_jazn/resources/nlp_provider_registry_v14_6_1.json",
+      "size_bytes": 1914,
+      "compress_size": 793,
+      "crc": "1286feef"
+    },
+    {
+      "path": "latka_jazn/resources/nlp_provider_registry_v14_6_2.json",
+      "size_bytes": 2138,
+      "compress_size": 904,
+      "crc": "63541584"
+    },
+    {
+      "path": "latka_jazn/resources/package_manifest_profiles.json",
+      "size_bytes": 1642,
+      "compress_size": 664,
+      "crc": "31fcbad4"
+    },
+    {
+      "path": "latka_jazn/resources/polish_lemma_overrides_v14_6_1.json",
+      "size_bytes": 1087,
+      "compress_size": 401,
+      "crc": "182246f1"
+    },
+    {
+      "path": "latka_jazn/resources/polish_lemma_overrides_v14_6_2.json",
+      "size_bytes": 1311,
+      "compress_size": 527,
+      "crc": "d5a7e7f5"
+    },
+    {
+      "path": "latka_jazn/resources/polish_reasoning/sources.lock.json",
+      "size_bytes": 7709,
+      "compress_size": 2486,
+      "crc": "78568baf"
+    },
+    {
+      "path": "latka_jazn/resources/polish_understanding_lexicon.json",
+      "size_bytes": 17302,
+      "compress_size": 4956,
+      "crc": "aa17ea37"
+    },
+    {
+      "path": "latka_jazn/resources/semantic_lexicon_v14_6_0.json",
+      "size_bytes": 10049,
+      "compress_size": 2823,
+      "crc": "2001dd3d"
+    },
+    {
+      "path": "latka_jazn/resources/semantic_lexicon_v14_6_1.json",
+      "size_bytes": 12740,
+      "compress_size": 3469,
+      "crc": "35ca45f4"
+    },
+    {
+      "path": "latka_jazn/resources/semantic_lexicon_v14_6_2.json",
+      "size_bytes": 14386,
+      "compress_size": 3891,
+      "crc": "d8db7c0b"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_6.json",
+      "size_bytes": 1037,
+      "compress_size": 540,
+      "crc": "c561036a"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_7.json",
+      "size_bytes": 1188,
+      "compress_size": 605,
+      "crc": "591db145"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_1.json",
+      "size_bytes": 1220,
+      "compress_size": 622,
+      "crc": "14334142"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_2.json",
+      "size_bytes": 771,
+      "compress_size": 402,
+      "crc": "20eebfa6"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_3.json",
+      "size_bytes": 464,
+      "compress_size": 255,
+      "crc": "cc07f957"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_6_9_4.json",
+      "size_bytes": 675,
+      "compress_size": 391,
+      "crc": "9fe7f091"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_7_1.json",
+      "size_bytes": 568,
+      "compress_size": 351,
+      "crc": "d214c128"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_8_0.json",
+      "size_bytes": 656,
+      "compress_size": 397,
+      "crc": "6b157485"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_8_1.json",
+      "size_bytes": 811,
+      "compress_size": 473,
+      "crc": "9f2a5c39"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_8_2.json",
+      "size_bytes": 885,
+      "compress_size": 502,
+      "crc": "e8493164"
+    },
+    {
+      "path": "latka_jazn/resources/startup_contract_v14_8_2_4.json",
+      "size_bytes": 847,
+      "compress_size": 482,
+      "crc": "953168fd"
+    },
+    {
+      "path": "latka_jazn/resources/update_manifest_schema.json",
+      "size_bytes": 1295,
+      "compress_size": 343,
+      "crc": "07ecdec0"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_1.json",
+      "size_bytes": 2437,
+      "compress_size": 786,
+      "crc": "f3ceaf92"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_2.json",
+      "size_bytes": 2640,
+      "compress_size": 892,
+      "crc": "796a14cb"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_3.json",
+      "size_bytes": 325,
+      "compress_size": 203,
+      "crc": "6d596d9d"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_4.json",
+      "size_bytes": 710,
+      "compress_size": 377,
+      "crc": "1a15bdb4"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_5.json",
+      "size_bytes": 898,
+      "compress_size": 478,
+      "crc": "fe06c721"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_6.json",
+      "size_bytes": 1320,
+      "compress_size": 626,
+      "crc": "68b2324e"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_7.json",
+      "size_bytes": 1496,
+      "compress_size": 722,
+      "crc": "c94dca0e"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_1.json",
+      "size_bytes": 1518,
+      "compress_size": 733,
+      "crc": "b0d90057"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_2.json",
+      "size_bytes": 1142,
+      "compress_size": 410,
+      "crc": "f44d91cc"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_3.json",
+      "size_bytes": 189,
+      "compress_size": 134,
+      "crc": "81e027b4"
+    },
+    {
+      "path": "latka_jazn/resources/zip_package_profiles_v14_6_9_4.json",
+      "size_bytes": 432,
+      "compress_size": 298,
+      "crc": "4938ad1c"
+    },
+    {
+      "path": "latka_jazn/tools/__init__.py",
+      "size_bytes": 72,
+      "compress_size": 74,
+      "crc": "0e3a9d57"
+    },
+    {
+      "path": "latka_jazn/tools/active_extraction_cache.py",
+      "size_bytes": 13485,
+      "compress_size": 3446,
+      "crc": "0efd4dd5"
+    },
+    {
+      "path": "latka_jazn/tools/dedup_manifest.py",
+      "size_bytes": 4105,
+      "compress_size": 1514,
+      "crc": "3faa070e"
+    },
+    {
+      "path": "latka_jazn/tools/migration_report.py",
+      "size_bytes": 240,
+      "compress_size": 188,
+      "crc": "e33b2aba"
+    },
+    {
+      "path": "latka_jazn/tools/package_export.py",
+      "size_bytes": 9623,
+      "compress_size": 3309,
+      "crc": "98cd0ccd"
+    },
+    {
+      "path": "latka_jazn/tools/runtime_contract_version_normalizer.py",
+      "size_bytes": 7551,
+      "compress_size": 2212,
+      "crc": "e2f6c348"
+    },
+    {
+      "path": "latka_jazn/tools/update_history_audit.py",
+      "size_bytes": 6416,
+      "compress_size": 2178,
+      "crc": "884c5e61"
+    },
+    {
+      "path": "latka_jazn/tools/version_consistency_audit.py",
+      "size_bytes": 2804,
+      "compress_size": 1170,
+      "crc": "3e971e44"
+    },
+    {
+      "path": "latka_jazn/voice/__init__.py",
+      "size_bytes": 66,
+      "compress_size": 68,
+      "crc": "63f1326d"
+    },
+    {
+      "path": "latka_jazn/voice/audio_session_ledger.py",
+      "size_bytes": 283,
+      "compress_size": 180,
+      "crc": "b0520965"
+    },
+    {
+      "path": "latka_jazn/voice/realtime_voice_adapter.py",
+      "size_bytes": 118,
+      "compress_size": 96,
+      "crc": "931c792a"
+    },
+    {
+      "path": "latka_jazn/voice/speech_to_text_input_adapter.py",
+      "size_bytes": 128,
+      "compress_size": 104,
+      "crc": "598cdfc0"
+    },
+    {
+      "path": "latka_jazn/voice/text_output_adapter.py",
+      "size_bytes": 143,
+      "compress_size": 112,
+      "crc": "b6bcf3a2"
+    },
+    {
+      "path": "latka_jazn/voice/tts_output_adapter.py",
+      "size_bytes": 295,
+      "compress_size": 202,
+      "crc": "942c5359"
+    },
+    {
+      "path": "latka_jazn/voice/voice_consent_policy.py",
+      "size_bytes": 183,
+      "compress_size": 149,
+      "crc": "40d00c5a"
+    },
+    {
+      "path": "latka_jazn/voice/voice_identity_policy.py",
+      "size_bytes": 213,
+      "compress_size": 164,
+      "crc": "8f2c3b72"
+    },
+    {
+      "path": "latka_jazn/voice/voice_style_profile.py",
+      "size_bytes": 258,
+      "compress_size": 195,
+      "crc": "979c6f96"
+    },
+    {
+      "path": "latka_jazn/voice/voice_truth_boundary.py",
+      "size_bytes": 213,
+      "compress_size": 167,
+      "crc": "fc20285b"
+    },
+    {
+      "path": "main.py",
+      "size_bytes": 54883,
+      "compress_size": 11840,
+      "crc": "d0ac260f"
+    },
+    {
+      "path": "MANIFEST_CURRENT.json",
+      "size_bytes": 932548,
+      "compress_size": 123868,
+      "crc": "a30fbf0e"
+    },
+    {
+      "path": "MANIFEST_RUNTIME_MUTABLE.json",
+      "size_bytes": 18798,
+      "compress_size": 1656,
+      "crc": "ed2c2363"
+    },
+    {
+      "path": "memory/exported_from_sqlite/episodic_from_sqlite.jsonl",
+      "size_bytes": 671449,
+      "compress_size": 118999,
+      "crc": "4b1af84d"
+    },
+    {
+      "path": "memory/exported_from_sqlite/journal_from_sqlite.jsonl",
+      "size_bytes": 1043240,
+      "compress_size": 186387,
+      "crc": "5fe5e345"
+    },
+    {
+      "path": "memory/exported_from_sqlite/procedural_from_sqlite.jsonl",
+      "size_bytes": 61657,
+      "compress_size": 12818,
+      "crc": "a2cd8de5"
+    },
+    {
+      "path": "memory/exported_from_sqlite/README.txt",
+      "size_bytes": 419,
+      "compress_size": 282,
+      "crc": "8393710e"
+    },
+    {
+      "path": "memory/exported_from_sqlite/reflections_from_sqlite.jsonl",
+      "size_bytes": 177709,
+      "compress_size": 25042,
+      "crc": "e7f019a1"
+    },
+    {
+      "path": "memory/exported_from_sqlite/semantic_from_sqlite.jsonl",
+      "size_bytes": 66368,
+      "compress_size": 10905,
+      "crc": "0f41a264"
+    },
+    {
+      "path": "memory/exported_from_sqlite/truth_audits_from_sqlite.jsonl",
+      "size_bytes": 268556,
+      "compress_size": 28412,
+      "crc": "464bd34d"
+    },
+    {
+      "path": "memory/layered/affective.jsonl",
+      "size_bytes": 437928,
+      "compress_size": 51647,
+      "crc": "0aedb034"
+    },
+    {
+      "path": "memory/layered/continuity.jsonl",
+      "size_bytes": 15191089,
+      "compress_size": 901619,
+      "crc": "8bb96aef"
+    },
+    {
+      "path": "memory/layered/episodic.jsonl",
+      "size_bytes": 847400,
+      "compress_size": 102823,
+      "crc": "61b57050"
+    },
+    {
+      "path": "memory/layered/procedural.jsonl",
+      "size_bytes": 183939,
+      "compress_size": 23565,
+      "crc": "8e1028fd"
+    },
+    {
+      "path": "memory/layered/reflections.jsonl",
+      "size_bytes": 852546,
+      "compress_size": 94029,
+      "crc": "0388f6fc"
+    },
+    {
+      "path": "memory/layered/requirements_ledger_v14_6_9_3.jsonl",
+      "size_bytes": 7885,
+      "compress_size": 1105,
+      "crc": "50993c4d"
+    },
+    {
+      "path": "memory/layered/semantic.jsonl",
+      "size_bytes": 574505,
+      "compress_size": 66193,
+      "crc": "76ab3589"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
+      "size_bytes": 995440,
+      "compress_size": 57388,
+      "crc": "18283678"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_3.jsonl",
+      "size_bytes": 20636,
+      "compress_size": 2579,
+      "crc": "555459a3"
+    },
+    {
+      "path": "memory/layered/source_origin_ledger_v14_6_9_4.jsonl",
+      "size_bytes": 181276,
+      "compress_size": 12350,
+      "crc": "5fada254"
+    },
+    {
+      "path": "memory/layered/truth_audits.jsonl",
+      "size_bytes": 1703091,
+      "compress_size": 119101,
+      "crc": "d7d1c506"
+    },
+    {
+      "path": "memory/layered/turn_logic_audit.jsonl",
+      "size_bytes": 460349,
+      "compress_size": 18511,
+      "crc": "4405f5ad"
+    },
+    {
+      "path": "memory/legacy_raw/MOVED_TO_BACKUP.txt",
+      "size_bytes": 312,
+      "compress_size": 241,
+      "crc": "09c62538"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_active_paths.jsonl",
+      "size_bytes": 926869092,
+      "compress_size": 189616652,
+      "crc": "92579cec"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_full_graph.jsonl",
+      "size_bytes": 1063061528,
+      "compress_size": 218482088,
+      "crc": "e3e0a6b3"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_README.md",
+      "size_bytes": 2413,
+      "compress_size": 1316,
+      "crc": "c37544bd"
+    },
+    {
+      "path": "memory/processed_chats/chat_context_sources.json",
+      "size_bytes": 214506,
+      "compress_size": 97635,
+      "crc": "8ee3c925"
+    },
+    {
+      "path": "memory/raw/analizy_utworow.json",
+      "size_bytes": 209985,
+      "compress_size": 56203,
+      "crc": "797069dc"
+    },
+    {
+      "path": "memory/raw/CHAT_HTML_IMPORT_MANIFEST.json",
+      "size_bytes": 739,
+      "compress_size": 405,
+      "crc": "b86e637a"
+    },
+    {
+      "path": "memory/raw/conversation_turns.jsonl",
+      "size_bytes": 3194945,
+      "compress_size": 493510,
+      "crc": "9e144e98"
+    },
+    {
+      "path": "memory/raw/data.txt",
+      "size_bytes": 87299,
+      "compress_size": 33699,
+      "crc": "2d3f2e06"
+    },
+    {
+      "path": "memory/raw/dziennik.json",
+      "size_bytes": 1649112,
+      "compress_size": 213238,
+      "crc": "b0c2a8cc"
+    },
+    {
+      "path": "memory/raw/episodic_memory.jsonl",
+      "size_bytes": 402452,
+      "compress_size": 102580,
+      "crc": "c896cbc1"
+    },
+    {
+      "path": "memory/raw/extra_data.json",
+      "size_bytes": 18578,
+      "compress_size": 6828,
+      "crc": "088299d6"
+    },
+    {
+      "path": "memory/raw/IDENTITY_ORIGIN_CONTRACT.txt",
+      "size_bytes": 215,
+      "compress_size": 177,
+      "crc": "27b07bd8"
+    },
+    {
+      "path": "memory/raw/LATKA_BOOTSTRAP_SYSTEM.txt",
+      "size_bytes": 4824,
+      "compress_size": 2432,
+      "crc": "986a2997"
+    },
+    {
+      "path": "memory/raw/LATKA_IDENTITY_CANON.json",
+      "size_bytes": 5025,
+      "compress_size": 2342,
+      "crc": "4356dc51"
+    },
+    {
+      "path": "memory/raw/plugins_jazn.json",
+      "size_bytes": 2639,
+      "compress_size": 967,
+      "crc": "ac9e27d3"
+    },
+    {
+      "path": "memory/raw/runtime_event_errors.jsonl",
+      "size_bytes": 0,
+      "compress_size": 2,
+      "crc": "00000000"
+    },
+    {
+      "path": "memory/raw/runtime_events.jsonl",
+      "size_bytes": 500992581,
+      "compress_size": 99767143,
+      "crc": "f2ef4e31"
+    },
+    {
+      "path": "memory/raw/session_continuity_index.json",
+      "size_bytes": 13490,
+      "compress_size": 2671,
+      "crc": "175a7d38"
+    },
+    {
+      "path": "memory/raw_chats/MOVED_TO_BACKUP.txt",
+      "size_bytes": 311,
+      "compress_size": 240,
+      "crc": "bd377119"
+    },
+    {
+      "path": "memory/RAW_MEMORY_MANIFEST.json",
+      "size_bytes": 25703,
+      "compress_size": 4058,
+      "crc": "59dba746"
+    },
+    {
+      "path": "memory/sqlite/chat_context_audit_README.md",
+      "size_bytes": 8762,
+      "compress_size": 2671,
+      "crc": "6fe94c1d"
+    },
+    {
+      "path": "memory/sqlite/chat_context_audit_shards.json",
+      "size_bytes": 934,
+      "compress_size": 530,
+      "crc": "de4175b2"
+    },
+    {
+      "path": "memory/sqlite/chat_context_README.md",
+      "size_bytes": 8910,
+      "compress_size": 2661,
+      "crc": "89402d93"
+    },
+    {
+      "path": "memory/sqlite/chat_context_shards.json",
+      "size_bytes": 935,
+      "compress_size": 534,
+      "crc": "77dcccd4"
+    },
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_0001.sqlite3",
+      "size_bytes": 208564224,
+      "compress_size": 62796898,
+      "crc": "7e711e4c"
+    },
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "size_bytes": 126214144,
+      "compress_size": 53983168,
+      "crc": "04d7d5ca"
+    },
+    {
+      "path": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "size_bytes": 94126080,
+      "compress_size": 46108385,
+      "crc": "806f76bd"
+    },
+    {
+      "path": "memory/sqlite/inspect_sqlite_memory.py",
+      "size_bytes": 2998,
+      "compress_size": 1081,
+      "crc": "b5fa0acd"
+    },
+    {
+      "path": "memory/sqlite/legacy_docs_README.md",
+      "size_bytes": 10351,
+      "compress_size": 2638,
+      "crc": "22079979"
+    },
+    {
+      "path": "memory/sqlite/make_sqlite_memory_slice.py",
+      "size_bytes": 12454,
+      "compress_size": 3772,
+      "crc": "62b403af"
+    },
+    {
+      "path": "memory/sqlite/make_sqlite_memory_slice_v2.py",
+      "size_bytes": 13901,
+      "compress_size": 3898,
+      "crc": "190e4cd0"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+      "size_bytes": 798720,
+      "compress_size": 124607,
+      "crc": "7c2959ab"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3-shm",
+      "size_bytes": 32768,
+      "compress_size": 86,
+      "crc": "ddc506b6"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3-wal",
+      "size_bytes": 0,
+      "compress_size": 2,
+      "crc": "00000000"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit_shards.json",
+      "size_bytes": 884,
+      "compress_size": 511,
+      "crc": "760475fb"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+      "size_bytes": 248426496,
+      "compress_size": 37961747,
+      "crc": "b633034f"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-shm",
+      "size_bytes": 32768,
+      "compress_size": 86,
+      "crc": "ddc506b6"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-wal",
+      "size_bytes": 0,
+      "compress_size": 2,
+      "crc": "00000000"
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
+      "size_bytes": 895,
+      "compress_size": 513,
+      "crc": "a0854c16"
+    },
+    {
+      "path": "memory/sqlite/schema.txt",
+      "size_bytes": 40822,
+      "compress_size": 3396,
+      "crc": "4fae0571"
+    },
+    {
+      "path": "memory/sqlite/sharded_v1/latka_memory_raw_0001.sqlite3",
+      "size_bytes": 187027456,
+      "compress_size": 107297482,
+      "crc": "add34e53"
+    },
+    {
+      "path": "memory/sqlite/sqlite_audit_report.json",
+      "size_bytes": 275360,
+      "compress_size": 65357,
+      "crc": "a2cbae3e"
+    },
+    {
+      "path": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "size_bytes": 116953088,
+      "compress_size": 38274602,
+      "crc": "594ff5d0"
+    },
+    {
+      "path": "memory/update_protocol.json",
+      "size_bytes": 2026,
+      "compress_size": 945,
+      "crc": "1f9f7350"
+    },
+    {
+      "path": "memory/versioned_sources/activation_state.json.fce99a254c4e.json",
+      "size_bytes": 3024,
+      "compress_size": 967,
+      "crc": "0164dda9"
+    },
+    {
+      "path": "memory/versioned_sources/affective_history.json.e44e3bd87119.json",
+      "size_bytes": 108439,
+      "compress_size": 2116,
+      "crc": "bf56c808"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.3fe5fa2a4f5c.json",
+      "size_bytes": 202387,
+      "compress_size": 55149,
+      "crc": "ab3a8c8f"
+    },
+    {
+      "path": "memory/versioned_sources/analizy_utworow.json.cadec013898c.json",
+      "size_bytes": 207753,
+      "compress_size": 55380,
+      "crc": "c4fa3c9d"
+    },
+    {
+      "path": "memory/versioned_sources/ARCHIWUM_biblioteka.txt.487a18580883.txt",
+      "size_bytes": 913,
+      "compress_size": 353,
+      "crc": "cdca9e90"
+    },
+    {
+      "path": "memory/versioned_sources/book_memory.json.ef88b06d9849.json",
+      "size_bytes": 54,
+      "compress_size": 45,
+      "crc": "f19fd103"
+    },
+    {
+      "path": "memory/versioned_sources/canon_conflicts.json.f217c7f1786b.json",
+      "size_bytes": 465,
+      "compress_size": 242,
+      "crc": "e9759fec"
+    },
+    {
+      "path": "memory/versioned_sources/canon_registry.json.d59da8e3f8d7.json",
+      "size_bytes": 754,
+      "compress_size": 398,
+      "crc": "db1b1b82"
+    },
+    {
+      "path": "memory/versioned_sources/continuity_state.json.c4b4b1cc4683.json",
+      "size_bytes": 1248,
+      "compress_size": 415,
+      "crc": "6e5b96af"
+    },
+    {
+      "path": "memory/versioned_sources/data.txt.9065059cbc31.txt",
+      "size_bytes": 83272,
+      "compress_size": 32038,
+      "crc": "a1b28f52"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.1f4c05b9d90c.json",
+      "size_bytes": 359378,
+      "compress_size": 83437,
+      "crc": "04a1ee4f"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.3e6fe023d807.json",
+      "size_bytes": 372086,
+      "compress_size": 87331,
+      "crc": "3eb0a7f0"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.4da82c40ca26.json",
+      "size_bytes": 356135,
+      "compress_size": 82350,
+      "crc": "b0f63bbf"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.a017f196d077.json",
+      "size_bytes": 353494,
+      "compress_size": 81637,
+      "crc": "dfe74802"
+    },
+    {
+      "path": "memory/versioned_sources/dziennik.json.e50738b37e28.json",
+      "size_bytes": 317941,
+      "compress_size": 81278,
+      "crc": "76466ae7"
+    },
+    {
+      "path": "memory/versioned_sources/eksport_czatu_jazn_2026-05-17_v14_6_2_source.html",
+      "size_bytes": 24278,
+      "compress_size": 8235,
+      "crc": "54c3543d"
+    },
+    {
+      "path": "memory/versioned_sources/emotion_state.json.a0ad97113285.json",
+      "size_bytes": 1211,
+      "compress_size": 521,
+      "crc": "d15ecf4d"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.607ce4d0451d.jsonl",
+      "size_bytes": 392519,
+      "compress_size": 99457,
+      "crc": "1e74b73a"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.60e02b867972.jsonl",
+      "size_bytes": 390481,
+      "compress_size": 98673,
+      "crc": "dfb1af42"
+    },
+    {
+      "path": "memory/versioned_sources/episodic_memory.jsonl.c20d8d8d1401.jsonl",
+      "size_bytes": 2034506,
+      "compress_size": 477958,
+      "crc": "bfafe6b4"
+    },
+    {
+      "path": "memory/versioned_sources/extra_data.json.3caa7fdb6d67.json",
+      "size_bytes": 14551,
+      "compress_size": 6019,
+      "crc": "121a02f3"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_journal.json.37517e5f3dc6.json",
+      "size_bytes": 3,
+      "compress_size": 5,
+      "crc": "7068d244"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_snapshots.json.6d932e2343bc.json",
+      "size_bytes": 2141,
+      "compress_size": 966,
+      "crc": "7837c900"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_state.json.02397c2228d8.json",
+      "size_bytes": 1166,
+      "compress_size": 470,
+      "crc": "638ddec6"
+    },
+    {
+      "path": "memory/versioned_sources/identity_growth_state.json.ca3d163bab05.json",
+      "size_bytes": 3,
+      "compress_size": 5,
+      "crc": "dda1b006"
+    },
+    {
+      "path": "memory/versioned_sources/identity_state.json.3fe524034e5c.json",
+      "size_bytes": 30408,
+      "compress_size": 11812,
+      "crc": "34f561b0"
+    },
+    {
+      "path": "memory/versioned_sources/import_registry.json.13e313ef36bd.json",
+      "size_bytes": 91225,
+      "compress_size": 45961,
+      "crc": "c76cdbba"
+    },
+    {
+      "path": "memory/versioned_sources/integrity_manifest.json.26574ad40ea2.json",
+      "size_bytes": 5909,
+      "compress_size": 2743,
+      "crc": "bc5b46dc"
+    },
+    {
+      "path": "memory/versioned_sources/integrity_report.json.dadce9ebab64.json",
+      "size_bytes": 1041,
+      "compress_size": 594,
+      "crc": "a8ef8e4d"
+    },
+    {
+      "path": "memory/versioned_sources/journal.json.364b37738032.json",
+      "size_bytes": 20,
+      "compress_size": 22,
+      "crc": "8c2bfc9b"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.3189f0600701.txt",
+      "size_bytes": 1475,
+      "compress_size": 893,
+      "crc": "c098b8ed"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.412a5515f618.txt",
+      "size_bytes": 1439,
+      "compress_size": 889,
+      "crc": "c7a2befd"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.562b0a7be006.txt",
+      "size_bytes": 2624,
+      "compress_size": 1484,
+      "crc": "25013016"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.844cd422b943.txt",
+      "size_bytes": 837,
+      "compress_size": 546,
+      "crc": "5a5b32a4"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_BOOTSTRAP_SYSTEM.txt.84683fc90743.txt",
+      "size_bytes": 2399,
+      "compress_size": 1353,
+      "crc": "87aa0e2f"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.540510868244.json",
+      "size_bytes": 3812,
+      "compress_size": 1766,
+      "crc": "a4a6fd44"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.68ccf4dcb609.json",
+      "size_bytes": 2383,
+      "compress_size": 1245,
+      "crc": "3e52ea72"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.a919ab719415.json",
+      "size_bytes": 2778,
+      "compress_size": 1396,
+      "crc": "79216f99"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.c3f1547a84a0.json",
+      "size_bytes": 1327,
+      "compress_size": 743,
+      "crc": "d78077c3"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.e1a62cae6de8.json",
+      "size_bytes": 4279,
+      "compress_size": 2031,
+      "crc": "8b861d85"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.e1fb4803d13a.json",
+      "size_bytes": 2674,
+      "compress_size": 1354,
+      "crc": "4728df35"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.edf2b36c6190.json",
+      "size_bytes": 3203,
+      "compress_size": 1516,
+      "crc": "f80eea04"
+    },
+    {
+      "path": "memory/versioned_sources/LATKA_IDENTITY_CANON.json.f5aa00b29222.json",
+      "size_bytes": 1347,
+      "compress_size": 752,
+      "crc": "1bdc591c"
+    },
+    {
+      "path": "memory/versioned_sources/legacy_import_report.json.03a1af9b1886.json",
+      "size_bytes": 8776,
+      "compress_size": 1902,
+      "crc": "69c27274"
+    },
+    {
+      "path": "memory/versioned_sources/memory_resonance.json.dfd62709dde1.json",
+      "size_bytes": 1511,
+      "compress_size": 643,
+      "crc": "8f33d107"
+    },
+    {
+      "path": "memory/versioned_sources/migration_report.json.4251f0a8fcd0.json",
+      "size_bytes": 1941,
+      "compress_size": 889,
+      "crc": "d10fa2a0"
+    },
+    {
+      "path": "memory/versioned_sources/openai_conversation.json.bfd1073fadb4.json",
+      "size_bytes": 169,
+      "compress_size": 131,
+      "crc": "49447c73"
+    },
+    {
+      "path": "memory/versioned_sources/openai_conversation_state.json.4acb183c3353.json",
+      "size_bytes": 145,
+      "compress_size": 130,
+      "crc": "b79296b8"
+    },
+    {
+      "path": "memory/versioned_sources/quiet_rest_state.json.ca98b3ae3be5.json",
+      "size_bytes": 774,
+      "compress_size": 228,
+      "crc": "5d0dd10c"
+    },
+    {
+      "path": "memory/versioned_sources/semantic_memory.json.5faebe9b8d62.json",
+      "size_bytes": 26011,
+      "compress_size": 9266,
+      "crc": "ce4f8a05"
+    },
+    {
+      "path": "MEMORY_CHECKPOINT_POLICY.md",
+      "size_bytes": 1773,
+      "compress_size": 1007,
+      "crc": "c1219808"
+    },
+    {
+      "path": "plan_memory_unification.py",
+      "size_bytes": 40170,
+      "compress_size": 9840,
+      "crc": "42dce9a9"
+    },
+    {
+      "path": "prepare_memory_migration_queues.py",
+      "size_bytes": 24238,
+      "compress_size": 5868,
+      "crc": "4748821e"
+    },
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 647,
+      "compress_size": 384,
+      "crc": "8d20be90"
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 2061,
+      "compress_size": 1061,
+      "crc": "d7191749"
+    },
+    {
+      "path": "README_CHAT_HTML_7Z_IMPORT.txt",
+      "size_bytes": 1938,
+      "compress_size": 943,
+      "crc": "2ef8b36f"
+    },
+    {
+      "path": "README_CURRENT_SQLITE.txt",
+      "size_bytes": 100,
+      "compress_size": 98,
+      "crc": "4d3e20fd"
+    },
+    {
+      "path": "README_MEMORY_RAW_CHAT_7Z.txt",
+      "size_bytes": 160,
+      "compress_size": 138,
+      "crc": "0f2cfd3f"
+    },
+    {
+      "path": "reports/canon_extraction/canon_candidates.jsonl",
+      "size_bytes": 5442271,
+      "compress_size": 634799,
+      "crc": "fea739ca"
+    },
+    {
+      "path": "reports/canon_extraction/canon_extraction_report.json",
+      "size_bytes": 3116,
+      "compress_size": 1215,
+      "crc": "ba86bc68"
+    },
+    {
+      "path": "reports/canon_extraction/canon_extraction_report.md",
+      "size_bytes": 15446,
+      "compress_size": 5099,
+      "crc": "8edf5c1b"
+    },
+    {
+      "path": "reports/canon_extraction/progress.jsonl",
+      "size_bytes": 2650,
+      "compress_size": 601,
+      "crc": "50616e84"
+    },
+    {
+      "path": "requests/29702e77f9a841f49443a7acb5833fb6.json",
+      "size_bytes": 243,
+      "compress_size": 201,
+      "crc": "43d40e1a"
+    },
+    {
+      "path": "requirements.txt",
+      "size_bytes": 214,
+      "compress_size": 183,
+      "crc": "1912787f"
+    },
+    {
+      "path": "review_memory_candidates.py",
+      "size_bytes": 18284,
+      "compress_size": 4706,
+      "crc": "5545fb93"
+    },
+    {
+      "path": "scripts/bootstrap_polish_reasoning.ps1",
+      "size_bytes": 1866,
+      "compress_size": 736,
+      "crc": "ff107cb8"
+    },
+    {
+      "path": "scripts/bootstrap_polish_reasoning.sh",
+      "size_bytes": 1264,
+      "compress_size": 609,
+      "crc": "c8f1cd90"
+    },
+    {
+      "path": "SHA256SUMS",
+      "size_bytes": 90779,
+      "compress_size": 37473,
+      "crc": "ebbb873e"
+    },
+    {
+      "path": "SHA256SUMS_STATIC",
+      "size_bytes": 90779,
+      "compress_size": 37473,
+      "crc": "ebbb873e"
+    },
+    {
+      "path": "split_zip_sha.py",
+      "size_bytes": 19895,
+      "compress_size": 6505,
+      "crc": "3cf596b6"
+    },
+    {
+      "path": "START_CHATGPT_FROM_HERE.txt",
+      "size_bytes": 1728,
+      "compress_size": 940,
+      "crc": "a293be84"
+    },
+    {
+      "path": "status/runtime.json",
+      "size_bytes": 423,
+      "compress_size": 270,
+      "crc": "aaf839e6"
+    },
+    {
+      "path": "tests/test_archive_workspace_runtime_sqlite.py",
+      "size_bytes": 6281,
+      "compress_size": 1464,
+      "crc": "afc735de"
+    },
+    {
+      "path": "tests/test_auto_memory_update.py",
+      "size_bytes": 2133,
+      "compress_size": 781,
+      "crc": "4a6c9343"
+    },
+    {
+      "path": "tests/test_chatgpt_cognitive_bridge.py",
+      "size_bytes": 3055,
+      "compress_size": 1172,
+      "crc": "431b25ed"
+    },
+    {
+      "path": "tests/test_conversation_archive_sql.py",
+      "size_bytes": 15664,
+      "compress_size": 3183,
+      "crc": "906fa0e6"
+    },
+    {
+      "path": "tests/test_conversation_memory_capture.py",
+      "size_bytes": 3425,
+      "compress_size": 1285,
+      "crc": "a60c634f"
+    },
+    {
+      "path": "tests/test_dziennik_version_update.py",
+      "size_bytes": 3763,
+      "compress_size": 1101,
+      "crc": "21106ac6"
+    },
+    {
+      "path": "tests/test_html_conversations_to_layered_sqlite.py",
+      "size_bytes": 7462,
+      "compress_size": 1610,
+      "crc": "cded7cd2"
+    },
+    {
+      "path": "tests/test_html_conversations_to_simple_sqlite.py",
+      "size_bytes": 4837,
+      "compress_size": 1293,
+      "crc": "d6d7412c"
+    },
+    {
+      "path": "tests/test_identity_startup.py",
+      "size_bytes": 1707,
+      "compress_size": 643,
+      "crc": "4f589000"
+    },
+    {
+      "path": "tests/test_layered_memory.py",
+      "size_bytes": 1163,
+      "compress_size": 535,
+      "crc": "25a1d287"
+    },
+    {
+      "path": "tests/test_memory_importance.py",
+      "size_bytes": 485,
+      "compress_size": 275,
+      "crc": "4b0fa26c"
+    },
+    {
+      "path": "tests/test_memory_store.py",
+      "size_bytes": 1084,
+      "compress_size": 471,
+      "crc": "e7a8f94c"
+    },
+    {
+      "path": "tests/test_neurocognitive_expansion.py",
+      "size_bytes": 2426,
+      "compress_size": 858,
+      "crc": "16210229"
+    },
+    {
+      "path": "tests/test_neuropsychology_map.py",
+      "size_bytes": 556,
+      "compress_size": 320,
+      "crc": "8cae57f1"
+    },
+    {
+      "path": "tests/test_raw_archive_v14521.py",
+      "size_bytes": 1704,
+      "compress_size": 620,
+      "crc": "3f7ddd64"
+    },
+    {
+      "path": "tests/test_runtime_persistence.py",
+      "size_bytes": 3092,
+      "compress_size": 1140,
+      "crc": "4b1d6ebe"
+    },
+    {
+      "path": "tests/test_self_architecture.py",
+      "size_bytes": 720,
+      "compress_size": 369,
+      "crc": "964d43ed"
+    },
+    {
+      "path": "tests/test_temporal_emotional_awareness.py",
+      "size_bytes": 714,
+      "compress_size": 384,
+      "crc": "53a27ce9"
+    },
+    {
+      "path": "tests/test_truth_boundary.py",
+      "size_bytes": 1287,
+      "compress_size": 530,
+      "crc": "3aa58c90"
+    },
+    {
+      "path": "tests/test_v14520_repair.py",
+      "size_bytes": 6883,
+      "compress_size": 2130,
+      "crc": "08517a53"
+    },
+    {
+      "path": "tests/test_v14521_review_fixes.py",
+      "size_bytes": 3415,
+      "compress_size": 1209,
+      "crc": "fbcb275c"
+    },
+    {
+      "path": "tests/test_v14524_runtime_bridge_export_hotfix.py",
+      "size_bytes": 3734,
+      "compress_size": 1158,
+      "crc": "b0f341f1"
+    },
+    {
+      "path": "tests/test_v14525_realtime_exact_event_ledger.py",
+      "size_bytes": 3967,
+      "compress_size": 1459,
+      "crc": "94b6a4a9"
+    },
+    {
+      "path": "tests/test_v14526_package_completeness.py",
+      "size_bytes": 3732,
+      "compress_size": 1397,
+      "crc": "c97f2336"
+    },
+    {
+      "path": "tests/test_v14527_dialogue_repair.py",
+      "size_bytes": 2590,
+      "compress_size": 1088,
+      "crc": "c6278116"
+    },
+    {
+      "path": "tests/test_v14528_awareness_logic.py",
+      "size_bytes": 4795,
+      "compress_size": 1705,
+      "crc": "9d6c862e"
+    },
+    {
+      "path": "tests/test_v14529_conversation_runtime.py",
+      "size_bytes": 3506,
+      "compress_size": 1173,
+      "crc": "6098a5d3"
+    },
+    {
+      "path": "tests/test_v14530_polish_understanding.py",
+      "size_bytes": 3057,
+      "compress_size": 1109,
+      "crc": "1917f687"
+    },
+    {
+      "path": "tests/test_v14531_identity_continuity_understanding.py",
+      "size_bytes": 3237,
+      "compress_size": 1106,
+      "crc": "fd646ac6"
+    },
+    {
+      "path": "tests/test_v14532_cognitive_packets.py",
+      "size_bytes": 3506,
+      "compress_size": 1289,
+      "crc": "f6fa1c09"
+    },
+    {
+      "path": "tests/test_v14533_download_safe_cognitive_packets.py",
+      "size_bytes": 1564,
+      "compress_size": 769,
+      "crc": "cccde8df"
+    },
+    {
+      "path": "tests/test_v14534_emotional_granularity_continuity_cognition.py",
+      "size_bytes": 4102,
+      "compress_size": 1514,
+      "crc": "2f204187"
+    },
+    {
+      "path": "tests/test_v14535_timestamp_contract.py",
+      "size_bytes": 2379,
+      "compress_size": 944,
+      "crc": "e07753d0"
+    },
+    {
+      "path": "tests/test_v14536_birth_source_contract.py",
+      "size_bytes": 3217,
+      "compress_size": 1183,
+      "crc": "f1e96744"
+    },
+    {
+      "path": "tests/test_v14537_persistent_runtime_dialogue.py",
+      "size_bytes": 3912,
+      "compress_size": 1426,
+      "crc": "79ecb69a"
+    },
+    {
+      "path": "tests/test_v14538_github_cognitive_runtime.py",
+      "size_bytes": 3278,
+      "compress_size": 1335,
+      "crc": "256d7814"
+    },
+    {
+      "path": "tests/test_v14539_cleanup_dedup.py",
+      "size_bytes": 1375,
+      "compress_size": 591,
+      "crc": "d4de3f3d"
+    },
+    {
+      "path": "tests/test_v1460_lexical_semantic_runtime.py",
+      "size_bytes": 2930,
+      "compress_size": 1047,
+      "crc": "d0730ddf"
+    },
+    {
+      "path": "tests/test_v146101_stale_route_context_guard.py",
+      "size_bytes": 3728,
+      "compress_size": 1217,
+      "crc": "50fe9138"
+    },
+    {
+      "path": "tests/test_v14610_dictionary_network_policy.py",
+      "size_bytes": 1436,
+      "compress_size": 553,
+      "crc": "9c5ecb63"
+    },
+    {
+      "path": "tests/test_v14610_external_research_handler.py",
+      "size_bytes": 482,
+      "compress_size": 247,
+      "crc": "4f939ac9"
+    },
+    {
+      "path": "tests/test_v14610_manifest_profiles.py",
+      "size_bytes": 382,
+      "compress_size": 217,
+      "crc": "30bd83ea"
+    },
+    {
+      "path": "tests/test_v14610_route_handler_dispatcher.py",
+      "size_bytes": 1320,
+      "compress_size": 542,
+      "crc": "aadd4a76"
+    },
+    {
+      "path": "tests/test_v14610_startup_contract.py",
+      "size_bytes": 1349,
+      "compress_size": 507,
+      "crc": "bd18c879"
+    },
+    {
+      "path": "tests/test_v14610_update_history_audit.py",
+      "size_bytes": 684,
+      "compress_size": 351,
+      "crc": "9a94abf2"
+    },
+    {
+      "path": "tests/test_v14610_version_consistency.py",
+      "size_bytes": 912,
+      "compress_size": 404,
+      "crc": "2ab4c1d7"
+    },
+    {
+      "path": "tests/test_v146112_runtime_preview_source_state.py",
+      "size_bytes": 3922,
+      "compress_size": 1328,
+      "crc": "09ac12d4"
+    },
+    {
+      "path": "tests/test_v146113_cognitive_turn_envelope.py",
+      "size_bytes": 4463,
+      "compress_size": 1430,
+      "crc": "eb22faeb"
+    },
+    {
+      "path": "tests/test_v146114_bootstrap_recognition_hotfix.py",
+      "size_bytes": 2385,
+      "compress_size": 1074,
+      "crc": "83e3c158"
+    },
+    {
+      "path": "tests/test_v146114_final_visible_continuity_ledger.py",
+      "size_bytes": 5130,
+      "compress_size": 1570,
+      "crc": "540a521b"
+    },
+    {
+      "path": "tests/test_v146114_runtime_preview_fallback_detection.py",
+      "size_bytes": 660,
+      "compress_size": 381,
+      "crc": "1a1f2f2c"
+    },
+    {
+      "path": "tests/test_v146114_version_consistency_contract.py",
+      "size_bytes": 2213,
+      "compress_size": 871,
+      "crc": "52e82f46"
+    },
+    {
+      "path": "tests/test_v146115_contextual_greeting_fallback_repair.py",
+      "size_bytes": 3767,
+      "compress_size": 1231,
+      "crc": "91f309e1"
+    },
+    {
+      "path": "tests/test_v1461_nlp_adapter_zip_profiles.py",
+      "size_bytes": 2880,
+      "compress_size": 1013,
+      "crc": "0292bc29"
+    },
+    {
+      "path": "tests/test_v14621_stale_nlp_route_hotfix.py",
+      "size_bytes": 3683,
+      "compress_size": 1421,
+      "crc": "612c331d"
+    },
+    {
+      "path": "tests/test_v1462_runtime_start_fallback_truth_contract.py",
+      "size_bytes": 3827,
+      "compress_size": 1434,
+      "crc": "d1dc7e66"
+    },
+    {
+      "path": "tests/test_v1463_memory_recall_content_hotfix.py",
+      "size_bytes": 3124,
+      "compress_size": 1059,
+      "crc": "c574bdd5"
+    },
+    {
+      "path": "tests/test_v1464_active_cache_visible_preview.py",
+      "size_bytes": 3693,
+      "compress_size": 967,
+      "crc": "d60a6f38"
+    },
+    {
+      "path": "tests/test_v1465_memory_search_planner.py",
+      "size_bytes": 3583,
+      "compress_size": 1024,
+      "crc": "37133109"
+    },
+    {
+      "path": "tests/test_v1466_self_owned_startup_contract.py",
+      "size_bytes": 3889,
+      "compress_size": 1321,
+      "crc": "cfbd67cd"
+    },
+    {
+      "path": "tests/test_v1467_free_dialogue_memory_nlp_bridge.py",
+      "size_bytes": 4849,
+      "compress_size": 1770,
+      "crc": "c7728cfa"
+    },
+    {
+      "path": "tests/test_v1468_free_dialogue_parity_memory_search_hotfix.py",
+      "size_bytes": 4613,
+      "compress_size": 1702,
+      "crc": "c28f3ff3"
+    },
+    {
+      "path": "tests/test_v14691_neurological_signal_router.py",
+      "size_bytes": 2510,
+      "compress_size": 914,
+      "crc": "8389659a"
+    },
+    {
+      "path": "tests/test_v14692_runtime_self_expression_topic_mismatch.py",
+      "size_bytes": 4569,
+      "compress_size": 1658,
+      "crc": "5421e0d6"
+    },
+    {
+      "path": "tests/test_v14693_active_marker_cache.py",
+      "size_bytes": 774,
+      "compress_size": 353,
+      "crc": "8fe1f3f4"
+    },
+    {
+      "path": "tests/test_v14693_behavioral_runtime_dialogue_repair.py",
+      "size_bytes": 1600,
+      "compress_size": 574,
+      "crc": "56b320ed"
+    },
+    {
+      "path": "tests/test_v14693_creative_text_preservation.py",
+      "size_bytes": 1104,
+      "compress_size": 553,
+      "crc": "b770526f"
+    },
+    {
+      "path": "tests/test_v14693_source_origin_boundary.py",
+      "size_bytes": 1137,
+      "compress_size": 477,
+      "crc": "e63a89a4"
+    },
+    {
+      "path": "tests/test_v14694_dynamic_runtime_provenance_template_origin_neuro_nlp.py",
+      "size_bytes": 5263,
+      "compress_size": 1750,
+      "crc": "405ce968"
+    },
+    {
+      "path": "tests/test_v14695_standalone_greeting_route_hotfix.py",
+      "size_bytes": 2661,
+      "compress_size": 1006,
+      "crc": "e054a286"
+    },
+    {
+      "path": "tests/test_v1470_model_independent_voice_runtime.py",
+      "size_bytes": 4430,
+      "compress_size": 1661,
+      "crc": "08e81ef6"
+    },
+    {
+      "path": "tests/test_v1471_dialogue_grounding_hotfix.py",
+      "size_bytes": 3718,
+      "compress_size": 1212,
+      "crc": "70aeb2a4"
+    },
+    {
+      "path": "tests/test_v14824_codex_session_bridge.py",
+      "size_bytes": 4497,
+      "compress_size": 1369,
+      "crc": "1b3582d4"
+    },
+    {
+      "path": "tests/test_v14824_model_guided_jazn_runtime.py",
+      "size_bytes": 2796,
+      "compress_size": 987,
+      "crc": "d53065a0"
+    },
+    {
+      "path": "tests/test_v14824_positive_feedback_runtime.py",
+      "size_bytes": 1872,
+      "compress_size": 835,
+      "crc": "dbb443a0"
+    },
+    {
+      "path": "tests/test_v14824_runtime_exact_quote_and_validation.py",
+      "size_bytes": 2680,
+      "compress_size": 776,
+      "crc": "1c527218"
+    },
+    {
+      "path": "tests/test_v14825_final_response_preserves_handler_body.py",
+      "size_bytes": 3177,
+      "compress_size": 1070,
+      "crc": "cd443152"
+    },
+    {
+      "path": "tests/test_v14825_route_memory_capability_hotfix.py",
+      "size_bytes": 7005,
+      "compress_size": 2184,
+      "crc": "088aab01"
+    },
+    {
+      "path": "tests/test_v148260_self_memory_recall_presentation_quality.py",
+      "size_bytes": 4164,
+      "compress_size": 1514,
+      "crc": "efa261de"
+    },
+    {
+      "path": "tests/test_v148261_non_memory_intent_memory_gating.py",
+      "size_bytes": 2847,
+      "compress_size": 1119,
+      "crc": "d663e019"
+    },
+    {
+      "path": "tests/test_v148262_runtime_contract_version_normalizer.py",
+      "size_bytes": 5498,
+      "compress_size": 1253,
+      "crc": "92a1c34e"
+    },
+    {
+      "path": "tests/test_v148263_free_dialogue_short_turn_fallback_hotfix.py",
+      "size_bytes": 3154,
+      "compress_size": 1214,
+      "crc": "3cf730f8"
+    },
+    {
+      "path": "tests/test_v148264_route_freshness_no_birth_stale_route.py",
+      "size_bytes": 4375,
+      "compress_size": 1676,
+      "crc": "509343ce"
+    },
+    {
+      "path": "tests/test_v148265_eof_chat_lifecycle_contract.py",
+      "size_bytes": 2414,
+      "compress_size": 749,
+      "crc": "aa51aaf2"
+    },
+    {
+      "path": "tests/test_v148266_current_turn_route_grounding_health_weather.py",
+      "size_bytes": 5983,
+      "compress_size": 1913,
+      "crc": "ae7a9775"
+    },
+    {
+      "path": "tests/test_v14827_memory_normalization_sidecar.py",
+      "size_bytes": 11783,
+      "compress_size": 2594,
+      "crc": "975da497"
+    },
+    {
+      "path": "tests/test_v1482_chat_loop_repeated_template_guard.py",
+      "size_bytes": 965,
+      "compress_size": 554,
+      "crc": "c0578c3f"
+    },
+    {
+      "path": "tests/test_v1482_dialogue_followup_time_repair.py",
+      "size_bytes": 1705,
+      "compress_size": 745,
+      "crc": "ee23cbe9"
+    },
+    {
+      "path": "tests/test_v1482_dialogue_intent_classifier_precision.py",
+      "size_bytes": 2856,
+      "compress_size": 1072,
+      "crc": "c2fb370e"
+    },
+    {
+      "path": "tests/test_v1482_ellipsis_boundary.py",
+      "size_bytes": 615,
+      "compress_size": 277,
+      "crc": "9406b0da"
+    },
+    {
+      "path": "tests/test_v1482_ordinary_dialogue_night_tone_repair.py",
+      "size_bytes": 2487,
+      "compress_size": 797,
+      "crc": "b4a570b1"
+    },
+    {
+      "path": "tests/test_v1482_raw_memory_status.py",
+      "size_bytes": 1506,
+      "compress_size": 476,
+      "crc": "eb856c70"
+    },
+    {
+      "path": "tests/test_v1482_runtime_activation_status.py",
+      "size_bytes": 1026,
+      "compress_size": 294,
+      "crc": "5165f992"
+    },
+    {
+      "path": "tests/test_v1482_runtime_answer_validator_policy.py",
+      "size_bytes": 1843,
+      "compress_size": 679,
+      "crc": "373f2838"
+    },
+    {
+      "path": "tests/test_v148313_canon_source_refactor.py",
+      "size_bytes": 3543,
+      "compress_size": 1157,
+      "crc": "2463f6dd"
+    },
+    {
+      "path": "tests/test_v14831_fast_wake_route_trace.py",
+      "size_bytes": 3162,
+      "compress_size": 1207,
+      "crc": "af950174"
+    },
+    {
+      "path": "tests/test_v14832_unified_chat_session_core.py",
+      "size_bytes": 10749,
+      "compress_size": 2635,
+      "crc": "ab2899ce"
+    },
+    {
+      "path": "tests/test_v14834088_canon_source_question_handler.py",
+      "size_bytes": 4963,
+      "compress_size": 1363,
+      "crc": "d1706521"
+    },
+    {
+      "path": "tests/test_v14834089_manifest_excluded_detail_privacy.py",
+      "size_bytes": 1144,
+      "compress_size": 493,
+      "crc": "ac2a4a0d"
+    },
+    {
+      "path": "tests/test_v14834090_chat_gpt_final_visible_rendering.py",
+      "size_bytes": 2947,
+      "compress_size": 1233,
+      "crc": "09fc8d19"
+    },
+    {
+      "path": "tests/test_v14834_python_canon_consolidation.py",
+      "size_bytes": 3461,
+      "compress_size": 1161,
+      "crc": "84143546"
+    },
+    {
+      "path": "tests/test_v1483_polish_reasoning_cli.py",
+      "size_bytes": 1155,
+      "compress_size": 492,
+      "crc": "bd3b8a8e"
+    },
+    {
+      "path": "tests/test_v1483_polish_reasoning_pipeline.py",
+      "size_bytes": 3059,
+      "compress_size": 902,
+      "crc": "ca29fd9c"
+    },
+    {
+      "path": "tests/test_v1484_morfeusz_polimorf_provider.py",
+      "size_bytes": 3275,
+      "compress_size": 1102,
+      "crc": "a9cb1f38"
+    },
+    {
+      "path": "tests/test_v1484_polish_morphology_cli.py",
+      "size_bytes": 1422,
+      "compress_size": 578,
+      "crc": "1a72852f"
+    },
+    {
+      "path": "tests/test_v14_8_0_network_sjp_lexical_bridge.py",
+      "size_bytes": 2976,
+      "compress_size": 994,
+      "crc": "2a318369"
+    },
+    {
+      "path": "tests/test_v14_8_1_large_dialogue_memory_grounding.py",
+      "size_bytes": 4478,
+      "compress_size": 1359,
+      "crc": "5a761233"
+    },
+    {
+      "path": "tools/apply_v14_8_2_1_cleanup.py",
+      "size_bytes": 9814,
+      "compress_size": 2945,
+      "crc": "bb6a712a"
+    },
+    {
+      "path": "tools/auto_memory_update.py",
+      "size_bytes": 293,
+      "compress_size": 193,
+      "crc": "f6529358"
+    },
+    {
+      "path": "tools/bootstrap_dependencies.py",
+      "size_bytes": 2498,
+      "compress_size": 1058,
+      "crc": "948d2afd"
+    },
+    {
+      "path": "tools/build_conversation_archive.py",
+      "size_bytes": 55782,
+      "compress_size": 10816,
+      "crc": "09cd52f8"
+    },
+    {
+      "path": "tools/extract_latka_canon_candidates.py",
+      "size_bytes": 301,
+      "compress_size": 200,
+      "crc": "fb5b5ff0"
+    },
+    {
+      "path": "tools/fix_v14825_manifest_marker.py",
+      "size_bytes": 15828,
+      "compress_size": 4427,
+      "crc": "13f811c8"
+    },
+    {
+      "path": "tools/html_conversations_to_layered_sqlite.py",
+      "size_bytes": 30567,
+      "compress_size": 6023,
+      "crc": "2d30e630"
+    },
+    {
+      "path": "tools/html_conversations_to_simple_sqlite.py",
+      "size_bytes": 12547,
+      "compress_size": 3545,
+      "crc": "073c939f"
+    },
+    {
+      "path": "tools/import_chat_html_7z.py",
+      "size_bytes": 5206,
+      "compress_size": 1941,
+      "crc": "0713034f"
+    },
+    {
+      "path": "tools/memory_repair.py",
+      "size_bytes": 2396,
+      "compress_size": 988,
+      "crc": "6dcd8cbb"
+    },
+    {
+      "path": "tools/rebuild_large_memory_index.py",
+      "size_bytes": 1567,
+      "compress_size": 807,
+      "crc": "bd518a4f"
+    },
+    {
+      "path": "tools/rebuild_latka_memory_database.py",
+      "size_bytes": 104103,
+      "compress_size": 22778,
+      "crc": "9a41bfd5"
+    },
+    {
+      "path": "tools/record_version_update.py",
+      "size_bytes": 1899,
+      "compress_size": 717,
+      "crc": "4529f124"
+    },
+    {
+      "path": "tools/refresh_current_manifest.py",
+      "size_bytes": 12991,
+      "compress_size": 4431,
+      "crc": "595ee1e8"
+    },
+    {
+      "path": "tools/runtime_memory.py",
+      "size_bytes": 3206,
+      "compress_size": 1267,
+      "crc": "977081f4"
+    },
+    {
+      "path": "tools/split_latka_memory_sqlite.py",
+      "size_bytes": 30314,
+      "compress_size": 6870,
+      "crc": "40a63046"
+    },
+    {
+      "path": "tools/verify_export_package.py",
+      "size_bytes": 1060,
+      "compress_size": 592,
+      "crc": "36cd27dc"
+    },
+    {
+      "path": "VERSION.txt",
+      "size_bytes": 14,
+      "compress_size": 16,
+      "crc": "7af3bc1b"
+    }
+  ]
+}
