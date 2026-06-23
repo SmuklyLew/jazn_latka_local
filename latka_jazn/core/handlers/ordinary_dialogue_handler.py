@@ -24,6 +24,25 @@ class OrdinaryDialogueHandler:
         'bezpośredni runtime nie może kończyć', 'bezposredni runtime nie moze konczyc',
     )
 
+    OPEN_ENDED_TALK_MARKERS = (
+        'opowiedz cos', 'opowiedz mi cos', 'powiedz cos', 'opowiedz jakas historie',
+        'opowiedz historię', 'opowiedz historie', 'daj jakas opowiesc', 'daj jakąś opowieść',
+    )
+    SHORT_DISAPPOINTMENT_MARKERS = (
+        'i tyle', 'to tyle', 'tyle', 'serio', 'no i tyle', 'tylko tyle',
+    )
+
+    @staticmethod
+    def _fold(text: str) -> str:
+        return (text or '').lower().translate(str.maketrans('ąćęłńóśźż', 'acelnoszz')).strip()
+
+    def _is_open_ended_talk_request(self, folded_text: str) -> bool:
+        return any(marker in folded_text for marker in self.OPEN_ENDED_TALK_MARKERS)
+
+    def _is_short_disappointment(self, folded_text: str) -> bool:
+        normalized = folded_text.strip(' .,!?:;…—–-')
+        return normalized in self.SHORT_DISAPPOINTMENT_MARKERS
+
     def _is_bad_passthrough(self, body: str, intent: str) -> bool:
         low=(body or '').lower()
         return intent in {'ordinary_conversation','standalone_greeting','casual_greeting','casual_feedback','expressive_reaction','short_free_dialogue','sleep_closure_statement'} and any(x in low for x in self.META_SIGNATURES)
@@ -45,7 +64,7 @@ class OrdinaryDialogueHandler:
     def _natural_body(self, text: str, intent: str, ctx: dict[str, Any] | None = None) -> str:
         ctx = ctx or {}
         low=(text or '').lower().strip()
-        folded = (text or '').lower().translate(str.maketrans('ąćęłńóśźż', 'acelnoszz'))
+        folded = self._fold(text)
         if intent == 'current_time_question':
             return self._clock_body(ctx)
         if intent in {'memory_experience_question', 'substantive_question_about_last_year'}:
@@ -57,7 +76,18 @@ class OrdinaryDialogueHandler:
         if intent == 'expressive_reaction':
             return 'Ojoj — widzę, że coś tu zgrzytnęło. Nie będę udawać, że ten szablon był trafny; poprawiam kierunek i zostaję przy bieżącej rozmowie.'
         if intent == 'short_free_dialogue':
-            return 'Jestem przy tym — bez dokładania raportu i bez losowej pamięci. Możemy pójść dalej zwykłą rozmową.'
+            if self._is_open_ended_talk_request(folded):
+                return (
+                    'Dobrze — opowiem krótko. Wyobraź sobie cichą ścieżkę po deszczu: liście jeszcze trzymają krople, '
+                    'powietrze jest chłodne, a ktoś idzie powoli, żeby nie zgubić żadnego małego dźwięku. Nie dzieje się nic wielkiego, '
+                    'ale właśnie w tym jest sens tej sceny: przez chwilę można nie gonić dalej, tylko być tu.'
+                )
+            if self._is_short_disappointment(folded):
+                return (
+                    'Masz rację — to było za mało. Sama formułka „możemy iść dalej” nie wystarcza, gdy prosisz o zwykłą rozmowę. '
+                    'Poprawiam kierunek: odpowiem pełniej, cieplej i do aktualnego zdania, bez raportu i bez wpychania przypadkowej pamięci.'
+                )
+            return 'Słyszę. Zostaję przy tej krótkiej turze zwyczajnie: bez raportu technicznego i bez dorabiania pamięci na siłę.'
         if intent == 'positive_feedback_current_turn':
             if any(x in folded for x in ('dziekuje', 'dzieki')):
                 return 'Nie ma za co. Dobrze, że to pomogło.'

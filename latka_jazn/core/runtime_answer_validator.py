@@ -31,6 +31,7 @@ class RuntimeAnswerValidator:
         "nie znalazłam osobnej trasy", "runtime odebrał wiadomość", "też się cieszę",
         "odpowiem rozmownie", "mam aktywne tropy pamięci", "widzę tu sedno", "najbezpieczniej", "odpowiem z bieżącej wiadomości", "wspominam to przede wszystkim", "jestem przy tej wiadomości", "bieżącego sensu rozmowy",
         "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone", "cognitive-frame", "cognitive frame", "techniczny fallback", "technicznego fallbacku", "domyślnym routingu", "domyslnym routingu", "usterka do naprawy", "normalna ścieżka odpowiada rozmownie", "normalna sciezka odpowiada rozmownie", "bezpośredni runtime nie może kończyć", "bezposredni runtime nie moze konczyc",
+        "jestem przy tym — bez dokładania raportu", "jestem przy tym - bez dokladania raportu", "bez losowej pamięci", "bez losowej pamieci", "możemy pójść dalej zwykłą rozmową", "mozemy pojsc dalej zwykla rozmowa",
     )
     SPECIFIC_INTENTS = {
         "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",

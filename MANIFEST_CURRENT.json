@@ -3,8 +3,8 @@
   "version": "v14.8.3.4.093",
   "runtime_version": "v14.8.3.4.093",
   "package_version": "v14.8.3.4.093",
-  "generated_at_utc": "2026-06-23T22:59:18.140924+00:00",
-  "updated_at_utc": "2026-06-23T22:59:18.140924+00:00",
+  "generated_at_utc": "2026-06-23T23:43:56.092736+00:00",
+  "updated_at_utc": "2026-06-23T23:43:56.092736+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,12 +13,12 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 747,
-  "static_file_count": 747,
+  "file_count": 749,
+  "static_file_count": 749,
   "mutable_runtime_file_count": 0,
-  "runtime_mutable_file_count": 177,
+  "runtime_mutable_file_count": 181,
   "archive_file_count": 170,
-  "excluded_file_count": 1230,
+  "excluded_file_count": 1244,
   "deferred_hash_file_count": 0,
   "hash_size_limit_bytes": 67108864,
   "runtime_mutable_manifest": "MANIFEST_RUNTIME_MUTABLE.json",
@@ -28,12 +28,12 @@
     "why": "Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code."
   },
   "excluded_file_detail_count": 11,
-  "excluded_file_detail_suppressed_count": 1219,
+  "excluded_file_detail_suppressed_count": 1233,
   "excluded_file_detail_suppressed_summary": [
     {
       "reason": "generated_cache_directory",
-      "count": 1219,
-      "size_bytes": 68295107
+      "count": 1233,
+      "size_bytes": 68390074
     }
   ],
   "mutable_patterns": [
@@ -98,7 +98,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
       "exists": true,
-      "size_bytes": 876544,
+      "size_bytes": 921600,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
@@ -2091,6 +2091,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "docs/UPDATE_V14_8_4_003A_ORDINARY_DIALOGUE_OPEN_PROMPT_REPAIR.md",
+      "size_bytes": 2159,
+      "sha256": "046901c49651e33708a2da064b93754355513de7bef6fd84cbdf88a0e97ee821",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "docs/VOICE_AND_AUDIO_FUTURE_ADAPTERS_v14_7_0.md",
       "size_bytes": 913,
       "sha256": "3c88615c55935b7605f7af0060b0d002b21d263f5ee0631bc135343fb9d6c577",
@@ -2659,8 +2668,8 @@
     },
     {
       "path": "latka_jazn/core/handlers/ordinary_dialogue_handler.py",
-      "size_bytes": 6883,
-      "sha256": "e074d4a532a1717802499e80f7cdb66945695d29734adae467fa8ac461fdede7",
+      "size_bytes": 8549,
+      "sha256": "93c2754317b3510b4bbbe6ccfda3841b75533058492df5b0aa35ede5b107865e",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -3001,8 +3010,8 @@
     },
     {
       "path": "latka_jazn/core/runtime_answer_validator.py",
-      "size_bytes": 30451,
-      "sha256": "8963dc8f194048414a3afddfe5f5eab0929b4749bd9849d7da180a9034451eda",
+      "size_bytes": 30678,
+      "sha256": "88d40d9a6620bb6f67898e42ab38abb0405d4dea2d7f425e2c97e67907c0aa08",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -4818,18 +4827,18 @@
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_4_003_MODEL_CONTEXT_COMPILER.patch",
-      "size_bytes": 23501,
-      "sha256": "46b4dd558715b99b2720ed46075d04d52710231f45efc0b444fc69f5c03c188f",
+      "path": "LATKA_JAZN_v14_8_4_003A_ORDINARY_DIALOGUE_OPEN_PROMPT_REPAIR.patch",
+      "size_bytes": 9958,
+      "sha256": "5f85229bd8cf775c3f8be85a267a7e4e27009087da69d241f4d4ed225165fea6",
       "mutable_runtime": false,
       "classification": "archive_or_backup",
       "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_4_003_REPORT.md",
-      "size_bytes": 2826,
-      "sha256": "cbdc73091725a221d0eafb9d4f0d1a3f37c3a4ea0d708067305c33051c29d6a5",
+      "path": "LATKA_JAZN_v14_8_4_003A_REPORT.md",
+      "size_bytes": 3353,
+      "sha256": "fc9cb01b2387856a6ac909cc0b68a9a2e5899fbc0b4daf4752d9664f556ee1cc",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
@@ -6699,6 +6708,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "tests/test_v1484_ordinary_dialogue_open_prompt_repair.py",
+      "size_bytes": 1823,
+      "sha256": "ab0a079865678153e15c4b73107db5d6b4c6b3aeb91182aa3ab29b31f4a0174c",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "tests/test_v1484_ordinary_dialogue_stale_route_hotfix.py",
       "size_bytes": 4911,
       "sha256": "a90a0848e7b0fd2b56ddada7b6657e3ac6bf943921c834242717bf2a33b3185e",
@@ -6901,12 +6919,12 @@
     {
       "path": "MANIFEST_CURRENT.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 262399
+      "size_bytes": 261658
     },
     {
       "path": "MANIFEST_RUNTIME_MUTABLE.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 91182
+      "size_bytes": 91647
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-shm",
@@ -6921,12 +6939,12 @@
     {
       "path": "SHA256SUMS",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 87457
+      "size_bytes": 87188
     },
     {
       "path": "SHA256SUMS_STATIC",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 87457
+      "size_bytes": 87188
     },
     {
       "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/MANIFEST_CURRENT.json",
