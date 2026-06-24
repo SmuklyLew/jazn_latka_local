@@ -4,6 +4,7 @@ from dataclasses import asdict, dataclass, is_dataclass
 import re
 from typing import Any
 
+from latka_jazn.core.memory_grounded_generation_bridge import build_grounded_memory_items, memory_allowed_for_generation
 from latka_jazn.core.nlg_plan import NlgPlan, default_truth_boundary
 from latka_jazn.core.operational_thought_frame import OperationalThoughtFrame
 
@@ -100,19 +101,21 @@ def extract_allowed_memory_items(
     """
 
     plan = _as_dict(nlg_plan)
-    if str(plan.get("memory_policy") or "") != "required_grounded_payload":
+    if not memory_allowed_for_generation(plan, {}):
         return []
     contract = _as_dict(memory_recall_contract)
     try:
         max_items = max(0, int(limit or 8))
     except (TypeError, ValueError):
         max_items = 8
-    out: list[dict[str, Any]] = []
-    for raw in (contract.get("items") or [])[:max_items]:
-        item = _sanitize_memory_item(raw)
-        if item["excerpt"]:
-            out.append(item)
-    return out
+    allowed: list[dict[str, Any]] = []
+    for item in build_grounded_memory_items(contract, limit=max_items):
+        payload = item.to_dict()
+        # ModelContextPacket.allowed_memory_items pozostaje stabilnym minimalnym
+        # kontraktem pamięci dla modelu: bez technicznego pola mostu.
+        payload.pop("schema_version", None)
+        allowed.append(payload)
+    return allowed
 
 
 def build_forbidden_claims(nlg_plan: NlgPlan | dict[str, Any], voice_source_contract: dict[str, Any] | None) -> list[str]:

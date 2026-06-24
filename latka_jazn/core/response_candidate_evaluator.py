@@ -4,6 +4,7 @@ from dataclasses import asdict, is_dataclass
 import re
 from typing import Any
 
+from latka_jazn.core.memory_grounded_generation_bridge import build_grounded_memory_items, enforce_memory_grounding
 from latka_jazn.core.response_candidate import CandidateEvaluation, ResponseCandidate
 
 BIOLOGICAL_CLAIM_MARKERS = (
@@ -35,6 +36,8 @@ def evaluate_response_candidate(
     policy = _as_dict(response_policy)
     text = candidate.text or ""
     low = _fold(text)
+    grounded_items = build_grounded_memory_items({"items": context.get("allowed_memory_items") or []})
+    grounding_evaluation = enforce_memory_grounding(candidate, grounded_items)
     violations: list[str] = []
     reasons: list[str] = []
 
@@ -46,6 +49,9 @@ def evaluate_response_candidate(
         violations.append("stale_route_or_debug_fallback_marker")
     if _has_unbacked_memory_claim(low, plan, context):
         violations.append("memory_claim_without_allowed_memory_payload")
+    for violation in grounding_evaluation.violations:
+        if violation not in violations:
+            violations.append(violation)
     if str(plan.get("source_policy") or "") == "requires_external_web" and candidate.source == "model_adapter":
         violations.append("model_candidate_cannot_fake_external_web_sources")
     if policy.get("exact_runtime_required") is True and candidate.source != "runtime_fallback":
@@ -57,6 +63,9 @@ def evaluate_response_candidate(
         reasons.append("model_candidate_passed_guardrails")
     if _memory_allowed(plan, context):
         reasons.append("grounded_memory_payload_available")
+    for reason in grounding_evaluation.reasons:
+        if reason not in reasons:
+            reasons.append(reason)
     if not violations and text.strip():
         reasons.append("non_empty_candidate")
 

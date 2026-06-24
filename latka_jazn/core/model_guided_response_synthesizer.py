@@ -95,7 +95,31 @@ class ModelGuidedResponseSynthesizer:
         body = self._clean(selected.text)
         if not body:
             return ModelGuidedSynthesis(False, draft_body, selected.status, selected.provider, selected.model, "selected_candidate_empty_after_clean", [])
-        return ModelGuidedSynthesis(True, body, selected.status, selected.provider, selected.model, "generated_from_jazn_cognitive_context", [])
+        sources = self._sources_for_candidate(selected, context)
+        reason = "generated_from_grounded_memory_context" if sources else "generated_from_jazn_cognitive_context"
+        return ModelGuidedSynthesis(True, body, selected.status, selected.provider, selected.model, reason, sources)
+
+    @staticmethod
+    def _sources_for_candidate(candidate: Any, context: dict[str, Any]) -> list[dict[str, Any]]:
+        used = {str(item_id) for item_id in getattr(candidate, "used_memory_item_ids", []) or []}
+        if not used:
+            return []
+        sources: list[dict[str, Any]] = []
+        for item in context.get("allowed_memory_items") or []:
+            if not isinstance(item, dict):
+                continue
+            item_id = str(item.get("item_id") or "")
+            if item_id in used:
+                sources.append(
+                    {
+                        "item_id": item_id,
+                        "source": item.get("source"),
+                        "timestamp": item.get("timestamp"),
+                        "confidence": item.get("confidence"),
+                        "relevance_reason": item.get("relevance_reason"),
+                    }
+                )
+        return sources
 
     @staticmethod
     def _clean(text: str) -> str:
