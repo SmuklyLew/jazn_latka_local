@@ -4,10 +4,11 @@ from dataclasses import asdict, dataclass
 import re
 from typing import Any
 
-from latka_jazn.model_adapters.base import ModelAdapterRequest
 from latka_jazn.core.model_context_compiler import compile_model_context
 from latka_jazn.core.nlg_planner import build_nlg_plan
 from latka_jazn.core.operational_thought_frame import build_operational_thought_frame
+from latka_jazn.core.response_candidate_evaluator import evaluate_response_candidate, select_best_candidate
+from latka_jazn.core.response_candidate_generator import generate_response_candidates
 
 
 @dataclass(slots=True)
@@ -62,17 +63,39 @@ class ModelGuidedResponseSynthesizer:
             cognitive_frame=cognitive_frame,
             response_policy=response_policy,
         )
-        prompt = (
-            "Sformułuj jedną trafną odpowiedź na bieżącą wiadomość użytkownika. "
-            "Użyj szkicu tylko jako materiału i ograniczeń; nie kopiuj go automatycznie. "
-            "Nie opisuj procesu tworzenia odpowiedzi. Zachowaj wymagane komponenty polityki odpowiedzi. "
-            "Jeżeli kontekst nie wystarcza, powiedz krótko czego nie wiesz zamiast zgadywać."
+        nlg_plan = context.get("nlg_plan") or {}
+        candidates = generate_response_candidates(
+            adapter=adapter,
+            nlg_plan=nlg_plan,
+            model_context=context,
+            fallback_body=draft_body,
+            max_candidates=3,
+            adapter_system_context=context,
         )
-        response = adapter.generate(ModelAdapterRequest(prompt=prompt, system_context=context))
-        body = self._clean(response.text)
-        if response.status != "completed" or not body:
-            return ModelGuidedSynthesis(False, draft_body, response.status, response.provider, response.model, "model_generation_failed_or_empty", response.sources)
-        return ModelGuidedSynthesis(True, body, response.status, response.provider, response.model, "generated_from_jazn_cognitive_context", response.sources)
+        evaluations = [
+            evaluate_response_candidate(
+                candidate=candidate,
+                nlg_plan=nlg_plan,
+                model_context=context,
+                response_policy=response_policy,
+            )
+            for candidate in candidates
+        ]
+        selected = select_best_candidate(candidates, evaluations)
+        if selected.source != "model_adapter":
+            return ModelGuidedSynthesis(
+                False,
+                draft_body,
+                selected.status,
+                selected.provider,
+                selected.model,
+                "selected_runtime_fallback_candidate",
+                [],
+            )
+        body = self._clean(selected.text)
+        if not body:
+            return ModelGuidedSynthesis(False, draft_body, selected.status, selected.provider, selected.model, "selected_candidate_empty_after_clean", [])
+        return ModelGuidedSynthesis(True, body, selected.status, selected.provider, selected.model, "generated_from_jazn_cognitive_context", [])
 
     @staticmethod
     def _clean(text: str) -> str:

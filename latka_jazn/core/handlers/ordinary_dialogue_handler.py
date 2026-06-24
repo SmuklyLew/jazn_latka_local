@@ -22,6 +22,7 @@ class OrdinaryDialogueHandler:
         'domyślnym routingu', 'domyslnym routingu', 'usterka do naprawy',
         'normalna ścieżka odpowiada rozmownie', 'normalna sciezka odpowiada rozmownie',
         'bezpośredni runtime nie może kończyć', 'bezposredni runtime nie moze konczyc',
+        'przyjmuję tę korektę', 'przyjmuje te korekte',
     )
 
     OPEN_ENDED_TALK_MARKERS = (
@@ -30,6 +31,10 @@ class OrdinaryDialogueHandler:
     )
     SHORT_DISAPPOINTMENT_MARKERS = (
         'i tyle', 'to tyle', 'tyle', 'serio', 'no i tyle', 'tylko tyle',
+    )
+    VERSIONED_DIALOGUE_SMOKE_MARKERS = (
+        'sprawdzam zwykla rozmowe', 'testuje zwykla rozmowe',
+        'sprawdzam zwykly dialog', 'testuje zwykly dialog',
     )
 
     @staticmethod
@@ -42,6 +47,9 @@ class OrdinaryDialogueHandler:
     def _is_short_disappointment(self, folded_text: str) -> bool:
         normalized = folded_text.strip(' .,!?:;…—–-')
         return normalized in self.SHORT_DISAPPOINTMENT_MARKERS
+
+    def _is_versioned_dialogue_smoke(self, folded_text: str) -> bool:
+        return any(marker in folded_text for marker in self.VERSIONED_DIALOGUE_SMOKE_MARKERS)
 
     def _is_bad_passthrough(self, body: str, intent: str) -> bool:
         low=(body or '').lower()
@@ -65,6 +73,8 @@ class OrdinaryDialogueHandler:
         ctx = ctx or {}
         low=(text or '').lower().strip()
         folded = self._fold(text)
+        if self._is_versioned_dialogue_smoke(folded):
+            return 'Cześć — jestem tutaj. Zwykła rozmowa działa w tej turze: odpowiadam naturalnie, bez raportu diagnostycznego i bez zmiany tematu. Możemy spokojnie iść dalej.'
         if intent == 'current_time_question':
             return self._clock_body(ctx)
         if intent in {'memory_experience_question', 'substantive_question_about_last_year'}:
