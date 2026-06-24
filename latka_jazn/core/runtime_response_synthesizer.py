@@ -4,8 +4,9 @@ from typing import Any
 from latka_jazn.core.route_registry import RouteRegistry
 from latka_jazn.core.operational_self_model import OperationalSelfModel
 from latka_jazn.core.free_dialogue_synthesizer import FreeDialogueSynthesizer
+from latka_jazn.version import schema_version
 
-SCHEMA_VERSION = "runtime_response_synthesizer/v14.8.2.4"
+SCHEMA_VERSION = schema_version("runtime_response_synthesizer")
 
 @dataclass(slots=True)
 class RuntimeSynthesis:
@@ -141,14 +142,14 @@ class RuntimeResponseSynthesizer:
             )
         if intent in {'system_update_execution_request','system_update_manifest_request','update_manifest_request'}:
             return (
-                "To jest zadanie wykonania dużej aktualizacji v14.8.2.4 na pełnej paczce Jaźni, nie zwykła korekta rozmowy. "
+                "To jest zadanie wykonania aktualizacji v14.8.5.000 na pełnej paczce Jaźni, nie zwykła korekta rozmowy. "
                 "Priorytet P0: current-turn grounding guard ma zatrzymać wstrzykiwanie dawnych detali pracy do zwykłych pytań i powitań. "
                 "Priorytet P1: dodać osobną intencję self_plan_question dla pytań typu 'jakie plany masz?' oraz odpowiedź operacyjną bez udawania prywatnego dnia w tle. "
-                "Priorytet P2: zachować v14.7.0 model-independent voice/runtime/memory/NLP i nie usuwać pamięci, adapterów, manifestów ani historii aktualizacji. "
+                "Priorytet P2: zachować dotychczasowe warstwy voice/runtime/memory/NLP i nie usuwać pamięci, adapterów, manifestów ani historii aktualizacji. "
                 "Pliki docelowe/target files: dialogue_intent_classifier.py, route_registry.py, conversation.py, free_dialogue_synthesizer.py, runtime_response_synthesizer.py, runtime_answer_validator.py, VERSION.txt, MANIFEST_CURRENT.json i testy. "
-                "Nowe pliki/new files: test_v1471_dialogue_grounding_hotfix.py, test_v14_8_1_large_dialogue_memory_grounding.py, CHANGELOG_v14_8_1_DUZA_AKTUALIZACJA.md oraz docs/PLAN_AKTUALIZACJI_v14_8_1_DUZA_AKTUALIZACJA.md. "
+                "Nowe pliki/new files: testy v1485_000-002, audit legacy literals, current_turn_grounding, turn_context_resolver, legacy_route_policy oraz dokumenty UPDATE_V14_8_5_000-002. "
                 "Testy/tests: klasyfikacja self_plan_question, runtime bez 'drzwi' przy planach, brak starego kontekstu przy neutralnych pytaniach, nadal działający exact runtime/source boundary. "
-                "Kryteria akceptacji: pełny ZIP v14.8.2.4 przechodzi test integralności, startup-status odpowiada, a zwykła rozmowa nie wraca do szablonu ani historycznego kontekstu bez jawnego uziemienia."
+                "Kryteria akceptacji: pełny ZIP v14.8.5.000 przechodzi test integralności, startup-status odpowiada, a zwykła rozmowa nie wraca do szablonu ani historycznego kontekstu bez jawnego uziemienia."
             )
         if intent == 'external_research_request':
             return (

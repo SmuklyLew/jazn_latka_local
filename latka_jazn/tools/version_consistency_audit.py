@@ -4,11 +4,13 @@ from pathlib import Path
 import json
 import re
 
+from latka_jazn.version import PACKAGE_VERSION, schema_version
+
 
 ROOT = Path(__file__).resolve().parents[2]
-ACTIVE_VERSION = (ROOT / "VERSION.txt").read_text(encoding="utf-8").strip() if (ROOT / "VERSION.txt").exists() else "unknown"
+ACTIVE_VERSION = (ROOT / "VERSION.txt").read_text(encoding="utf-8").strip() if (ROOT / "VERSION.txt").exists() else PACKAGE_VERSION
 ACTIVE_SEMVER = ACTIVE_VERSION.split("-")[0].lstrip("v") if ACTIVE_VERSION.startswith("v") else ACTIVE_VERSION
-SCHEMA_VERSION = "version_consistency_audit/v14.8.2.4"
+SCHEMA_VERSION = schema_version("version_consistency_audit")
 
 ACTIVE_CONTROL_FILES = (
     "VERSION.txt",

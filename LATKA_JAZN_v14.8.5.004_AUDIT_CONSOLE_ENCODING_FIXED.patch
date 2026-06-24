@@ -1,0 +1,33 @@
+--- a/tools/audit_legacy_literals_v1485.py
++++ b/tools/audit_legacy_literals_v1485.py
+@@ -196,6 +196,21 @@
+     return "\n".join(lines)
+ 
+ 
++def _console_safe_text(text: str) -> str:
++    """Return text that can be written to the current console encoding.
++
++    Windows PowerShell may run Python with a legacy console encoding such as
++    cp1250. The audit can legitimately encounter emoji or other Unicode in
++    source files, so console output must not crash the audit itself.
++    """
++    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
++    return text.encode(encoding, errors="backslashreplace").decode(encoding, errors="replace")
++
++
++def _safe_print(text: str) -> None:
++    sys.stdout.write(_console_safe_text(text) + "\n")
++
++
+ def main(argv: list[str] | None = None) -> int:
+     parser = argparse.ArgumentParser(description="Audit legacy route/version literals in active Jaźń runtime files.")
+     parser.add_argument("--root", type=Path, default=ROOT)
+@@ -211,7 +226,7 @@
+     if args.md_out:
+         args.md_out.parent.mkdir(parents=True, exist_ok=True)
+         args.md_out.write_text(render_markdown(report), encoding="utf-8")
+-    print(text)
++    _safe_print(text)
+     return 1 if args.fail_on_active_runtime_blockers and report["blocker_count"] else 0
+ 
+ 

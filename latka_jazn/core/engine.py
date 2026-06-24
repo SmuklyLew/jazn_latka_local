@@ -61,6 +61,7 @@ from latka_jazn.core.project_index import ProjectStartupIndexer
 from latka_jazn.nlp.topic_mismatch_guard import TopicMismatchGuard
 from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
 from latka_jazn.core.runtime_answer_validator import RuntimeAnswerValidator
+from latka_jazn.core.turn_context_resolver import TurnContextResolver
 from latka_jazn.core.source_origin_ledger import SourceOriginLedger
 from latka_jazn.core.template_registry import TemplateRegistry
 from latka_jazn.core.response_generation_mode import build_runtime_provenance
@@ -127,6 +128,7 @@ class JaznEngine:
         self.topic_mismatch_guard = TopicMismatchGuard()
         self.dialogue_intent_classifier = DialogueIntentClassifier()
         self.runtime_answer_validator = RuntimeAnswerValidator()
+        self.turn_context_resolver = TurnContextResolver()
         self.source_origin_ledger = SourceOriginLedger(self.config.root)
         self.template_registry = TemplateRegistry(self.config.root)
         self.runtime_response_synthesizer = RuntimeResponseSynthesizer()
@@ -1500,23 +1502,17 @@ class JaznEngine:
         prior_runtime_route = ctx.get("previous_runtime_route") or self.last_runtime_route
         now_for_context = time.time()
         prior_context_age_seconds = int(now_for_context - prior_turn_at) if isinstance(prior_turn_at, (int, float)) else None
-        current_text_low = (text or "").strip().lower()
-        current_text_words = [w for w in current_text_low.replace("?", " ").replace("!", " ").split() if w]
-        strong_standalone_question = bool(
-            "?" in current_text_low
-            and any(marker in current_text_low for marker in ("jaźń", "jazn", "łatka", "latka", "chatgpt", "runtime", "źródło", "zrodlo", "własny głos", "wlasny glos"))
+        turn_context_resolution = self.turn_context_resolver.resolve(
+            current_user_text=text,
+            previous_user_text=prior_user_text,
+            previous_intent=prior_detected_intent,
+            previous_route=prior_runtime_route,
+            session_id=str(ctx.get("session_id") or ""),
+            no_carryover=no_carryover,
+            time_gap_seconds=prior_context_age_seconds,
+            explicit_previous_user_text=bool(ctx.get("previous_user_text")),
         )
-        ellipsis_like_current_turn = bool(
-            ctx.get("previous_user_text")
-            or (len(current_text_words) <= 4 and not strong_standalone_question)
-            or current_text_low in {"to zrób", "zrób to", "zrob to", "możesz to zrobić", "mozesz to zrobic", "dalej", "kontynuuj", "a ty", "a u ciebie"}
-            or current_text_low.startswith(("a ", "więc ", "wiec ", "czyli ")) and len(current_text_words) <= 8 and not strong_standalone_question
-        )
-        carryover_allowed = bool(
-            (not no_carryover) and prior_user_text
-            and ellipsis_like_current_turn
-            and (ctx.get("previous_user_text") or prior_context_age_seconds is None or prior_context_age_seconds <= 21600)
-        )
+        carryover_allowed = bool(turn_context_resolution.carryover_allowed)
         if carryover_allowed:
             ctx.setdefault("previous_user_text", prior_user_text)
             if prior_detected_intent:
@@ -1531,16 +1527,13 @@ class JaznEngine:
         ).to_dict()
         frame["dialogue_intent_classifier"] = dialogue_intent_report
         frame["turn_context_carryover"] = {
-            "schema_version": "turn_context_carryover/v14.7.0",
+            **turn_context_resolution.to_dict(),
             "previous_user_text_available": bool(prior_user_text),
             "previous_user_text_used": bool(carryover_allowed),
             "previous_detected_intent": prior_detected_intent,
             "previous_runtime_route": prior_runtime_route,
             "previous_context_age_seconds": prior_context_age_seconds,
             "ttl_seconds": 21600,
-            "ellipsis_like_current_turn": ellipsis_like_current_turn,
-            "strong_standalone_question": strong_standalone_question,
-            "truth_boundary": "Od v14.7.0 poprzedni kontekst wolno przenieść tylko dla krótkich/eliptycznych odpowiedzi albo jawnie przekazanego previous_user_text. Pełne pytania użytkownika nie mogą odziedziczyć starego tematu.",
         }
         envelope = CognitiveTurnEnvelope.from_cognitive_frame(
             frame,
@@ -1858,7 +1851,7 @@ class JaznEngine:
             envelope_dict,
             source=ctx.get("client", "process_turn"),
             actor="latka_runtime",
-            tags=["cognitive_turn_envelope", "final_response_contract", "timestamp_contract", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "project_startup_index", "v14.6.10"],
+            tags=["cognitive_turn_envelope", "final_response_contract", "timestamp_contract", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "project_startup_index", self.config.version],
             importance=0.86,
             emotional_weight=0.55,
             canonical_impact=1,
@@ -1869,7 +1862,7 @@ class JaznEngine:
             actor="latka_runtime",
             source=ctx.get("client", "process_turn"),
             payload=envelope_dict,
-            tags=["cognitive_turn_envelope", "final_response_contract", "exact", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "v14.6.10"],
+            tags=["cognitive_turn_envelope", "final_response_contract", "exact", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", self.config.version],
             importance=0.86,
             emotional_weight=0.55,
             canonical_impact=1,

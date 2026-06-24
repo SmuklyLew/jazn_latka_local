@@ -1,4 +1,4 @@
-# Current package version: v14.8.3.4.093-ordinary-dialogue-natural-presence-repair
+# Current package version: v14.8.5.000-dialogue-runtime-grounding-version-reconciliation
 from __future__ import annotations
 
 import argparse
@@ -6,7 +6,9 @@ import json
 import sys
 from pathlib import Path
 
-ACTIVE_PACKAGE_VERSION = "v14.8.3.4.093"
+from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, schema_version
+
+ACTIVE_PACKAGE_VERSION = PACKAGE_VERSION
 
 
 def _configure_stdio_utf8() -> None:
@@ -90,9 +92,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--active-cache-status", action="store_true", dest="active_cache_status", help="Pokaż status aktywnego rozpakowanego folderu i decyzję, czy trzeba ponownie rozpakować ZIP.")
     parser.add_argument("--project-startup-index", action="store_true", dest="project_startup_index", help="Zbuduj i pokaż mapę plików oraz modułów/funkcji Jaźni przy rozruchu.")
     parser.add_argument("--topic-guard", action="store_true", dest="topic_guard", help="Pokaż raport TopicMismatchGuard dla wiadomości bez generowania pełnej odpowiedzi.")
-    parser.add_argument("--dialogue-intent", action="store_true", dest="dialogue_intent", help="Pokaż klasyfikację aktu rozmowy v14.6.10 bez generowania odpowiedzi.")
+    parser.add_argument("--dialogue-intent", action="store_true", dest="dialogue_intent", help="Pokaż klasyfikację aktu rozmowy aktywnego runtime bez generowania odpowiedzi.")
     parser.add_argument("--module-responsibility-map", action="store_true", dest="module_responsibility_map", help="Zbuduj semantyczną mapę odpowiedzialności modułów i funkcji.")
-    parser.add_argument("--seed-requirements-ledger", action="store_true", dest="seed_requirements_ledger", help="Dopisz wymagania manifestu v14.6.10 do requirements ledger.")
+    parser.add_argument("--seed-requirements-ledger", action="store_true", dest="seed_requirements_ledger", help="Dopisz wymagania aktywnego manifestu do requirements ledger.")
     parser.add_argument("--last-turn", action="store_true", dest="last_turn", help="Pokaż ostatni turn checkpoint: exact_runtime_text, visible_text, route, template_origin i source-origin.")
     parser.add_argument("--compare-runtime-visible", action="store_true", dest="compare_runtime_visible", help="Porównaj exact runtime text z widoczną odpowiedzią ChatGPT dla ostatniej tury albo --trace-id.")
     parser.add_argument("--dictionary-lookup", action="store_true", dest="dictionary_lookup", help="Sprawdź termin przez cache/mini-leksykon/adaptory słowników; nie udawaj lookupu online bez providera.")
@@ -109,7 +111,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--voice-source-contract", action="store_true", dest="voice_source_contract", help="Pokaż kontrakt: Jaźń jako źródło, ChatGPT/model jako kanał głosu.")
     parser.add_argument("--rendering-mode", action="store_true", dest="rendering_mode", help="Pokaż decyzję naturalna odpowiedź vs exact runtime/diagnostyka.")
     parser.add_argument("--raw-chat-status", action="store_true", dest="raw_chat_status", help="Pokaż status memory/raw/chat.html i chat.html.7z bez rozpakowywania.")
-    parser.add_argument("--raw-chat-status-json", action="store_true", dest="raw_chat_status_json", help="Pokaż uczciwy status raw memory/indexu jako JSON v14.8.2.6.4.")
+    parser.add_argument("--raw-chat-status-json", action="store_true", dest="raw_chat_status_json", help="Pokaż uczciwy status raw memory/indexu jako JSON aktywnego runtime.")
     parser.add_argument("--conversation-archive-status", action="store_true", dest="conversation_archive_status", help="Pokaż status conversation_archive/FTS/staging zbudowanych z raw_chats/*.html.")
     parser.add_argument("--conversation-archive-search", action="store_true", dest="conversation_archive_search", help="Szukaj w osobnym conversation_fts i zwróć UID/provenance do archive/staging.")
     parser.add_argument("--conversation-archive-limit", type=int, default=8, help="Limit trafień dla --conversation-archive-search.")
@@ -271,7 +273,7 @@ def main(argv: list[str] | None = None) -> int:
         archive_store = ConversationArchiveStore(cfg.root)
         archive_query = " ".join((plan.search_terms or plan.focus_terms or [])[:8]) or text
         payload = {
-            "schema_version": "memory_plan_cli/v14.6.10",
+            "schema_version": schema_version("memory_plan_cli"),
             "runtime_version": cfg.version,
             "memory_search_plan": plan.to_dict(),
             "source_file_hits": [hit.to_dict() for hit in planner.search_source_files(plan, limit=8)],
@@ -426,7 +428,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.last_turn:
         cfg = config or JaznConfig()
-        payload = TurnTraceReader(cfg.root).latest() or {"schema_version": "turn_checkpoint/v14.6.10", "found": False, "reason": "no_checkpoint_found"}
+        payload = TurnTraceReader(cfg.root).latest() or {"schema_version": schema_version("turn_checkpoint"), "found": False, "reason": "no_checkpoint_found"}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
@@ -623,7 +625,7 @@ def main(argv: list[str] | None = None) -> int:
             runtime_text = envelope_dict.get("final_visible_text") or ""
             final_contract = envelope_dict.get("final_response_contract") or {}
             payload = {
-                "schema_version": "runtime_preview/v14.6.10",
+                "schema_version": schema_version("runtime_preview"),
                 "runtime_version": engine.config.version,
                 "mode": "diagnostic_runtime_preview_single_process_turn_not_background_daemon",
                 "turn_trace": envelope_dict.get("trace"),
@@ -685,7 +687,7 @@ def main(argv: list[str] | None = None) -> int:
         generated_session: JaznRuntimeSession | None = None
         default_client = "chatgpt_bridge"
         default_lifecycle = "chatgpt_bridge_jsonl"
-        bridge_protocol_version = "chatgpt_bridge_jsonl/v14.8.3.4.093"
+        bridge_protocol_version = schema_version("chatgpt_bridge_jsonl")
         accepted_input_fields = ["message", "text", "user_text", "content", "prompt"]
 
         def bridge_meta(
@@ -731,7 +733,7 @@ def main(argv: list[str] | None = None) -> int:
             line_index: int | None = None,
         ) -> dict:
             return {
-                "schema_version": "chatgpt_bridge_error/v14.8.3.4.093",
+                "schema_version": schema_version("chatgpt_bridge_error"),
                 "chatgpt_bridge": bridge_meta(
                     client=client,
                     input_kind=input_kind,

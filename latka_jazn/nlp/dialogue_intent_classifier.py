@@ -11,9 +11,10 @@ from latka_jazn.nlp.speech_act_detector import SpeechActDetector
 from latka_jazn.nlp.question_object_detector import QuestionObjectDetector
 from latka_jazn.nlp.creative_material_detector import CreativeMaterialDetector
 from latka_jazn.nlp.source_preservation_detector import SourcePreservationDetector
+from latka_jazn.version import schema_version
 
 DIACRITIC_MAP = str.maketrans("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ")
-SCHEMA_VERSION = "dialogue_intent_classifier/v14.8.2.6.1"
+SCHEMA_VERSION = schema_version("dialogue_intent_classifier")
 
 @dataclass(slots=True)
 class DialogueIntentReport:
@@ -37,7 +38,7 @@ class DialogueIntentReport:
     def to_dict(self) -> dict[str, Any]: return asdict(self)
 
 class DialogueIntentClassifier:
-    """Deterministyczne ucho rozmowy dla Jaźni v14.6.10.
+    """Deterministyczne ucho rozmowy dla aktywnej Jaźni.
 
     Stosuje granice słów/fras i priorytety, żeby pytanie diagnostyczne nie stało
     się korektą, zadanie twórcze nie stało się aktualizacją, a 'a ty?' nie zostało
@@ -178,6 +179,15 @@ class DialogueIntentClassifier:
         "zaimplementuj", "zaktualizuj kod", "zmień kod", "zmien kod",
         "zrób patch", "zrob patch", "nałóż patch", "naloz patch",
     )
+    USER_MEMORY_RECALL_TERMS = (
+        "co pamiętasz o mnie", "co pamietasz o mnie", "co pamiętasz o krzysztofie", "co pamietasz o krzysztofie",
+        "co wiesz o mnie", "co wiesz o krzysztofie", "pamiętasz o mnie", "pamietasz o mnie",
+        "poszukaj w pamięci o mnie", "poszukaj w pamieci o mnie", "sprawdź pamięć o mnie", "sprawdz pamiec o mnie",
+        "moje wspomnienia", "o moich", "o mnie jako", "o użytkowniku", "o uzytkowniku",
+    )
+    USER_MEMORY_PERSON_TERMS = (
+        "krzysztof", "o mnie", "mnie", "moje", "moją", "moja", "moim", "moich", "użytkownik", "uzytkownik", "smukły", "smukly",
+    )
     SELF_MEMORY_RECALL_TERMS = (
         "co pamiętasz", "co pamietasz", "poszukaj w pamięci", "poszukaj w pamieci",
         "sprawdź pamięć", "sprawdz pamiec", "szukaj w pamięci", "szukaj w pamieci",
@@ -288,6 +298,7 @@ class DialogueIntentClassifier:
             and any(marker in folded for marker in ("jaki", "sprawdz", "czy", "podaj", "odpowiedz", "status"))
             and not self._has_any(norm,folded,self.UPDATE_EXECUTION_VERBS)
         )
+        has_user_memory_recall=self._has_any(norm,folded,self.USER_MEMORY_RECALL_TERMS) or (self._has_any(norm,folded,self.SELF_MEMORY_RECALL_TERMS) and self._has_any(norm,folded,self.USER_MEMORY_PERSON_TERMS))
         has_self_memory_recall=self._has_any(norm,folded,self.SELF_MEMORY_RECALL_TERMS)
         has_self_memory_persona=self._has_any(norm,folded,self.SELF_MEMORY_PERSONA_TERMS)
         has_direct_latka_voice=self._has_any(norm,folded,self.DIRECT_LATKA_VOICE_TERMS)
@@ -314,8 +325,10 @@ class DialogueIntentClassifier:
             return self._report(norm,folded,'internet_access_question',['bezpośrednie pytanie o dostęp runtime do internetu/sieci'],0.92,diag=False,speech_act=speech.speech_act,question_object='internet_access')
         if has_direct_capability and not has_update:
             return self._report(norm,folded,'capability_status_question',['bezpośrednie pytanie o możliwości Jaźni/runtime; nie ordinary fallback'],0.91,speech_act=speech.speech_act,question_object='capabilities')
+        if has_user_memory_recall:
+            return self._report(norm,folded,'user_memory_recall_request',['pytanie o pamięć dotyczącą użytkownika/Krzysztofa; nie mieszać z self_memory Łatki'],0.91,speech_act=speech.speech_act,question_object='user_memory')
         if has_self_memory_recall and (has_self_memory_persona or any(x in folded for x in ('co pamietasz', 'co pamiętasz', 'poszukaj w pamieci', 'poszukaj w pamięci'))):
-            return self._report(norm,folded,'self_memory_recall_request',['pytanie o pamięć dotyczącą Łatki/postaci/tożsamości albo szerokie "co pamiętasz"'],0.90,speech_act=speech.speech_act,question_object='self_memory')
+            return self._report(norm,folded,'self_memory_recall_request',['pytanie o pamięć dotyczącą Łatki/postaci/tożsamości albo szerokie "co pamiętasz" bez wskazania użytkownika'],0.90,speech_act=speech.speech_act,question_object='self_memory')
         if has_casual_feedback:
             return self._report(norm,folded,'casual_feedback',['krótka ocena jakości poprzedniej odpowiedzi; trzeba uznać błąd, nie powtarzać fallbacku'],0.88,speech_act=speech.speech_act,question_object='current_turn_feedback')
         if exact_casual_greeting:
@@ -323,9 +336,9 @@ class DialogueIntentClassifier:
         if has_expressive_reaction:
             return self._report(norm,folded,'expressive_reaction',['krótka reakcja emocjonalna/rozmowna; odpowiedź ma podjąć kontekst, nie prosić o doprecyzowanie'],0.82,speech_act=speech.speech_act,question_object='expressive_reaction')
         if has_runtime_status:
-            return self._report(norm,folded,'runtime_activation_status_question',['v14.8.2.4: pytanie o aktywną Jaźń/runtime/ChatGPT ma pierwszeństwo przed ellipsis i ordinary'],0.91,ident=True,speech_act=speech.speech_act,question_object='runtime_status')
+            return self._report(norm,folded,'runtime_activation_status_question',['pytanie o aktywną Jaźń/runtime/ChatGPT ma pierwszeństwo przed ellipsis i ordinary'],0.91,ident=True,speech_act=speech.speech_act,question_object='runtime_status')
         if has_chat_mode:
-            return self._report(norm,folded,'runtime_chat_mode_request',['v14.8.2.4: pytanie o --chat/runtime-preview/stdin ma własną trasę, nie aktualizację'],0.91,diag=True,speech_act=speech.speech_act,question_object='runtime_chat_mode')
+            return self._report(norm,folded,'runtime_chat_mode_request',['pytanie o --chat/runtime-preview/stdin ma własną trasę, nie aktualizację'],0.91,diag=True,speech_act=speech.speech_act,question_object='runtime_chat_mode')
         if has_current_time:
             return self._report(norm,folded,'current_time_question',['pytanie o aktualną godzinę ma własną trasę; nie wolno odpowiadać szablonem rozmownym'],0.92,speech_act=speech.speech_act,question_object='current_time')
         if has_repetition_bug:
@@ -342,7 +355,7 @@ class DialogueIntentClassifier:
             return self._report(norm,folded,'positive_feedback_current_turn',['krótki pozytywny feedback wymaga krótkiej, naturalnej odpowiedzi bez naprawczego meta-szablonu'],0.84,speech_act=speech.speech_act,question_object='current_turn_feedback')
         if has_repair_plan:
             intent='logic_reasoning_audit_request' if any(x in folded for x in ('logik', 'rozumow')) else 'system_repair_plan_request'
-            return self._report(norm,folded,intent,['v14.8.2.4: prośba o kodowy plan/naprawę logiki systemu ma pierwszeństwo przed source-origin'],0.90,update=False,diag=True,speech_act=speech.speech_act,question_object='system_repair_plan')
+            return self._report(norm,folded,intent,['prośba o kodowy plan/naprawę logiki systemu ma pierwszeństwo przed source-origin'],0.90,update=False,diag=True,speech_act=speech.speech_act,question_object='system_repair_plan')
         if has_memory_experience_followup or (previous_memory_context and len(folded.split()) <= 7 and any(x in folded for x in ('przezyc', 'przezy', 'wspomn', '2025'))):
             return self._report(norm,folded,'memory_experience_question',['doprecyzowanie lub follow-up do pytania o wspomnienia/przeżycia; zachować zakres rozmowy'],0.86,speech_act=speech.speech_act,question_object='memory_experience')
         ell=self.ellipsis.resolve(text, previous_text=previous_text)
@@ -385,8 +398,8 @@ class DialogueIntentClassifier:
             if any(x in folded for x in ('co myslisz','co myślisz','ocen','analiz')):
                 return self._report(norm,folded,'creative_text_analysis',evidence,0.85,creative=True,preserve=True,speech_act=speech.speech_act,question_object='creative_text')
             return self._report(norm,folded,'creative_text_analysis',evidence,0.74,creative=True,preserve=not preservation.revision_allowed,speech_act=speech.speech_act,question_object='creative_text')
-        if has_update and any(x in folded for x in ("v14.6.10", "14.6.10", "behavioral runtime", "dialogue intent", "source integrity", "topic-mismatch")):
-            return self._report(norm,folded,'v14_6_10_behavioral_runtime_dialogue_intent_source_integrity_update',['jawna prośba o aktualizację/hotfix v14.6.10 behavioral runtime/dialogue/source integrity'],0.89,speech_act=speech.speech_act,question_object='system_update')
+        if has_update and any(x in folded for x in ("behavioral runtime", "dialogue intent", "source integrity", "topic-mismatch")):
+            return self._report(norm,folded,'legacy_behavioral_runtime_dialogue_update_reference',['jawna prośba o historyczny zakres behavioral runtime/dialogue/source integrity; aktywny runtime ma użyć legacy_diagnostic_only albo aktualnego system_update'],0.79,speech_act=speech.speech_act,question_object='legacy_system_update')
         if has_update and has_system:
             if 'lista' in folded or 'manifest' in folded:
                 return self._report(norm,folded,'system_update_manifest_request',['jawne polecenie manifestu/listy aktualizacji'],0.88,update=True,diag=has_diag,speech_act=speech.speech_act,question_object='system')
@@ -400,7 +413,7 @@ class DialogueIntentClassifier:
             if "stale-route" in folded or "starego kontekstu" in folded or "stary kontekst" in folded:
                 ev.append("jawny problem stale-route / starego kontekstu w odpowiedzi runtime")
             return self._report(norm,folded,'system_diagnostic_question',ev,0.90 if len(ev)>1 else 0.88,diag=True,speech_act=speech.speech_act,question_object='runtime')
-        if ("nlp" in folded or "polish_nlp" in folded) and any(x in folded for x in ("zbyt ogoln", "ogolnym tropem", "stale-route", "stara trasa", "regresj", "fallback")) and ("v14.6.1" in folded or "v14.6.2" in folded or "co trzeba" in folded or "co teraz" in folded):
+        if ("nlp" in folded or "polish_nlp" in folded) and any(x in folded for x in ("zbyt ogoln", "ogolnym tropem", "stale-route", "stara trasa", "regresj", "fallback")) and ("14.6.1" in folded or "14.6.2" in folded or "co trzeba" in folded or "co teraz" in folded):
             return self._report(norm,folded,'current_hotfix_for_stale_nlp_route',['pytanie o bieżący hotfix/regresję NLP, nie historyczna trasa aktualizacji'],0.86,speech_act=speech.speech_act,question_object='runtime_hotfix')
         if any(x in folded for x in ("wspominasz", "wspomnij", "wspomn", "pamietasz", "pamiętasz")) and speech.speech_act == "question":
             return self._report(norm,folded,'memory_experience_question',['pytanie doświadczeniowe o pamięć/wspomnienie'],0.82,speech_act=speech.speech_act,question_object='memory_experience')

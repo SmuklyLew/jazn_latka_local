@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
+from latka_jazn.version import schema_version
 
 from latka_jazn.core.route_handler_base import RouteHandlerResult
 from latka_jazn.core.route_registry import RouteRegistryEntry
@@ -24,10 +25,11 @@ from latka_jazn.core.handlers.runtime_chat_mode_handler import RuntimeChatModeHa
 from latka_jazn.core.handlers.system_repair_plan_handler import SystemRepairPlanHandler
 from latka_jazn.core.handlers.capability_status_handler import CapabilityStatusHandler
 from latka_jazn.core.handlers.self_memory_recall_handler import SelfMemoryRecallHandler
+from latka_jazn.core.handlers.user_memory_recall_handler import UserMemoryRecallHandler
 from latka_jazn.core.handlers.direct_latka_voice_handler import DirectLatkaVoiceHandler
 from latka_jazn.core.handlers.identity_memory_existence_handler import IdentityMemoryExistenceHandler
 
-SCHEMA_VERSION='route_handler_dispatcher/v14.8.2.5'
+SCHEMA_VERSION=schema_version('route_handler_dispatcher')
 
 @dataclass(slots=True)
 class RouteDispatchReport:
@@ -44,7 +46,7 @@ class RouteHandlerDispatcher:
     def __init__(self) -> None:
         handlers=[
             DictionaryLookupHandler(), ExternalResearchHandler(), OrdinaryDialogueHandler(), RuntimeDiagnosticHandler(), RuntimeSourceHandler(), CanonSourceHandler(), MemoryAuditHandler(), SystemUpdateHandler(),
-            CreativeTextHandler(), FileOperationHandler(), IdentityBoundaryHandler(), IdentityRuntimeTruthHandler(), PracticalAdviceHandler(), SelfStateHandler(), RuntimeActivationStatusHandler(), RuntimeChatModeHandler(), SystemRepairPlanHandler(), CapabilityStatusHandler(), SelfMemoryRecallHandler(), DirectLatkaVoiceHandler(), IdentityMemoryExistenceHandler(), FallbackHandler(),
+            CreativeTextHandler(), FileOperationHandler(), IdentityBoundaryHandler(), IdentityRuntimeTruthHandler(), PracticalAdviceHandler(), SelfStateHandler(), RuntimeActivationStatusHandler(), RuntimeChatModeHandler(), SystemRepairPlanHandler(), CapabilityStatusHandler(), UserMemoryRecallHandler(), SelfMemoryRecallHandler(), DirectLatkaVoiceHandler(), IdentityMemoryExistenceHandler(), FallbackHandler(),
         ]
         self.handlers_by_name={h.name:h for h in handlers}
         self.handlers_by_route={h.route:h for h in handlers}

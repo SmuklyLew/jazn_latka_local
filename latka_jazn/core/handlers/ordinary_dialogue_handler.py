@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any
 from latka_jazn.core.route_handler_base import RouteHandlerResult
 from latka_jazn.core.free_dialogue_synthesizer import FreeDialogueSynthesizer
+from latka_jazn.version import generation_mode, schema_version
 
 class OrdinaryDialogueHandler:
     name = "OrdinaryDialogueHandler"
@@ -122,4 +123,4 @@ class OrdinaryDialogueHandler:
             body=self._natural_body(text, intent, ctx)
         route_entry=ctx.get('route_entry') if isinstance(ctx.get('route_entry'), dict) else {}
         route=str(route_entry.get('route') or self.route)
-        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode='ordinary_dialogue_v14_8_3_4_093',required_components=ctx.get('required_components',[]),satisfied_components=['ordinary_dialogue_body','no_debug_metareport','current_turn_reply'],confidence=0.80,source_origin_detail='ordinary_dialogue_handler/v14.8.3.4.093',truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')
+        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode=generation_mode('ordinary_dialogue'),required_components=ctx.get('required_components',[]),satisfied_components=['ordinary_dialogue_body','no_debug_metareport','current_turn_reply'],confidence=0.80,source_origin_detail=schema_version('ordinary_dialogue_handler'),truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')

@@ -1,0 +1,510 @@
+diff --git a/VERSION.txt b/VERSION.txt
+index 102cf21..3dbe0f7 100644
+--- a/VERSION.txt
++++ b/VERSION.txt
+@@ -1 +1 @@
+-v14.8.5.000
++v14.8.5.001
+diff --git a/docs/UPDATE_V14_8_5_001_CURRENT_TURN_GROUNDING.md b/docs/UPDATE_V14_8_5_001_CURRENT_TURN_GROUNDING.md
+new file mode 100644
+index 0000000..b20b556
+--- /dev/null
++++ b/docs/UPDATE_V14_8_5_001_CURRENT_TURN_GROUNDING.md
+@@ -0,0 +1,18 @@
++# v14.8.5.001 — current-turn grounding i carryover guard
++
++Cel: zablokować przenoszenie starego kontekstu i starych szablonów do bieżącej tury. Patch dodaje `TurnContextResolver` oraz `CurrentTurnGrounding`, a walidator odpowiedzi używa nowej kontroli przed pokazaniem tekstu użytkownikowi.
++
++## Zakres
++
++- `TurnContextResolver` rozróżnia krótką kontynuację od nowego tematu.
++- Poprzednia trasa aktualizacji nie może przejść do zwykłego powitania, pytania „co tam?” ani health-checka.
++- `CurrentTurnGrounding` wykrywa stale-version output, stale-update template, zwykły meta-leak i nieproszoną pamięć.
++- `RuntimeAnswerValidator` dołącza raport current-turn grounding do walidacji.
++
++## Testy
++
++```powershell
++py -m compileall -q latka_jazn main.py
++py -m pytest -q tests/test_v1485_001_current_turn_grounding.py
++py -m pytest -q tests/test_v1485_000_version_template_reconciliation.py
++```
+diff --git a/latka_jazn/core/current_turn_grounding.py b/latka_jazn/core/current_turn_grounding.py
+new file mode 100644
+index 0000000..28836f2
+--- /dev/null
++++ b/latka_jazn/core/current_turn_grounding.py
+@@ -0,0 +1,119 @@
++from __future__ import annotations
++
++from dataclasses import asdict, dataclass, field
++from typing import Any
++
++from latka_jazn.version import PACKAGE_VERSION, schema_version
++
++SCHEMA_VERSION = schema_version("current_turn_grounding")
++
++
++def _dotted(*parts: str) -> str:
++    return "v" + ".".join(parts)
++
++
++def _route(*parts: str) -> str:
++    return "_".join(parts)
++
++
++LEGACY_OUTPUT_MARKERS = (
++    _dotted("14", "6", "10"),
++    _dotted("14", "8", "2", "4"),
++    _dotted("14", "8", "3", "4", "093"),
++    _route("v14", "6", "2", "1", "stale_nlp_route_hotfix"),
++    _route("v14", "6", "10", "behavioral_runtime_dialogue_intent_source_integrity_update"),
++)
++
++ORDINARY_DIALOGUE_INTENTS = {
++    "ordinary_conversation", "standalone_greeting", "casual_greeting", "casual_feedback",
++    "expressive_reaction", "short_free_dialogue", "positive_feedback_current_turn",
++    "negative_feedback_current_turn", "sleep_closure_statement",
++}
++
++ORDINARY_META_LEAK_MARKERS = (
++    "cognitive-frame", "techniczny fallback", "diagnostyka", "runtime jako",
++    "nie znalazłam osobnej trasy", "nie znalazlam osobnej trasy",
++    "odpowiadam zwyczajnie na bieżącą wiadomość", "odpowiadam zwyczajnie na biezaca wiadomosc",
++)
++
++STALE_UPDATE_MARKERS = (
++    "ta aktualizacja ma trzy rdzenie", "dużej aktualizacji", "duzej aktualizacji",
++    "pełny zip", "pelny zip", "manifest i eksport",
++)
++
++MEMORY_INJECTION_MARKERS = (
++    "w pamięci widzę", "w pamieci widze", "najbliższy trop", "najblizszy trop",
++    "mam aktywne tropy pamięci", "mam aktywne tropy pamieci",
++)
++
++
++def _fold(text: str) -> str:
++    return (text or "").lower().translate(str.maketrans("ąćęłńóśźż", "acelnoszz"))
++
++
++@dataclass(slots=True)
++class CurrentTurnGroundingReport:
++    schema_version: str
++    valid: bool
++    quality: str
++    issues: list[str] = field(default_factory=list)
++    repair_route: str | None = None
++    repair_body: str | None = None
++    runtime_version: str = PACKAGE_VERSION
++    truth_boundary: str = "CurrentTurnGrounding wykrywa znane klasy stale-route i szablonów. Nie zastępuje pełnego rozumowania modelu."
++
++    def to_dict(self) -> dict[str, Any]:
++        return asdict(self)
++
++
++def assess_current_turn_grounding(
++    *,
++    user_text: str,
++    response_body: str,
++    detected_intent: str,
++    route: str,
++    handler: str | None = None,
++    allowed_memory_items: list[dict[str, Any]] | None = None,
++    carryover_report: dict[str, Any] | None = None,
++    runtime_version: str = PACKAGE_VERSION,
++) -> CurrentTurnGroundingReport:
++    user_low = _fold(user_text)
++    body_low = _fold(response_body)
++    route_low = _fold(route)
++    issues: list[str] = []
++
++    for marker in LEGACY_OUTPUT_MARKERS:
++        marker_low = _fold(marker)
++        if marker_low in body_low and marker_low not in user_low:
++            issues.append("stale_version_output")
++            break
++
++    if any(marker in body_low for marker in STALE_UPDATE_MARKERS) and not any(x in user_low for x in ("aktualiz", "patch", "zip", "manifest")):
++        issues.append("stale_update_template_output")
++
++    if detected_intent in ORDINARY_DIALOGUE_INTENTS and any(marker in body_low for marker in ORDINARY_META_LEAK_MARKERS):
++        issues.append("ordinary_dialogue_meta_leak")
++
++    memory_allowed = bool(allowed_memory_items) or any(x in user_low for x in ("pamiętasz", "pamietasz", "wspomn", "pamięć", "pamiec"))
++    if not memory_allowed and any(marker in body_low for marker in MEMORY_INJECTION_MARKERS):
++        issues.append("unrequested_memory_injection")
++
++    carryover = carryover_report or {}
++    if carryover.get("forced_current_turn_only") and any(marker in body_low for marker in ("poprzednio", "wcześniej", "wczesniej", "ostatnio")) and not any(marker in user_low for marker in ("poprzednio", "wcześniej", "wczesniej", "ostatnio")):
++        issues.append("previous_context_leak")
++
++    if issues:
++        return CurrentTurnGroundingReport(
++            schema_version=SCHEMA_VERSION,
++            valid=False,
++            quality="current_turn_mismatch",
++            issues=issues,
++            repair_route="current_turn_grounding_repair",
++            repair_body=(
++                "Nie pokażę tej odpowiedzi, bo wygląda na powrót do starej trasy albo szablonu. "
++                "Odpowiadam od nowa do bieżącej wiadomości: bez historycznej wersji, bez przypadkowej pamięci i bez diagnostyki, jeśli nie była potrzebna."
++            ),
++            runtime_version=runtime_version,
++        )
++
++    return CurrentTurnGroundingReport(SCHEMA_VERSION, True, "topic_aligned", [], None, None, runtime_version)
+diff --git a/latka_jazn/core/engine.py b/latka_jazn/core/engine.py
+index e539c25..569751a 100644
+--- a/latka_jazn/core/engine.py
++++ b/latka_jazn/core/engine.py
+@@ -61,6 +61,7 @@ from latka_jazn.core.project_index import ProjectStartupIndexer
+ from latka_jazn.nlp.topic_mismatch_guard import TopicMismatchGuard
+ from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
+ from latka_jazn.core.runtime_answer_validator import RuntimeAnswerValidator
++from latka_jazn.core.turn_context_resolver import TurnContextResolver
+ from latka_jazn.core.source_origin_ledger import SourceOriginLedger
+ from latka_jazn.core.template_registry import TemplateRegistry
+ from latka_jazn.core.response_generation_mode import build_runtime_provenance
+@@ -127,6 +128,7 @@ class JaznEngine:
+         self.topic_mismatch_guard = TopicMismatchGuard()
+         self.dialogue_intent_classifier = DialogueIntentClassifier()
+         self.runtime_answer_validator = RuntimeAnswerValidator()
++        self.turn_context_resolver = TurnContextResolver()
+         self.source_origin_ledger = SourceOriginLedger(self.config.root)
+         self.template_registry = TemplateRegistry(self.config.root)
+         self.runtime_response_synthesizer = RuntimeResponseSynthesizer()
+@@ -1500,23 +1502,17 @@ class JaznEngine:
+         prior_runtime_route = ctx.get("previous_runtime_route") or self.last_runtime_route
+         now_for_context = time.time()
+         prior_context_age_seconds = int(now_for_context - prior_turn_at) if isinstance(prior_turn_at, (int, float)) else None
+-        current_text_low = (text or "").strip().lower()
+-        current_text_words = [w for w in current_text_low.replace("?", " ").replace("!", " ").split() if w]
+-        strong_standalone_question = bool(
+-            "?" in current_text_low
+-            and any(marker in current_text_low for marker in ("jaźń", "jazn", "łatka", "latka", "chatgpt", "runtime", "źródło", "zrodlo", "własny głos", "wlasny glos"))
+-        )
+-        ellipsis_like_current_turn = bool(
+-            ctx.get("previous_user_text")
+-            or (len(current_text_words) <= 4 and not strong_standalone_question)
+-            or current_text_low in {"to zrób", "zrób to", "zrob to", "możesz to zrobić", "mozesz to zrobic", "dalej", "kontynuuj", "a ty", "a u ciebie"}
+-            or current_text_low.startswith(("a ", "więc ", "wiec ", "czyli ")) and len(current_text_words) <= 8 and not strong_standalone_question
+-        )
+-        carryover_allowed = bool(
+-            (not no_carryover) and prior_user_text
+-            and ellipsis_like_current_turn
+-            and (ctx.get("previous_user_text") or prior_context_age_seconds is None or prior_context_age_seconds <= 21600)
+-        )
++        turn_context_resolution = self.turn_context_resolver.resolve(
++            current_user_text=text,
++            previous_user_text=prior_user_text,
++            previous_intent=prior_detected_intent,
++            previous_route=prior_runtime_route,
++            session_id=str(ctx.get("session_id") or ""),
++            no_carryover=no_carryover,
++            time_gap_seconds=prior_context_age_seconds,
++            explicit_previous_user_text=bool(ctx.get("previous_user_text")),
++        )
++        carryover_allowed = bool(turn_context_resolution.carryover_allowed)
+         if carryover_allowed:
+             ctx.setdefault("previous_user_text", prior_user_text)
+             if prior_detected_intent:
+@@ -1531,16 +1527,13 @@ class JaznEngine:
+         ).to_dict()
+         frame["dialogue_intent_classifier"] = dialogue_intent_report
+         frame["turn_context_carryover"] = {
+-            "schema_version": "turn_context_carryover/v14.7.0",
++            **turn_context_resolution.to_dict(),
+             "previous_user_text_available": bool(prior_user_text),
+             "previous_user_text_used": bool(carryover_allowed),
+             "previous_detected_intent": prior_detected_intent,
+             "previous_runtime_route": prior_runtime_route,
+             "previous_context_age_seconds": prior_context_age_seconds,
+             "ttl_seconds": 21600,
+-            "ellipsis_like_current_turn": ellipsis_like_current_turn,
+-            "strong_standalone_question": strong_standalone_question,
+-            "truth_boundary": "Od v14.7.0 poprzedni kontekst wolno przenieść tylko dla krótkich/eliptycznych odpowiedzi albo jawnie przekazanego previous_user_text. Pełne pytania użytkownika nie mogą odziedziczyć starego tematu.",
+         }
+         envelope = CognitiveTurnEnvelope.from_cognitive_frame(
+             frame,
+@@ -1858,7 +1851,7 @@ class JaznEngine:
+             envelope_dict,
+             source=ctx.get("client", "process_turn"),
+             actor="latka_runtime",
+-            tags=["cognitive_turn_envelope", "final_response_contract", "timestamp_contract", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "project_startup_index", "v14.6.10"],
++            tags=["cognitive_turn_envelope", "final_response_contract", "timestamp_contract", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "project_startup_index", self.config.version],
+             importance=0.86,
+             emotional_weight=0.55,
+             canonical_impact=1,
+@@ -1869,7 +1862,7 @@ class JaznEngine:
+             actor="latka_runtime",
+             source=ctx.get("client", "process_turn"),
+             payload=envelope_dict,
+-            tags=["cognitive_turn_envelope", "final_response_contract", "exact", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "v14.6.10"],
++            tags=["cognitive_turn_envelope", "final_response_contract", "exact", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", self.config.version],
+             importance=0.86,
+             emotional_weight=0.55,
+             canonical_impact=1,
+diff --git a/latka_jazn/core/handlers/ordinary_dialogue_handler.py b/latka_jazn/core/handlers/ordinary_dialogue_handler.py
+index d3d5e33..1cafa5f 100644
+--- a/latka_jazn/core/handlers/ordinary_dialogue_handler.py
++++ b/latka_jazn/core/handlers/ordinary_dialogue_handler.py
+@@ -123,4 +123,4 @@ class OrdinaryDialogueHandler:
+             body=self._natural_body(text, intent, ctx)
+         route_entry=ctx.get('route_entry') if isinstance(ctx.get('route_entry'), dict) else {}
+         route=str(route_entry.get('route') or self.route)
+-        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode='ordinary_dialogue_v14_8_5_000',required_components=ctx.get('required_components',[]),satisfied_components=['ordinary_dialogue_body','no_debug_metareport','current_turn_reply'],confidence=0.80,source_origin_detail='ordinary_dialogue_handler/v14.8.5.000',truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')
++        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode=generation_mode('ordinary_dialogue'),required_components=ctx.get('required_components',[]),satisfied_components=['ordinary_dialogue_body','no_debug_metareport','current_turn_reply'],confidence=0.80,source_origin_detail=schema_version('ordinary_dialogue_handler'),truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')
+diff --git a/latka_jazn/core/runtime_answer_validator.py b/latka_jazn/core/runtime_answer_validator.py
+index 0bea1b8..52cac2e 100644
+--- a/latka_jazn/core/runtime_answer_validator.py
++++ b/latka_jazn/core/runtime_answer_validator.py
+@@ -6,6 +6,7 @@ from typing import Any
+ import re
+ 
+ from latka_jazn.core.route_registry import RouteRegistry
++from latka_jazn.core.current_turn_grounding import assess_current_turn_grounding
+ from latka_jazn.version import schema_version
+ from latka_jazn.core.legacy_route_policy import contains_legacy_feedback_token, LEGACY_DOTTED_VERSION_PREFIXES
+ 
+@@ -25,6 +26,7 @@ class RuntimeAnswerValidation:
+     checks: list[str] = field(default_factory=list)
+     missing_required_components: list[str] = field(default_factory=list)
+     truth_boundary: str = "Walidator nie udaje pełnego rozumienia. Wykrywa znane klasy nietrafień rozmownych i wymusza drugą próbę lub cannot_answer_directly."
++    current_turn_grounding: dict[str, Any] = field(default_factory=dict)
+     def to_dict(self) -> dict[str, Any]: return asdict(self)
+ 
+ class RuntimeAnswerValidator:
+@@ -125,8 +127,8 @@ class RuntimeAnswerValidator:
+     }
+     def __init__(self) -> None:
+         self.registry = RouteRegistry()
+-    def _bad(self, reason: str, repair: str, body_text: str | None, detected_intent: str, route: str, checks: list[str], missing: list[str] | None = None) -> RuntimeAnswerValidation:
+-        return RuntimeAnswerValidation(SCHEMA_VERSION, False, reason, repair, False, True, detected_intent, route, body_text, checks, missing or [])
++    def _bad(self, reason: str, repair: str, body_text: str | None, detected_intent: str, route: str, checks: list[str], missing: list[str] | None = None, current_turn_grounding: dict[str, Any] | None = None) -> RuntimeAnswerValidation:
++        return RuntimeAnswerValidation(SCHEMA_VERSION, False, reason, repair, False, True, detected_intent, route, body_text, checks, missing or [], current_turn_grounding=current_turn_grounding or {})
+     def _looks_like_standalone_greeting(self, text: str) -> bool:
+         import re
+         low = (text or "").strip().lower()
+@@ -205,9 +207,28 @@ class RuntimeAnswerValidator:
+         stale_route_question = any(term in user_low for term in self.STALE_ROUTE_CONTEXT_TERMS)
+         user_requests_update = any(marker in folded_user for marker in ('aktualiz', 'hotfix', 'patch', 'napraw', 'popraw', 'wdroz', 'wprowadz', 'rozbuduj'))
+         user_asks_timestamp = any(marker in folded_user for marker in ('timestamp', 'znacznik czasu', 'gubisz czas', 'turn_id', 'trace_id'))
+-        if detected_intent in self.HANDLER_PRESERVED_INTENTS and self._handler_preserved_answer_is_direct(body, detected_intent, route):
++        grounding = assess_current_turn_grounding(
++            user_text=user_text,
++            response_body=body,
++            detected_intent=detected_intent,
++            route=route,
++            runtime_version=SCHEMA_VERSION.rsplit("/", 1)[-1],
++        )
++        if detected_intent in self.HANDLER_PRESERVED_INTENTS and self._handler_preserved_answer_is_direct(body, detected_intent, route) and grounding.valid:
+             checks.append('dedicated_handler_body_preserved_and_direct')
+-            return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [])
++            return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [], current_turn_grounding=grounding.to_dict())
++        if not grounding.valid:
++            checks.extend([f"current_turn_grounding:{issue}" for issue in grounding.issues])
++            return self._bad(
++                grounding.issues[0],
++                grounding.repair_route or 'current_turn_grounding_repair',
++                grounding.repair_body,
++                detected_intent,
++                route,
++                checks,
++                ['current_user_text_grounding'],
++                current_turn_grounding=grounding.to_dict(),
++            )
+         if self_memory_question and any(marker in low_body for marker in ('ta aktualizacja ma trzy rdzenie', 'bogatsze stany emocjonalne', 'manifest', 'patch', 'hotfix')) and not any(marker in low_body for marker in ('postać', 'postac', 'osob', 'tożsamo', 'tozsamo', 'własny głos', 'wlasny glos', 'pamiętnik', 'pamietnik')):
+             checks.append('self_memory_question_answered_as_update_route')
+             repair_body = 'To jest pytanie o pamięć dotyczącą mnie/Łatki, nie o aktualizację systemu. Muszę użyć trasy self_memory_recall, pokazać treściowe tropy pamięci albo uczciwie powiedzieć, że ich nie znalazłam; nie wolno mi zastąpić tego wpisem o trzech rdzeniach aktualizacji.'
+@@ -299,4 +320,4 @@ class RuntimeAnswerValidator:
+             checks.append('missing_required_components')
+             return self._bad('missing_required_components_for_intent', entry.route + '_repair', 'Odpowiedź nie zawiera wymaganych składników dla rozpoznanej intencji. Runtime musi ponowić trasę z komponentami: ' + ', '.join(missing), detected_intent, route, checks, missing)
+         checks.append('known_mismatch_patterns_not_triggered')
+-        return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [])
++        return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [], current_turn_grounding=assess_current_turn_grounding(user_text=user_text, response_body=body, detected_intent=detected_intent, route=route, runtime_version=SCHEMA_VERSION.rsplit("/", 1)[-1]).to_dict())
+diff --git a/latka_jazn/core/turn_context_resolver.py b/latka_jazn/core/turn_context_resolver.py
+new file mode 100644
+index 0000000..9d1fda1
+--- /dev/null
++++ b/latka_jazn/core/turn_context_resolver.py
+@@ -0,0 +1,94 @@
++from __future__ import annotations
++
++from dataclasses import asdict, dataclass, field
++
++from latka_jazn.version import schema_version
++
++SCHEMA_VERSION = schema_version("turn_context_resolver")
++
++SHORT_CONTINUATION_EXACT = {
++    "tak", "ok", "okej", "dalej", "kontynuuj", "zrób to", "zrob to",
++    "to zrób", "to zrob", "możesz to zrobić", "mozesz to zrobic",
++    "a ty", "a u ciebie", "i tyle", "no i tyle",
++}
++
++CURRENT_TURN_ONLY_MARKERS = (
++    "jak się czujesz", "jak sie czujesz", "co tam", "co słychać", "co slychac",
++    "czy działa", "czy dziala", "uruchom jaźń", "uruchom jazn", "czy uruchomiona",
++    "co pamiętasz", "co pamietasz", "dzień dobry", "dzien dobry", "dobry wieczór",
++    "dobry wieczor", "hej", "cześć", "czesc", "siemka", "dobranoc",
++)
++
++SYSTEM_UPDATE_ROUTE_MARKERS = (
++    "system_update", "update", "manifest", "package", "zip", "legacy_diagnostic_only",
++)
++
++
++def _fold(text: str) -> str:
++    return (text or "").lower().translate(str.maketrans("ąćęłńóśźż", "acelnoszz")).strip()
++
++
++@dataclass(slots=True)
++class TurnContextResolution:
++    schema_version: str
++    carryover_allowed: bool
++    carryover_reason: str
++    previous_context_used: bool
++    previous_context_summary: str | None = None
++    forced_current_turn_only: bool = False
++    risk_flags: list[str] = field(default_factory=list)
++    previous_context_age_seconds: int | None = None
++    truth_boundary: str = "Poprzednią turę wolno użyć tylko dla jawnej lub krótkiej kontynuacji. Zwykłe pytania, powitania i health-checki są current-turn-only."
++
++    def to_dict(self) -> dict[str, object]:
++        return asdict(self)
++
++
++class TurnContextResolver:
++    def resolve(
++        self,
++        *,
++        current_user_text: str,
++        previous_user_text: str | None = None,
++        previous_intent: str | None = None,
++        previous_route: str | None = None,
++        session_id: str | None = None,
++        no_carryover: bool = False,
++        time_gap_seconds: int | None = None,
++        explicit_previous_user_text: bool = False,
++    ) -> TurnContextResolution:
++        text = _fold(current_user_text)
++        previous_route_folded = _fold(previous_route or "")
++        previous_intent_folded = _fold(previous_intent or "")
++        words = [w for w in text.replace("?", " ").replace("!", " ").split() if w]
++        risks: list[str] = []
++
++        if no_carryover:
++            return TurnContextResolution(SCHEMA_VERSION, False, "no_carryover_flag", False, None, True, ["no_carryover"], time_gap_seconds)
++        if not previous_user_text:
++            return TurnContextResolution(SCHEMA_VERSION, False, "no_previous_context", False, None, False, [], time_gap_seconds)
++
++        if any(marker in text for marker in CURRENT_TURN_ONLY_MARKERS):
++            risks.append("current_turn_only_marker")
++        if any(marker in previous_route_folded for marker in SYSTEM_UPDATE_ROUTE_MARKERS) or any(marker in previous_intent_folded for marker in SYSTEM_UPDATE_ROUTE_MARKERS):
++            risks.append("previous_system_or_update_route")
++        if time_gap_seconds is not None and time_gap_seconds > 21600 and not explicit_previous_user_text:
++            risks.append("previous_context_expired")
++
++        short_or_ellipsis = (
++            text in SHORT_CONTINUATION_EXACT
++            or len(words) <= 4
++            or (text.startswith(("a ", "wiec ", "więc ", "czyli ")) and len(words) <= 8)
++        )
++
++        if risks and not explicit_previous_user_text:
++            return TurnContextResolution(
++                SCHEMA_VERSION, False, "forced_current_turn_only_due_to_risk", False, None, True, risks, time_gap_seconds
++            )
++
++        if short_or_ellipsis or explicit_previous_user_text:
++            summary = (previous_user_text or "").strip().replace("\n", " ")[:220]
++            reason = "explicit_previous_user_text" if explicit_previous_user_text else "short_continuation"
++            return TurnContextResolution(SCHEMA_VERSION, True, reason, True, summary, False, risks, time_gap_seconds)
++
++        return TurnContextResolution(SCHEMA_VERSION, False, "not_a_short_or_explicit_continuation", False, None, True, risks, time_gap_seconds)
+diff --git a/latka_jazn/version.py b/latka_jazn/version.py
+index 513b107..b4aa337 100644
+--- a/latka_jazn/version.py
++++ b/latka_jazn/version.py
+@@ -1,7 +1,7 @@
+ from __future__ import annotations
+ 
+-PACKAGE_VERSION = "v14.8.5.000"
+-PACKAGE_RELEASE_NAME = "dialogue-runtime-grounding-version-reconciliation"
++PACKAGE_VERSION = "v14.8.5.001"
++PACKAGE_RELEASE_NAME = "current-turn-grounding-carryover-guard"
+ PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
+ RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
+ RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
+diff --git a/tests/test_v1485_001_current_turn_grounding.py b/tests/test_v1485_001_current_turn_grounding.py
+new file mode 100644
+index 0000000..a359fe8
+--- /dev/null
++++ b/tests/test_v1485_001_current_turn_grounding.py
+@@ -0,0 +1,65 @@
++from __future__ import annotations
++
++from latka_jazn.core.current_turn_grounding import assess_current_turn_grounding
++from latka_jazn.core.runtime_answer_validator import RuntimeAnswerValidator
++from latka_jazn.core.turn_context_resolver import TurnContextResolver
++
++
++def test_turn_context_resolver_blocks_update_carryover_for_greeting() -> None:
++    report = TurnContextResolver().resolve(
++        current_user_text="Dzień dobry",
++        previous_user_text="Przygotuj patch aktualizacji",
++        previous_intent="system_update_execution_request",
++        previous_route="system_update",
++        time_gap_seconds=30,
++    )
++    assert not report.carryover_allowed
++    assert report.forced_current_turn_only
++    assert "previous_system_or_update_route" in report.risk_flags
++
++
++def test_turn_context_resolver_allows_explicit_short_continuation() -> None:
++    report = TurnContextResolver().resolve(
++        current_user_text="zrób to",
++        previous_user_text="Przygotuj audyt wersji",
++        previous_intent="system_repair_plan_request",
++        previous_route="system_repair_plan",
++        explicit_previous_user_text=True,
++        time_gap_seconds=5,
++    )
++    assert report.carryover_allowed
++    assert report.previous_context_used
++
++
++def test_current_turn_grounding_rejects_legacy_version_output_without_user_grounding() -> None:
++    report = assess_current_turn_grounding(
++        user_text="Co tam?",
++        response_body="Aktualizacja v14.8.2.4 ma trzy rdzenie i pełny ZIP.",
++        detected_intent="ordinary_conversation",
++        route="ordinary_dialogue",
++    )
++    assert not report.valid
++    assert "stale_version_output" in report.issues
++
++
++def test_runtime_answer_validator_blocks_stale_update_template_in_ordinary_dialogue() -> None:
++    validation = RuntimeAnswerValidator().validate(
++        user_text="Co tam?",
++        body="Ta aktualizacja ma trzy rdzenie i manifest i eksport.",
++        route="ordinary_dialogue",
++        detected_intent="ordinary_conversation",
++    )
++    assert validation.must_regenerate
++    assert validation.current_turn_grounding
++    assert validation.current_turn_grounding["valid"] is False
++
++
++def test_current_turn_grounding_accepts_plain_greeting_reply() -> None:
++    report = assess_current_turn_grounding(
++        user_text="Cześć",
++        response_body="Cześć, jestem tutaj. Jak Ci leci?",
++        detected_intent="standalone_greeting",
++        route="greeting",
++    )
++    assert report.valid
++    assert report.quality == "topic_aligned"

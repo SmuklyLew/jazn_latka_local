@@ -7,15 +7,15 @@ import unicodedata
 
 from latka_jazn.core.memory_recall_presenter import MemoryRecallPresenter
 from latka_jazn.core.route_handler_base import RouteHandlerResult
+from latka_jazn.version import schema_version
 
-SCHEMA_VERSION = "self_memory_recall_handler/v14.8.2.6.3"
+SCHEMA_VERSION = schema_version("self_memory_recall_handler")
 
 
 class SelfMemoryRecallHandler:
     """Memory answers about Łatka/persona/identity, grounded in recall payload.
 
-    v14.8.2.6.3 keeps the v14.8.2.5 route fix, but improves the visible
-    presentation layer: persona recall is deduplicated, grouped by meaning,
+    The active route keeps a source-grounded presentation layer: persona recall is deduplicated, grouped by meaning,
     stripped of raw JSON/procedural tails and rendered as a calm source-grounded
     answer rather than as a dump of retrieved chunks.
     """

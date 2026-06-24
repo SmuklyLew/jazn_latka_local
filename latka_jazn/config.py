@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import os
 
+from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
+
 DEFAULT_MAX_SQLITE_FILE_BYTES = 480 * 1024 * 1024
 
 
@@ -28,7 +30,7 @@ def _env_int(name: str, default: int) -> int:
 
 @dataclass(slots=True)
 class JaznConfig:
-    version: str = "v14.8.3.4.093"
+    version: str = PACKAGE_VERSION
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[1])
     timezone: str = "Europe/Warsaw"
     timestamp_format: str = "[🕒 %Y-%m-%d %H:%M:%S GMT%z, %A, Europe/Warsaw]"
@@ -61,7 +63,7 @@ class JaznConfig:
     network_default_timeout_connect_seconds: float = field(default_factory=lambda: _env_float("JAZN_NETWORK_TIMEOUT_CONNECT", 3.0))
     network_default_timeout_read_seconds: float = field(default_factory=lambda: _env_float("JAZN_NETWORK_TIMEOUT_READ", 6.0))
     network_max_retries: int = field(default_factory=lambda: _env_int("JAZN_NETWORK_MAX_RETRIES", 1))
-    network_user_agent: str = "LatkaJazn/14.8.3"
+    network_user_agent: str = f"LatkaJazn/{USER_AGENT_VERSION}"
     network_cache_required: bool = True
     network_cache_ttl_seconds: int = 604800
     network_respect_robots_and_terms: bool = True
