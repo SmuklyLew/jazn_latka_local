@@ -56,6 +56,7 @@ from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnos
 from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
+from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
 
 
 def _render_readonly_status(root: Path | None = None) -> str:
@@ -99,6 +100,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--polish-reasoning-frame", action="store_true", dest="polish_reasoning_frame", help="Pokaż warstwowy frame Polish Reasoning: normalizacja, morfologia, semantyka, reply policy i status providerów.")
     parser.add_argument("--polish-reasoning-sources", action="store_true", dest="polish_reasoning_sources", help="Pokaż rejestr źródeł/licencji/cache dla warstwy Polish Reasoning.")
     parser.add_argument("--polish-reasoning-bootstrap-plan", action="store_true", dest="polish_reasoning_bootstrap_plan", help="Pokaż komendy lokalnej instalacji providerów NLP bez ich automatycznego pobierania.")
+    parser.add_argument("--nlp-resource-status", action="store_true", dest="nlp_resource_status", help="Pokaż status lexical resource registry/cache: źródła, licencje, dostępność i projektowy leksykon bez pobierania dużych danych.")
     parser.add_argument("--polish-morphology", action="store_true", dest="polish_morphology", help="Pokaż szczegółową analizę morfologiczną v14.8.4: Morfeusz/PoliMorf, kandydaci i selected_lemma.")
     parser.add_argument("--morfeusz-status", action="store_true", dest="morfeusz_status", help="Pokaż status realnego providera Morfeusz2/SGJP w Polish Reasoning.")
     parser.add_argument("--polimorf-status", action="store_true", dest="polimorf_status", help="Pokaż status opcjonalnego lokalnego providera PoliMorf.")
@@ -443,6 +445,18 @@ def main(argv: list[str] | None = None) -> int:
     if ns.polish_reasoning_sources:
         cfg = config or JaznConfig()
         payload = {"runtime_version": cfg.version, "polish_reasoning_sources": PolishReasoningSourceRegistry(cfg.root).to_dict()}
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.nlp_resource_status:
+        cfg = config or JaznConfig()
+        registry = LexicalResourceRegistry(
+            cfg.root,
+            verified_sources_path=cfg.root / cfg.lexical_resources_registry_path,
+            project_lexicon_path=cfg.root / cfg.latka_project_lexicon_path,
+            cache_path=cfg.lexical_resource_cache_path,
+        )
+        payload = {"runtime_version": cfg.version, "nlp_resource_status": registry.to_dict()}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 

@@ -3,8 +3,8 @@
   "version": "v14.8.3.4.093",
   "runtime_version": "v14.8.3.4.093",
   "package_version": "v14.8.3.4.093",
-  "generated_at_utc": "2026-06-24T00:17:36.184657+00:00",
-  "updated_at_utc": "2026-06-24T00:17:36.184657+00:00",
+  "generated_at_utc": "2026-06-24T01:01:24.648746+00:00",
+  "updated_at_utc": "2026-06-24T01:01:24.648746+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,12 +13,12 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 765,
-  "static_file_count": 765,
+  "file_count": 762,
+  "static_file_count": 762,
   "mutable_runtime_file_count": 0,
-  "runtime_mutable_file_count": 185,
-  "archive_file_count": 173,
-  "excluded_file_count": 1262,
+  "runtime_mutable_file_count": 186,
+  "archive_file_count": 170,
+  "excluded_file_count": 1288,
   "deferred_hash_file_count": 0,
   "hash_size_limit_bytes": 67108864,
   "runtime_mutable_manifest": "MANIFEST_RUNTIME_MUTABLE.json",
@@ -28,12 +28,12 @@
     "why": "Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code."
   },
   "excluded_file_detail_count": 11,
-  "excluded_file_detail_suppressed_count": 1251,
+  "excluded_file_detail_suppressed_count": 1277,
   "excluded_file_detail_suppressed_summary": [
     {
       "reason": "generated_cache_directory",
-      "count": 1251,
-      "size_bytes": 68532123
+      "count": 1277,
+      "size_bytes": 68679282
     }
   ],
   "mutable_patterns": [
@@ -98,7 +98,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
       "exists": true,
-      "size_bytes": 942080,
+      "size_bytes": 946176,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
@@ -158,13 +158,14 @@
     {
       "path": "workspace_runtime/dictionary_cache.sqlite3",
       "exists": true,
-      "size_bytes": 40960,
+      "size_bytes": 49152,
       "integrity_check": "ok",
       "foreign_key_check_count": 0,
       "tables": [
         "dictionary_entries",
         "failed_lookups",
         "language_resource_config",
+        "lexical_resource_cache",
         "lookup_events",
         "source_license_notes",
         "sqlite_sequence"
@@ -2118,6 +2119,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "docs/UPDATE_V14_8_4_005_NLP_LEXICAL_RESOURCES.md",
+      "size_bytes": 3533,
+      "sha256": "4658e612dfbecf9b469319bfe8e63c4b8a2346436835344929df93c996e0c97a",
+      "mutable_runtime": false,
+      "classification": "static_documentation",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "docs/VOICE_AND_AUDIO_FUTURE_ADAPTERS_v14_7_0.md",
       "size_bytes": 913,
       "sha256": "3c88615c55935b7605f7af0060b0d002b21d263f5ee0631bc135343fb9d6c577",
@@ -2218,8 +2228,8 @@
     },
     {
       "path": "latka_jazn/config.py",
-      "size_bytes": 7914,
-      "sha256": "c53854167fa9e54a7a842907712afe2938617f60e30734ca49543581503337ef",
+      "size_bytes": 8514,
+      "sha256": "fd5833cacc74519613b512e286db8cc91e5f819de5abf757a199b55d521b854a",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -4071,6 +4081,24 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "latka_jazn/nlp_reasoning/lexical_resource_cache.py",
+      "size_bytes": 5983,
+      "sha256": "27c55f60f20c646d473338ed93f2e5e520380bf90f624ceba62234dcaeb41721",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "latka_jazn/nlp_reasoning/lexical_resource_registry.py",
+      "size_bytes": 10071,
+      "sha256": "983a9df437ad5a35022ee96ba65fc83727ab90fa08fd23ca103d3e023d715216",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "latka_jazn/nlp_reasoning/models.py",
       "size_bytes": 3936,
       "sha256": "9ee4f9e9b259ca15ed86650792a080c512f2a30a29b867035109c5a240d0972e",
@@ -4362,6 +4390,24 @@
       "path": "latka_jazn/resources/memory_search_topics_v14_6_9_4.json",
       "size_bytes": 401,
       "sha256": "28cfa825bffdec30d9ed7cfa597cd6f014dd78fdcea900e8292b92f7c6755b2b",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "latka_jazn/resources/nlp/latka_project_lexicon.json",
+      "size_bytes": 3325,
+      "sha256": "fbec77a5495909bc057a6f766e7e641ec46a2fa020af7c1fd13ddd791b72947f",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
+      "path": "latka_jazn/resources/nlp/verified_sources.json",
+      "size_bytes": 4346,
+      "sha256": "32e96fd6dfa5054ed786f682d8039d2e48921e1fc39b1f34dabafa21e57ab232",
       "mutable_runtime": false,
       "classification": "static_code",
       "archive": false,
@@ -4827,15 +4873,6 @@
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_MANIFEST_REPAIR_REPORT.v14_8_2_5.json",
-      "size_bytes": 3639,
-      "sha256": "a9310b013827689b58fdb3c31d4dff1291fc4830d97d9ffe4f8456a436672e28",
-      "mutable_runtime": false,
-      "classification": "static_project_file",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
       "path": "LATKA_JAZN_v14_8_3_4_091_AUDIT.json",
       "size_bytes": 125021,
       "sha256": "d641b98be9ee5729e90a4739426af0cb4aeb0258b65f2425b25a82ef1a15b8ce",
@@ -4881,72 +4918,18 @@
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_4_004_REASON_COMPAT_REPAIR_v2.patch",
-      "size_bytes": 1611,
-      "sha256": "2082dda9dd6fda2ed96609a85d3b848891b0077deaec782ef37f68f82f5be681",
+      "path": "LATKA_JAZN_v14_8_4_005_NLP_LEXICAL_RESOURCES.patch",
+      "size_bytes": 38711,
+      "sha256": "6110d7a7486a893f3adbac93e4290ff456a4be190b16c10d29856d606040798c",
       "mutable_runtime": false,
       "classification": "archive_or_backup",
       "archive": true,
       "hash_policy": "stable_content_hash"
     },
     {
-      "path": "LATKA_JAZN_v14_8_4_004_REASON_COMPAT_REPAIR_v2_REPORT.md",
-      "size_bytes": 1609,
-      "sha256": "1cd541192cc2e63fc175519fd1b689cbae84b26b1ed63f75b47a8af1fb1efb06",
-      "mutable_runtime": false,
-      "classification": "static_documentation",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_4_004_REPORT.md",
-      "size_bytes": 1122,
-      "sha256": "ddc92a8d3a2b9c293ff957917a9cfc79f150924212bc59cade75aaffcffab2a3",
-      "mutable_runtime": false,
-      "classification": "static_documentation",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_4_004_RESPONSE_CANDIDATES.patch",
-      "size_bytes": 26253,
-      "sha256": "3521c81e4892778866d378cf49fec96814b3c8802ab26ddcfc00b498b766bc2b",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_4_004A_ORDINARY_DIALOGUE_VERSION_SMOKE_REPAIR.patch",
-      "size_bytes": 6714,
-      "sha256": "ab52fb06571211ee8bc49d8cf724140d413f9c4991a49a49309aebf0a52a45ee",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_4_004A_ORDINARY_DIALOGUE_VERSION_SMOKE_REPAIR_REPORT.md",
-      "size_bytes": 924,
-      "sha256": "3ab77f61a2de94dfa7b0c9cba5e28081d4d17833d0158181a5162403825ba1e6",
-      "mutable_runtime": false,
-      "classification": "static_documentation",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_4_004A_TEST_ENVELOPE_COMPAT_REPAIR.patch",
-      "size_bytes": 887,
-      "sha256": "8d31201e3d8673ff7a3966260c5e93c07c901fb3ad647fbadabe0bb17a66680e",
-      "mutable_runtime": false,
-      "classification": "archive_or_backup",
-      "archive": true,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "LATKA_JAZN_v14_8_4_004A_TEST_ENVELOPE_COMPAT_REPAIR_REPORT.md",
-      "size_bytes": 1441,
-      "sha256": "2d6af7e59c8528bf49cfd0fa3ea129920562447c18ffdf346e6e8b17ef6ad4db",
+      "path": "LATKA_JAZN_v14_8_4_005_NLP_LEXICAL_RESOURCES_REPORT.md",
+      "size_bytes": 4324,
+      "sha256": "49ed709514ee52030fdf34873a18c43c9e87ce40ceb1d80ac62e015eec3060fc",
       "mutable_runtime": false,
       "classification": "static_documentation",
       "archive": false,
@@ -4954,28 +4937,10 @@
     },
     {
       "path": "main.py",
-      "size_bytes": 56408,
-      "sha256": "e7b6ff45f38b191f4f9d8a02bb8cebe389628c1d72b6fb8c8d8afa490cff8d27",
+      "size_bytes": 56358,
+      "sha256": "c60b0a28057e30b63e3794f2f75587fca9dbbc37523bff7c8be800036483e07d",
       "mutable_runtime": false,
       "classification": "static_code",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "MANIFEST_CURRENT.corrected.v14_8_2_5.json",
-      "size_bytes": 265752,
-      "sha256": "fcf5a781a26aaa077efb3dff72dc40e276af051b4778f4e9cc3439bb69ecf885",
-      "mutable_runtime": false,
-      "classification": "static_project_file",
-      "archive": false,
-      "hash_policy": "stable_content_hash"
-    },
-    {
-      "path": "MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json",
-      "size_bytes": 94565,
-      "sha256": "61f341f8f95b06f85f36f4c488f23c7a41218e649ed191624b55fa27ec5a7f4a",
-      "mutable_runtime": false,
-      "classification": "static_project_file",
       "archive": false,
       "hash_policy": "stable_content_hash"
     },
@@ -6798,6 +6763,15 @@
       "hash_policy": "stable_content_hash"
     },
     {
+      "path": "tests/test_v1484_lexical_resources.py",
+      "size_bytes": 4645,
+      "sha256": "3efee2a2e5915e792ac6188afc3e8ab6e2449b53ed9e376693bb87030b07003c",
+      "mutable_runtime": false,
+      "classification": "static_code",
+      "archive": false,
+      "hash_policy": "stable_content_hash"
+    },
+    {
       "path": "tests/test_v1484_model_context_compiler.py",
       "size_bytes": 5985,
       "sha256": "1e48b70946d95730210ab6f0cbf7547a1f75abb7fed19ded1a24e2e44aad87b7",
@@ -7063,12 +7037,12 @@
     {
       "path": "MANIFEST_CURRENT.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 265752
+      "size_bytes": 267897
     },
     {
       "path": "MANIFEST_RUNTIME_MUTABLE.json",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 94565
+      "size_bytes": 95523
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3-shm",
@@ -7083,12 +7057,12 @@
     {
       "path": "SHA256SUMS",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 88583
+      "size_bytes": 89373
     },
     {
       "path": "SHA256SUMS_STATIC",
       "reason": "self_or_checksum_control_file",
-      "size_bytes": 88583
+      "size_bytes": 89373
     },
     {
       "path": "workspace_runtime/pytest_codex_v1483_route_fix_final/test_active_cache_normalizes_b0/MANIFEST_CURRENT.json",

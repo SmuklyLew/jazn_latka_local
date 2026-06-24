@@ -73,6 +73,12 @@ class JaznConfig:
         "local_cache", "local_mini_lexicon", "morfeusz_optional",
         "wiktionary_mediawiki_api", "sjp_reference", "wsjp_reference", "plwordnet_optional", "languagetool_optional",
     )
+    lexical_resources_registry_path: str = "latka_jazn/resources/nlp/verified_sources.json"
+    latka_project_lexicon_path: str = "latka_jazn/resources/nlp/latka_project_lexicon.json"
+    lexical_resource_cache_name: str = field(default_factory=lambda: os.environ.get("JAZN_LEXICAL_RESOURCE_CACHE", "workspace_runtime/dictionary_cache.sqlite3").strip())
+    lexical_resource_cache_ttl_seconds: int = field(default_factory=lambda: _env_int("JAZN_LEXICAL_RESOURCE_CACHE_TTL", 604800))
+    lexical_resource_status_include_optional: bool = field(default_factory=lambda: _env_bool("JAZN_LEXICAL_STATUS_OPTIONAL", True))
+
 
     research_allow_network: bool = field(default_factory=lambda: _env_bool("JAZN_RESEARCH_ALLOW_NETWORK", True))
     research_requires_chatgpt_web_when_local_provider_missing: bool = True
@@ -101,6 +107,10 @@ class JaznConfig:
     @property
     def conversation_staging_dir(self) -> Path:
         return self.root / self.conversation_staging_dir_name
+
+    @property
+    def lexical_resource_cache_path(self) -> Path:
+        return self.root / self.lexical_resource_cache_name
 
     def _active_shard_path(self, manifest_name: str, logical_database: str, role: str, default_db_name: str) -> Path:
         try:
