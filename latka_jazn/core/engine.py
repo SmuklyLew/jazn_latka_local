@@ -1601,6 +1601,11 @@ class JaznEngine:
             "lexical_semantic_understanding": frame.get("lexical_semantic_understanding") if isinstance(frame.get("lexical_semantic_understanding"), dict) else {},
             "dictionary_adapter": self.external_dictionary_adapter,
             "store_stats": self.store.stats(),
+            "store": self.store,
+            "model_adapter_status": self.model_adapter.describe() if hasattr(self.model_adapter, "describe") else {},
+            "granular_affect": frame.get("granular_affect") if isinstance(frame.get("granular_affect"), dict) else {},
+            "affective_state": frame.get("affective_state") if isinstance(frame.get("affective_state"), dict) else {},
+            "emotional_profile": frame.get("emotional_profile") if isinstance(frame.get("emotional_profile"), dict) else {},
             "route_entry": route_entry.to_dict(),
             "required_components": route_entry.required_components,
             "turn_response_policy": turn_response_policy.to_dict() if 'turn_response_policy' in locals() else {},
@@ -1615,7 +1620,7 @@ class JaznEngine:
         decision_dict["handler_missing_components"] = handler_result.missing_components
         if handler_result.source_origin_detail:
             decision_dict["source_origin_detail"] = handler_result.source_origin_detail
-        dedicated_preserve_handlers = {"CapabilityStatusHandler", "SelfMemoryRecallHandler", "DirectLatkaVoiceHandler", "IdentityMemoryExistenceHandler", "CanonSourceHandler"}
+        dedicated_preserve_handlers = {"CapabilityStatusHandler", "SelfMemoryRecallHandler", "DirectLatkaVoiceHandler", "IdentityMemoryExistenceHandler", "CanonSourceHandler", "SelfArchitectureAuditHandler"}
         handler_required = list(handler_result.required_components or route_entry.required_components or [])
         handler_satisfied = set(handler_result.satisfied_components or [])
         handler_missing = list(handler_result.missing_components or [])

@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.010-sleep-closure-repair-loop-hotfix
+# Current package version: v14.8.5.011-self-architecture-audit-reflection-memory-gate
 from __future__ import annotations
 
 import argparse

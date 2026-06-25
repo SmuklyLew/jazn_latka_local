@@ -9,7 +9,7 @@ from latka_jazn.version import PACKAGE_VERSION
 
 
 def test_version_is_current_010_for_sleep_closure_repair_loop() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.010"
+    assert PACKAGE_VERSION == "v14.8.5.011"
 
 
 def test_sleep_closure_handler_body_passes_runtime_answer_validator() -> None:

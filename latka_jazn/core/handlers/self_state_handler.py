@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any
 from latka_jazn.core.route_handler_base import RouteHandlerResult
 from latka_jazn.core.operational_self_model import OperationalSelfModel
+from latka_jazn.core.self_state_affective_bridge import SelfStateAffectiveBridge
 from latka_jazn.version import generation_mode, schema_version
 
 class SelfStateHandler:
@@ -14,6 +15,7 @@ class SelfStateHandler:
         intent = ctx.get('intent', 'unknown')
         entry_route = (ctx.get('route_entry') or {}).get('route') or self.route
         model = OperationalSelfModel()
+        bridge = SelfStateAffectiveBridge()
         low = (text or '').lower()
         health_concern = any(marker in low for marker in ('jesteś chora', 'jestes chora'))
         if health_concern:
@@ -30,9 +32,14 @@ class SelfStateHandler:
                 "Nie będę udawała osobnego dnia w tle poza uruchomieniami runtime."
             )
         elif intent == 'self_expression_request':
-            body = model.render_self_expression_answer(user_text=text)
+            body = bridge.render_expression(user_text=text, granular_affect=ctx.get('granular_affect'))
         else:
-            body = model.render_self_state_answer(user_text=text, reciprocal=intent == 'reciprocal_self_state_question')
+            body = bridge.render_state(
+                user_text=text,
+                granular_affect=ctx.get('granular_affect'),
+                fallback=model.current_state(user_text=text),
+                reciprocal=intent == 'reciprocal_self_state_question',
+            )
         return RouteHandlerResult(
             self.name,
             entry_route,

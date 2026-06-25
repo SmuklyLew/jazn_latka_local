@@ -38,10 +38,10 @@ class RuntimeAnswerValidator:
         "jestem przy tym — bez dokładania raportu", "jestem przy tym - bez dokladania raportu", "bez losowej pamięci", "bez losowej pamieci", "możemy pójść dalej zwykłą rozmową", "mozemy pojsc dalej zwykla rozmowa",
     )
     SPECIFIC_INTENTS = {
-        "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",
+        "self_architecture_audit_request", "jazn_development_plan_request", "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",
         "system_update_execution_request", "system_update_manifest_request", "update_manifest_request", "creative_text_formatting", "creative_text_analysis",
         "practical_repair_advice", "automotive_warning_light_question", "dictionary_lookup_request", "language_question", "external_research_request",
-        "identity_boundary_question", "identity_direct_question", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "user_memory_recall_request", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check_after_update", "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question",
+        "identity_boundary_question", "identity_direct_question", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "user_memory_recall_request", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check_after_update", "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
         "casual_greeting", "casual_feedback", "expressive_reaction", "short_free_dialogue",
     }
     STALE_WORKDAY_DETAILS = (
@@ -62,7 +62,7 @@ class RuntimeAnswerValidator:
         "internet_access_question",
         "runtime_health_check_after_update",
         "canon_source_question",
-        "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question",
+        "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
     }
 
 
@@ -124,6 +124,14 @@ class RuntimeAnswerValidator:
         "current_turn_closure": ("spać", "spac", "dobranoc", "odpoczn"),
         "warmth": ("spokojnie", "ciep", "dobranoc", "rozumiem"),
         "no_diagnostics": ("nie będę", "bez diagnostyki", "nie rozkręcać"),
+        "self_architecture_audit": ("self_architecture_audit", "architekt", "moduł", "modul", "routing", "handler"),
+        "reflection_grounding": ("reflection grounding", "refleksj", "źród", "zrod", "granica"),
+        "grounded_reflection_store": ("grounded reflection store", "grounded_reflections", "zapis refleksji", "reflection_store"),
+        "memory_gate": ("brama pamięci", "brama pamieci", "memory_gate", "brama", "pamię", "pamie"),
+        "recall_quality": ("recall quality", "jakość recall", "jakosc recall", "content-not-counts", "counts_only"),
+        "capability_reality_check": ("reality check", "capability reality", "sprawdzenie zachowania", "nie tylko obecności plików"),
+        "development_backlog": ("v14.8.6.0", "backlog", "plan", "priorytet", "krok"),
+        "scientific_basis": ("scientific", "źród", "zrod", "nist", "langgraph", "reflexion", "generative agents", "global workspace"),
     }
     def __init__(self) -> None:
         self.registry = RouteRegistry()

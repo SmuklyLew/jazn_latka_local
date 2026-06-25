@@ -19,7 +19,7 @@ class RouteRegistryEntry:
 class RouteRegistry:
     """Priorytetowy rejestr tras: DialogueIntentClassifier > RouteRegistry > LegacyMarkers."""
     PRIORITIES = {
-        "runtime_behavior_diagnostic_request": 100, "runtime_exact_quote_request": 99,
+        "self_architecture_audit_request": 101, "jazn_development_plan_request": 100, "runtime_behavior_diagnostic_request": 100, "runtime_exact_quote_request": 99,
         "runtime_source_question": 98, "canon_source_question": 98, "runtime_activation_status_question": 97, "runtime_chat_mode_request": 97, "system_repair_plan_request": 96, "logic_reasoning_audit_request": 96, "memory_grounding_status_question": 96, "system_diagnostic_question": 96,
         "system_update_execution_request": 95, "system_update_manifest_request": 94,
         "creative_text_formatting": 92, "creative_text_analysis": 90,
@@ -41,6 +41,8 @@ class RouteRegistry:
         "ordinary_conversation": 10,
     }
     HANDLERS = {
+        "self_architecture_audit_request": ("self_architecture_audit", "SelfArchitectureAuditHandler"),
+        "jazn_development_plan_request": ("self_architecture_audit", "SelfArchitectureAuditHandler"),
         "runtime_source_question": ("runtime_source", "RuntimeSourceHandler"),
         "canon_source_question": ("canon_source", "CanonSourceHandler"),
         "runtime_exact_quote_request": ("runtime_source", "RuntimeSourceHandler"),
@@ -107,6 +109,8 @@ class RouteRegistry:
         return RouteRegistryEntry(intent, route, handler, priority, required, legacy_forbidden_routes_for(priority))
 
     def required_components_for(self, intent: str) -> list[str]:
+        if intent in {"self_architecture_audit_request", "jazn_development_plan_request"}:
+            return ["self_architecture_audit", "reflection_grounding", "grounded_reflection_store", "memory_gate", "recall_quality", "capability_reality_check", "development_backlog", "scientific_basis", "tests", "truth_boundary"]
         if intent in {"runtime_activation_status_question"}:
             return ["runtime_status", "model_channel_boundary", "no_background_process_claim"]
         if intent == "runtime_restart_request":

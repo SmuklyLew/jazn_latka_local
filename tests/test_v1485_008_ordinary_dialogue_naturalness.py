@@ -27,7 +27,7 @@ def _assert_natural(body: str) -> None:
 
 
 def test_version_is_current_for_ordinary_dialogue_naturalness() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.010"
+    assert PACKAGE_VERSION == "v14.8.5.011"
 
 
 def test_co_tam_ok_and_dobranoc_are_warm_not_meta_reports() -> None:
