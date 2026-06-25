@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from typing import Any
 
-SCHEMA_VERSION = "affect_mixer/v14.8.3.4.093"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("affect_mixer")
 
 
 @dataclass(slots=True)

@@ -5,7 +5,9 @@ from typing import Any
 import linecache
 from latka_jazn.core.template_origin import TemplateOrigin
 
-SCHEMA_VERSION = "template_registry/v14.6.10"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("template_registry")
 
 @dataclass(slots=True)
 class TemplateSignature:

@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.000-dialogue-runtime-grounding-version-reconciliation
+# Current package version: v14.8.5.006-runtime-marker-schema-integrity-hotfix
 from __future__ import annotations
 
 import argparse

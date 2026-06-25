@@ -4,7 +4,9 @@ from typing import Any
 import hashlib
 import re
 
-SCHEMA_VERSION = "session_provenance/v14.8.3.2"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("session_provenance")
 
 TIMESTAMP_HEADER_RE = re.compile(
     r"^\[🕒 \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} GMT[+-]\d{1,2}, [^,\]]+, Europe/Warsaw\]$"
@@ -144,7 +146,7 @@ def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
         errors.append("unicode_replacement_character_detected")
 
     payload = {
-        "schema_version": "final_visible_integrity/v14.8.3.2",
+        "schema_version": schema_version("final_visible_integrity"),
         "valid": not errors,
         "errors": errors,
         "timestamp_header": timestamp_header,

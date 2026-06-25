@@ -5,7 +5,9 @@ from typing import Any
 import hashlib
 import re
 
-SCHEMA_VERSION = "final_response_contract/v14.7.0"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("final_response_contract")
 
 
 @dataclass(slots=True)
@@ -49,6 +51,7 @@ class FinalResponseContract:
     voice_source_contract: dict[str, Any] | None = None
     runtime_rendering_mode: dict[str, Any] | None = None
     memory_recall_contract_status: dict[str, Any] | None = None
+    final_visible_integrity: dict[str, Any] | None = None
     schema_version: str = SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, Any]:
@@ -74,6 +77,7 @@ class FinalResponseContract:
             raise ValueError("timestamp_header is required for final visible response")
         marker = state_emoticon or "🌿"
         final_visible_text = cls.ensure_timestamp_prefix(timestamp_header, marker, body)
+        final_visible_integrity = cls.validate_visible_text(timestamp_header, final_visible_text)
         fallback_classification = cls.classify_fallback(decision.get("route"), body, runtime_version=runtime_version)
         if fallback_classification != "not_fallback":
             runtime_answer_quality = "stale_route_mismatch" if fallback_classification == "stale_route_mismatch" else "fallback_or_debug"
@@ -119,6 +123,7 @@ class FinalResponseContract:
             voice_source_contract=decision.get("voice_source_contract") or None,
             runtime_rendering_mode=decision.get("runtime_rendering_mode") or None,
             memory_recall_contract_status=decision.get("memory_recall_contract_status") or None,
+            final_visible_integrity=final_visible_integrity,
         )
 
     @staticmethod
@@ -170,7 +175,7 @@ class FinalResponseContract:
         visible = (text or "").strip()
         has_timestamp = bool(timestamp_header) and visible.startswith(timestamp_header)
         return {
-            "schema_version": "final_response_contract_validation/v14.7.0",
+            "schema_version": schema_version("final_response_contract_validation"),
             "timestamp_header": timestamp_header,
             "timestamp_present": has_timestamp,
             "valid": has_timestamp,

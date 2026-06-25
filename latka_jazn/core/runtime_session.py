@@ -6,7 +6,9 @@ from latka_jazn.core.engine import JaznEngine
 from latka_jazn.core.runtime_session_state import RuntimeSessionStateStore
 from latka_jazn.core.session_provenance import build_session_provenance, repair_final_visible_integrity, validate_final_visible_integrity
 
-SCHEMA_VERSION = "runtime_session/v14.8.3.2"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("runtime_session")
 
 class JaznRuntimeSession:
     """Wspólny rdzeń one-shot, --runtime-preview, --chat i --chat-gpt.
