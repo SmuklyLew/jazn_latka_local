@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.007-audit-title-dialogue-smoke-hotfix
+# Current package version: v14.8.5.008-ordinary-dialogue-naturalness-hotfix
 from __future__ import annotations
 
 import argparse

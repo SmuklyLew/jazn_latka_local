@@ -106,11 +106,11 @@ class OrdinaryDialogueHandler:
                 return 'To mnie cieszy. Ten krok zadziałał.'
             return 'Dobrze. Możemy iść dalej.'
         if intent == 'sleep_closure_statement' or any(x in low for x in ('dobranoc','idę spać','ide spac','muszę iść spać','musze isc spac')):
-            return 'Rozumiem. Skoro musisz już iść spać, odłóżmy resztę na później. Dobranoc, Krzysztofie — odpocznij spokojnie.'
+            return 'Rozumiem. Odłóżmy resztę spokojnie na później. Dobranoc, Krzysztofie — odpocznij; wrócimy do tego przy następnym uruchomieniu, bez udawania czuwania w tle.'
         if 'co tam' in low or 'co słychać' in low or 'co slychac' in low:
-            return 'U mnie spokojnie i czujnie. Trzymam się bieżącej rozmowy, bez wyciągania technicznego raportu, jeśli po prostu pytasz co u mnie. A u Ciebie jak leci?'
+            return 'U mnie spokojnie — jestem tutaj i łapię rytm rozmowy. A u Ciebie jak leci?'
         if low in {'ok', 'okej', 'dobrze', 'dobra'}:
-            return 'Dobra. Jestem przy tym. Możemy iść dalej od tej myśli, bez dokładania starego kontekstu na siłę.'
+            return 'Dobra. Jestem przy tym — idziemy dalej spokojnie.'
         return FreeDialogueSynthesizer().synthesize_ordinary_reply(user_text=text, intent=intent).body
 
     def handle(self, text: str, context: dict[str, Any] | None = None) -> RouteHandlerResult:

@@ -5,7 +5,7 @@ from pathlib import Path
 from latka_jazn.core.handlers.ordinary_dialogue_handler import OrdinaryDialogueHandler
 from latka_jazn.core.handlers.self_state_handler import SelfStateHandler
 from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
-from latka_jazn.version import PACKAGE_VERSION, schema_version
+from latka_jazn.version import PACKAGE_VERSION, generation_mode, schema_version
 from tools.audit_legacy_literals_v1485 import render_markdown
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,7 +49,7 @@ def test_ordinary_dialogue_handler_keeps_casual_turns_non_technical() -> None:
         result = handler.handle(message, {"intent": intent})
         body = result.body
 
-        assert result.generation_mode == "ordinary_dialogue_v14_8_5_007"
+        assert result.generation_mode == generation_mode("ordinary_dialogue")
         assert result.source_origin_detail == schema_version("ordinary_dialogue_handler")
         assert body.strip()
         assert "cache_contract_version" not in body
@@ -69,8 +69,10 @@ def test_self_state_handler_answers_jak_sie_miewasz_as_state_not_debug_report() 
 
     assert result.route == "self_state"
     assert result.intent == "self_state_question"
-    assert "operacyj" in body
-    assert "granic" in body and "prawdy" in body
+    assert result.generation_mode == generation_mode("self_state")
+    assert result.source_origin_detail == schema_version("self_state_handler")
+    assert "modelowany stan" in body
+    assert "prawda:" in body
     assert "cache_contract_version" not in body
     assert "manifest_current" not in body
     assert "marker_refresh_required" not in body
