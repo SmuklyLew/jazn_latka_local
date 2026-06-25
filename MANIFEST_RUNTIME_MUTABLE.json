@@ -1,10 +1,10 @@
 {
-  "schema_version": "manifest_runtime_mutable/v14.8.5.010",
-  "version": "v14.8.5.010",
-  "runtime_version": "v14.8.5.010",
-  "package_version": "v14.8.5.010",
-  "generated_at_utc": "2026-06-25T14:04:08.705412+00:00",
-  "updated_at_utc": "2026-06-25T14:04:08.705412+00:00",
+  "schema_version": "manifest_runtime_mutable/v14.8.5.011",
+  "version": "v14.8.5.011",
+  "runtime_version": "v14.8.5.011",
+  "package_version": "v14.8.5.011",
+  "generated_at_utc": "2026-06-25T19:44:10.450383+00:00",
+  "updated_at_utc": "2026-06-25T19:44:10.450383+00:00",
   "start_file": "main.py",
   "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
   "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
@@ -13,7 +13,7 @@
   "active_conversation_fts": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
   "active_staging_database": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
   "storage_layout": "conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1",
-  "file_count": 192,
+  "file_count": 194,
   "mutable_patterns": [
     "workspace_runtime/**",
     "memory/raw/**",
@@ -24,22 +24,27 @@
     "memory/sqlite/**/*_shards.json",
     "memory/sqlite/sqlite_audit_report.json"
   ],
-  "deferred_hash_file_count": 192,
+  "deferred_hash_file_count": 194,
   "deferred_hash_files": [
     {
       "path": "memory/layered/affective.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 464942
+      "size_bytes": 465975
     },
     {
       "path": "memory/layered/continuity.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 15729507
+      "size_bytes": 15755291
     },
     {
       "path": "memory/layered/episodic.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 876068
+      "size_bytes": 877237
+    },
+    {
+      "path": "memory/layered/grounded_reflections.jsonl",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 3904
     },
     {
       "path": "memory/layered/procedural.jsonl",
@@ -49,7 +54,7 @@
     {
       "path": "memory/layered/reflections.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 884557
+      "size_bytes": 885693
     },
     {
       "path": "memory/layered/requirements_ledger_v14_6_9_3.jsonl",
@@ -59,12 +64,12 @@
     {
       "path": "memory/layered/semantic.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 598591
+      "size_bytes": 599459
     },
     {
       "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 1085609
+      "size_bytes": 1090497
     },
     {
       "path": "memory/layered/source_origin_ledger_v14_6_9_3.jsonl",
@@ -79,12 +84,12 @@
     {
       "path": "memory/layered/truth_audits.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 1762018
+      "size_bytes": 1764175
     },
     {
       "path": "memory/layered/turn_logic_audit.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 524241
+      "size_bytes": 527393
     },
     {
       "path": "memory/processed_chats/chat_context_active_paths.jsonl",
@@ -119,7 +124,7 @@
     {
       "path": "memory/raw/conversation_turns.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 3301185
+      "size_bytes": 3316896
     },
     {
       "path": "memory/raw/data.txt",
@@ -129,7 +134,7 @@
     {
       "path": "memory/raw/dziennik.json",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 1696362
+      "size_bytes": 1698303
     },
     {
       "path": "memory/raw/episodic_memory.jsonl",
@@ -169,12 +174,12 @@
     {
       "path": "memory/raw/runtime_events.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 1432704926
+      "size_bytes": 1477794902
     },
     {
       "path": "memory/raw/session_continuity_index.json",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 13831
+      "size_bytes": 13999
     },
     {
       "path": "memory/raw_chats/MOVED_TO_BACKUP.txt",
@@ -199,7 +204,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 1007616
+      "size_bytes": 1015808
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit_shards.json",
@@ -214,7 +219,7 @@
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory_0003.sqlite3",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 155484160
+      "size_bytes": 200585216
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory_shards.json",
@@ -444,7 +449,7 @@
     {
       "path": "workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 3141
+      "size_bytes": 3102
     },
     {
       "path": "workspace_runtime/latka_jazn_v14_8_0_corrupt_original.sha256",
@@ -787,6 +792,11 @@
       "size_bytes": 499
     },
     {
+      "path": "workspace_runtime/runtime_sessions/smoke-011-v2.json",
+      "reason": "runtime_or_private_memory",
+      "size_bytes": 495
+    },
+    {
       "path": "workspace_runtime/runtime_sessions/smoke-after-merge-v14.8.3.4.093.json",
       "reason": "runtime_or_private_memory",
       "size_bytes": 475
@@ -889,7 +899,7 @@
     {
       "path": "workspace_runtime/runtime_state.json",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 552
+      "size_bytes": 647
     },
     {
       "path": "workspace_runtime/smoke_v1484_002a_raw.txt",
@@ -979,19 +989,19 @@
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-25/turns.jsonl",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 28944
+      "size_bytes": 61000
     },
     {
       "path": "workspace_runtime/turn_checkpoints/LATEST_TURN_CHECKPOINT.json",
       "reason": "runtime_or_private_memory",
-      "size_bytes": 5620
+      "size_bytes": 16637
     }
   ],
   "truth_boundary": "Ten manifest zawiera pliki runtime/prywatnej pamięci: workspace_runtime, raw/private memory, processed chat graphs i SQLite. Ich SHA jest odroczony; rozmiar i ścieżka opisują snapshot chwili wygenerowania.",
   "files": [
     {
       "path": "memory/layered/affective.jsonl",
-      "size_bytes": 464942,
+      "size_bytes": 465975,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1000,7 +1010,7 @@
     },
     {
       "path": "memory/layered/continuity.jsonl",
-      "size_bytes": 15729507,
+      "size_bytes": 15755291,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1009,7 +1019,16 @@
     },
     {
       "path": "memory/layered/episodic.jsonl",
-      "size_bytes": 876068,
+      "size_bytes": 877237,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
+      "path": "memory/layered/grounded_reflections.jsonl",
+      "size_bytes": 3904,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1027,7 +1046,7 @@
     },
     {
       "path": "memory/layered/reflections.jsonl",
-      "size_bytes": 884557,
+      "size_bytes": 885693,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1045,7 +1064,7 @@
     },
     {
       "path": "memory/layered/semantic.jsonl",
-      "size_bytes": 598591,
+      "size_bytes": 599459,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1054,7 +1073,7 @@
     },
     {
       "path": "memory/layered/source_origin_ledger_v14_6_10.jsonl",
-      "size_bytes": 1085609,
+      "size_bytes": 1090497,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1081,7 +1100,7 @@
     },
     {
       "path": "memory/layered/truth_audits.jsonl",
-      "size_bytes": 1762018,
+      "size_bytes": 1764175,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1090,7 +1109,7 @@
     },
     {
       "path": "memory/layered/turn_logic_audit.jsonl",
-      "size_bytes": 524241,
+      "size_bytes": 527393,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1153,7 +1172,7 @@
     },
     {
       "path": "memory/raw/conversation_turns.jsonl",
-      "size_bytes": 3301185,
+      "size_bytes": 3316896,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1171,7 +1190,7 @@
     },
     {
       "path": "memory/raw/dziennik.json",
-      "size_bytes": 1696362,
+      "size_bytes": 1698303,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1243,7 +1262,7 @@
     },
     {
       "path": "memory/raw/runtime_events.jsonl",
-      "size_bytes": 1432704926,
+      "size_bytes": 1477794902,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1252,7 +1271,7 @@
     },
     {
       "path": "memory/raw/session_continuity_index.json",
-      "size_bytes": 13831,
+      "size_bytes": 13999,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1297,7 +1316,7 @@
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
-      "size_bytes": 1007616,
+      "size_bytes": 1015808,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1324,7 +1343,7 @@
     },
     {
       "path": "memory/sqlite/runtime_write_v1/runtime_memory_0003.sqlite3",
-      "size_bytes": 155484160,
+      "size_bytes": 200585216,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -1738,7 +1757,7 @@
     },
     {
       "path": "workspace_runtime/JAZN_ACTIVE_RUNTIME.json",
-      "size_bytes": 3141,
+      "size_bytes": 3102,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -2358,6 +2377,15 @@
       "hash_policy": "runtime_or_private_memory_hash_deferred"
     },
     {
+      "path": "workspace_runtime/runtime_sessions/smoke-011-v2.json",
+      "size_bytes": 495,
+      "sha256": "",
+      "mutable_runtime": true,
+      "classification": "mutable_runtime",
+      "archive": false,
+      "hash_policy": "runtime_or_private_memory_hash_deferred"
+    },
+    {
       "path": "workspace_runtime/runtime_sessions/smoke-after-merge-v14.8.3.4.093.json",
       "size_bytes": 475,
       "sha256": "",
@@ -2539,7 +2567,7 @@
     },
     {
       "path": "workspace_runtime/runtime_state.json",
-      "size_bytes": 552,
+      "size_bytes": 647,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -2701,7 +2729,7 @@
     },
     {
       "path": "workspace_runtime/turn_checkpoints/2026-06-25/turns.jsonl",
-      "size_bytes": 28944,
+      "size_bytes": 61000,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
@@ -2710,7 +2738,7 @@
     },
     {
       "path": "workspace_runtime/turn_checkpoints/LATEST_TURN_CHECKPOINT.json",
-      "size_bytes": 5620,
+      "size_bytes": 16637,
       "sha256": "",
       "mutable_runtime": true,
       "classification": "mutable_runtime",
