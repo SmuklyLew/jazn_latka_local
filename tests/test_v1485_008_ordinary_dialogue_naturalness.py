@@ -26,8 +26,8 @@ def _assert_natural(body: str) -> None:
         assert marker not in lowered
 
 
-def test_version_is_current_008_for_ordinary_dialogue_naturalness() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.008"
+def test_version_is_current_for_ordinary_dialogue_naturalness() -> None:
+    assert PACKAGE_VERSION == "v14.8.5.009"
 
 
 def test_co_tam_ok_and_dobranoc_are_warm_not_meta_reports() -> None:
@@ -46,7 +46,9 @@ def test_co_tam_ok_and_dobranoc_are_warm_not_meta_reports() -> None:
 
     assert "A u Ciebie jak leci?" in handler.handle("Co tam słychać?", {"intent": "ordinary_conversation"}).body
     assert "idziemy dalej spokojnie" in handler.handle("ok", {"intent": "ordinary_conversation"}).body
-    assert "Dobranoc, Krzysztofie" in handler.handle("Dobranoc", {"intent": "sleep_closure_statement"}).body
+    sleep_result = handler.handle("Dobranoc", {"intent": "sleep_closure_statement"})
+    assert "Dobranoc, Krzysztofie" in sleep_result.body
+    assert {"current_turn_closure", "warmth", "no_diagnostics", "no_random_memory_excerpt"}.issubset(set(sleep_result.satisfied_components))
 
 
 def test_a_ty_and_jak_sie_miewasz_route_to_self_state_with_truth_boundary() -> None:

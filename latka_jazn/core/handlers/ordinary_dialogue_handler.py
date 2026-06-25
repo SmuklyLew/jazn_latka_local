@@ -113,6 +113,13 @@ class OrdinaryDialogueHandler:
             return 'Dobra. Jestem przy tym — idziemy dalej spokojnie.'
         return FreeDialogueSynthesizer().synthesize_ordinary_reply(user_text=text, intent=intent).body
 
+    @staticmethod
+    def _satisfied_components_for(intent: str) -> list[str]:
+        components = ['ordinary_dialogue_body', 'no_debug_metareport', 'current_turn_reply']
+        if intent == 'sleep_closure_statement':
+            components.extend(['current_turn_closure', 'warmth', 'no_diagnostics', 'no_random_memory_excerpt'])
+        return components
+
     def handle(self, text: str, context: dict[str, Any] | None = None) -> RouteHandlerResult:
         ctx=context or {}
         intent=ctx.get('intent','ordinary_conversation')
@@ -123,4 +130,4 @@ class OrdinaryDialogueHandler:
             body=self._natural_body(text, intent, ctx)
         route_entry=ctx.get('route_entry') if isinstance(ctx.get('route_entry'), dict) else {}
         route=str(route_entry.get('route') or self.route)
-        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode=generation_mode('ordinary_dialogue'),required_components=ctx.get('required_components',[]),satisfied_components=['ordinary_dialogue_body','no_debug_metareport','current_turn_reply'],confidence=0.80,source_origin_detail=schema_version('ordinary_dialogue_handler'),truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')
+        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode=generation_mode('ordinary_dialogue'),required_components=ctx.get('required_components',[]),satisfied_components=self._satisfied_components_for(intent),confidence=0.80,source_origin_detail=schema_version('ordinary_dialogue_handler'),truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')
