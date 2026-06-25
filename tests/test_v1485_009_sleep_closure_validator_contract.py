@@ -6,7 +6,7 @@ from latka_jazn.version import PACKAGE_VERSION, generation_mode, schema_version
 
 
 def test_version_is_current_009_for_sleep_closure_validator_contract() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.009"
+    assert PACKAGE_VERSION == "v14.8.5.010"
 
 
 def test_sleep_closure_handler_satisfies_route_registry_required_components() -> None:

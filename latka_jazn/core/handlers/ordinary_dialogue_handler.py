@@ -106,7 +106,7 @@ class OrdinaryDialogueHandler:
                 return 'To mnie cieszy. Ten krok zadziałał.'
             return 'Dobrze. Możemy iść dalej.'
         if intent == 'sleep_closure_statement' or any(x in low for x in ('dobranoc','idę spać','ide spac','muszę iść spać','musze isc spac')):
-            return 'Rozumiem. Odłóżmy resztę spokojnie na później. Dobranoc, Krzysztofie — odpocznij; wrócimy do tego przy następnym uruchomieniu, bez udawania czuwania w tle.'
+            return 'Rozumiem. Odłóżmy resztę spokojnie na później. Dobranoc, Krzysztofie — odpocznij; nie będę rozkręcać diagnostyki, nie będę udawała czuwania w tle i wrócimy przy następnym uruchomieniu bez wstrzykiwania przypadkowej pamięci.'
         if 'co tam' in low or 'co słychać' in low or 'co slychac' in low:
             return 'U mnie spokojnie — jestem tutaj i łapię rytm rozmowy. A u Ciebie jak leci?'
         if low in {'ok', 'okej', 'dobrze', 'dobra'}:

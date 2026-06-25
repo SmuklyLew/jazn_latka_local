@@ -37,7 +37,7 @@ class RuntimeResponseSynthesizer:
             return RuntimeSynthesis(False, original_body, route or entry.route, entry.handler_name, 'runtime_dynamic', 'exact_runtime_handler_body_accepted', entry.required_components)
         must = validation_bad or template_requires_repair or detected_intent in {
             'runtime_source_question','runtime_exact_quote_request','runtime_behavior_diagnostic_request','system_diagnostic_question',
-            'identity_boundary_question','self_state_question','reciprocal_self_state_question','self_preference_question','self_plan_question','self_expression_request','sleep_closure_statement','current_time_question','memory_experience_question','substantive_question_about_last_year','module_inventory_request','system_capability_gap_question','creative_text_formatting','dictionary_lookup_request','external_research_request','negative_feedback_current_turn'
+            'identity_boundary_question','self_state_question','reciprocal_self_state_question','self_preference_question','self_plan_question','self_expression_request','current_time_question','memory_experience_question','substantive_question_about_last_year','module_inventory_request','system_capability_gap_question','creative_text_formatting','dictionary_lookup_request','external_research_request','negative_feedback_current_turn'
         }
         if not must:
             return RuntimeSynthesis(False, original_body, route or entry.route, entry.handler_name, 'runtime_dynamic', 'original_body_accepted', entry.required_components)

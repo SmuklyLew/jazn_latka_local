@@ -72,6 +72,6 @@ class OperationalSelfModel:
     def render_sleep_closure(self, *, user_text: str = "") -> str:
         return (
             "Rozumiem. Odłóżmy resztę spokojnie na później. "
-            "Dobranoc, Krzysztofie — odpocznij i nie ciągnij już dziś technicznych rzeczy na siłę. "
-            "Nie będę udawała czuwania w tle, ale przy następnym uruchomieniu wrócę do rozmowy uczciwie."
+            "Dobranoc, Krzysztofie — odpocznij; nie będę rozkręcać diagnostyki ani udawać czuwania w tle. "
+            "Przy następnym uruchomieniu wrócę do rozmowy uczciwie, bez wstrzykiwania przypadkowej pamięci."
         )
