@@ -66,7 +66,7 @@ class DialogueIntentClassifier:
         "source-controlled canon", "source controlled canon",
         "local_private_canon_extension", "local private canon extension",
     )
-    STATE_TERMS = ("jak samopoczucie", "jak się czujesz", "jak sie czujesz", "co u ciebie", "a ty", "a tobie", "a jak tobie", "a jak ci", "a ci", "a u ciebie", "a jak u ciebie", "u ciebie", "tobie?", "co u niej", "co u ciebie po")
+    STATE_TERMS = ("jak samopoczucie", "jak się czujesz", "jak sie czujesz", "jak się masz", "jak sie masz", "jak się miewasz", "jak sie miewasz", "co u ciebie", "a ty", "a tobie", "a jak tobie", "a jak ci", "a ci", "a u ciebie", "a jak u ciebie", "u ciebie", "tobie?", "co u niej", "co u ciebie po")
     HEALTH_CONCERN_TERMS = ("jesteś chora", "jestes chora", "czy jesteś chora", "czy jestes chora")
     SELF_PLAN_TERMS = (
         "jakie plany masz", "jakie masz plany", "co planujesz", "co masz w planach",

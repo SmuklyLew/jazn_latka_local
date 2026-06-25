@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.006-runtime-marker-schema-integrity-hotfix
+# Current package version: v14.8.5.007-audit-title-dialogue-smoke-hotfix
 from __future__ import annotations
 
 import argparse

@@ -171,7 +171,7 @@ def build_report(root: Path = ROOT) -> dict[str, object]:
 
 def render_markdown(report: dict[str, object]) -> str:
     lines = [
-        "# Legacy literal audit v14.8.5.000",
+        f"# Legacy literal audit {report['target_version']}",
         "",
         f"Target version: `{report['target_version']}`",
         f"Findings: `{report['finding_count']}`",

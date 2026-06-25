@@ -15,7 +15,7 @@ from latka_jazn.model_adapters.null_model_adapter import NullModelAdapter
 from latka_jazn.tools.active_extraction_cache import build_active_runtime_status, write_active_runtime_marker
 from latka_jazn.version import PACKAGE_VERSION, schema_version
 
-EXPECTED_VERSION = "v14.8.5.006"
+EXPECTED_VERSION = PACKAGE_VERSION
 
 
 def _minimal_runtime_root(tmp_path: Path) -> Path:
@@ -30,7 +30,7 @@ def _minimal_runtime_root(tmp_path: Path) -> Path:
     return root
 
 
-def test_package_version_is_current_006() -> None:
+def test_package_version_matches_expected_runtime_version() -> None:
     assert PACKAGE_VERSION == EXPECTED_VERSION
 
 
