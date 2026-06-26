@@ -36,6 +36,19 @@ __pycache__/
 *.source_files.sha256
 *.join.ps1
 
+# Patch/recovery artifacts generated during ChatGPT/Codex update work
+# Keep source, tests and docs in Git; keep ad-hoc patch bundles outside the repo.
+/*.patch
+/*.rej
+/*.orig
+/*.BAD.patch
+/*_PATCH_REPORT.md
+/LATKA_*_COMMANDS.ps1
+/v14_*_sha256.txt
+/v14_*_patch_bundle.zip
+/v14_*_PATCH_FIXED_BUNDLE.zip
+/v14_*_FULL_PATCH_AND_RECOVERY_BUNDLE.zip
+
 # Codex/editor local state
 .codex/
 .vscode/

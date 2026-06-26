@@ -1,0 +1,28 @@
+{
+  "include": [
+    "latka_jazn",
+    "tests",
+    "main.py"
+  ],
+  "exclude": [
+    "workspace_runtime",
+    "memory",
+    "processed",
+    "requests",
+    "responses",
+    "status",
+    "backups",
+    "backups_git",
+    "tmp",
+    "temp",
+    "patchs",
+    ".pytest_cache",
+    "**/__pycache__"
+  ],
+  "ignore": [
+    "workspace_runtime",
+    "memory"
+  ],
+  "pythonVersion": "3.14",
+  "typeCheckingMode": "off"
+}
