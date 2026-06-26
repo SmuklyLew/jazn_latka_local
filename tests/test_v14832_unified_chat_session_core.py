@@ -37,9 +37,17 @@ def _env() -> dict[str, str]:
     return env
 
 
-def _run_chat_jsonl(tmp_path: Path, lines: list[dict], *, session_id: str | None = None) -> list[dict]:
-    input_text = "".join(json.dumps(line, ensure_ascii=False) + "\n" for line in lines)
-    cmd = [sys.executable, "-X", "utf8", "main.py", "--root", str(tmp_path), "--chat-jsonl", "--no-carryover"]
+def _run_chat_gpt(
+    tmp_path: Path,
+    lines: list[dict | str],
+    *,
+    session_id: str | None = None,
+) -> list[dict]:
+    input_text = "".join(
+        (line if isinstance(line, str) else json.dumps(line, ensure_ascii=False)) + "\n"
+        for line in lines
+    )
+    cmd = [sys.executable, "-X", "utf8", "main.py", "--root", str(tmp_path), "--chat-gpt", "--no-carryover"]
     if session_id:
         cmd.extend(["--session-id", session_id])
     proc = subprocess.run(
@@ -107,21 +115,25 @@ def _assert_clean_runtime_payload(payload: dict) -> None:
         assert artifact not in final_visible_text
 
 
-def test_chat_jsonl_and_session_core_share_same_path(tmp_path: Path) -> None:
-    payloads = _run_chat_jsonl(
+def test_chat_gpt_and_session_core_share_same_path(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(
         tmp_path,
         [{"text": "Chcę rozmawiać z Łatką, a nie z Codex botem"}],
-        session_id="jsonl-core",
+        session_id="chatgpt-core",
     )
 
     payload = payloads[0]
     _assert_clean_runtime_payload(payload)
-    assert payload["session"]["session_id"] == "jsonl-core"
+    assert payload["session"]["session_id"] == "chatgpt-core"
     assert payload["session_id_source"] == "cli_arg"
-    assert payload["trace"]["client"] == "chat_jsonl"
-    assert payload["trace"]["lifecycle"] == "chat_jsonl_batch"
+    assert payload["trace"]["client"] == "chatgpt_bridge"
+    assert payload["trace"]["lifecycle"] == "chatgpt_bridge_jsonl"
     assert payload["conversation_decision"]["route"] == "direct_latka_voice"
     assert payload["conversation_decision"]["handler_name"] == "DirectLatkaVoiceHandler"
+    assert payload["chatgpt_bridge"]["preferred_input_field"] == "message"
+    assert payload["chatgpt_bridge"]["input_field"] in {"message", "text"}
+    assert payload["chatgpt_bridge"]["deprecated_flag_removed"] == "--chat-jsonl"
+    assert payload["ok"] is True
     assert "Możesz teraz rozmawiać bezpośrednio z Łatką" in payload["final_visible_text"]
 
 
@@ -140,8 +152,8 @@ def test_chat_stdin_uses_same_session_core(tmp_path: Path) -> None:
         assert artifact not in proc.stdout
 
 
-def test_chat_jsonl_payload_session_id_overrides_cli_session_id(tmp_path: Path) -> None:
-    payloads = _run_chat_jsonl(
+def test_chat_gpt_payload_session_id_overrides_cli_session_id(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(
         tmp_path,
         [{"session_id": "payload-id", "client": "chatgpt", "text": "Chcę rozmawiać z Łatką, a nie z Codex botem"}],
         session_id="cli-id",
@@ -175,12 +187,12 @@ def test_chat_eof_is_not_runtime_failure(tmp_path: Path) -> None:
     assert "To nie jest dowód stałego procesu w tle" in proc.stdout
 
 
-def test_final_visible_text_clean_in_chat_and_jsonl(tmp_path: Path) -> None:
+def test_final_visible_text_clean_in_chat_and_chat_gpt(tmp_path: Path) -> None:
     messages = [
         "Chcę rozmawiać z Łatką, a nie z Codex botem",
         "Za kogo się uważasz? Co pamiętasz? Kim jesteś?",
     ]
-    payloads = _run_chat_jsonl(tmp_path / "jsonl", [{"text": message} for message in messages], session_id="clean-jsonl")
+    payloads = _run_chat_gpt(tmp_path / "chatgpt", [{"text": message} for message in messages], session_id="clean-chatgpt")
     chat = _run_chat(tmp_path / "chat", "\n".join(messages + ["/exit", ""]), session_id="clean-chat")
 
     for payload in payloads:
@@ -188,6 +200,74 @@ def test_final_visible_text_clean_in_chat_and_jsonl(tmp_path: Path) -> None:
     for artifact in RENDER_ARTIFACTS:
         assert artifact not in chat.stdout
     assert TIMESTAMP_ANYWHERE_RE.search(chat.stdout)
+
+
+def test_chat_gpt_uses_message_field_as_preferred_input(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(tmp_path, [{"message": "Chcę rozmawiać z Łatką, a nie z Codex botem"}], session_id="chatgpt-message")
+    payload = payloads[0]
+    _assert_clean_runtime_payload(payload)
+    assert payload["trace"]["client"] == "chatgpt_bridge"
+    assert payload["trace"]["lifecycle"] == "chatgpt_bridge_jsonl"
+    assert payload["chatgpt_bridge"]["input_field"] == "message"
+
+
+def test_chat_gpt_accepts_plain_text_line(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(tmp_path, ["Chcę rozmawiać z Łatką, a nie z Codex botem"], session_id="plain-chatgpt")
+    payload = payloads[0]
+    _assert_clean_runtime_payload(payload)
+    assert payload["chatgpt_bridge"]["input_kind"] == "plain_text"
+    assert payload["chatgpt_bridge"]["input_field"] == "plain_text"
+
+
+def test_chat_gpt_accepts_openai_messages_shape(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(
+        tmp_path,
+        [{"messages": [{"role": "system", "content": "pomoc"}, {"role": "user", "content": "Chcę rozmawiać z Łatką, a nie z Codex botem"}]}],
+        session_id="messages-chatgpt",
+    )
+    payload = payloads[0]
+    _assert_clean_runtime_payload(payload)
+    assert payload["chatgpt_bridge"]["input_kind"] == "json_chat_messages"
+    assert payload["chatgpt_bridge"]["input_field"] == "messages[user].content"
+
+
+def test_chat_gpt_rejects_empty_json_message_without_runtime_turn(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(tmp_path, [{"message": ""}], session_id="empty-chatgpt")
+    payload = payloads[0]
+    assert payload["schema_version"] == "chatgpt_bridge_error/v14.8.3.4.090"
+    assert payload["ok"] is False
+    assert payload["error_code"] == "empty_message"
+
+
+def test_chat_gpt_rejects_non_object_json_line(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(tmp_path, ["[1, 2, 3]"], session_id="bad-json-chatgpt")
+    payload = payloads[0]
+    assert payload["schema_version"] == "chatgpt_bridge_error/v14.8.3.4.090"
+    assert payload["error_code"] == "invalid_jsonl_payload"
+
+
+def test_chat_gpt_rejects_malformed_json_object_line(tmp_path: Path) -> None:
+    payloads = _run_chat_gpt(tmp_path, ['{"message": '], session_id="malformed-json-chatgpt")
+    payload = payloads[0]
+    assert payload["schema_version"] == "chatgpt_bridge_error/v14.8.3.4.090"
+    assert payload["error_code"] == "malformed_json"
+
+
+def test_old_chat_jsonl_flag_removed_in_favor_of_chat_gpt(tmp_path: Path) -> None:
+    proc = subprocess.run(
+        [sys.executable, "-X", "utf8", "main.py", "--root", str(tmp_path), "--chat-jsonl"],
+        cwd=ROOT,
+        input="",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        env=_env(),
+        timeout=30,
+        check=False,
+    )
+    assert proc.returncode == 2
+    assert "--chat-gpt" in proc.stderr
 
 
 def test_no_private_runtime_db_staged() -> None:

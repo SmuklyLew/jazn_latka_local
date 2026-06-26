@@ -1,22 +1,25 @@
-# Current package version: v14.8.2.6.4-route-freshness-no-birth-stale-route-hotfix
+# Current package version: v14.8.5.006-runtime-marker-schema-integrity-hotfix
 from __future__ import annotations
-
-ACTIVE_EXTRACTION_CACHE_TOOL_VERSION = "v14.8.2.6.4-route-freshness-no-birth-stale-route-hotfix"
 
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, version_number
+
+ACTIVE_EXTRACTION_CACHE_TOOL_VERSION = PACKAGE_VERSION_FULL
+
 import hashlib
 import json
 import os
 
-FALLBACK_PACKAGE_VERSION = "v14.8.2.6.4-route-freshness-no-birth-stale-route-hotfix"
+FALLBACK_PACKAGE_VERSION = PACKAGE_VERSION_FULL
 SCHEMA_PREFIX = "jazn_active_runtime_marker"
 CACHE_CONTRACT_PREFIX = "active_extraction_cache_contract"
 VISIBLE_PREVIEW_CONTRACT_PREFIX = "visible_runtime_preview_contract"
-SCHEMA_VERSION = f"{SCHEMA_PREFIX}/v14.8.2.6.4"
-CACHE_CONTRACT_VERSION = f"{CACHE_CONTRACT_PREFIX}/v14.8.2.6.4"
-VISIBLE_PREVIEW_CONTRACT_VERSION = f"{VISIBLE_PREVIEW_CONTRACT_PREFIX}/v14.8.2.6.4"
+SCHEMA_VERSION = f"{SCHEMA_PREFIX}/{PACKAGE_VERSION}"
+CACHE_CONTRACT_VERSION = f"{CACHE_CONTRACT_PREFIX}/{PACKAGE_VERSION}"
+VISIBLE_PREVIEW_CONTRACT_VERSION = f"{VISIBLE_PREVIEW_CONTRACT_PREFIX}/{PACKAGE_VERSION}"
 DEFAULT_MARKER_NAME = "JAZN_ACTIVE_RUNTIME.json"
 START_FILE_ORDER = ("main.py", "run.py", "jazn.py")
 
@@ -28,7 +31,7 @@ def _version_number(package_version: str | None = None) -> str:
     value = value.lstrip('\ufeff').strip()
     if value.startswith('v'):
         value = value[1:]
-    return value or '14.8.2.6.4'
+    return value or version_number(PACKAGE_VERSION)
 
 
 def active_marker_schema_version(package_version: str | None = None) -> str:
@@ -116,7 +119,7 @@ def _active_storage_from_bootstrap(root: Path, version: str | None) -> dict[str,
             }
     except Exception:
         pass
-    if str(version).startswith(("v14.8.2.6", "v14.8.2.5")):
+    if str(version).startswith(("v14.8.5", "v14.8.4", "v14.8.3")):
         return {
             "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
             "active_runtime_write_database": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
@@ -197,11 +200,21 @@ def build_active_runtime_status(root: Path, *, source_zip: Path | None = None, m
     else:
         cache_miss_reasons.append("active_marker_missing_or_invalid")
 
-    missing_hard_requirement = any(reason.endswith("missing") or reason == "active_root_missing" for reason in cache_miss_reasons)
+    hard_missing_reasons = {"active_root_missing", "VERSION.txt_missing", "start_file_missing_main_run_jazn", "MANIFEST_CURRENT.json_missing"}
+    missing_hard_requirement = any(reason in hard_missing_reasons for reason in cache_miss_reasons)
     marker_differs = any("differs" in reason for reason in cache_miss_reasons)
-    should_reuse_existing_extraction = bool(root.exists() and version and start_file and current_manifest_sha256 and not marker_differs)
-    if missing_hard_requirement and not existing_marker:
-        should_reuse_existing_extraction = bool(root.exists() and version and start_file and current_manifest_sha256)
+    marker_refresh_required = any(reason.startswith("marker_") or reason.startswith("active_marker_") for reason in cache_miss_reasons)
+    source_zip_mismatch = any(reason == "marker_source_zip_sha256_differs_or_missing" for reason in cache_miss_reasons)
+    # Marker drift after a version/manifest update must not force re-extraction when the
+    # current folder itself is complete. It only means the marker should be refreshed.
+    should_reuse_existing_extraction = bool(
+        root.exists()
+        and version
+        and start_file
+        and current_manifest_sha256
+        and not missing_hard_requirement
+        and not source_zip_mismatch
+    )
 
     marker_schema_version = active_marker_schema_version(version)
     cache_contract_version = active_cache_contract_version(version)
@@ -223,6 +236,8 @@ def build_active_runtime_status(root: Path, *, source_zip: Path | None = None, m
         "cache_hit_reasons": cache_hit_reasons,
         "cache_miss_reasons": cache_miss_reasons,
         "should_reuse_existing_extraction": should_reuse_existing_extraction,
+        "marker_refresh_required": bool(marker_refresh_required),
+        "marker_differs": bool(marker_differs),
         "must_not_extract_again_when": [
             "active_root exists",
             "VERSION.txt matches expected Jaźń version",

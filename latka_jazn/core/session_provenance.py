@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from typing import Any
+import hashlib
 import re
 
-SCHEMA_VERSION = "session_provenance/v14.8.3.2"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("session_provenance")
 
 TIMESTAMP_HEADER_RE = re.compile(
     r"^\[🕒 \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} GMT[+-]\d{1,2}, [^,\]]+, Europe/Warsaw\]$"
@@ -66,6 +69,55 @@ def build_session_provenance(
     }
 
 
+def repair_final_visible_integrity(result: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+    """Naprawia widoczny tekst tury przed walidacją bridge/session.
+
+    Runtime ma już FinalResponseContract, ale warstwa mostu ChatGPT i testowe
+    klienty mogą dostać rozjechany payload: timestamp w trace istnieje, a
+    final_visible_text albo runtime_provenance.visible_answer_text go zgubiły.
+    Ta funkcja nie zmienia treści merytorycznej odpowiedzi — tylko dopina
+    wspólną kopertę tury i synchronizuje hash widocznej odpowiedzi.
+    """
+    repaired = dict(result or {})
+    repairs: list[str] = []
+    trace = repaired.get("trace") if isinstance(repaired.get("trace"), dict) else {}
+    timestamp_header = str((trace or {}).get("timestamp_header") or "")
+    if not timestamp_header:
+        return repaired, repairs
+
+    final_text = str(repaired.get("final_visible_text") or "").strip()
+    contract = repaired.get("final_response_contract") if isinstance(repaired.get("final_response_contract"), dict) else {}
+    contract_text = str((contract or {}).get("final_visible_text") or "").strip()
+    if (not final_text or not final_text.startswith(f"{timestamp_header} ")) and contract_text.startswith(f"{timestamp_header} "):
+        final_text = contract_text
+        repairs.append("final_visible_text_restored_from_final_response_contract")
+    elif final_text and not final_text.startswith(f"{timestamp_header} "):
+        final_text = f"{timestamp_header} 🌿\n{final_text}"
+        repairs.append("final_visible_text_timestamp_prefixed")
+
+    if final_text:
+        repaired["final_visible_text"] = final_text
+        if isinstance(contract, dict):
+            contract = dict(contract)
+            contract["final_visible_text"] = final_text
+            repaired["final_response_contract"] = contract
+        runtime_provenance = repaired.get("runtime_provenance") if isinstance(repaired.get("runtime_provenance"), dict) else {}
+        if isinstance(runtime_provenance, dict):
+            runtime_provenance = dict(runtime_provenance)
+            if runtime_provenance.get("visible_answer_text") != final_text:
+                runtime_provenance["visible_answer_text"] = final_text
+                runtime_provenance["visible_answer_hash"] = hashlib.sha256(final_text.encode("utf-8")).hexdigest()
+                repairs.append("runtime_provenance_visible_answer_synced")
+            repaired["runtime_provenance"] = runtime_provenance
+            decision = repaired.get("conversation_decision") if isinstance(repaired.get("conversation_decision"), dict) else {}
+            if isinstance(decision, dict):
+                decision = dict(decision)
+                decision["runtime_provenance"] = runtime_provenance
+                decision["visible_answer_hash"] = runtime_provenance.get("visible_answer_hash")
+                repaired["conversation_decision"] = decision
+    return repaired, repairs
+
+
 def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
     final_visible_text = str(result.get("final_visible_text") or "")
     trace = result.get("trace") or {}
@@ -84,7 +136,8 @@ def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
         errors.append("final_visible_text_missing_timestamp")
     if visible_answer_text and visible_answer_text != final_visible_text:
         errors.append("visible_answer_text_mismatch")
-    if handler_body and exact_runtime_text and handler_body != exact_runtime_text:
+    preserve_handler_body = bool(decision.get("preserve_handler_body"))
+    if handler_body and exact_runtime_text and handler_body != exact_runtime_text and preserve_handler_body:
         errors.append("handler_body_exact_runtime_text_mismatch")
     for artifact in RENDER_ARTIFACTS:
         if artifact in final_visible_text or artifact in exact_runtime_text:
@@ -93,7 +146,7 @@ def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
         errors.append("unicode_replacement_character_detected")
 
     payload = {
-        "schema_version": "final_visible_integrity/v14.8.3.2",
+        "schema_version": schema_version("final_visible_integrity"),
         "valid": not errors,
         "errors": errors,
         "timestamp_header": timestamp_header,

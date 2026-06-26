@@ -1,2 +1,5 @@
-"""Łatka Jaźń v14.8.3.1-fast-wake-route-trace-repair."""
-__version__ = "v14.8.3.1-fast-wake-route-trace-repair"
+"""Łatka Jaźń active runtime package."""
+from .version import PACKAGE_VERSION, PACKAGE_VERSION_FULL
+
+__version__ = PACKAGE_VERSION
+__version_full__ = PACKAGE_VERSION_FULL

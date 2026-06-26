@@ -2,7 +2,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
-SCHEMA_VERSION = "turn_response_policy/v14.8.2.4"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("turn_response_policy")
 
 @dataclass(slots=True)
 class TurnResponsePolicy:

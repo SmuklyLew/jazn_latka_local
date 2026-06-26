@@ -3,6 +3,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import os
 
+from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
+from latka_jazn.core.timestamp_policy import (
+    TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
+    TIMESTAMP_NETWORK_FIRST_DEFAULT,
+    TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT,
+    TIMESTAMP_TIMEZONE,
+)
+
 DEFAULT_MAX_SQLITE_FILE_BYTES = 480 * 1024 * 1024
 
 
@@ -28,9 +36,9 @@ def _env_int(name: str, default: int) -> int:
 
 @dataclass(slots=True)
 class JaznConfig:
-    version: str = "v14.8.3.4.088"
+    version: str = PACKAGE_VERSION
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[1])
-    timezone: str = "Europe/Warsaw"
+    timezone: str = TIMESTAMP_TIMEZONE
     timestamp_format: str = "[🕒 %Y-%m-%d %H:%M:%S GMT%z, %A, Europe/Warsaw]"
     memory_db_name: str = field(default_factory=lambda: os.environ.get("JAZN_RUNTIME_MEMORY_DB", "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3").strip())
     audit_db_name: str = field(default_factory=lambda: os.environ.get("JAZN_AUDIT_DB", "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3").strip())
@@ -47,12 +55,12 @@ class JaznConfig:
     raw_memory_dir: str = "memory/raw"
     versioned_memory_dir: str = "memory/versioned_sources"
     require_first_person_identity: bool = True
-    network_time_first: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_FIRST", False))
-    local_time_fallback: bool = True
+    network_time_first: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_FIRST", TIMESTAMP_NETWORK_FIRST_DEFAULT))
+    local_time_fallback: bool = TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT
     startup_status_default_mode: str = field(default_factory=lambda: os.environ.get("JAZN_STARTUP_STATUS_MODE", "fast").strip().lower())
     sqlite_health_default_mode: str = field(default_factory=lambda: os.environ.get("JAZN_SQLITE_HEALTH_MODE", "metadata").strip().lower())
     turn_trace_enabled: bool = field(default_factory=lambda: _env_bool("JAZN_TURN_TRACE", False))
-    network_time_allowed_in_normal_turn: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_IN_TURN", False))
+    network_time_allowed_in_normal_turn: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_IN_TURN", TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT))
     auto_import_raw_chat_html_on_bootstrap: bool = True
     raw_chat_html_auto_import_limit: int | None = None
     idle_reflection_thresholds: tuple[int, ...] = (300, 600, 21600)
@@ -61,7 +69,7 @@ class JaznConfig:
     network_default_timeout_connect_seconds: float = field(default_factory=lambda: _env_float("JAZN_NETWORK_TIMEOUT_CONNECT", 3.0))
     network_default_timeout_read_seconds: float = field(default_factory=lambda: _env_float("JAZN_NETWORK_TIMEOUT_READ", 6.0))
     network_max_retries: int = field(default_factory=lambda: _env_int("JAZN_NETWORK_MAX_RETRIES", 1))
-    network_user_agent: str = "LatkaJazn/14.8.3"
+    network_user_agent: str = f"LatkaJazn/{USER_AGENT_VERSION}"
     network_cache_required: bool = True
     network_cache_ttl_seconds: int = 604800
     network_respect_robots_and_terms: bool = True
@@ -73,6 +81,12 @@ class JaznConfig:
         "local_cache", "local_mini_lexicon", "morfeusz_optional",
         "wiktionary_mediawiki_api", "sjp_reference", "wsjp_reference", "plwordnet_optional", "languagetool_optional",
     )
+    lexical_resources_registry_path: str = "latka_jazn/resources/nlp/verified_sources.json"
+    latka_project_lexicon_path: str = "latka_jazn/resources/nlp/latka_project_lexicon.json"
+    lexical_resource_cache_name: str = field(default_factory=lambda: os.environ.get("JAZN_LEXICAL_RESOURCE_CACHE", "workspace_runtime/dictionary_cache.sqlite3").strip())
+    lexical_resource_cache_ttl_seconds: int = field(default_factory=lambda: _env_int("JAZN_LEXICAL_RESOURCE_CACHE_TTL", 604800))
+    lexical_resource_status_include_optional: bool = field(default_factory=lambda: _env_bool("JAZN_LEXICAL_STATUS_OPTIONAL", True))
+
 
     research_allow_network: bool = field(default_factory=lambda: _env_bool("JAZN_RESEARCH_ALLOW_NETWORK", True))
     research_requires_chatgpt_web_when_local_provider_missing: bool = True
@@ -101,6 +115,10 @@ class JaznConfig:
     @property
     def conversation_staging_dir(self) -> Path:
         return self.root / self.conversation_staging_dir_name
+
+    @property
+    def lexical_resource_cache_path(self) -> Path:
+        return self.root / self.lexical_resource_cache_name
 
     def _active_shard_path(self, manifest_name: str, logical_database: str, role: str, default_db_name: str) -> Path:
         try:

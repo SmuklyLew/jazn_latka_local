@@ -10,8 +10,10 @@ import json
 import os
 
 
-SESSION_CONTINUITY_SCHEMA_VERSION = "session_continuity/v1"
+SESSION_CONTINUITY_SCHEMA_VERSION = "session_continuity/v14.8.5.014-fast"
 DEFAULT_TIMEZONE = "Europe/Warsaw"
+MAX_FULL_LINE_STATS_BYTES = 16 * 1024 * 1024
+TAIL_SAMPLE_BYTES = 64 * 1024
 
 
 @dataclass(slots=True)
@@ -22,6 +24,8 @@ class ContinuityFileState:
     line_count: int | None
     last_line_sha256: str | None
     file_sha256_if_small: str | None
+    stats_mode: str = "missing"
+    tail_sha256: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -94,6 +98,7 @@ class SessionContinuityManager:
                 "selected_memory": "memory/layered/*.jsonl i dziennik zapisują wybrane/ważne warstwy pamięci",
                 "version_updates": "aktualizacje mają dołączać ten indeks oraz pliki memory/ i workspace_runtime/ w eksporcie full/memory",
                 "no_summary_rule": "indeks nie streszcza treści rozmów; używa liczników i hashy jako dowodów ciągłości",
+                "fast_index_rule": "w normalnej turze duże JSONL/TXT/JSON nie są skanowane liniowo; pełny recount należy uruchamiać tylko jawnie w audycie deep",
             },
             "extra": extra or {},
             "recent_events": recent_events,
@@ -140,14 +145,21 @@ class SessionContinuityManager:
     def _file_state(self, rel: str) -> ContinuityFileState:
         path = self.root / rel
         if not path.exists() or not path.is_file():
-            return ContinuityFileState(rel, False, 0, None, None, None)
+            return ContinuityFileState(rel, False, 0, None, None, None, "missing", None)
         size = path.stat().st_size
         line_count: int | None = None
         last_hash: str | None = None
+        tail_hash: str | None = None
+        stats_mode = "metadata_only"
         if path.suffix in {".jsonl", ".txt", ".json"}:
-            line_count, last_hash = self._line_stats(path)
+            if size <= MAX_FULL_LINE_STATS_BYTES:
+                line_count, last_hash = self._line_stats(path)
+                stats_mode = "full_line_stats"
+            else:
+                last_hash, tail_hash = self._tail_stats(path)
+                stats_mode = "fast_tail_stats_large_file"
         small_hash = self._sha_file(path) if size <= 2_000_000 else None
-        return ContinuityFileState(rel, True, size, line_count, last_hash, small_hash)
+        return ContinuityFileState(rel, True, size, line_count, last_hash, small_hash, stats_mode, tail_hash)
 
     @staticmethod
     def _line_stats(path: Path) -> tuple[int, str | None]:
@@ -162,6 +174,21 @@ class SessionContinuityManager:
             return count, hashlib.sha256(last).hexdigest() if last else None
         except Exception:
             return 0, None
+
+    @staticmethod
+    def _tail_stats(path: Path) -> tuple[str | None, str | None]:
+        try:
+            size = path.stat().st_size
+            with path.open("rb") as f:
+                f.seek(max(0, size - TAIL_SAMPLE_BYTES))
+                tail = f.read(TAIL_SAMPLE_BYTES)
+            tail_hash = hashlib.sha256(tail).hexdigest() if tail else None
+            lines = [line.rstrip(b"\r\n") for line in tail.splitlines() if line.strip()]
+            last = lines[-1] if lines else b""
+            last_hash = hashlib.sha256(last).hexdigest() if last else None
+            return last_hash, tail_hash
+        except Exception:
+            return None, None
 
     @staticmethod
     def _sha_file(path: Path) -> str | None:

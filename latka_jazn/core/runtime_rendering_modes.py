@@ -3,7 +3,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Any
 
-SCHEMA_VERSION = "runtime_rendering_modes/v14.7.0"
+from latka_jazn.version import schema_version
+
+SCHEMA_VERSION = schema_version("runtime_rendering_modes")
 
 @dataclass(slots=True)
 class RuntimeRenderingMode:

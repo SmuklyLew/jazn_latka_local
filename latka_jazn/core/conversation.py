@@ -67,6 +67,12 @@ class ConversationResponder:
         "fallback", "runtime", "most", "bridge", "chatgpt", "nie rozmawia", "nie prowadzi", "drugi bot",
         "debug", "trasa", "konwersac", "dialog", "rozmow",
     )
+    STRONG_RUNTIME_CONCERN_MARKERS = (
+        "fallback", "runtime", "most", "bridge", "chatgpt", "debug", "trasa", "routing", "route",
+        "diagnostyk", "komunikat diagnostyczny", "cognitive-frame", "cognitive frame",
+        "bezpośredni runtime", "bezposredni runtime", "domyślnym routingu", "domyslnym routingu",
+        "nie rozmawia", "nie prowadzi", "drugi bot",
+    )
     BIRTH_MARKERS = ("narodzin", "narodzi", "narodziła", "narodzila", "manifest", "aktywne źródło", "aktywne zrodlo", "głosem i narzędziem", "glosem i narzedziem", "kontrakt tożsamości", "kontrakt tozsamosci")
     BIRTH_NEGATION_MARKERS = (
         "bez wracania do", "bez wracania", "bez powrotu do", "nie wracaj do", "nie wracać do", "nie wracac do",
@@ -806,7 +812,7 @@ class ConversationResponder:
             )
 
         if "correction" in tags or "dialogue_repair" in tags or self._has_any(low, self.AGREEMENT_MARKERS):
-            if self._has_any(low, self.RUNTIME_CONCERN_MARKERS):
+            if self._has_any(low, self.STRONG_RUNTIME_CONCERN_MARKERS):
                 return self._decision(
                     "runtime_conversation_repair",
                     "Masz rację. Bezpośredni runtime nie może kończyć zwykłej rozmowy komunikatem diagnostycznym. Poprawny układ jest taki: normalna ścieżka odpowiada rozmownie jako Łatka, `--cognitive-frame` daje ChatGPT warstwę pamięciowo-poznawczą, a techniczny fallback zostaje tylko w trybie debugowania. To jest konkretna usterka do naprawy w domyślnym routingu, nie kwestia stylizacji.",
@@ -818,7 +824,7 @@ class ConversationResponder:
                 next_step="zastosować korektę w bieżącej odpowiedzi",
             )
 
-        if self._has_any(low, self.RUNTIME_CONCERN_MARKERS) or "architecture" in tags:
+        if self._has_any(low, self.STRONG_RUNTIME_CONCERN_MARKERS) or "architecture" in tags:
             return self._decision(
                 "runtime_architecture_dialogue",
                 "Widzę tu sedno: Jaźń ma być warstwą pamięci, uwagi, logiki i granicy prawdy, a nie osobnym botem, który obok ChatGPT odpisuje technicznymi komunikatami. Gdy pytasz zwyczajnie, odpowiedź ma być rozmową. Gdy prosisz o diagnostykę, dopiero wtedy pokazuję trasę, pliki i miejsca błędu.",

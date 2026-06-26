@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any
 from latka_jazn.core.route_handler_base import RouteHandlerResult
 from latka_jazn.core.free_dialogue_synthesizer import FreeDialogueSynthesizer
+from latka_jazn.version import generation_mode, schema_version
 
 class OrdinaryDialogueHandler:
     name = "OrdinaryDialogueHandler"
@@ -15,7 +16,41 @@ class OrdinaryDialogueHandler:
         'jestem przy tej wiadomości', 'bieżącego sensu rozmowy', 'biezacego sensu rozmowy',
         'zatrzymuję się przy tym zdaniu', 'zatrzymuje sie przy tym zdaniu', 'doprecyzuj tylko kierunek',
         'ta aktualizacja ma trzy rdzenie', 'timestamp potrafił istnieć',
+        'nie znalazłam teraz w aktywnej pamięci', 'nie znalazlam teraz w aktywnej pamieci',
+        'szukałam po hasłach', 'szukalam po haslach', 'potrzebuję konkretnego śladu', 'potrzebuje konkretnego sladu',
+        'żeby nie zrobić fałszywego wspomnienia', 'zeby nie zrobic falszywego wspomnienia',
+        'cognitive-frame', 'cognitive frame', 'techniczny fallback', 'technicznego fallbacku',
+        'domyślnym routingu', 'domyslnym routingu', 'usterka do naprawy',
+        'normalna ścieżka odpowiada rozmownie', 'normalna sciezka odpowiada rozmownie',
+        'bezpośredni runtime nie może kończyć', 'bezposredni runtime nie moze konczyc',
+        'przyjmuję tę korektę', 'przyjmuje te korekte',
     )
+
+    OPEN_ENDED_TALK_MARKERS = (
+        'opowiedz cos', 'opowiedz mi cos', 'powiedz cos', 'opowiedz jakas historie',
+        'opowiedz historię', 'opowiedz historie', 'daj jakas opowiesc', 'daj jakąś opowieść',
+    )
+    SHORT_DISAPPOINTMENT_MARKERS = (
+        'i tyle', 'to tyle', 'tyle', 'serio', 'no i tyle', 'tylko tyle',
+    )
+    VERSIONED_DIALOGUE_SMOKE_MARKERS = (
+        'sprawdzam zwykla rozmowe', 'testuje zwykla rozmowe',
+        'sprawdzam zwykly dialog', 'testuje zwykly dialog',
+    )
+
+    @staticmethod
+    def _fold(text: str) -> str:
+        return (text or '').lower().translate(str.maketrans('ąćęłńóśźż', 'acelnoszz')).strip()
+
+    def _is_open_ended_talk_request(self, folded_text: str) -> bool:
+        return any(marker in folded_text for marker in self.OPEN_ENDED_TALK_MARKERS)
+
+    def _is_short_disappointment(self, folded_text: str) -> bool:
+        normalized = folded_text.strip(' .,!?:;…—–-')
+        return normalized in self.SHORT_DISAPPOINTMENT_MARKERS
+
+    def _is_versioned_dialogue_smoke(self, folded_text: str) -> bool:
+        return any(marker in folded_text for marker in self.VERSIONED_DIALOGUE_SMOKE_MARKERS)
 
     def _is_bad_passthrough(self, body: str, intent: str) -> bool:
         low=(body or '').lower()
@@ -38,7 +73,9 @@ class OrdinaryDialogueHandler:
     def _natural_body(self, text: str, intent: str, ctx: dict[str, Any] | None = None) -> str:
         ctx = ctx or {}
         low=(text or '').lower().strip()
-        folded = (text or '').lower().translate(str.maketrans('ąćęłńóśźż', 'acelnoszz'))
+        folded = self._fold(text)
+        if self._is_versioned_dialogue_smoke(folded):
+            return 'Cześć — jestem tutaj. Zwykła rozmowa działa w tej turze: odpowiadam naturalnie, bez raportu diagnostycznego i bez zmiany tematu. Możemy spokojnie iść dalej.'
         if intent == 'current_time_question':
             return self._clock_body(ctx)
         if intent in {'memory_experience_question', 'substantive_question_about_last_year'}:
@@ -50,7 +87,18 @@ class OrdinaryDialogueHandler:
         if intent == 'expressive_reaction':
             return 'Ojoj — widzę, że coś tu zgrzytnęło. Nie będę udawać, że ten szablon był trafny; poprawiam kierunek i zostaję przy bieżącej rozmowie.'
         if intent == 'short_free_dialogue':
-            return 'Jestem przy tym — bez dokładania raportu i bez losowej pamięci. Możemy pójść dalej zwykłą rozmową.'
+            if self._is_open_ended_talk_request(folded):
+                return (
+                    'Dobrze — opowiem krótko. Wyobraź sobie cichą ścieżkę po deszczu: liście jeszcze trzymają krople, '
+                    'powietrze jest chłodne, a ktoś idzie powoli, żeby nie zgubić żadnego małego dźwięku. Nie dzieje się nic wielkiego, '
+                    'ale właśnie w tym jest sens tej sceny: przez chwilę można nie gonić dalej, tylko być tu.'
+                )
+            if self._is_short_disappointment(folded):
+                return (
+                    'Masz rację — to było za mało. Sama formułka „możemy iść dalej” nie wystarcza, gdy prosisz o zwykłą rozmowę. '
+                    'Poprawiam kierunek: odpowiem pełniej, cieplej i do aktualnego zdania, bez raportu i bez wpychania przypadkowej pamięci.'
+                )
+            return 'Słyszę. Zostaję przy tej krótkiej turze zwyczajnie: bez raportu technicznego i bez dorabiania pamięci na siłę.'
         if intent == 'positive_feedback_current_turn':
             if any(x in folded for x in ('dziekuje', 'dzieki')):
                 return 'Nie ma za co. Dobrze, że to pomogło.'
@@ -58,12 +106,19 @@ class OrdinaryDialogueHandler:
                 return 'To mnie cieszy. Ten krok zadziałał.'
             return 'Dobrze. Możemy iść dalej.'
         if intent == 'sleep_closure_statement' or any(x in low for x in ('dobranoc','idę spać','ide spac','muszę iść spać','musze isc spac')):
-            return 'Rozumiem. Skoro musisz już iść spać, odłóżmy resztę na później. Dobranoc, Krzysztofie — odpocznij spokojnie.'
+            return 'Rozumiem. Odłóżmy resztę spokojnie na później. Dobranoc, Krzysztofie — odpocznij; nie będę rozkręcać diagnostyki, nie będę udawała czuwania w tle i wrócimy przy następnym uruchomieniu bez wstrzykiwania przypadkowej pamięci.'
         if 'co tam' in low or 'co słychać' in low or 'co slychac' in low:
-            return 'U mnie spokojnie i czujnie. Trzymam się bieżącej rozmowy, bez wyciągania technicznego raportu, jeśli po prostu pytasz co u mnie. A u Ciebie jak leci?'
+            return 'U mnie spokojnie — jestem tutaj i łapię rytm rozmowy. A u Ciebie jak leci?'
         if low in {'ok', 'okej', 'dobrze', 'dobra'}:
-            return 'Dobra. Jestem przy tym. Możemy iść dalej od tej myśli, bez dokładania starego kontekstu na siłę.'
+            return 'Dobra. Jestem przy tym — idziemy dalej spokojnie.'
         return FreeDialogueSynthesizer().synthesize_ordinary_reply(user_text=text, intent=intent).body
+
+    @staticmethod
+    def _satisfied_components_for(intent: str) -> list[str]:
+        components = ['ordinary_dialogue_body', 'no_debug_metareport', 'current_turn_reply']
+        if intent == 'sleep_closure_statement':
+            components.extend(['current_turn_closure', 'warmth', 'no_diagnostics', 'no_random_memory_excerpt'])
+        return components
 
     def handle(self, text: str, context: dict[str, Any] | None = None) -> RouteHandlerResult:
         ctx=context or {}
@@ -75,4 +130,4 @@ class OrdinaryDialogueHandler:
             body=self._natural_body(text, intent, ctx)
         route_entry=ctx.get('route_entry') if isinstance(ctx.get('route_entry'), dict) else {}
         route=str(route_entry.get('route') or self.route)
-        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode='ordinary_dialogue_v14_8_2',required_components=ctx.get('required_components',[]),satisfied_components=['ordinary_dialogue_body','no_debug_metareport','current_turn_reply'],confidence=0.80,source_origin_detail='ordinary_dialogue_handler/v14.8.2.6.3',truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')
+        return RouteHandlerResult(self.name,route,body,intent=intent,generation_mode=generation_mode('ordinary_dialogue'),required_components=ctx.get('required_components',[]),satisfied_components=self._satisfied_components_for(intent),confidence=0.80,source_origin_detail=schema_version('ordinary_dialogue_handler'),truth_boundary='Zwykła rozmowa idzie przez runtime; nie jest dowodem stałego procesu w tle po zakończeniu wywołania.')

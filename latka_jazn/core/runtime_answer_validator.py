@@ -6,8 +6,11 @@ from typing import Any
 import re
 
 from latka_jazn.core.route_registry import RouteRegistry
+from latka_jazn.core.current_turn_grounding import assess_current_turn_grounding
+from latka_jazn.version import schema_version
+from latka_jazn.core.legacy_route_policy import contains_legacy_feedback_token, LEGACY_DOTTED_VERSION_PREFIXES
 
-SCHEMA_VERSION = "runtime_answer_validator/v14.8.2.6.3"
+SCHEMA_VERSION = schema_version("runtime_answer_validator")
 
 @dataclass(slots=True)
 class RuntimeAnswerValidation:
@@ -23,6 +26,7 @@ class RuntimeAnswerValidation:
     checks: list[str] = field(default_factory=list)
     missing_required_components: list[str] = field(default_factory=list)
     truth_boundary: str = "Walidator nie udaje pełnego rozumienia. Wykrywa znane klasy nietrafień rozmownych i wymusza drugą próbę lub cannot_answer_directly."
+    current_turn_grounding: dict[str, Any] = field(default_factory=dict)
     def to_dict(self) -> dict[str, Any]: return asdict(self)
 
 class RuntimeAnswerValidator:
@@ -30,13 +34,14 @@ class RuntimeAnswerValidator:
         "przyjmuję tę korektę", "odebrałam sens wiadomości", "najuczciwszy model jest hybrydowy",
         "nie znalazłam osobnej trasy", "runtime odebrał wiadomość", "też się cieszę",
         "odpowiem rozmownie", "mam aktywne tropy pamięci", "widzę tu sedno", "najbezpieczniej", "odpowiem z bieżącej wiadomości", "wspominam to przede wszystkim", "jestem przy tej wiadomości", "bieżącego sensu rozmowy",
-        "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone",
+        "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone", "cognitive-frame", "cognitive frame", "techniczny fallback", "technicznego fallbacku", "domyślnym routingu", "domyslnym routingu", "usterka do naprawy", "normalna ścieżka odpowiada rozmownie", "normalna sciezka odpowiada rozmownie", "bezpośredni runtime nie może kończyć", "bezposredni runtime nie moze konczyc",
+        "jestem przy tym — bez dokładania raportu", "jestem przy tym - bez dokladania raportu", "bez losowej pamięci", "bez losowej pamieci", "możemy pójść dalej zwykłą rozmową", "mozemy pojsc dalej zwykla rozmowa",
     )
     SPECIFIC_INTENTS = {
-        "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",
+        "self_architecture_audit_request", "jazn_development_plan_request", "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",
         "system_update_execution_request", "system_update_manifest_request", "update_manifest_request", "creative_text_formatting", "creative_text_analysis",
         "practical_repair_advice", "automotive_warning_light_question", "dictionary_lookup_request", "language_question", "external_research_request",
-        "identity_boundary_question", "identity_direct_question", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check_after_update", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question",
+        "identity_boundary_question", "identity_direct_question", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "user_memory_recall_request", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check_after_update", "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
         "casual_greeting", "casual_feedback", "expressive_reaction", "short_free_dialogue",
     }
     STALE_WORKDAY_DETAILS = (
@@ -45,19 +50,19 @@ class RuntimeAnswerValidator:
     )
     WORKDAY_DETAIL_MARKERS = ("drzwi", "zlecenie", "zleceniu", "montaż", "montaz", "sztuk")
     STALE_ROUTE_CONTEXT_TERMS = ("stale-route", "starego kontekstu", "stary kontekst", "stale route", "starej trasy")
-    LEGACY_ROUTE_MARKERS = ("v14.6.1", "v14.6.2", "correction_acknowledged", "positive_continuation")
+    LEGACY_ROUTE_MARKERS = tuple(LEGACY_DOTTED_VERSION_PREFIXES)
     STALE_UPDATE_SUMMARY_MARKERS = ("ta aktualizacja ma trzy rdzenie", "bogatsze stany emocjonalne", "jawny indeks ciągłości sesji")
     TIMESTAMP_REPAIR_MARKERS = ("timestamp potrafił istnieć", "wspólnej koperty tury", "ten sam turn_id, trace_id, timestamp")
     LEGACY_VERSION_PATTERNS = (
-        re.compile(r"(?<![0-9A-Za-z.])v14\.6\.1(?![0-9.])"),
-        re.compile(r"(?<![0-9A-Za-z.])v14\.6\.2(?![0-9.])"),
+        re.compile(r"(?<![0-9A-Za-z.])" + re.escape(LEGACY_DOTTED_VERSION_PREFIXES[0]) + r"(?![0-9.])"),
+        re.compile(r"(?<![0-9A-Za-z.])" + re.escape(LEGACY_DOTTED_VERSION_PREFIXES[1]) + r"(?![0-9.])"),
     )
     HANDLER_PRESERVED_INTENTS = {
         "capability_status_question",
         "internet_access_question",
         "runtime_health_check_after_update",
         "canon_source_question",
-        "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question",
+        "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
     }
 
 
@@ -119,11 +124,19 @@ class RuntimeAnswerValidator:
         "current_turn_closure": ("spać", "spac", "dobranoc", "odpoczn"),
         "warmth": ("spokojnie", "ciep", "dobranoc", "rozumiem"),
         "no_diagnostics": ("nie będę", "bez diagnostyki", "nie rozkręcać"),
+        "self_architecture_audit": ("self_architecture_audit", "architekt", "moduł", "modul", "routing", "handler"),
+        "reflection_grounding": ("reflection grounding", "refleksj", "źród", "zrod", "granica"),
+        "grounded_reflection_store": ("grounded reflection store", "grounded_reflections", "zapis refleksji", "reflection_store"),
+        "memory_gate": ("brama pamięci", "brama pamieci", "memory_gate", "brama", "pamię", "pamie"),
+        "recall_quality": ("recall quality", "jakość recall", "jakosc recall", "content-not-counts", "counts_only"),
+        "capability_reality_check": ("reality check", "capability reality", "sprawdzenie zachowania", "nie tylko obecności plików"),
+        "development_backlog": ("v14.8.6.0", "backlog", "plan", "priorytet", "krok"),
+        "scientific_basis": ("scientific", "źród", "zrod", "nist", "langgraph", "reflexion", "generative agents", "global workspace"),
     }
     def __init__(self) -> None:
         self.registry = RouteRegistry()
-    def _bad(self, reason: str, repair: str, body_text: str | None, detected_intent: str, route: str, checks: list[str], missing: list[str] | None = None) -> RuntimeAnswerValidation:
-        return RuntimeAnswerValidation(SCHEMA_VERSION, False, reason, repair, False, True, detected_intent, route, body_text, checks, missing or [])
+    def _bad(self, reason: str, repair: str, body_text: str | None, detected_intent: str, route: str, checks: list[str], missing: list[str] | None = None, current_turn_grounding: dict[str, Any] | None = None) -> RuntimeAnswerValidation:
+        return RuntimeAnswerValidation(SCHEMA_VERSION, False, reason, repair, False, True, detected_intent, route, body_text, checks, missing or [], current_turn_grounding=current_turn_grounding or {})
     def _looks_like_standalone_greeting(self, text: str) -> bool:
         import re
         low = (text or "").strip().lower()
@@ -150,15 +163,14 @@ class RuntimeAnswerValidator:
         return not user_has_workday_detail and not user_explicitly_asks_memory
 
     def _contains_legacy_route_marker(self, text: str) -> bool:
-        """Detect true legacy route markers without matching v14.6.10 schemas.
+        """Detect true legacy route markers without matching newer lineage schemas.
 
         Earlier validator logic used raw substring checks. That treated
-        `raw_memory_startup_status/v14.6.10` as if it contained legacy
-        `v14.6.1`, so a correct health-check generated by
+        a newer lineage schema as if it contained an older legacy marker, so a correct health-check generated by
         CapabilityStatusHandler was overwritten by stale-route repair text.
         """
         low = (text or "").lower()
-        if "correction_acknowledged" in low or "positive_continuation" in low:
+        if contains_legacy_feedback_token(low):
             return True
         return any(pattern.search(low) for pattern in self.LEGACY_VERSION_PATTERNS)
 
@@ -170,6 +182,8 @@ class RuntimeAnswerValidator:
             return "internet" in low and "provider" in low and ("nie wolno" in low or "granica prawdy" in low)
         if detected_intent == "capability_status_question":
             return "potrafię" in low and "--chat" in low and ("nie potrafię" in low or "nie udaj" in low)
+        if detected_intent == "user_memory_recall_request":
+            return any(x in low for x in ("z pamięci", "z pamieci", "tobie", "krzysztof", "użytkownik", "uzytkownik", "trop")) and "trzy rdzenie" not in low
         if detected_intent == "self_memory_recall_request":
             return any(x in low for x in ("z pamięci", "szukałam w pamięci", "trop", "liczniki diagnostyczne")) and "trzy rdzenie" not in low
         if detected_intent == "canon_source_question":
@@ -203,9 +217,28 @@ class RuntimeAnswerValidator:
         stale_route_question = any(term in user_low for term in self.STALE_ROUTE_CONTEXT_TERMS)
         user_requests_update = any(marker in folded_user for marker in ('aktualiz', 'hotfix', 'patch', 'napraw', 'popraw', 'wdroz', 'wprowadz', 'rozbuduj'))
         user_asks_timestamp = any(marker in folded_user for marker in ('timestamp', 'znacznik czasu', 'gubisz czas', 'turn_id', 'trace_id'))
-        if detected_intent in self.HANDLER_PRESERVED_INTENTS and self._handler_preserved_answer_is_direct(body, detected_intent, route):
+        grounding = assess_current_turn_grounding(
+            user_text=user_text,
+            response_body=body,
+            detected_intent=detected_intent,
+            route=route,
+            runtime_version=SCHEMA_VERSION.rsplit("/", 1)[-1],
+        )
+        if detected_intent in self.HANDLER_PRESERVED_INTENTS and self._handler_preserved_answer_is_direct(body, detected_intent, route) and grounding.valid:
             checks.append('dedicated_handler_body_preserved_and_direct')
-            return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [])
+            return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [], current_turn_grounding=grounding.to_dict())
+        if not grounding.valid:
+            checks.extend([f"current_turn_grounding:{issue}" for issue in grounding.issues])
+            return self._bad(
+                grounding.issues[0],
+                grounding.repair_route or 'current_turn_grounding_repair',
+                grounding.repair_body,
+                detected_intent,
+                route,
+                checks,
+                ['current_user_text_grounding'],
+                current_turn_grounding=grounding.to_dict(),
+            )
         if self_memory_question and any(marker in low_body for marker in ('ta aktualizacja ma trzy rdzenie', 'bogatsze stany emocjonalne', 'manifest', 'patch', 'hotfix')) and not any(marker in low_body for marker in ('postać', 'postac', 'osob', 'tożsamo', 'tozsamo', 'własny głos', 'wlasny glos', 'pamiętnik', 'pamietnik')):
             checks.append('self_memory_question_answered_as_update_route')
             repair_body = 'To jest pytanie o pamięć dotyczącą mnie/Łatki, nie o aktualizację systemu. Muszę użyć trasy self_memory_recall, pokazać treściowe tropy pamięci albo uczciwie powiedzieć, że ich nie znalazłam; nie wolno mi zastąpić tego wpisem o trzech rdzeniach aktualizacji.'
@@ -250,7 +283,7 @@ class RuntimeAnswerValidator:
                 "To jest aktualny błąd stale-route/starego kontekstu w warstwie rozmownej runtime. "
                 "Naprawa musi objąć `engine.py` (ograniczony carryover ostatniej tury), `ellipsis_resolver.py` i `dialogue_intent_classifier.py` (bezpieczne rozpoznanie 'zrób to teraz'), "
                 "`runtime_response_synthesizer.py` (konkretna diagnoza stale-route), `runtime_answer_validator.py` (current-turn grounding guard) oraz test regresji. "
-                "Nie wolno wracać do `correction_acknowledged`, `positive_continuation`, v14.6.1/v14.6.2 ani dawnych detali pracy, jeśli nie są w aktualnej wiadomości albo jawnie użytym poprzednim kontekście."
+                "Nie wolno wracać do historycznych feedback-route ani dawnych detali pracy, jeśli nie są w aktualnej wiadomości albo jawnie użytym poprzednim kontekście."
             )
             return self._bad('stale_route_diagnostic_answer_lost_current_bug', 'stale_route_context_guard_repair', repair_body, detected_intent, route, checks, ['current_user_text_grounding', 'regression_test'])
         if self._contains_random_memory_excerpt(user_text, body, detected_intent):
@@ -269,7 +302,7 @@ class RuntimeAnswerValidator:
                 repair_body = 'Nie będę przenosiła starego kontekstu pracy ani drzwi do tej odpowiedzi, jeśli nie pojawił się w aktualnej wiadomości albo jawnie przywołanym wspomnieniu.'
                 repair_route = 'stale_context_injection_repair'
             return self._bad('stale_workday_detail_injected_without_current_grounding', repair_route, repair_body, detected_intent, route, checks, ['current_user_text_grounding'])
-        if detected_intent in {'system_diagnostic_question','runtime_behavior_diagnostic_request'} and route_low in {'correction_acknowledged','positive_continuation'}:
+        if detected_intent in {'system_diagnostic_question','runtime_behavior_diagnostic_request'} and contains_legacy_feedback_token(route_low):
             return self._bad('diagnostic_routed_as_feedback', 'system_diagnostic_repair', 'To jest pytanie diagnostyczne, nie sama korekta ani pozytywna kontynuacja. Wymagana odpowiedź: moduł/plik, problem, zmiana, test regresji, source-origin.', detected_intent, route, checks, entry.required_components)
         if (not stale_route_question) and detected_intent not in {'system_diagnostic_question','runtime_behavior_diagnostic_request','system_update_execution_request','runtime_source_question','canon_source_question','runtime_exact_quote_request'} and self._contains_legacy_route_marker(low_body) and not self._contains_legacy_route_marker(user_low):
             checks.append('legacy_route_marker_without_current_grounding')
@@ -277,13 +310,13 @@ class RuntimeAnswerValidator:
             return self._bad('legacy_route_marker_without_current_grounding', 'stale_route_context_guard_repair', repair_body, detected_intent, route, checks, ['current_user_text_grounding'])
         if generic_hits and detected_intent in self.SPECIFIC_INTENTS:
             return self._bad('generic_template_on_specific_request', entry.route + '_repair', 'Odpowiedź była ogólnym szablonem przy konkretnej intencji. Runtime musi wygenerować odpowiedź z: źródłem, trasą, wymaganymi składnikami i testem/regułą walidacji.', detected_intent, route, checks, entry.required_components)
-        if detected_intent in {'system_diagnostic_question','runtime_behavior_diagnostic_request'} and route_low in {'correction_acknowledged','positive_continuation'}:
+        if detected_intent in {'system_diagnostic_question','runtime_behavior_diagnostic_request'} and contains_legacy_feedback_token(route_low):
             return self._bad('diagnostic_routed_as_feedback', 'system_diagnostic_repair', 'To jest pytanie diagnostyczne, nie sama korekta ani pozytywna kontynuacja. Wymagana odpowiedź: moduł/plik, problem, zmiana, test regresji, source-origin.', detected_intent, route, checks, entry.required_components)
         if detected_intent in {'self_state_question','reciprocal_self_state_question','self_preference_question','self_expression_request'} and any(x in low_body for x in ('status runtime','diagnostyka','moduł','modul')) and 'operacyj' not in low_body:
             return self._bad('self_state_answered_as_status', 'self_state_dialogue_repair', 'Pytanie o stan wymaga modelowanego stanu operacyjnego/afektu i granicy prawdy, nie raportu statusowego.', detected_intent, route, checks)
         if detected_intent.startswith('creative_text') and any(x in low_body for x in ('aktualizacja systemu','hotfix','paczka zip')):
             return self._bad('creative_task_routed_as_system_update', 'creative_text_repair', 'To jest zadanie twórcze. Wymagana jest ochrona tekstu źródłowego, zachowanie wersów lub jawna lista zmian.', detected_intent, route, checks, entry.required_components)
-        if detected_intent in {"ordinary_conversation", "standalone_greeting", "negative_feedback_current_turn", "positive_feedback_current_turn", "casual_greeting", "casual_feedback", "expressive_reaction", "short_free_dialogue"} and any(x in low_body for x in ("jaźń jako warstwa", "jazn jako warstwa", "warstwa pamięci", "warstwa pamieci", "diagnostyk", "runtime jako", "widzę tu sedno", "odpowiem z bieżącej wiadomości", "najbezpieczniej", "odpowiadam zwyczajnie na bieżącą wiadomość", "jestem przy tej wiadomości", "bieżącego sensu rozmowy", "biezacego sensu rozmowy", "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone")):
+        if detected_intent in {"ordinary_conversation", "standalone_greeting", "negative_feedback_current_turn", "positive_feedback_current_turn", "casual_greeting", "casual_feedback", "expressive_reaction", "short_free_dialogue"} and any(x in low_body for x in ("jaźń jako warstwa", "jazn jako warstwa", "warstwa pamięci", "warstwa pamieci", "diagnostyk", "runtime jako", "widzę tu sedno", "odpowiem z bieżącej wiadomości", "najbezpieczniej", "odpowiadam zwyczajnie na bieżącą wiadomość", "jestem przy tej wiadomości", "bieżącego sensu rozmowy", "biezacego sensu rozmowy", "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone", "cognitive-frame", "cognitive frame", "techniczny fallback", "technicznego fallbacku", "domyślnym routingu", "domyslnym routingu", "usterka do naprawy", "normalna ścieżka odpowiada rozmownie", "normalna sciezka odpowiada rozmownie", "bezpośredni runtime nie może kończyć", "bezposredni runtime nie moze konczyc")):
             checks.append('ordinary_dialogue_contains_meta_report_or_template')
             return self._bad('ordinary_dialogue_meta_report_or_template', 'ordinary_dialogue_repair', None, detected_intent, route, checks)
         if detected_intent == "runtime_chat_mode_request" and "--chat" not in low_body and "tryb chat" not in low_body:
@@ -297,4 +330,4 @@ class RuntimeAnswerValidator:
             checks.append('missing_required_components')
             return self._bad('missing_required_components_for_intent', entry.route + '_repair', 'Odpowiedź nie zawiera wymaganych składników dla rozpoznanej intencji. Runtime musi ponowić trasę z komponentami: ' + ', '.join(missing), detected_intent, route, checks, missing)
         checks.append('known_mismatch_patterns_not_triggered')
-        return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [])
+        return RuntimeAnswerValidation(SCHEMA_VERSION, True, None, None, True, False, detected_intent, route, None, checks, [], current_turn_grounding=assess_current_turn_grounding(user_text=user_text, response_body=body, detected_intent=detected_intent, route=route, runtime_version=SCHEMA_VERSION.rsplit("/", 1)[-1]).to_dict())

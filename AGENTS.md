@@ -109,7 +109,7 @@ Jeżeli któregokolwiek kroku nie da się potwierdzić, napisz:
 
 Na Windows preferuj `python -X utf8` albo `py -X utf8` dla wszystkich komend Jaźni.
 
-Przed testami `--chat-jsonl` w Windows PowerShell ustaw jawnie UTF-8 dla konsoli i pipe:
+Przed testami `--chat-gpt` w Windows PowerShell ustaw jawnie UTF-8 dla konsoli i pipe:
 
 ```powershell
 [Console]::InputEncoding  = [System.Text.UTF8Encoding]::new($false)
@@ -118,7 +118,7 @@ $OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 chcp 65001 | Out-Null
 ```
 
-Jeżeli tego nie ustawisz, polskie znaki mogą zostać zamienione na `?`, np. `Działasz? Czy uruchomiłaś Jaźń?` może dojść do runtime jako `Dzia?asz? Czy uruchomi?a? Ja???`, co psuje routing `--chat-jsonl`.
+Jeżeli tego nie ustawisz, polskie znaki mogą zostać zamienione na `?`, np. `Działasz? Czy uruchomiłaś Jaźń?` może dojść do runtime jako `Dzia?asz? Czy uruchomi?a? Ja???`, co psuje routing `--chat-gpt`.
 
 Przy czytaniu plików tekstowych, szczególnie `VERSION.txt`, dopuszczaj BOM i używaj `utf-8-sig`, jeśli trzeba. Nie traktuj problemów z polskimi znakami, `cp1250`, BOM albo `UnicodeEncodeError` jako błędu Jaźni, dopóki nie sprawdzisz kodowania.
 
@@ -535,7 +535,7 @@ Po zmianach wykonaj minimum:
 - `python -X utf8 .\main.py --wake-state-status`,
 - test `--runtime-preview`,
 - test `--chat` przez stdin,
-- test `--chat-jsonl`, jeśli istnieje,
+- test `--chat-gpt`, jeśli istnieje,
 - SQLite `integrity_check`,
 - SQLite `foreign_key_check`,
 - audyt manifestu i SHA, jeśli zmieniano pliki dystrybucyjne.

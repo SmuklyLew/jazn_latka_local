@@ -132,6 +132,37 @@ class MemoryRecallPresenter:
                 content_excerpt=self._excerpt(content, max_len=420),
             ))
 
+        for archive_hit in memory_context.get("conversation_archive_hits") or []:
+            if not isinstance(archive_hit, dict):
+                continue
+            content = self._clean(archive_hit.get("excerpt") or archive_hit.get("text"))
+            if not content:
+                continue
+            confidence = self._float_or_none(archive_hit.get("identity_confidence"))
+            score, label, assessment = self._assess(content, terms, user_text, confidence=confidence)
+            # bm25 rank jest zwykle mniejsze dla lepszych wyników; traktujemy je tylko jako tie-breaker,
+            # a nie zamiennik oceny znaczeniowej.
+            if archive_hit.get("grounding") == "conversation_archive_v1+fts_v1":
+                assessment = "treściowy fragment z conversation_archive/FTS; dobry trop pamięciowy, jeśli odpowiada pytaniu i zachowuje granicę prawdy"
+            source_parts = [self._clean(archive_hit.get("source_name")), self._clean(archive_hit.get("source_locator"))]
+            source = " / ".join(x for x in source_parts if x) or "conversation_archive_v1"
+            title = self._clean(archive_hit.get("conversation_title"))
+            role = self._clean(archive_hit.get("author_role"))
+            if title or role:
+                source = f"{source} / {title or 'bez tytułu'} / {role or 'unknown'}"
+            items.append(MemoryRecallItem(
+                item_type="conversation_archive",
+                query_term=self._first_matching_term(content, terms) or archive_hit.get("phrase"),
+                timestamp=self._clean(archive_hit.get("create_time_warsaw")),
+                source=source,
+                confidence=confidence,
+                grounding="conversation_archive_v1+fts_v1",
+                relevance_score=score,
+                relevance_label=label,
+                meaning_assessment=assessment,
+                content_excerpt=self._excerpt(content, max_len=460),
+            ))
+
         for raw in memory_context.get("raw_chat_fallback") or []:
             if not isinstance(raw, dict):
                 continue
@@ -154,7 +185,7 @@ class MemoryRecallPresenter:
 
         # Kolejność: najpierw trafność znaczeniowa, potem epizody przed legacy,
         # przy zachowaniu stabilnej kolejności dla równych wyników.
-        type_bonus = {"episode": 0.04, "source_file": 0.035, "legacy_message": 0.02, "raw_chat_fallback": 0.0}
+        type_bonus = {"episode": 0.04, "conversation_archive": 0.038, "source_file": 0.035, "legacy_message": 0.02, "raw_chat_fallback": 0.0}
         items.sort(key=lambda x: (x.relevance_score + type_bonus.get(x.item_type, 0.0)), reverse=True)
         return items[:limit]
 

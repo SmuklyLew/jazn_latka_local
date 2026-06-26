@@ -161,7 +161,7 @@ def cli_capabilities(start_file: str | None = 'main.py') -> dict[str, bool]:
         '--build-wake-state': True,
         '--dedupe-memory-sidecar': True,
         '--runtime-preview': True,
-        '--chat-jsonl': bool(start_file),
+        '--chat-gpt': bool(start_file),
         '--turn-trace': True,
         '--network-time-check': True,
         '--sqlite-integrity-audit': True,

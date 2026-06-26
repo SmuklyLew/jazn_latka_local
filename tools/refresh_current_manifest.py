@@ -57,18 +57,30 @@ def find_project_root(start: Path) -> Path:
 
 
 ROOT = find_project_root(Path(__file__).resolve())
-ACTIVE_DATABASE = 'memory/sqlite/chat_context.sqlite3'
-AUDIT_DATABASE = 'memory/sqlite/chat_context_audit.sqlite3'
+ACTIVE_DATABASE = 'memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3'
+AUDIT_DATABASE = 'memory/sqlite/runtime_write_v1/runtime_audit.sqlite3'
+RUNTIME_WRITE_DATABASE = 'memory/sqlite/runtime_write_v1/runtime_memory.sqlite3'
+CONVERSATION_FTS_DATABASE = 'memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3'
+STAGING_DATABASE = 'memory/sqlite/staging_v1/staging_memory_0001.sqlite3'
+STORAGE_LAYOUT = 'conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1'
 HASH_SIZE_LIMIT = 64 * 1024 * 1024
 CONTROL_EXCLUDED = {'MANIFEST_CURRENT.json','MANIFEST_RUNTIME_MUTABLE.json','SHA256SUMS','SHA256SUMS_STATIC'}
-EXCLUDE_DIR_PARTS = {'__pycache__','.pytest_cache','.git','.mypy_cache','.ruff_cache'}
+EXCLUDE_DIR_PARTS = {'__pycache__','.pytest_cache','.pytest-tmp','.git','.mypy_cache','.ruff_cache'}
 TRANSIENT_SUFFIXES = ('-wal','-shm','.sqlite3-wal','.sqlite3-shm','.tmp','.tmp_extract_part','.partial')
 EXCLUDE_PREFIXES = ('exports/',)
+EXCLUDED_DETAIL_SUPPRESSED_REASONS = {'generated_cache_directory'}
 MUTABLE_PATTERNS = (
-    'workspace_runtime/**/*.sqlite3','workspace_runtime/**/*.json','workspace_runtime/**/*.jsonl','workspace_runtime/**/*.log',
-    'workspace_runtime/logs/**','workspace_runtime/turn_checkpoints/**','workspace_runtime/codex_session_bridge/**',
-    'memory/sqlite/chat_context.sqlite3','memory/sqlite/chat_context_audit.sqlite3','memory/sqlite/chat_context_shards.json','memory/sqlite/chat_context_audit_shards.json',
-    'memory/layered/*.jsonl','memory/raw/session_continuity_index.json','memory/raw/runtime_event_errors.jsonl','memory/raw/runtime_events.jsonl','memory/raw/conversation_turns.jsonl','memory/raw/dziennik.json',
+    # Everything under workspace_runtime is local runtime/cache/session state.
+    'workspace_runtime/**',
+    # Private/raw memory and imported conversation graphs are memory state, not static code.
+    'memory/raw/**',
+    'memory/raw_chats/**',
+    'memory/processed_chats/**',
+    'memory/layered/*.jsonl',
+    # SQLite stores and shard/audit sidecars are runtime/private memory stores.
+    'memory/sqlite/**/*.sqlite3',
+    'memory/sqlite/**/*_shards.json',
+    'memory/sqlite/sqlite_audit_report.json',
 )
 ARCHIVE_PATTERNS = ('backups/**','docs/update_history/**','memory/versioned_sources/**','memory/raw/*.7z','memory/sqlite/*.bak','patches/**','*.patch','*.bak_*','**/*.bak_*')
 
@@ -82,6 +94,17 @@ def sha256(path: Path) -> str:
 def matches(path: str, patterns: tuple[str, ...]) -> bool:
     return any(fnmatch.fnmatch(path, pat) for pat in patterns)
 
+def _manifest_entry(rel: str, size: int, digest: str, mutable: bool, classification: str, archive: bool, hpolicy: str) -> dict[str, Any]:
+    return {
+        'path': rel,
+        'size_bytes': size,
+        'sha256': digest,
+        'mutable_runtime': mutable,
+        'classification': classification,
+        'archive': archive,
+        'hash_policy': hpolicy,
+    }
+
 def exclusion_reason(rel: str) -> str | None:
     p = Path(rel)
     if p.name in CONTROL_EXCLUDED: return 'self_or_checksum_control_file'
@@ -91,16 +114,24 @@ def exclusion_reason(rel: str) -> str | None:
     return None
 
 def classify(rel: str) -> str:
-    if matches(rel, MUTABLE_PATTERNS) or (rel.startswith('memory/sqlite/') and rel.endswith('.sqlite3')): return 'mutable_runtime'
-    if matches(rel, ARCHIVE_PATTERNS): return 'archive_or_backup'
-    if rel.startswith('memory/raw/') or rel.startswith('memory/exported_from_sqlite/') or rel.startswith('memory/processed_chats/'): return 'memory_source_static'
-    if rel.startswith(('latka_jazn/','tests/','tools/','scripts/')) or rel == 'main.py': return 'static_code'
-    if rel.startswith(('docs/','reports/')) or rel.endswith(('.md','.txt')): return 'static_documentation'
+    # Runtime/private memory is intentionally classified before static code/docs.
+    # MANIFEST_CURRENT must not list local runtime state, raw private memory,
+    # imported chat graphs, SQLite stores or workspace cache files as static package files.
+    if matches(rel, MUTABLE_PATTERNS):
+        return 'mutable_runtime'
+    if rel.startswith('memory/sqlite/') and rel.endswith(('.sqlite3', '.sqlite3-wal', '.sqlite3-shm')):
+        return 'mutable_runtime'
+    if matches(rel, ARCHIVE_PATTERNS):
+        return 'archive_or_backup'
+    if rel.startswith(('latka_jazn/','tests/','tools/','scripts/')) or rel == 'main.py':
+        return 'static_code'
+    if rel.startswith(('docs/','reports/')) or rel.endswith(('.md','.txt')):
+        return 'static_documentation'
     return 'static_project_file'
 
 def sqlite_diag(root: Path) -> list[dict[str, Any]]:
     out=[]
-    for rel in [ACTIVE_DATABASE,AUDIT_DATABASE,'workspace_runtime/dictionary_cache.sqlite3']:
+    for rel in [ACTIVE_DATABASE,AUDIT_DATABASE,RUNTIME_WRITE_DATABASE,CONVERSATION_FTS_DATABASE,STAGING_DATABASE,'workspace_runtime/dictionary_cache.sqlite3']:
         p=root/rel
         item={'path':rel,'exists':p.exists(),'size_bytes':p.stat().st_size if p.exists() else 0}
         if p.exists():
@@ -122,42 +153,67 @@ def build(root: Path) -> tuple[dict[str,Any],dict[str,Any]]:
     version=(root/'VERSION.txt').read_text(encoding='utf-8').strip()
     semver=version.split('-',1)[0].lstrip('v')
     now=datetime.now(timezone.utc).isoformat()
-    entries=[]; excluded=[]; deferred=[]
+    entries=[]; mutable_entries=[]; excluded=[]; deferred=[]; mutable_deferred=[]
+    excluded_file_count=0
+    excluded_detail_suppressed: dict[str, dict[str, Any]] = {}
     for path in sorted(root.rglob('*')):
         if not path.is_file(): continue
         rel=path.relative_to(root).as_posix()
         reason=exclusion_reason(rel)
         st=path.stat()
         if reason:
-            excluded.append({'path':rel,'reason':reason,'size_bytes':st.st_size})
+            excluded_file_count += 1
+            if reason in EXCLUDED_DETAIL_SUPPRESSED_REASONS:
+                summary = excluded_detail_suppressed.setdefault(reason, {'reason':reason,'count':0,'size_bytes':0})
+                summary['count'] += 1
+                summary['size_bytes'] += st.st_size
+            else:
+                excluded.append({'path':rel,'reason':reason,'size_bytes':st.st_size})
             continue
         classification=classify(rel)
         mutable=classification=='mutable_runtime'
-        archive=classification=='archive_or_backup' or matches(rel, ('memory/raw/*.7z',))
+        archive=classification=='archive_or_backup'
         if mutable:
-            digest=''
-            hpolicy='mutable_runtime_hash_deferred'
-            deferred.append({'path':rel,'reason':'mutable_runtime','size_bytes':st.st_size})
-        elif st.st_size > HASH_SIZE_LIMIT:
+            # Keep runtime/private-memory paths out of MANIFEST_CURRENT.
+            # They live only in MANIFEST_RUNTIME_MUTABLE so active-cache hashes
+            # are stable and static package manifests do not swallow memory state.
+            entry = _manifest_entry(rel, st.st_size, '', True, classification, False, 'runtime_or_private_memory_hash_deferred')
+            mutable_entries.append(entry)
+            mutable_deferred.append({'path':rel,'reason':'runtime_or_private_memory','size_bytes':st.st_size})
+            continue
+        if st.st_size > HASH_SIZE_LIMIT:
             digest=''
             hpolicy='large_static_hash_deferred'
             deferred.append({'path':rel,'reason':'large_static_file_over_64MiB','size_bytes':st.st_size})
         else:
             digest=sha256(path)
             hpolicy='stable_content_hash'
-        entries.append({'path':rel,'size_bytes':st.st_size,'sha256':digest,'mutable_runtime':mutable,'classification':classification,'archive':archive,'hash_policy':hpolicy})
-    mutable_entries=[e for e in entries if e['mutable_runtime']]
-    static_entries=[e for e in entries if not e['mutable_runtime']]
+        entries.append(_manifest_entry(rel, st.st_size, digest, False, classification, archive, hpolicy))
+    static_entries=list(entries)
     archive_entries=[e for e in entries if e.get('archive')]
     common={
         'version':version,'runtime_version':version,'package_version':version,
         'generated_at_utc':now,'updated_at_utc':now,'start_file':'main.py',
         'active_database':ACTIVE_DATABASE,'audit_database':AUDIT_DATABASE,
+        'active_runtime_write_database':RUNTIME_WRITE_DATABASE,
+        'active_conversation_archive':ACTIVE_DATABASE,
+        'active_conversation_fts':CONVERSATION_FTS_DATABASE,
+        'active_staging_database':STAGING_DATABASE,
+        'storage_layout':STORAGE_LAYOUT,
     }
     manifest={
         'schema_version':f'manifest_current/v{semver}',**common,
-        'file_count':len(entries),'static_file_count':len(static_entries),'mutable_runtime_file_count':len(mutable_entries),'archive_file_count':len(archive_entries),'excluded_file_count':len(excluded),'deferred_hash_file_count':len(deferred),
+        'file_count':len(entries),'static_file_count':len(static_entries),'mutable_runtime_file_count':0,'runtime_mutable_file_count':len(mutable_entries),'archive_file_count':len(archive_entries),'excluded_file_count':excluded_file_count,'deferred_hash_file_count':len(deferred),
         'hash_size_limit_bytes':HASH_SIZE_LIMIT,
+        'runtime_mutable_manifest':'MANIFEST_RUNTIME_MUTABLE.json',
+        'runtime_memory_split_policy':{
+            'static_manifest':'MANIFEST_CURRENT.json contains static code/documentation/project files only.',
+            'runtime_manifest':'MANIFEST_RUNTIME_MUTABLE.json contains workspace_runtime, raw/private memory, processed chat graphs and SQLite stores.',
+            'why':'Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code.'
+        },
+        'excluded_file_detail_count':len(excluded),
+        'excluded_file_detail_suppressed_count':sum(item['count'] for item in excluded_detail_suppressed.values()),
+        'excluded_file_detail_suppressed_summary':list(excluded_detail_suppressed.values()),
         'mutable_patterns':list(MUTABLE_PATTERNS),
         'excluded_policy':{'control_files_excluded_from_own_hash':sorted(CONTROL_EXCLUDED),'directory_parts_excluded':sorted(EXCLUDE_DIR_PARTS),'transient_suffixes_excluded':list(TRANSIENT_SUFFIXES),'prefixes_excluded':list(EXCLUDE_PREFIXES),'truth_boundary':'MANIFEST_CURRENT.json, MANIFEST_RUNTIME_MUTABLE.json i SHA256SUMS są wyłączone z listy hashowanej, żeby uniknąć samoreferencyjnego SHA. WAL/SHM, cache i eksporty są runtime/transient.'},
         'sqlite_diagnostics':sqlite_diag(root),
@@ -167,7 +223,9 @@ def build(root: Path) -> tuple[dict[str,Any],dict[str,Any]]:
     mutable_manifest={
         'schema_version':f'manifest_runtime_mutable/v{semver}',**common,
         'file_count':len(mutable_entries),'mutable_patterns':list(MUTABLE_PATTERNS),
-        'truth_boundary':'Ten manifest zawiera tylko pliki, które mogą zmieniać się podczas działania Jaźni. Ich SHA jest odroczony; rozmiar i ścieżka opisują snapshot chwili wygenerowania.',
+        'deferred_hash_file_count':len(mutable_deferred),
+        'deferred_hash_files':mutable_deferred,
+        'truth_boundary':'Ten manifest zawiera pliki runtime/prywatnej pamięci: workspace_runtime, raw/private memory, processed chat graphs i SQLite. Ich SHA jest odroczony; rozmiar i ścieżka opisują snapshot chwili wygenerowania.',
         'files':mutable_entries,
     }
     return manifest, mutable_manifest
@@ -192,7 +250,7 @@ def main() -> int:
     out=root
     write_json(out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json', manifest)
     write_json(out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json', mutable_manifest)
-    report={'generated_at_utc':manifest['generated_at_utc'],'root':str(root),'version':manifest['version'],'file_count':manifest['file_count'],'static_file_count':manifest['static_file_count'],'mutable_runtime_file_count':manifest['mutable_runtime_file_count'],'archive_file_count':manifest['archive_file_count'],'excluded_file_count':manifest['excluded_file_count'],'deferred_hash_file_count':manifest['deferred_hash_file_count'],'active_database':manifest['active_database'],'audit_database':manifest['audit_database'],'sqlite_diagnostics':manifest['sqlite_diagnostics'],'outputs':[str((out/'MANIFEST_CURRENT.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.json').resolve()),str((out/'SHA256SUMS').resolve()),str((out/'SHA256SUMS_STATIC').resolve()),str((out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json').resolve())]}
+    report={'generated_at_utc':manifest['generated_at_utc'],'root':str(root),'version':manifest['version'],'file_count':manifest['file_count'],'static_file_count':manifest['static_file_count'],'mutable_runtime_file_count':manifest['mutable_runtime_file_count'],'runtime_mutable_file_count':manifest.get('runtime_mutable_file_count', 0),'archive_file_count':manifest['archive_file_count'],'excluded_file_count':manifest['excluded_file_count'],'excluded_file_detail_count':manifest.get('excluded_file_detail_count', len(manifest.get('excluded_files', []))),'excluded_file_detail_suppressed_count':manifest.get('excluded_file_detail_suppressed_count', 0),'deferred_hash_file_count':manifest['deferred_hash_file_count'],'active_database':manifest['active_database'],'audit_database':manifest['audit_database'],'sqlite_diagnostics':manifest['sqlite_diagnostics'],'outputs':[str((out/'MANIFEST_CURRENT.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.json').resolve()),str((out/'SHA256SUMS').resolve()),str((out/'SHA256SUMS_STATIC').resolve()),str((out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json').resolve())]}
     write_json(out/'LATKA_JAZN_MANIFEST_REPAIR_REPORT.v14_8_2_5.json', report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0

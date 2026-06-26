@@ -4,7 +4,9 @@ from dataclasses import asdict, dataclass
 import re
 from typing import Any
 
-SCHEMA_VERSION = "memory_use_gate/v14.8.2.6.1"
+from latka_jazn.core.self_question_memory_gate import SelfQuestionMemoryGate
+
+SCHEMA_VERSION = "memory_use_gate/v14.8.5.011"
 _DIACRITIC_MAP = str.maketrans("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ")
 
 NON_MEMORY_INTENTS = {
@@ -19,6 +21,8 @@ MEMORY_REQUIRED_INTENTS = {
     "user_memory_question",
     "identity_memory_question",
     "continuity_question",
+    "self_architecture_audit_request",
+    "jazn_development_plan_request",
 }
 
 @dataclass(slots=True)
@@ -45,6 +49,9 @@ class MemoryUseGate:
     def decide(self, user_text: str, *, detected_intent: str | None = None) -> MemoryUseDecision:
         low = self._norm(user_text)
         intent = detected_intent or "unknown"
+        self_gate = SelfQuestionMemoryGate().decide(user_text, detected_intent=intent)
+        if self_gate.force_memory_content:
+            return MemoryUseDecision(True, "self_question_memory_gate:" + self_gate.reason, "self_architecture_or_self_memory_content", "low")
         if intent in NON_MEMORY_INTENTS:
             return MemoryUseDecision(False, "non_memory_specialized_intent_blocks_retrieval", "disabled_for_turn", "low_after_gate")
         if intent in {"self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "sleep_closure_statement"}:

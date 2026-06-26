@@ -19,8 +19,8 @@ py -X utf8 main.py [flagi] [message]
 - `--cognitive-frame`, `--chatgpt-frame`, `--brain-frame` — Zwróć wewnętrzny pakiet poznawczy JSON dla ChatGPT, nie gotową odpowiedź użytkownikowi.
 - `--debug-direct` — Pokaż techniczną ścieżkę bezpośrednią i fallback diagnostyczny zamiast rozmownej odpowiedzi.
 - `--chat`, `--loop` — Uruchom stałą pętlę rozmowy: jeden JaznEngine działa przez wiele tur aż do /exit lub EOF.
-- `--chat-jsonl` — Uruchom wsadową pętlę JSONL bez promptu: jedna linia JSON wejścia, jedna linia JSON wyjścia.
-- `--session-id` — Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-jsonl.
+- `--chat-gpt` — Uruchom główny most ChatGPT w protokole JSONL: jedna linia wejścia, jedna linia JSON wyjścia; przyjmuje `message`, `text`, `user_text`, `content`, `prompt`, format `messages[].content` albo zwykły tekst.
+- `--session-id` — Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.
 - `--no-carryover` — Zablokuj użycie poprzedniej tury nawet jeśli istnieje runtime_state.json.
 - `--github-plan` — Zapisz i pokaż plan repozytoriów Latka.Jazn oraz Latka.Jazn.Memory bez wykonywania pushu.
 - `--dedup-report` — Zbuduj raport duplikatów treści i SHA-256 bez usuwania plików.

@@ -7,6 +7,13 @@ from typing import Any
 import email.utils
 import json, re, urllib.request
 
+from .timestamp_policy import (
+    TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
+    TIMESTAMP_NETWORK_FIRST_DEFAULT,
+    TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
+    timestamp_runtime_policy,
+)
+
 POLISH_WEEKDAYS = {
     0: "poniedziałek", 1: "wtorek", 2: "środa", 3: "czwartek",
     4: "piątek", 5: "sobota", 6: "niedziela"
@@ -93,10 +100,25 @@ class WarsawClock:
             )
         self.last_sample: TimeSample | None = None
 
-    def now(self, network_first: bool = False) -> TimeSample:
+    def now(
+        self,
+        network_first: bool = TIMESTAMP_NETWORK_FIRST_DEFAULT,
+        *,
+        allow_fallback: bool = TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
+        timeout_seconds: float = TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
+    ) -> TimeSample:
         if network_first:
-            sample = self._network_time(timeout_seconds=1.5)
+            sample = self._network_time(timeout_seconds=timeout_seconds)
             if sample:
+                self.last_sample = sample
+                return sample
+            if not allow_fallback:
+                sample = TimeSample(
+                    datetime.now(self.tz),
+                    "network_time_unavailable_no_fallback",
+                    False,
+                    error="network time unavailable and local fallback disabled",
+                )
                 self.last_sample = sample
                 return sample
         sample = self._local_time_sample()
@@ -112,7 +134,7 @@ class WarsawClock:
             if sample is None:
                 return NetworkTimeCheckResult(
                     status="unavailable",
-                    error="network time unavailable; normal runtime should use local time",
+                    error="network time unavailable; normal runtime must block ordinary visible replies or mark them degraded",
                     elapsed_ms=elapsed_ms,
                     timeout_seconds=timeout_seconds,
                     urls_tried=urls_tried,
@@ -140,7 +162,7 @@ class WarsawClock:
             "https://worldtimeapi.org/api/timezone/Europe/Warsaw",
             "https://timeapi.io/api/TimeZone/zone?timeZone=Europe/Warsaw",
         ]
-        headers = {"Cache-Control": "no-cache", "Pragma": "no-cache", "User-Agent": "LatkaJazn/14.5.20"}
+        headers = {"Cache-Control": "no-cache", "Pragma": "no-cache", "User-Agent": "LatkaJazn/14.8.5"}
         for url in json_urls:
             if urls_tried is not None:
                 urls_tried.append(url)
@@ -187,12 +209,22 @@ class WarsawClock:
     def _local_time_sample(self) -> TimeSample:
         return TimeSample(datetime.now(self.tz), "local_fallback", False)
 
-    def header(self, sample: TimeSample | None = None) -> str:
-        # v14.5.24: formatowanie nagłówka nie powinno samo uruchamiać długich prób sieciowych;
-        # synchronizacja czasu odbywa się jawnie przez now(network_first=True) albo /czas.
-        sample = sample or self.now(network_first=False)
+    def header(self, sample: TimeSample | None = None, *, network_first: bool = TIMESTAMP_NETWORK_FIRST_DEFAULT) -> str:
+        # P0 timestamp: gdy nie przekazano próbki, header sam próbuje czasu sieciowego.
+        # Lokalny fallback pozostaje jawnie nieufny w TimeSample.trusted/source.
+        sample = sample or self.now(network_first=network_first)
         dt = sample.dt.astimezone(self.tz)
         offset_seconds = int(dt.utcoffset().total_seconds()) if dt.utcoffset() else 0
         offset_hours = offset_seconds // 3600
         sign = "+" if offset_hours >= 0 else ""
         return f"[🕒 {dt:%Y-%m-%d %H:%M:%S} GMT{sign}{offset_hours}, {POLISH_WEEKDAYS[dt.weekday()]}, Europe/Warsaw]"
+    def sample_contract(self, sample: TimeSample | None = None) -> dict[str, Any]:
+        sample = sample or self.last_sample or self.now(network_first=TIMESTAMP_NETWORK_FIRST_DEFAULT)
+        return {
+            **timestamp_runtime_policy(),
+            "timestamp_header": self.header(sample),
+            "sample_iso": sample.dt.isoformat(),
+            "source": sample.source,
+            "trusted": sample.trusted,
+            "error": sample.error,
+        }

@@ -5,7 +5,10 @@ from typing import Any
 import re
 import unicodedata
 
-SCHEMA_VERSION = "topic_mismatch_guard/v14.6.10"
+from latka_jazn.version import schema_version
+from latka_jazn.core.legacy_route_policy import LEGACY_DOTTED_VERSION_PREFIXES
+
+SCHEMA_VERSION = schema_version("topic_mismatch_guard")
 DIACRITIC_MAP = str.maketrans("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ")
 
 
@@ -30,7 +33,7 @@ class TopicMismatchReport:
 class TopicMismatchGuard:
     """NLP-guard dla aktualnego tematu rozmowy i błędów starej trasy.
 
-    v14.6.10 celowo trzyma tę warstwę lekką i deterministyczną: normalizacja,
+    Ta warstwa celowo pozostaje lekka i deterministyczna: normalizacja,
     wersje, frazy celu i zobowiązania odpowiedzi. Nie udaje pełnego modelu
     językowego; daje runtime jasne pole `preferred_route` oraz listę ryzyk.
     """
@@ -93,11 +96,11 @@ class TopicMismatchGuard:
         commitments = self._commitments(capabilities, current_update)
         reasons: list[str] = []
         if current_update and any(v in {"14.6.1", "14.6.2", "14.6.2.1"} for v in versions):
-            reasons.append("Wiadomość zawiera starą wersję, ale aktualny zakres ma pierwszeństwo tylko wtedy, gdy użytkownik jawnie wskazuje v14.6.10 albo bieżący hotfix.")
+            reasons.append("Wiadomość zawiera historyczną wersję; aktywny runtime nie może automatycznie wrócić do starej trasy.")
         if legacy_risk:
             reasons.append("Kandydat odpowiedzi wygląda jak powrót do historycznej trasy NLP zamiast aktualnego hotfixa.")
-        if current_update and preferred == "v14_6_10_behavioral_runtime_dialogue_intent_source_integrity_update":
-            reasons.append("Aktualny hotfix łączy samoekspresję runtime, naprawę nietrafionego tematu, NLP i indeks startowy projektu.")
+        if current_update and preferred == "system_update_execution_request":
+            reasons.append("Aktualny zakres ma użyć bieżącej trasy system_update_execution_request, nie historycznego hotfixa.")
         return TopicMismatchReport(
             schema_version=SCHEMA_VERSION,
             normalized_text=normalized,
@@ -146,7 +149,7 @@ class TopicMismatchGuard:
     def _preferred_route(self, capabilities: list[str], versions: list[str], current_update: bool) -> str:
         cap = set(capabilities)
         if current_update:
-            return "v14_6_10_behavioral_runtime_dialogue_intent_source_integrity_update"
+            return "system_update_execution_request"
         if "runtime_thought_boundary" in cap:
             return "runtime_thought_boundary_explanation"
         if "runtime_self_expression" in cap:
@@ -166,11 +169,11 @@ class TopicMismatchGuard:
         route = (candidate_route or "").lower()
         version = (runtime_version or "").lower()
         body = (response_body or "").lower()
-        if current_update and route in {"v14_6_1_nlp_adapter_update", "v14_6_2_1_stale_nlp_route_hotfix", "v14_6_2_full_update_scope"}:
+        if current_update and route in {"legacy_nlp_adapter_update", "legacy_stale_nlp_route_hotfix", "legacy_full_update_scope"}:
             return True
-        if current_update and any(old in body for old in ("v14.6.1", "v14.6.2.1", "v14.6.2 full")) and "v14.6.10" not in body and "v14.6.10" not in body:
+        if current_update and any(old in body for old in ("legacy nlp adapter update", "legacy stale nlp route hotfix", "legacy full update scope")):
             return True
-        if route == "v14_6_1_nlp_adapter_update" and not version.startswith("v14.6.1"):
+        if route == "v14_6_1_nlp_adapter_update" and not version.startswith(LEGACY_DOTTED_VERSION_PREFIXES[0]):
             return True
         return False
 
@@ -180,7 +183,7 @@ class TopicMismatchGuard:
         out: list[str] = []
         if current_update:
             out.extend([
-                "odpowiedzieć o v14.6.10/v14.6.10, nie o v14.6.1/v14.6.2",
+                "odpowiedzieć o aktywnym zakresie, nie o historycznej trasie",
                 "wymienić konkretne pliki, testy i manifest aktualizacji",
                 "utrzymać granicę prawdy: runtime nie ma biologicznego czekania ani stałego procesu po jednorazowym wywołaniu",
             ])

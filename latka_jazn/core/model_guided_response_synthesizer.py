@@ -4,7 +4,11 @@ from dataclasses import asdict, dataclass
 import re
 from typing import Any
 
-from latka_jazn.model_adapters.base import ModelAdapterRequest
+from latka_jazn.core.model_context_compiler import compile_model_context
+from latka_jazn.core.nlg_planner import build_nlg_plan
+from latka_jazn.core.operational_thought_frame import build_operational_thought_frame
+from latka_jazn.core.response_candidate_evaluator import evaluate_response_candidate, select_best_candidate
+from latka_jazn.core.response_candidate_generator import generate_response_candidates
 
 
 @dataclass(slots=True)
@@ -59,17 +63,63 @@ class ModelGuidedResponseSynthesizer:
             cognitive_frame=cognitive_frame,
             response_policy=response_policy,
         )
-        prompt = (
-            "Sformułuj jedną trafną odpowiedź na bieżącą wiadomość użytkownika. "
-            "Użyj szkicu tylko jako materiału i ograniczeń; nie kopiuj go automatycznie. "
-            "Nie opisuj procesu tworzenia odpowiedzi. Zachowaj wymagane komponenty polityki odpowiedzi. "
-            "Jeżeli kontekst nie wystarcza, powiedz krótko czego nie wiesz zamiast zgadywać."
+        nlg_plan = context.get("nlg_plan") or {}
+        candidates = generate_response_candidates(
+            adapter=adapter,
+            nlg_plan=nlg_plan,
+            model_context=context,
+            fallback_body=draft_body,
+            max_candidates=3,
+            adapter_system_context=context,
         )
-        response = adapter.generate(ModelAdapterRequest(prompt=prompt, system_context=context))
-        body = self._clean(response.text)
-        if response.status != "completed" or not body:
-            return ModelGuidedSynthesis(False, draft_body, response.status, response.provider, response.model, "model_generation_failed_or_empty", response.sources)
-        return ModelGuidedSynthesis(True, body, response.status, response.provider, response.model, "generated_from_jazn_cognitive_context", response.sources)
+        evaluations = [
+            evaluate_response_candidate(
+                candidate=candidate,
+                nlg_plan=nlg_plan,
+                model_context=context,
+                response_policy=response_policy,
+            )
+            for candidate in candidates
+        ]
+        selected = select_best_candidate(candidates, evaluations)
+        if selected.source != "model_adapter":
+            return ModelGuidedSynthesis(
+                False,
+                draft_body,
+                selected.status,
+                selected.provider,
+                selected.model,
+                "selected_runtime_fallback_candidate",
+                [],
+            )
+        body = self._clean(selected.text)
+        if not body:
+            return ModelGuidedSynthesis(False, draft_body, selected.status, selected.provider, selected.model, "selected_candidate_empty_after_clean", [])
+        sources = self._sources_for_candidate(selected, context)
+        reason = "generated_from_grounded_memory_context" if sources else "generated_from_jazn_cognitive_context"
+        return ModelGuidedSynthesis(True, body, selected.status, selected.provider, selected.model, reason, sources)
+
+    @staticmethod
+    def _sources_for_candidate(candidate: Any, context: dict[str, Any]) -> list[dict[str, Any]]:
+        used = {str(item_id) for item_id in getattr(candidate, "used_memory_item_ids", []) or []}
+        if not used:
+            return []
+        sources: list[dict[str, Any]] = []
+        for item in context.get("allowed_memory_items") or []:
+            if not isinstance(item, dict):
+                continue
+            item_id = str(item.get("item_id") or "")
+            if item_id in used:
+                sources.append(
+                    {
+                        "item_id": item_id,
+                        "source": item.get("source"),
+                        "timestamp": item.get("timestamp"),
+                        "confidence": item.get("confidence"),
+                        "relevance_reason": item.get("relevance_reason"),
+                    }
+                )
+        return sources
 
     @staticmethod
     def _clean(text: str) -> str:
@@ -88,29 +138,47 @@ class ModelGuidedResponseSynthesizer:
         response_policy: dict[str, Any],
     ) -> dict[str, Any]:
         packets = cognitive_frame.get("cognitive_packets") or {}
-        memory = cognitive_frame.get("memory_recall_contract") or {}
-        return {
-            "user_message": user_text,
-            "detected_intent": detected_intent,
-            "route": route,
-            "response_policy": response_policy,
-            "draft_runtime_body": draft_body,
-            "voice_source_contract": cognitive_frame.get("voice_source_contract") or {},
-            "identity_continuity": cognitive_frame.get("identity_continuity") or {},
-            "truth_boundary": cognitive_frame.get("truth_boundary") or cognitive_frame.get("truth_boundary_check") or {},
-            "logical_reasoning": cognitive_frame.get("logical_reasoning") or {},
-            "operational_awareness": cognitive_frame.get("operational_awareness") or {},
-            "self_state_runtime": cognitive_frame.get("self_state_runtime") or {},
-            "neurocognitive_cycle": cognitive_frame.get("neurocognitive_cycle") or {},
-            "cognitive_packets": {
-                "dominant_packet": packets.get("dominant_packet"),
-                "packets": (packets.get("packets") or [])[:6],
-                "reply_guidance": (packets.get("reply_guidance") or [])[:8],
-            },
-            "polish_reasoning": cognitive_frame.get("polish_reasoning") or {},
-            "memory_recall_contract": {
-                "items": (memory.get("items") or [])[:8],
-                "truth_boundary": memory.get("truth_boundary"),
-            },
-            "dialogue_context": cognitive_frame.get("dialogue_context") or {},
-        }
+        nlg_plan = build_nlg_plan(
+            user_text=user_text,
+            cognitive_frame=cognitive_frame,
+            response_policy=response_policy,
+            route=route,
+            detected_intent=detected_intent,
+        )
+        thought_frame = build_operational_thought_frame(
+            user_text=user_text,
+            nlg_plan=nlg_plan,
+            cognitive_frame=cognitive_frame,
+            response_policy=response_policy,
+        )
+        packet = compile_model_context(
+            user_text=user_text,
+            cognitive_frame=cognitive_frame,
+            nlg_plan=nlg_plan,
+            thought_frame=thought_frame,
+            response_policy=response_policy,
+        )
+        context = packet.to_dict()
+        context.update(
+            {
+                "user_message": user_text,
+                "detected_intent": detected_intent,
+                "route": route,
+                "response_policy": response_policy,
+                "draft_runtime_body": draft_body,
+                "identity_continuity": cognitive_frame.get("identity_continuity") or {},
+                "truth_boundary": cognitive_frame.get("truth_boundary") or cognitive_frame.get("truth_boundary_check") or {},
+                "logical_reasoning": cognitive_frame.get("logical_reasoning") or {},
+                "operational_awareness": cognitive_frame.get("operational_awareness") or {},
+                "self_state_runtime": cognitive_frame.get("self_state_runtime") or {},
+                "neurocognitive_cycle": cognitive_frame.get("neurocognitive_cycle") or {},
+                "cognitive_packets": {
+                    "dominant_packet": packets.get("dominant_packet"),
+                    "packets": (packets.get("packets") or [])[:6],
+                    "reply_guidance": (packets.get("reply_guidance") or [])[:8],
+                },
+                "polish_reasoning": cognitive_frame.get("polish_reasoning") or {},
+                "dialogue_context": cognitive_frame.get("dialogue_context") or {},
+            }
+        )
+        return context

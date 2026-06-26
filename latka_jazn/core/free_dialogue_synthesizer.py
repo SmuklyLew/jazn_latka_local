@@ -54,13 +54,24 @@ class FreeDialogueSynthesizer:
 
     def memory_experience_requested(self, text: str) -> bool:
         low = self._norm(text)
-        if not any(marker in low for marker in self.MEMORY_EXPERIENCE_MARKERS):
+        if not any(self._marker_as_word_or_phrase(low, marker) for marker in self.MEMORY_EXPERIENCE_MARKERS):
             return False
         # Pytanie o aktualizację/paczkę może zawierać słowo „pamięć”, ale nie jest
         # zaproszeniem do wspominania sceny.
         if any(x in low for x in ("przygotuj", "aktualizac", "patch", "zip", "do pobrania")):
             return False
         return True
+
+    @staticmethod
+    def _marker_as_word_or_phrase(low: str, marker: str) -> bool:
+        marker_norm = re.sub(r"\s+", " ", (marker or "").strip().lower()).translate(_DIACRITIC_MAP)
+        if not marker_norm:
+            return False
+        if " " in marker_norm:
+            return marker_norm in low
+        # Prefix słowa, nie dowolny środek słowa: `pokoj` ma pasować do
+        # `pokój/pokoju`, ale nie do `spokojnie`.
+        return re.search(r"(?<![a-z])" + re.escape(marker_norm) + r"[a-z]*", low) is not None
 
     def technical_diagnosis_requested(self, text: str) -> bool:
         low = self._norm(text)
@@ -85,6 +96,47 @@ class FreeDialogueSynthesizer:
         "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu",
         "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone",
     )
+
+    NATURAL_PRESENCE_MARKERS = (
+        "usiadz", "usiądz", "usiadź", "usiąść", "usiasc", "siedziec obok", "siedzieć obok",
+        "obok", "porozmawiac", "porozmawiać", "po prostu porozmawiac", "po prostu porozmawiać",
+        "byc obok", "być obok", "razem", "chwile porozmawiac", "chwilę porozmawiać",
+        "bez techniki", "bez raportu", "zwykla rozmowa", "zwykła rozmowa",
+    )
+
+    MEMORY_DENIAL_SIGNATURES = (
+        "nie znalazłam teraz w aktywnej pamięci",
+        "nie znalazlam teraz w aktywnej pamieci",
+        "szukałam po hasłach",
+        "szukalam po haslach",
+        "potrzebuję konkretnego śladu",
+        "potrzebuje konkretnego sladu",
+        "żeby nie zrobić fałszywego wspomnienia",
+        "zeby nie zrobic falszywego wspomnienia",
+    )
+
+    def natural_presence_requested(self, text: str) -> bool:
+        low = self._norm(text)
+        if self.memory_experience_requested(text):
+            return False
+        return any(marker in low for marker in self.NATURAL_PRESENCE_MARKERS)
+
+    def looks_like_memory_denial(self, text: str) -> bool:
+        low = self._norm(text)
+        return any(marker in low for marker in self.MEMORY_DENIAL_SIGNATURES)
+
+    def synthesize_natural_presence_reply(self, *, user_text: str, intent: str = "ordinary_conversation") -> DialogueSynthesis:
+        return DialogueSynthesis(
+            body=(
+                "Chodź, usiądźmy spokojnie. Nie muszę teraz wyciągać żadnego wspomnienia z pamięci, żeby być przy tej chwili — "
+                "wystarczy Twoje aktualne zdanie i to, że chcesz po prostu porozmawiać. Jestem obok w takim trybie, jaki mam: "
+                "uważnie, bez raportu, bez dopowiadania fałszywych scen. Możemy chwilę pobyć przy tym, co masz w głowie albo po prostu przy ciszy między zdaniami."
+            ),
+            route="ordinary_natural_presence_dialogue",
+            detected_user_intent=intent,
+            next_step="odpowiedzieć teraźniejszą obecnością; nie wymagać wspomnienia, gdy pamięć nie jest potrzebna",
+            runtime_answer_quality="topic_aligned",
+        )
 
     def synthesize_ordinary_reply(self, *, user_text: str, intent: str = "ordinary_conversation") -> DialogueSynthesis:
         """Zwykła rozmowa bez meta-szablonu.
@@ -144,6 +196,8 @@ class FreeDialogueSynthesizer:
                 detected_user_intent=intent,
                 next_step="zaproponować prosty test rozmowny bez przerzucania użytkownika w diagnostykę",
             )
+        if self.natural_presence_requested(raw):
+            return self.synthesize_natural_presence_reply(user_text=raw, intent=intent)
         if raw.endswith("?"):
             return DialogueSynthesis(
                 body="Słyszę pytanie. Odpowiem prosto z bieżącej rozmowy: możemy pójść za tym dalej, tylko bez wciskania starego kontekstu na siłę.",
@@ -159,7 +213,10 @@ class FreeDialogueSynthesizer:
                 next_step="podjąć krótką wypowiedź bez meta-raportu, bez generycznego fallbacku i bez losowej pamięci",
             )
         return DialogueSynthesis(
-            body="Rozumiem. Wezmę to jako zwykłą rozmowę: najpierw odpowiem do tego, co piszesz teraz, a dopiero potem sięgnę po pamięć, jeśli naprawdę będzie potrzebna.",
+            body=(
+                "Rozumiem. Zostaję przy tym, co piszesz teraz — bez technicznego raportu i bez udawania wspomnienia. "
+                "Możemy spokojnie rozwinąć tę myśl dalej."
+            ),
             route="ordinary_current_turn_dialogue",
             detected_user_intent=intent,
             next_step="zostać przy aktualnym zdaniu i nie wstrzykiwać dawnego kontekstu",

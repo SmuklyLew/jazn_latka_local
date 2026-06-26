@@ -50,6 +50,7 @@ from latka_jazn.memory.event_ledger import RuntimeEventLedger
 from latka_jazn.memory.session_continuity import SessionContinuityManager
 from latka_jazn.memory.chat_html_importer import search_raw_chat_html_snippets
 from latka_jazn.memory.raw_archive import chat_archive_diagnostics
+from latka_jazn.memory.conversation_archive import ConversationArchiveStore
 from latka_jazn.core.runtime_status import build_runtime_status
 from latka_jazn.core.memory_recall_presenter import MemoryRecallPresenter
 from latka_jazn.core.free_dialogue_synthesizer import FreeDialogueSynthesizer
@@ -60,6 +61,7 @@ from latka_jazn.core.project_index import ProjectStartupIndexer
 from latka_jazn.nlp.topic_mismatch_guard import TopicMismatchGuard
 from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
 from latka_jazn.core.runtime_answer_validator import RuntimeAnswerValidator
+from latka_jazn.core.turn_context_resolver import TurnContextResolver
 from latka_jazn.core.source_origin_ledger import SourceOriginLedger
 from latka_jazn.core.template_registry import TemplateRegistry
 from latka_jazn.core.response_generation_mode import build_runtime_provenance
@@ -126,6 +128,7 @@ class JaznEngine:
         self.topic_mismatch_guard = TopicMismatchGuard()
         self.dialogue_intent_classifier = DialogueIntentClassifier()
         self.runtime_answer_validator = RuntimeAnswerValidator()
+        self.turn_context_resolver = TurnContextResolver()
         self.source_origin_ledger = SourceOriginLedger(self.config.root)
         self.template_registry = TemplateRegistry(self.config.root)
         self.runtime_response_synthesizer = RuntimeResponseSynthesizer()
@@ -299,7 +302,7 @@ class JaznEngine:
             pass
 
     def bootstrap(self) -> str:
-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
+        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
         MemoryImporter(self.store, self.config.root).register_packaged_sources(
             auto_import_raw_chat_html=self.config.auto_import_raw_chat_html_on_bootstrap,
             limit_conversations=self.config.raw_chat_html_auto_import_limit,
@@ -360,7 +363,7 @@ class JaznEngine:
             self.store.close()
 
     def handle_user_message(self, text: str, *, client_context: dict | None = None) -> str:
-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
+        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
         low = text.lower()
         neurological_signal_route = self.neurological_signal_router.analyse(text)
         self.event_ledger.append_turn(
@@ -898,11 +901,18 @@ class JaznEngine:
             "episodes": [],
             "legacy_messages": [],
             "source_file_hits": [],
+            "conversation_archive_hits": [],
+            "conversation_archive_search": {
+                "status": "skipped_by_memory_gate",
+                "issues": [],
+                "truth_boundary": "Conversation archive nie było odpytywane, bo brama pamięci zablokowała treściowy recall dla tej intencji.",
+            },
             "raw_chat_fallback": [],
             "counts": {
                 "episodes": 0,
                 "legacy_messages": 0,
                 "source_file_hits": 0,
+                "conversation_archive_hits": 0,
                 "raw_chat_fallback": 0,
             },
             "memory_gate": memory_gate,
@@ -913,6 +923,54 @@ class JaznEngine:
                 "truth_boundary": "Brak aktywnego wyszukiwania pamięci w tej turze; pytanie dotyczy statusu/możliwości/internetu, nie wspomnień.",
             },
         }
+
+    def _conversation_archive_context_hits(self, phrases: list[str], *, limit: int = 5) -> tuple[list[dict], dict]:
+        """Pobiera treściowe trafienia z conversation_archive/FTS jako normalną warstwę pamięci.
+
+        Wcześniejsze wersje miały osobną komendę --conversation-archive-search,
+        ale zwykły memory recall nadal mógł skończyć na licznikach albo source_file_hits.
+        Ten helper włącza archive do tego samego kontraktu pamięci, bez wybuchu gdy
+        baza jest niepełna, niezaimportowana albo środowisko ma tylko częściową paczkę.
+        """
+        query = " ".join(str(x).strip() for x in (phrases or []) if str(x).strip())
+        if not query:
+            return [], {"status": "empty_query", "issues": ["empty_query"]}
+        try:
+            store = ConversationArchiveStore(self.config.root)
+            search_result = store.search(query, limit=max(1, limit), include_snippets=True).to_dict()
+        except Exception as exc:
+            return [], {
+                "status": "error",
+                "issues": [f"conversation_archive_error:{type(exc).__name__}:{exc}"],
+                "truth_boundary": "Błąd archive search nie może blokować rozmowy ani udawać pamięci.",
+            }
+        hits = []
+        for hit in search_result.get("hits") or []:
+            if not isinstance(hit, dict):
+                continue
+            excerpt = str(hit.get("excerpt") or "").strip()
+            if not excerpt:
+                continue
+            hits.append({
+                "phrase": query,
+                "search_pass": "conversation_archive_fts",
+                "text": excerpt,
+                "excerpt": excerpt,
+                "conversation_title": hit.get("title"),
+                "author_role": hit.get("role"),
+                "create_time_warsaw": hit.get("create_time"),
+                "source_name": hit.get("source_name"),
+                "source_locator": hit.get("source_locator"),
+                "message_uid": hit.get("message_uid"),
+                "conversation_uid": hit.get("conversation_uid"),
+                "content_hash": hit.get("content_hash"),
+                "identity_confidence": hit.get("identity_confidence"),
+                "privacy_scope": hit.get("privacy_scope"),
+                "review_status": hit.get("review_status"),
+                "rank": hit.get("rank"),
+                "grounding": "conversation_archive_v1+fts_v1",
+            })
+        return hits[:limit], search_result
 
     def _memory_context_for_chatgpt(self, text: str, limit: int = 5) -> dict:
         """Buduje kontekst pamięci przez planer wyszukiwania, nie przez gołe tokeny.
@@ -985,12 +1043,13 @@ class JaznEngine:
         legacy = self._filter_memory_context_candidates(legacy, user_text=text, kind="legacy_message")[:limit]
 
         source_file_hits = [hit.to_dict() for hit in self.memory_search_planner.search_source_files(search_plan, limit=limit)]
+        conversation_archive_hits, conversation_archive_search = self._conversation_archive_context_hits(phrases, limit=limit)
 
         raw_fallback: list[dict] = []
         raw_path = self.config.root / "memory" / "raw" / "chat.html"
-        # Surowe chat.html jest ostatecznością: uruchamia się dopiero, gdy indeksy
-        # i pliki kanoniczne nie zwróciły treści.
-        if not legacy and not episodes and not source_file_hits and raw_path.exists():
+        # Surowe chat.html jest ostatecznością: uruchamia się dopiero, gdy indeksy,
+        # conversation_archive i pliki kanoniczne nie zwróciły treści.
+        if not legacy and not episodes and not source_file_hits and not conversation_archive_hits and raw_path.exists():
             raw_fallback = search_raw_chat_html_snippets(raw_path, phrases, limit=3)
 
         context = {
@@ -999,11 +1058,21 @@ class JaznEngine:
             "episodes": episodes,
             "legacy_messages": legacy,
             "source_file_hits": source_file_hits[:limit],
+            "conversation_archive_hits": conversation_archive_hits[:limit],
+            "conversation_archive_search": {
+                "status": conversation_archive_search.get("status"),
+                "query": conversation_archive_search.get("query"),
+                "fts_query": conversation_archive_search.get("fts_query"),
+                "searched_shards": conversation_archive_search.get("searched_shards"),
+                "issues": conversation_archive_search.get("issues") or [],
+                "truth_boundary": conversation_archive_search.get("truth_boundary"),
+            },
             "raw_chat_fallback": raw_fallback[:3],
             "counts": {
                 "episodes": len(episodes),
                 "legacy_messages": len(legacy),
                 "source_file_hits": len(source_file_hits[:limit]),
+                "conversation_archive_hits": len(conversation_archive_hits[:limit]),
                 "raw_chat_fallback": len(raw_fallback[:3]),
             },
         }
@@ -1077,7 +1146,7 @@ class JaznEngine:
         To jest właściwy tryb integracji: runtime działa jak pamięć/uwaga/afekt/procedury,
         a ChatGPT używa wyniku jako wewnętrznego kontekstu do jednej odpowiedzi Łatki.
         """
-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
+        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
         turn_id = str(uuid.uuid4())
         trace_id = str(uuid.uuid4())
         now = time.time()
@@ -1269,6 +1338,7 @@ class JaznEngine:
                 "rule": "Każda normalna odpowiedź Łatki przez ChatGPT ma zaczynać się tym prefixem czasu. Runtime bezpośredni dodaje go przez ResponseRenderer; most ChatGPT musi przenieść go na wierzch odpowiedzi, zamiast chować tylko w JSON.",
                 "example_start": f"{self.clock.header(sample)} ",
             },
+            "timestamp_contract": self.clock.sample_contract(sample),
             "user_message": text,
             "client_context": client_context or {},
             "contract": self.chatgpt_adapter.contract().to_dict(),
@@ -1433,23 +1503,17 @@ class JaznEngine:
         prior_runtime_route = ctx.get("previous_runtime_route") or self.last_runtime_route
         now_for_context = time.time()
         prior_context_age_seconds = int(now_for_context - prior_turn_at) if isinstance(prior_turn_at, (int, float)) else None
-        current_text_low = (text or "").strip().lower()
-        current_text_words = [w for w in current_text_low.replace("?", " ").replace("!", " ").split() if w]
-        strong_standalone_question = bool(
-            "?" in current_text_low
-            and any(marker in current_text_low for marker in ("jaźń", "jazn", "łatka", "latka", "chatgpt", "runtime", "źródło", "zrodlo", "własny głos", "wlasny glos"))
+        turn_context_resolution = self.turn_context_resolver.resolve(
+            current_user_text=text,
+            previous_user_text=prior_user_text,
+            previous_intent=prior_detected_intent,
+            previous_route=prior_runtime_route,
+            session_id=str(ctx.get("session_id") or ""),
+            no_carryover=no_carryover,
+            time_gap_seconds=prior_context_age_seconds,
+            explicit_previous_user_text=bool(ctx.get("previous_user_text")),
         )
-        ellipsis_like_current_turn = bool(
-            ctx.get("previous_user_text")
-            or (len(current_text_words) <= 4 and not strong_standalone_question)
-            or current_text_low in {"to zrób", "zrób to", "zrob to", "możesz to zrobić", "mozesz to zrobic", "dalej", "kontynuuj", "a ty", "a u ciebie"}
-            or current_text_low.startswith(("a ", "więc ", "wiec ", "czyli ")) and len(current_text_words) <= 8 and not strong_standalone_question
-        )
-        carryover_allowed = bool(
-            (not no_carryover) and prior_user_text
-            and ellipsis_like_current_turn
-            and (ctx.get("previous_user_text") or prior_context_age_seconds is None or prior_context_age_seconds <= 21600)
-        )
+        carryover_allowed = bool(turn_context_resolution.carryover_allowed)
         if carryover_allowed:
             ctx.setdefault("previous_user_text", prior_user_text)
             if prior_detected_intent:
@@ -1464,16 +1528,13 @@ class JaznEngine:
         ).to_dict()
         frame["dialogue_intent_classifier"] = dialogue_intent_report
         frame["turn_context_carryover"] = {
-            "schema_version": "turn_context_carryover/v14.7.0",
+            **turn_context_resolution.to_dict(),
             "previous_user_text_available": bool(prior_user_text),
             "previous_user_text_used": bool(carryover_allowed),
             "previous_detected_intent": prior_detected_intent,
             "previous_runtime_route": prior_runtime_route,
             "previous_context_age_seconds": prior_context_age_seconds,
             "ttl_seconds": 21600,
-            "ellipsis_like_current_turn": ellipsis_like_current_turn,
-            "strong_standalone_question": strong_standalone_question,
-            "truth_boundary": "Od v14.7.0 poprzedni kontekst wolno przenieść tylko dla krótkich/eliptycznych odpowiedzi albo jawnie przekazanego previous_user_text. Pełne pytania użytkownika nie mogą odziedziczyć starego tematu.",
         }
         envelope = CognitiveTurnEnvelope.from_cognitive_frame(
             frame,
@@ -1508,6 +1569,7 @@ class JaznEngine:
             lexical_semantic_understanding=frame.get("lexical_semantic_understanding") if isinstance(frame.get("lexical_semantic_understanding"), dict) else None,
         )
         decision_dict = decision.to_dict()
+        decision_dict["timestamp_contract"] = envelope.cognitive_frame.get("timestamp_contract") or {}
         decision_dict["voice_source_contract"] = envelope.cognitive_frame.get("voice_source_contract") or self.voice_source_contract.to_dict()
         decision_dict["runtime_rendering_mode"] = envelope.cognitive_frame.get("runtime_rendering_mode") or {}
         decision_dict["memory_recall_contract_status"] = {
@@ -1541,6 +1603,11 @@ class JaznEngine:
             "lexical_semantic_understanding": frame.get("lexical_semantic_understanding") if isinstance(frame.get("lexical_semantic_understanding"), dict) else {},
             "dictionary_adapter": self.external_dictionary_adapter,
             "store_stats": self.store.stats(),
+            "store": self.store,
+            "model_adapter_status": self.model_adapter.describe() if hasattr(self.model_adapter, "describe") else {},
+            "granular_affect": frame.get("granular_affect") if isinstance(frame.get("granular_affect"), dict) else {},
+            "affective_state": frame.get("affective_state") if isinstance(frame.get("affective_state"), dict) else {},
+            "emotional_profile": frame.get("emotional_profile") if isinstance(frame.get("emotional_profile"), dict) else {},
             "route_entry": route_entry.to_dict(),
             "required_components": route_entry.required_components,
             "turn_response_policy": turn_response_policy.to_dict() if 'turn_response_policy' in locals() else {},
@@ -1555,7 +1622,7 @@ class JaznEngine:
         decision_dict["handler_missing_components"] = handler_result.missing_components
         if handler_result.source_origin_detail:
             decision_dict["source_origin_detail"] = handler_result.source_origin_detail
-        dedicated_preserve_handlers = {"CapabilityStatusHandler", "SelfMemoryRecallHandler", "DirectLatkaVoiceHandler", "IdentityMemoryExistenceHandler", "CanonSourceHandler"}
+        dedicated_preserve_handlers = {"CapabilityStatusHandler", "SelfMemoryRecallHandler", "DirectLatkaVoiceHandler", "IdentityMemoryExistenceHandler", "CanonSourceHandler", "SelfArchitectureAuditHandler"}
         handler_required = list(handler_result.required_components or route_entry.required_components or [])
         handler_satisfied = set(handler_result.satisfied_components or [])
         handler_missing = list(handler_result.missing_components or [])
@@ -1676,7 +1743,7 @@ class JaznEngine:
             memory_gate=str(((frame.get("memory_context") or {}).get("gate") if isinstance(frame.get("memory_context"), dict) else None) or "not_needed"),
             startup_status_mode="fast",
             sqlite_health_mode="metadata",
-            network_time_used=False,
+            network_time_used=bool((envelope.cognitive_frame.get("timestamp_contract") or {}).get("trusted")),
             deep_audit_used=False,
             runtime_answer_validation=answer_validation.to_dict(),
             final_text_source=str(decision_dict.get("response_generation_mode") or decision_dict.get("handler_generation_mode") or "handler_or_synthesizer"),
@@ -1791,7 +1858,7 @@ class JaznEngine:
             envelope_dict,
             source=ctx.get("client", "process_turn"),
             actor="latka_runtime",
-            tags=["cognitive_turn_envelope", "final_response_contract", "timestamp_contract", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "project_startup_index", "v14.6.10"],
+            tags=["cognitive_turn_envelope", "final_response_contract", "timestamp_contract", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "project_startup_index", self.config.version],
             importance=0.86,
             emotional_weight=0.55,
             canonical_impact=1,
@@ -1802,7 +1869,7 @@ class JaznEngine:
             actor="latka_runtime",
             source=ctx.get("client", "process_turn"),
             payload=envelope_dict,
-            tags=["cognitive_turn_envelope", "final_response_contract", "exact", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", "v14.6.10"],
+            tags=["cognitive_turn_envelope", "final_response_contract", "exact", "dialogue_intent_classifier", "runtime_answer_validator", "source_origin_ledger", self.config.version],
             importance=0.86,
             emotional_weight=0.55,
             canonical_impact=1,

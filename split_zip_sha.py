@@ -28,7 +28,7 @@ Przykłady:
 
     py split_zip_sha.py "D:\\.AI\\jazn_v14.8.3.1" --part-size-mb 500
 
-    py split_zip_sha.py "D:\\.AI\\jazn_v14.8.3.1" --out "D:\\Desktop\\pakiet" --name jazn_v14.8.3.1 --part-size-mb 480 --force
+    py split_zip_sha.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --name jazn_latka_14.8.5.000 --part-size-mb 480 --force
 
 Konfiguracja bez argumentów CLI jest niżej w sekcji USTAWIENIA DOMYŚLNE.
 """

@@ -16,7 +16,7 @@ Zwykła rozmowa i `--runtime-preview` mogły dziedziczyć ciężki startup statu
 
 ## Granica Fast/Deep
 
-Fast path: normalna rozmowa, `--runtime-preview`, `--status-json`, `--chat-jsonl`, `--turn-trace`.
+Fast path: normalna rozmowa, `--runtime-preview`, `--status-json`, `--chat-gpt`, `--turn-trace`.
 
 Deep path: `--startup-status-deep`, `--sqlite-integrity-audit`, `--network-time-check`.
 
@@ -24,7 +24,7 @@ Fast path nie jest pełnym audytem. Deep path może być wolny i jest uruchamian
 
 ## Testy
 
-Zakres testów obejmuje klasyfikator, registry, walidator, startup summary, health mode SQLite, brak `urlopen()` w normalnej turze, CLI `--startup-status-fast`, CLI `--turn-trace` i smoke `--chat-jsonl`.
+Zakres testów obejmuje klasyfikator, registry, walidator, startup summary, health mode SQLite, brak `urlopen()` w normalnej turze, CLI `--startup-status-fast`, CLI `--turn-trace` i smoke `--chat-gpt`.
 
 ## Ograniczenia
 

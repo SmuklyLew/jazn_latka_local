@@ -1,11 +1,19 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass, asdict
 from typing import Any
+from datetime import datetime, timezone
 import hashlib
 import re
 
-SCHEMA_VERSION = "final_response_contract/v14.7.0"
+from latka_jazn.version import schema_version
+from latka_jazn.core.timestamp_policy import (
+    TIMESTAMP_MAX_AGE_SECONDS,
+    TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE,
+    timestamp_runtime_policy,
+)
+
+SCHEMA_VERSION = schema_version("final_response_contract")
 
 
 @dataclass(slots=True)
@@ -27,6 +35,8 @@ class FinalResponseContract:
     final_visible_text: str
     timestamp_required: bool = True
     timestamp_source: str = "cognitive_turn_envelope.trace.timestamp_header"
+    timestamp_trusted: bool | None = None
+    timestamp_sample_iso: str | None = None
     runtime_route: str = "unknown"
     detected_user_intent: str = "unknown"
     direct_answer_required: bool = False
@@ -49,6 +59,7 @@ class FinalResponseContract:
     voice_source_contract: dict[str, Any] | None = None
     runtime_rendering_mode: dict[str, Any] | None = None
     memory_recall_contract_status: dict[str, Any] | None = None
+    final_visible_integrity: dict[str, Any] | None = None
     schema_version: str = SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, Any]:
@@ -74,6 +85,12 @@ class FinalResponseContract:
             raise ValueError("timestamp_header is required for final visible response")
         marker = state_emoticon or "🌿"
         final_visible_text = cls.ensure_timestamp_prefix(timestamp_header, marker, body)
+        timestamp_contract = dict(decision.get("timestamp_contract") or {})
+        final_visible_integrity = cls.validate_visible_text(
+            timestamp_header,
+            final_visible_text,
+            timestamp_contract=timestamp_contract,
+        )
         fallback_classification = cls.classify_fallback(decision.get("route"), body, runtime_version=runtime_version)
         if fallback_classification != "not_fallback":
             runtime_answer_quality = "stale_route_mismatch" if fallback_classification == "stale_route_mismatch" else "fallback_or_debug"
@@ -97,6 +114,9 @@ class FinalResponseContract:
             state_emoticon=marker,
             body=body,
             final_visible_text=final_visible_text,
+            timestamp_source=str(timestamp_contract.get("source") or "cognitive_turn_envelope.trace.timestamp_header"),
+            timestamp_trusted=(bool(timestamp_contract.get("trusted")) if "trusted" in timestamp_contract else None),
+            timestamp_sample_iso=timestamp_contract.get("sample_iso"),
             runtime_route=str(decision.get("route") or "unknown"),
             detected_user_intent=str(decision.get("detected_user_intent") or "unknown"),
             direct_answer_required=bool(decision.get("direct_answer_required")),
@@ -119,6 +139,7 @@ class FinalResponseContract:
             voice_source_contract=decision.get("voice_source_contract") or None,
             runtime_rendering_mode=decision.get("runtime_rendering_mode") or None,
             memory_recall_contract_status=decision.get("memory_recall_contract_status") or None,
+            final_visible_integrity=final_visible_integrity,
         )
 
     @staticmethod
@@ -165,14 +186,46 @@ class FinalResponseContract:
         return f"{timestamp_header} {marker}\n{text}"
 
     @staticmethod
-    def validate_visible_text(timestamp_header: str, text: str) -> dict[str, Any]:
-        """Waliduje, czy widoczna odpowiedź dziedziczy timestamp koperty tury."""
+    def validate_visible_text(
+        timestamp_header: str,
+        text: str,
+        *,
+        timestamp_contract: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Waliduje widoczny timestamp: obecność, źródło, zaufanie i świeżość."""
         visible = (text or "").strip()
+        contract = dict(timestamp_contract or {})
         has_timestamp = bool(timestamp_header) and visible.startswith(timestamp_header)
+        trusted = contract.get("trusted")
+        source = contract.get("source")
+        sample_iso = contract.get("sample_iso")
+        max_age_seconds = int(contract.get("max_age_seconds") or TIMESTAMP_MAX_AGE_SECONDS)
+        freshness_seconds: int | None = None
+        freshness_ok = True
+        if sample_iso:
+            try:
+                sample_dt = datetime.fromisoformat(str(sample_iso).replace("Z", "+00:00"))
+                if sample_dt.tzinfo is None:
+                    sample_dt = sample_dt.replace(tzinfo=timezone.utc)
+                freshness_seconds = abs(int((datetime.now(timezone.utc) - sample_dt.astimezone(timezone.utc)).total_seconds()))
+                freshness_ok = freshness_seconds <= max_age_seconds
+            except Exception:
+                freshness_ok = False
+        trust_required = bool(contract.get("require_trusted_in_final_visible", TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE))
+        trust_ok = True if trusted is None and not contract else bool(trusted) or not trust_required
+        valid = bool(has_timestamp and freshness_ok and trust_ok)
         return {
-            "schema_version": "final_response_contract_validation/v14.7.0",
+            "schema_version": schema_version("final_response_contract_validation"),
+            "timestamp_policy": timestamp_runtime_policy(),
             "timestamp_header": timestamp_header,
             "timestamp_present": has_timestamp,
-            "valid": has_timestamp,
+            "timestamp_source": source,
+            "timestamp_trusted": trusted,
+            "timestamp_sample_iso": sample_iso,
+            "timestamp_freshness_seconds": freshness_seconds,
+            "timestamp_max_age_seconds": max_age_seconds,
+            "timestamp_freshness_ok": freshness_ok,
+            "timestamp_trust_ok": trust_ok,
+            "valid": valid,
             "text_sha256": hashlib.sha256(visible.encode("utf-8")).hexdigest(),
         }
