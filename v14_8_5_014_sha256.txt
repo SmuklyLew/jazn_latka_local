@@ -1,0 +1,2 @@
+d58b99e60515ddb01355762fab8581abfdb5e3700a79600a5d5b1684d95c608e  /mnt/data/v14_8_5_014_strict_runtime_truth_fast_continuity_openai_state_gateway.patch
+fa8ef429360d86e168ae3eeff318eb68eded166987f4da450be9aa47f5e26142  /mnt/data/v14_8_5_014_PATCH_REPORT.md

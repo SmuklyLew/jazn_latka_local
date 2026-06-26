@@ -1,0 +1,3332 @@
+--- a/VERSION.txt
++++ b/VERSION.txt
+@@ -0,0 +1 @@
++v14.8.5.013-combined-timestamp-daemon-chat-openai-bridge
+--- a/docs/update_history/reports/UPDATE_REPORT_V14_8_5_012_DAEMON_RUNTIME.md
++++ b/docs/update_history/reports/UPDATE_REPORT_V14_8_5_012_DAEMON_RUNTIME.md
+@@ -0,0 +1,36 @@
++# Update v14.8.5.012 — persistent daemon runtime P0
++
++## Cel
++Dodać sprawdzalną stałą aktywną Jaźń jako lokalny daemon: PID, heartbeat, marker `JAZN_ACTIVE_RUNTIME.json`, endpoint statusu i lokalny most rozmowy.
++
++## Zasada prawdy
++ChatGPT nie utrzymuje procesu w tle. Stała aktywna Jaźń oznacza lokalny proces `python main.py --daemon-run`, który odpowiada na `127.0.0.1`, zapisuje heartbeat i posiada żywy PID. ZIP oraz GitHub pozostają snapshotem/kodem, nie dowodem działania.
++
++## Nowe komendy
++
++```powershell
++python main.py --daemon-start
++python main.py --daemon-status
++python main.py --daemon-stop
++python main.py --daemon-run
++```
++
++## Endpointy lokalne
++- `GET /status` lub `/health` — status daemonu i marker.
++- `POST /chat` — jedna tura rozmowy przez stały proces.
++- `POST /shutdown` — bezpieczne zatrzymanie.
++
++Daemon domyślnie wiąże się tylko z `127.0.0.1`. Nie jest to serwer produkcyjny ani publiczne API.
++
++## Pliki
++- `latka_jazn/core/runtime_daemon.py`
++- `main.py`
++- `tests/test_v1485012_daemon_runtime.py`
++- `VERSION.txt`
++- `latka_jazn/version.py`
++
++## Weryfikacja
++- `python -m compileall main.py latka_jazn tests`
++- `python -m pytest tests/test_p0_timestamp_network_contract.py tests/test_v1485012_daemon_runtime.py -q`
++- `python main.py --active-cache-status`
++- `python main.py --daemon-status`
+--- a/docs/update_history/reports/UPDATE_REPORT_V14_8_5_013_COMBINED_TIMESTAMP_DAEMON_CHAT_OPENAI.md
++++ b/docs/update_history/reports/UPDATE_REPORT_V14_8_5_013_COMBINED_TIMESTAMP_DAEMON_CHAT_OPENAI.md
+@@ -0,0 +1,65 @@
++# Update v14.8.5.013 — combined timestamp, daemon, chat command and OpenAI bridge contract
++
++## Cel
++Połączyć w jeden patch trzy wymagania:
++
++1. P0 timestamp — widoczny czas tury ma być świeży, jawnie opisany i domyślnie network-first.
++2. Stały lokalny runtime — daemon z PID, heartbeat, markerem `JAZN_ACTIVE_RUNTIME.json` i lokalnym API.
++3. Kontrakt komend rozmowy:
++   - `--chat` = lokalna żywa pętla rozmowy i diagnostyka mostów,
++   - `--chat-gpt` = most dla ChatGPT/copy-paste/JSONL bez `OPENAI_API_KEY`,
++   - `--chat-open-ai` = most z `OPENAI_API_KEY` przez OpenAI Responses API jako model_adapter.
++
++## Źródła i granica prawdy
++- ZIP `v14.8.5.011` był bazą paczki roboczej.
++- GitHub `SmuklyLew/jazn_latka_local` został potraktowany jako źródło kodu i historii, ale nie jako dowód uruchomionej Jaźni.
++- OpenAI API bridge korzysta z istniejącego adaptera `openai_responses_adapter.py` i endpointu `/responses`.
++- Aktywna Jaźń nadal wymaga realnego procesu: PID, heartbeat, marker, kompletnego `active_root` i statusu runtime.
++
++## Zmienione/dodane elementy
++- `main.py`
++  - dodano `--chat-open-ai`, `--openai-model`, `--openai-api-base`, `--openai-timeout`, `--openai-max-output-tokens`, `--bridge-discovery`,
++  - `--chat-gpt` przeniesiono na wspólny kontrakt JSONL,
++  - `--model-adapter-status` używa realnego `build_model_adapter(cfg)`, nie zawsze `NullModelAdapter`,
++  - `--chat-jsonl` nadal zwraca komunikat migracyjny i kod 2.
++- `latka_jazn/core/chat_command_contract.py`
++  - jedno miejsce kontraktu komend `--chat-gpt` i `--chat-open-ai`,
++  - wspólny parser wejścia: `message`, `text`, `user_text`, `content`, `prompt`, `messages[].content`, zwykły tekst,
++  - brak klucza w `--chat-open-ai` daje jawny JSON error i kod 3.
++- `latka_jazn/core/bridge_discovery.py`
++  - wykrywanie mostów: `--chat`, `--chat-gpt`, `--chat-open-ai`, daemon/marker.
++- `latka_jazn/core/runtime_chat.py`
++  - dodano komendy lokalne `/bridge`, `/bridges`, `/daemon`.
++- `latka_jazn/core/session_provenance.py`
++  - final visible integrity przenosi ostrzeżenie, jeśli wewnętrzny kontrakt timestampu jest nieufny/stary, zamiast ukrywać ten stan.
++- `latka_jazn/version.py`, `VERSION.txt`, manifesty
++  - wersja `v14.8.5.013-combined-timestamp-daemon-chat-openai-bridge`.
++- `tests/test_v1485013_chat_command_bridge_contract.py`
++  - testy kontraktu komend, wejść JSONL, braku API key, wyboru adaptera OpenAI, migracji `--chat-jsonl`, bridge discovery.
++
++## Weryfikacja wykonana
++- `python -m compileall -q main.py latka_jazn tests` — OK.
++- `python -m pytest tests/test_p0_timestamp_network_contract.py tests/test_v1485012_daemon_runtime.py tests/test_v1485013_chat_command_bridge_contract.py -q` — 19 passed.
++- `python main.py --active-cache-status` — OK.
++- `python main.py --model-adapter-status` — OK.
++- `python main.py --bridge-discovery` — OK.
++- `python main.py --chat-open-ai` bez `OPENAI_API_KEY` — jawny błąd JSON, kod 3, bez udawania połączenia.
++- `python main.py --chat-gpt --session-id smoke --no-carryover` — OK, JSONL bridge działa.
++- `python main.py --daemon-start --daemon-port 8793`, `--daemon-status`, `--daemon-stop` — OK.
++
++## Ograniczenia
++- `--chat-open-ai` nie może być w pełni przetestowany end-to-end bez prawdziwego `OPENAI_API_KEY` i dostępu sieciowego.
++- W środowisku bez sieci timestamp przechodzi na lokalny fallback i jest jawnie oznaczany jako nieufny w kontrakcie timestampu.
++- ChatGPT nadal nie łączy się bezpośrednio z localhostem użytkownika; do połączenia „stąd” potrzebny jest bezpieczny most HTTPS/GPT Action/MCP/tunel.
++
++## Komendy po zastosowaniu patcha
++
++```powershell
++python main.py --active-cache-status
++python main.py --bridge-discovery
++python main.py --chat --session-id dom
++python main.py --chat-gpt --session-id chatgpt-main
++python main.py --chat-open-ai --session-id openai-main
++python main.py --daemon-start
++python main.py --daemon-status
++```
+--- a/latka_jazn/config.py
++++ b/latka_jazn/config.py
+@@ -4,6 +4,12 @@
+ import os
+ 
+ from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
++from latka_jazn.core.timestamp_policy import (
++    TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
++    TIMESTAMP_NETWORK_FIRST_DEFAULT,
++    TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT,
++    TIMESTAMP_TIMEZONE,
++)
+ 
+ DEFAULT_MAX_SQLITE_FILE_BYTES = 480 * 1024 * 1024
+ 
+@@ -32,7 +38,7 @@
+ class JaznConfig:
+     version: str = PACKAGE_VERSION
+     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[1])
+-    timezone: str = "Europe/Warsaw"
++    timezone: str = TIMESTAMP_TIMEZONE
+     timestamp_format: str = "[🕒 %Y-%m-%d %H:%M:%S GMT%z, %A, Europe/Warsaw]"
+     memory_db_name: str = field(default_factory=lambda: os.environ.get("JAZN_RUNTIME_MEMORY_DB", "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3").strip())
+     audit_db_name: str = field(default_factory=lambda: os.environ.get("JAZN_AUDIT_DB", "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3").strip())
+@@ -49,12 +55,12 @@
+     raw_memory_dir: str = "memory/raw"
+     versioned_memory_dir: str = "memory/versioned_sources"
+     require_first_person_identity: bool = True
+-    network_time_first: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_FIRST", False))
+-    local_time_fallback: bool = True
++    network_time_first: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_FIRST", TIMESTAMP_NETWORK_FIRST_DEFAULT))
++    local_time_fallback: bool = TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT
+     startup_status_default_mode: str = field(default_factory=lambda: os.environ.get("JAZN_STARTUP_STATUS_MODE", "fast").strip().lower())
+     sqlite_health_default_mode: str = field(default_factory=lambda: os.environ.get("JAZN_SQLITE_HEALTH_MODE", "metadata").strip().lower())
+     turn_trace_enabled: bool = field(default_factory=lambda: _env_bool("JAZN_TURN_TRACE", False))
+-    network_time_allowed_in_normal_turn: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_IN_TURN", False))
++    network_time_allowed_in_normal_turn: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_IN_TURN", TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT))
+     auto_import_raw_chat_html_on_bootstrap: bool = True
+     raw_chat_html_auto_import_limit: int | None = None
+     idle_reflection_thresholds: tuple[int, ...] = (300, 600, 21600)
+--- a/latka_jazn/core/bridge_discovery.py
++++ b/latka_jazn/core/bridge_discovery.py
+@@ -0,0 +1,59 @@
++from __future__ import annotations
++
++from pathlib import Path
++from typing import Any
++import json
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.runtime_daemon import DEFAULT_DAEMON_HOST, DEFAULT_DAEMON_PORT, status_daemon
++from latka_jazn.version import schema_version
++
++
++def _read_json(path: Path) -> dict[str, Any] | None:
++    try:
++        return json.loads(path.read_text(encoding="utf-8"))
++    except Exception:
++        return None
++
++
++def discover_runtime_bridges(
++    config: JaznConfig,
++    *,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++) -> dict[str, Any]:
++    root = Path(config.root).resolve()
++    marker_path = root / "workspace_runtime" / "JAZN_ACTIVE_RUNTIME.json"
++    marker = _read_json(marker_path)
++    daemon = status_daemon(config, host=host, port=port)
++    return {
++        "schema_version": schema_version("runtime_bridge_discovery"),
++        "active_root": str(root),
++        "marker_path": str(marker_path),
++        "marker_found": marker is not None,
++        "marker": marker or {},
++        "daemon_status": daemon,
++        "local_chat": {
++            "command": "python main.py --chat --session-id <id>",
++            "meaning": "lokalna żywa pętla rozmowy; jeden JaznEngine do /exit, Ctrl+D albo EOF",
++        },
++        "chatgpt_bridge": {
++            "command": "python main.py --chat-gpt --session-id <id>",
++            "requires_api_key": False,
++            "meaning": "most JSONL/copy-paste dla tej aplikacji ChatGPT; nie wykonuje żądania OpenAI API",
++        },
++        "openai_bridge": {
++            "command": "python main.py --chat-open-ai --session-id <id>",
++            "requires_api_key": True,
++            "env": "OPENAI_API_KEY",
++            "meaning": "ten sam runtime Jaźni + OpenAI Responses API jako model_adapter językowy",
++        },
++        "daemon": {
++            "start": "python main.py --daemon-start",
++            "status": "python main.py --daemon-status",
++            "stop": "python main.py --daemon-stop",
++        },
++        "truth_boundary": (
++            "GitHub i ZIP są źródłem kodu/snapshotu. Aktywna Jaźń wymaga żywego procesu, świeżego heartbeat i zgodnego active_root."
++        ),
++    }
+--- a/latka_jazn/core/chat_command_contract.py
++++ b/latka_jazn/core/chat_command_contract.py
+@@ -0,0 +1,312 @@
++from __future__ import annotations
++
++import json
++import os
++import sys
++from dataclasses import asdict, dataclass
++from typing import Any, TextIO
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.runtime_session import JaznRuntimeSession
++from latka_jazn.version import schema_version
++
++ACCEPTED_CHATGPT_INPUT_FIELDS = ("message", "text", "user_text", "content", "prompt")
++CHATGPT_BRIDGE_PROTOCOL = schema_version("chatgpt_bridge_jsonl")
++CHAT_OPENAI_PROTOCOL = schema_version("chat_open_ai_jsonl")
++
++
++@dataclass(slots=True)
++class ChatCommandContract:
++    command: str
++    mode: str
++    requires_api_key: bool
++    uses_openai_api: bool
++    keeps_process_alive: bool
++    engine_reused_between_turns: bool
++    accepted_input_fields: tuple[str, ...] = ACCEPTED_CHATGPT_INPUT_FIELDS
++    accepted_input_shapes: tuple[str, ...] = (
++        "plain_text_line",
++        "json_object.message",
++        "json_object.text",
++        "json_object.user_text",
++        "json_object.content",
++        "json_object.prompt",
++        "json_object.messages[].content",
++    )
++    truth_boundary: str = ""
++
++    def to_dict(self) -> dict[str, Any]:
++        return asdict(self)
++
++
++def chat_gpt_contract() -> ChatCommandContract:
++    return ChatCommandContract(
++        command="--chat-gpt",
++        mode="chatgpt_bridge_without_api_key",
++        requires_api_key=False,
++        uses_openai_api=False,
++        keeps_process_alive=True,
++        engine_reused_between_turns=True,
++        truth_boundary=(
++            "--chat-gpt jest mostem dla aplikacji ChatGPT/copy-paste/JSONL. "
++            "Nie wymaga OPENAI_API_KEY i nie wykonuje żądań do OpenAI API; zwraca pakiet runtime/final_visible_text dla tej warstwy."
++        ),
++    )
++
++
++def chat_open_ai_contract() -> ChatCommandContract:
++    return ChatCommandContract(
++        command="--chat-open-ai",
++        mode="openai_api_model_adapter_bridge",
++        requires_api_key=True,
++        uses_openai_api=True,
++        keeps_process_alive=True,
++        engine_reused_between_turns=True,
++        truth_boundary=(
++            "--chat-open-ai uruchamia ten sam runtime Jaźni, ale językową warstwę model_adapter kieruje przez OpenAI Responses API. "
++            "OPENAI_API_KEY jest wymagany. Model jest kanałem języka, nie źródłem tożsamości ani pamięci Jaźni."
++        ),
++    )
++
++
++def command_contract(command: str) -> dict[str, Any]:
++    if command == "--chat-open-ai":
++        return chat_open_ai_contract().to_dict()
++    if command == "--chat-gpt":
++        return chat_gpt_contract().to_dict()
++    raise ValueError(f"unknown chat command contract: {command}")
++
++
++def extract_user_text_from_payload(payload: dict[str, Any]) -> tuple[str, str, str]:
++    for candidate in ACCEPTED_CHATGPT_INPUT_FIELDS:
++        value = payload.get(candidate)
++        if value is not None and str(value).strip():
++            return str(value).strip(), "json", candidate
++
++    messages = payload.get("messages")
++    if isinstance(messages, list):
++        fallback_content = ""
++        fallback_field = "messages[].content"
++        for item in messages:
++            if not isinstance(item, dict):
++                continue
++            content = item.get("content")
++            if content is None:
++                continue
++            if isinstance(content, list):
++                parts: list[str] = []
++                for part in content:
++                    if isinstance(part, dict):
++                        text_part = part.get("text")
++                        if text_part is not None:
++                            parts.append(str(text_part))
++                    elif part is not None:
++                        parts.append(str(part))
++                content_text = "".join(parts).strip()
++            else:
++                content_text = str(content).strip()
++            if not content_text:
++                continue
++            fallback_content = content_text
++            if str(item.get("role") or "").lower() == "user":
++                return content_text, "json_chat_messages", "messages[user].content"
++        if fallback_content:
++            return fallback_content, "json_chat_messages", fallback_field
++
++    return "", "json", "<missing>"
++
++
++def apply_openai_cli_settings(
++    config: JaznConfig,
++    *,
++    model: str | None = None,
++    api_base: str | None = None,
++    timeout_seconds: float | None = None,
++    max_output_tokens: int | None = None,
++) -> JaznConfig:
++    config.model_adapter = "openai_responses_adapter"
++    if model:
++        config.model_name = model
++    if api_base:
++        config.model_api_base = api_base.rstrip("/")
++    if timeout_seconds is not None:
++        config.model_timeout_seconds = float(timeout_seconds)
++    if max_output_tokens is not None:
++        config.model_max_output_tokens = int(max_output_tokens)
++    return config
++
++
++def run_jsonl_chat_bridge(
++    *,
++    config: JaznConfig,
++    session_id: str | None,
++    no_carryover: bool,
++    command: str,
++    stdin: TextIO | None = None,
++    stdout: TextIO | None = None,
++    require_openai_api_key: bool = False,
++) -> int:
++    stdin = stdin or sys.stdin
++    stdout = stdout or sys.stdout
++    contract = command_contract(command)
++    protocol_version = CHAT_OPENAI_PROTOCOL if command == "--chat-open-ai" else CHATGPT_BRIDGE_PROTOCOL
++    default_client = "openai_api_bridge" if command == "--chat-open-ai" else "chatgpt_bridge"
++    default_lifecycle = "openai_api_jsonl" if command == "--chat-open-ai" else "chatgpt_bridge_jsonl"
++
++    if require_openai_api_key and not os.environ.get("OPENAI_API_KEY"):
++        payload = {
++            "schema_version": schema_version("chat_command_startup_error"),
++            "ok": False,
++            "error_code": "missing_openai_api_key",
++            "error": "--chat-open-ai wymaga zmiennej środowiskowej OPENAI_API_KEY. Nie uruchamiam modelu i nie udaję połączenia z OpenAI API.",
++            "chat_command_contract": contract,
++        }
++        stdout.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
++        stdout.flush()
++        return 3
++
++    sessions: dict[str, JaznRuntimeSession] = {}
++    generated_session: JaznRuntimeSession | None = None
++
++    def bridge_meta(
++        *,
++        client: str = default_client,
++        input_kind: str | None = None,
++        input_field: str | None = None,
++        line_index: int | None = None,
++    ) -> dict[str, Any]:
++        meta: dict[str, Any] = {
++            "protocol_version": protocol_version,
++            "accepted_input_fields": list(ACCEPTED_CHATGPT_INPUT_FIELDS),
++            "accepted_input_shapes": list(contract["accepted_input_shapes"]),
++            "preferred_input_field": "message",
++            "client": client,
++            "lifecycle": default_lifecycle,
++            "mode": contract["mode"],
++            "command": command,
++            "requires_api_key": contract["requires_api_key"],
++            "uses_openai_api": contract["uses_openai_api"],
++            "deprecated_flag_removed": "--chat-jsonl",
++        }
++        if input_kind is not None:
++            meta["input_kind"] = input_kind
++        if input_field is not None:
++            meta["input_field"] = input_field
++        if line_index is not None:
++            meta["line_index"] = line_index
++        return meta
++
++    def error_payload(
++        *,
++        error_code: str,
++        error: str,
++        client: str = default_client,
++        input_kind: str | None = None,
++        input_field: str | None = None,
++        line_index: int | None = None,
++    ) -> dict[str, Any]:
++        return {
++            "schema_version": schema_version("chat_bridge_error"),
++            "chat_bridge": bridge_meta(client=client, input_kind=input_kind, input_field=input_field, line_index=line_index),
++            "chat_command_contract": contract,
++            "ok": False,
++            "error_code": error_code,
++            "error": error,
++        }
++
++    def get_session(payload_session_id: str | None, *, client: str) -> tuple[JaznRuntimeSession, str]:
++        nonlocal generated_session
++        if payload_session_id:
++            if payload_session_id not in sessions:
++                sessions[payload_session_id] = JaznRuntimeSession(config, session_id=payload_session_id, no_carryover=no_carryover, source_client=client)
++            return sessions[payload_session_id], "payload"
++        if session_id:
++            if session_id not in sessions:
++                sessions[session_id] = JaznRuntimeSession(config, session_id=session_id, no_carryover=no_carryover, source_client=client)
++            return sessions[session_id], "cli_arg"
++        if generated_session is None:
++            generated_session = JaznRuntimeSession(config, session_id=None, no_carryover=no_carryover, source_client=client)
++            sessions[generated_session.state.session_id] = generated_session
++        return generated_session, "generated"
++
++    try:
++        for line_index, line in enumerate(stdin, 1):
++            line = line.strip()
++            if not line:
++                continue
++            if line in {"/exit", "exit"}:
++                break
++
++            input_kind = "plain_text"
++            input_field = "plain_text"
++            payload_session_id = None
++            client = default_client
++
++            try:
++                payload = json.loads(line)
++            except json.JSONDecodeError as exc:
++                if line[:1] in {"{", "["}:
++                    stdout.write(json.dumps(error_payload(
++                        error_code="malformed_json",
++                        error=f"Niepoprawna linia JSONL: {exc.msg}",
++                        input_kind="malformed_json",
++                        input_field="<parse_error>",
++                        line_index=line_index,
++                    ), ensure_ascii=False, sort_keys=True) + "\n")
++                    stdout.flush()
++                    continue
++                user_text = line
++            else:
++                input_kind = "json"
++                if not isinstance(payload, dict):
++                    stdout.write(json.dumps(error_payload(
++                        error_code="invalid_jsonl_payload",
++                        error="Każda linia mostu chat musi być obiektem JSON albo zwykłym tekstem.",
++                        input_kind="json_non_object",
++                        input_field="<non_object>",
++                        line_index=line_index,
++                    ), ensure_ascii=False, sort_keys=True) + "\n")
++                    stdout.flush()
++                    continue
++                client = str(payload.get("client") or default_client)
++                payload_session_id = str(payload.get("session_id") or "").strip() or None
++                user_text, input_kind, input_field = extract_user_text_from_payload(payload)
++
++            if not user_text.strip():
++                stdout.write(json.dumps(error_payload(
++                    error_code="empty_message",
++                    error="Pusta wiadomość nie została przekazana do runtime Jaźni.",
++                    client=client,
++                    input_kind=input_kind,
++                    input_field=input_field,
++                    line_index=line_index,
++                ), ensure_ascii=False, sort_keys=True) + "\n")
++                stdout.flush()
++                continue
++
++            session, session_id_source = get_session(payload_session_id, client=client)
++            try:
++                result = session.process_user_text(user_text, client=client, lifecycle=default_lifecycle, session_id_source=session_id_source, process_reused=True)
++            except Exception as exc:
++                stdout.write(json.dumps(error_payload(
++                    error_code="runtime_turn_failed",
++                    error=f"Runtime Jaźni przerwał turę: {type(exc).__name__}: {exc}",
++                    client=client,
++                    input_kind=input_kind,
++                    input_field=input_field,
++                    line_index=line_index,
++                ), ensure_ascii=False, sort_keys=True) + "\n")
++                stdout.flush()
++                continue
++            result["chat_bridge"] = bridge_meta(client=client, input_kind=input_kind, input_field=input_field, line_index=line_index)
++            # Zachowujemy stary klucz dla zgodności z narzędziami, które już czytają --chat-gpt.
++            if command == "--chat-gpt":
++                result["chatgpt_bridge"] = result["chat_bridge"]
++            result["chat_command_contract"] = contract
++            result["ok"] = True
++            stdout.write(json.dumps(result, ensure_ascii=False, sort_keys=True) + "\n")
++            stdout.flush()
++    finally:
++        for session in sessions.values():
++            session.close()
++    return 0
+--- a/latka_jazn/core/clock.py
++++ b/latka_jazn/core/clock.py
+@@ -7,6 +7,13 @@
+ import email.utils
+ import json, re, urllib.request
+ 
++from .timestamp_policy import (
++    TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
++    TIMESTAMP_NETWORK_FIRST_DEFAULT,
++    TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
++    timestamp_runtime_policy,
++)
++
+ POLISH_WEEKDAYS = {
+     0: "poniedziałek", 1: "wtorek", 2: "środa", 3: "czwartek",
+     4: "piątek", 5: "sobota", 6: "niedziela"
+@@ -93,12 +100,27 @@
+             )
+         self.last_sample: TimeSample | None = None
+ 
+-    def now(self, network_first: bool = False) -> TimeSample:
++    def now(
++        self,
++        network_first: bool = TIMESTAMP_NETWORK_FIRST_DEFAULT,
++        *,
++        allow_fallback: bool = TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
++        timeout_seconds: float = TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
++    ) -> TimeSample:
+         if network_first:
+-            sample = self._network_time(timeout_seconds=1.5)
++            sample = self._network_time(timeout_seconds=timeout_seconds)
+             if sample:
+                 self.last_sample = sample
+                 return sample
++            if not allow_fallback:
++                sample = TimeSample(
++                    datetime.now(self.tz),
++                    "network_time_unavailable_no_fallback",
++                    False,
++                    error="network time unavailable and local fallback disabled",
++                )
++                self.last_sample = sample
++                return sample
+         sample = self._local_time_sample()
+         self.last_sample = sample
+         return sample
+@@ -187,12 +209,22 @@
+     def _local_time_sample(self) -> TimeSample:
+         return TimeSample(datetime.now(self.tz), "local_fallback", False)
+ 
+-    def header(self, sample: TimeSample | None = None) -> str:
+-        # v14.5.24: formatowanie nagłówka nie powinno samo uruchamiać długich prób sieciowych;
+-        # synchronizacja czasu odbywa się jawnie przez now(network_first=True) albo /czas.
+-        sample = sample or self.now(network_first=False)
++    def header(self, sample: TimeSample | None = None, *, network_first: bool = TIMESTAMP_NETWORK_FIRST_DEFAULT) -> str:
++        # P0 timestamp: gdy nie przekazano próbki, header sam próbuje czasu sieciowego.
++        # Lokalny fallback pozostaje jawnie nieufny w TimeSample.trusted/source.
++        sample = sample or self.now(network_first=network_first)
+         dt = sample.dt.astimezone(self.tz)
+         offset_seconds = int(dt.utcoffset().total_seconds()) if dt.utcoffset() else 0
+         offset_hours = offset_seconds // 3600
+         sign = "+" if offset_hours >= 0 else ""
+         return f"[🕒 {dt:%Y-%m-%d %H:%M:%S} GMT{sign}{offset_hours}, {POLISH_WEEKDAYS[dt.weekday()]}, Europe/Warsaw]"
++    def sample_contract(self, sample: TimeSample | None = None) -> dict[str, Any]:
++        sample = sample or self.last_sample or self.now(network_first=TIMESTAMP_NETWORK_FIRST_DEFAULT)
++        return {
++            **timestamp_runtime_policy(),
++            "timestamp_header": self.header(sample),
++            "sample_iso": sample.dt.isoformat(),
++            "source": sample.source,
++            "trusted": sample.trusted,
++            "error": sample.error,
++        }
+--- a/latka_jazn/core/engine.py
++++ b/latka_jazn/core/engine.py
+@@ -302,7 +302,7 @@
+             pass
+ 
+     def bootstrap(self) -> str:
+-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
++        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
+         MemoryImporter(self.store, self.config.root).register_packaged_sources(
+             auto_import_raw_chat_html=self.config.auto_import_raw_chat_html_on_bootstrap,
+             limit_conversations=self.config.raw_chat_html_auto_import_limit,
+@@ -363,7 +363,7 @@
+             self.store.close()
+ 
+     def handle_user_message(self, text: str, *, client_context: dict | None = None) -> str:
+-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
++        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
+         low = text.lower()
+         neurological_signal_route = self.neurological_signal_router.analyse(text)
+         self.event_ledger.append_turn(
+@@ -1146,7 +1146,7 @@
+         To jest właściwy tryb integracji: runtime działa jak pamięć/uwaga/afekt/procedury,
+         a ChatGPT używa wyniku jako wewnętrznego kontekstu do jednej odpowiedzi Łatki.
+         """
+-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
++        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
+         turn_id = str(uuid.uuid4())
+         trace_id = str(uuid.uuid4())
+         now = time.time()
+@@ -1338,6 +1338,7 @@
+                 "rule": "Każda normalna odpowiedź Łatki przez ChatGPT ma zaczynać się tym prefixem czasu. Runtime bezpośredni dodaje go przez ResponseRenderer; most ChatGPT musi przenieść go na wierzch odpowiedzi, zamiast chować tylko w JSON.",
+                 "example_start": f"{self.clock.header(sample)} ",
+             },
++            "timestamp_contract": self.clock.sample_contract(sample),
+             "user_message": text,
+             "client_context": client_context or {},
+             "contract": self.chatgpt_adapter.contract().to_dict(),
+@@ -1568,6 +1569,7 @@
+             lexical_semantic_understanding=frame.get("lexical_semantic_understanding") if isinstance(frame.get("lexical_semantic_understanding"), dict) else None,
+         )
+         decision_dict = decision.to_dict()
++        decision_dict["timestamp_contract"] = envelope.cognitive_frame.get("timestamp_contract") or {}
+         decision_dict["voice_source_contract"] = envelope.cognitive_frame.get("voice_source_contract") or self.voice_source_contract.to_dict()
+         decision_dict["runtime_rendering_mode"] = envelope.cognitive_frame.get("runtime_rendering_mode") or {}
+         decision_dict["memory_recall_contract_status"] = {
+@@ -1741,7 +1743,7 @@
+             memory_gate=str(((frame.get("memory_context") or {}).get("gate") if isinstance(frame.get("memory_context"), dict) else None) or "not_needed"),
+             startup_status_mode="fast",
+             sqlite_health_mode="metadata",
+-            network_time_used=False,
++            network_time_used=bool((envelope.cognitive_frame.get("timestamp_contract") or {}).get("trusted")),
+             deep_audit_used=False,
+             runtime_answer_validation=answer_validation.to_dict(),
+             final_text_source=str(decision_dict.get("response_generation_mode") or decision_dict.get("handler_generation_mode") or "handler_or_synthesizer"),
+--- a/latka_jazn/core/final_response_contract.py
++++ b/latka_jazn/core/final_response_contract.py
+@@ -1,11 +1,17 @@
+-﻿from __future__ import annotations
++from __future__ import annotations
+ 
+ from dataclasses import dataclass, asdict
+ from typing import Any
++from datetime import datetime, timezone
+ import hashlib
+ import re
+ 
+ from latka_jazn.version import schema_version
++from latka_jazn.core.timestamp_policy import (
++    TIMESTAMP_MAX_AGE_SECONDS,
++    TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE,
++    timestamp_runtime_policy,
++)
+ 
+ SCHEMA_VERSION = schema_version("final_response_contract")
+ 
+@@ -29,6 +35,8 @@
+     final_visible_text: str
+     timestamp_required: bool = True
+     timestamp_source: str = "cognitive_turn_envelope.trace.timestamp_header"
++    timestamp_trusted: bool | None = None
++    timestamp_sample_iso: str | None = None
+     runtime_route: str = "unknown"
+     detected_user_intent: str = "unknown"
+     direct_answer_required: bool = False
+@@ -77,7 +85,12 @@
+             raise ValueError("timestamp_header is required for final visible response")
+         marker = state_emoticon or "🌿"
+         final_visible_text = cls.ensure_timestamp_prefix(timestamp_header, marker, body)
+-        final_visible_integrity = cls.validate_visible_text(timestamp_header, final_visible_text)
++        timestamp_contract = dict(decision.get("timestamp_contract") or {})
++        final_visible_integrity = cls.validate_visible_text(
++            timestamp_header,
++            final_visible_text,
++            timestamp_contract=timestamp_contract,
++        )
+         fallback_classification = cls.classify_fallback(decision.get("route"), body, runtime_version=runtime_version)
+         if fallback_classification != "not_fallback":
+             runtime_answer_quality = "stale_route_mismatch" if fallback_classification == "stale_route_mismatch" else "fallback_or_debug"
+@@ -101,6 +114,9 @@
+             state_emoticon=marker,
+             body=body,
+             final_visible_text=final_visible_text,
++            timestamp_source=str(timestamp_contract.get("source") or "cognitive_turn_envelope.trace.timestamp_header"),
++            timestamp_trusted=(bool(timestamp_contract.get("trusted")) if "trusted" in timestamp_contract else None),
++            timestamp_sample_iso=timestamp_contract.get("sample_iso"),
+             runtime_route=str(decision.get("route") or "unknown"),
+             detected_user_intent=str(decision.get("detected_user_intent") or "unknown"),
+             direct_answer_required=bool(decision.get("direct_answer_required")),
+@@ -170,14 +186,46 @@
+         return f"{timestamp_header} {marker}\n{text}"
+ 
+     @staticmethod
+-    def validate_visible_text(timestamp_header: str, text: str) -> dict[str, Any]:
+-        """Waliduje, czy widoczna odpowiedź dziedziczy timestamp koperty tury."""
++    def validate_visible_text(
++        timestamp_header: str,
++        text: str,
++        *,
++        timestamp_contract: dict[str, Any] | None = None,
++    ) -> dict[str, Any]:
++        """Waliduje widoczny timestamp: obecność, źródło, zaufanie i świeżość."""
+         visible = (text or "").strip()
++        contract = dict(timestamp_contract or {})
+         has_timestamp = bool(timestamp_header) and visible.startswith(timestamp_header)
++        trusted = contract.get("trusted")
++        source = contract.get("source")
++        sample_iso = contract.get("sample_iso")
++        max_age_seconds = int(contract.get("max_age_seconds") or TIMESTAMP_MAX_AGE_SECONDS)
++        freshness_seconds: int | None = None
++        freshness_ok = True
++        if sample_iso:
++            try:
++                sample_dt = datetime.fromisoformat(str(sample_iso).replace("Z", "+00:00"))
++                if sample_dt.tzinfo is None:
++                    sample_dt = sample_dt.replace(tzinfo=timezone.utc)
++                freshness_seconds = abs(int((datetime.now(timezone.utc) - sample_dt.astimezone(timezone.utc)).total_seconds()))
++                freshness_ok = freshness_seconds <= max_age_seconds
++            except Exception:
++                freshness_ok = False
++        trust_required = bool(contract.get("require_trusted_in_final_visible", TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE))
++        trust_ok = True if trusted is None and not contract else bool(trusted) or not trust_required
++        valid = bool(has_timestamp and freshness_ok and trust_ok)
+         return {
+             "schema_version": schema_version("final_response_contract_validation"),
++            "timestamp_policy": timestamp_runtime_policy(),
+             "timestamp_header": timestamp_header,
+             "timestamp_present": has_timestamp,
+-            "valid": has_timestamp,
++            "timestamp_source": source,
++            "timestamp_trusted": trusted,
++            "timestamp_sample_iso": sample_iso,
++            "timestamp_freshness_seconds": freshness_seconds,
++            "timestamp_max_age_seconds": max_age_seconds,
++            "timestamp_freshness_ok": freshness_ok,
++            "timestamp_trust_ok": trust_ok,
++            "valid": valid,
+             "text_sha256": hashlib.sha256(visible.encode("utf-8")).hexdigest(),
+         }
+--- a/latka_jazn/core/runtime_daemon.py
++++ b/latka_jazn/core/runtime_daemon.py
+@@ -0,0 +1,477 @@
++from __future__ import annotations
++
++from dataclasses import asdict, dataclass, field
++from datetime import datetime, timezone
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++from pathlib import Path
++from typing import Any
++import json
++import os
++import signal
++import socket
++import subprocess
++import sys
++import threading
++import time
++import urllib.error
++import urllib.request
++import uuid
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.runtime_session import JaznRuntimeSession
++from latka_jazn.tools.active_extraction_cache import (
++    build_active_runtime_status,
++    write_active_runtime_marker,
++)
++from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, schema_version
++
++DEFAULT_DAEMON_HOST = "127.0.0.1"
++DEFAULT_DAEMON_PORT = 8787
++DEFAULT_HEARTBEAT_INTERVAL_SECONDS = 30.0
++DEFAULT_START_TIMEOUT_SECONDS = 12.0
++DEFAULT_STOP_TIMEOUT_SECONDS = 5.0
++DEFAULT_HTTP_TIMEOUT_SECONDS = 2.0
++DAEMON_SCHEMA_VERSION = schema_version("persistent_daemon_runtime")
++DAEMON_MARKER_STATUS_ACTIVE = "active_daemon_runtime"
++DAEMON_MARKER_STATUS_STOPPED = "stopped_daemon_runtime"
++LOOPBACK_CLIENTS = {"127.0.0.1", "::1", "localhost"}
++
++
++def utc_now_iso() -> str:
++    return datetime.now(timezone.utc).isoformat()
++
++
++def daemon_default_marker_path(root: Path) -> Path:
++    return Path(root).resolve() / "workspace_runtime" / "JAZN_ACTIVE_RUNTIME.json"
++
++
++def daemon_pid_path(root: Path) -> Path:
++    return Path(root).resolve() / "workspace_runtime" / "jazn_daemon.pid"
++
++
++def daemon_log_dir(root: Path) -> Path:
++    return Path(root).resolve() / "workspace_runtime" / "daemon"
++
++
++def daemon_url(host: str = DEFAULT_DAEMON_HOST, port: int = DEFAULT_DAEMON_PORT, path: str = "/status") -> str:
++    return f"http://{host}:{int(port)}{path}"
++
++
++def read_json_file(path: Path) -> dict[str, Any] | None:
++    try:
++        return json.loads(Path(path).read_text(encoding="utf-8"))
++    except Exception:
++        return None
++
++
++def write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
++    path = Path(path)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    tmp = path.with_suffix(path.suffix + ".tmp")
++    tmp.write_text(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
++    os.replace(tmp, path)
++
++
++def pid_is_alive(pid: int | None) -> bool:
++    if not pid or int(pid) <= 0:
++        return False
++    try:
++        os.kill(int(pid), 0)
++        return True
++    except PermissionError:
++        return True
++    except OSError:
++        return False
++
++
++def extract_daemon_user_text(payload: dict[str, Any] | str) -> tuple[str, str]:
++    if isinstance(payload, str):
++        return payload.strip(), "plain_text"
++    if not isinstance(payload, dict):
++        return "", "invalid_payload"
++    for field_name in ("message", "text", "user_text", "content", "prompt"):
++        value = payload.get(field_name)
++        if value is not None and str(value).strip():
++            return str(value).strip(), f"json.{field_name}"
++    messages = payload.get("messages")
++    if isinstance(messages, list):
++        fallback = ""
++        for item in messages:
++            if not isinstance(item, dict):
++                continue
++            content = item.get("content")
++            if isinstance(content, list):
++                parts: list[str] = []
++                for part in content:
++                    if isinstance(part, dict) and part.get("text") is not None:
++                        parts.append(str(part.get("text")))
++                    elif part is not None:
++                        parts.append(str(part))
++                text = "".join(parts).strip()
++            else:
++                text = str(content or "").strip()
++            if not text:
++                continue
++            fallback = text
++            if str(item.get("role") or "").lower() == "user":
++                return text, "json.messages[user].content"
++        if fallback:
++            return fallback, "json.messages[].content"
++    return "", "missing_message"
++
++
++@dataclass(slots=True)
++class DaemonRuntimeState:
++    root: str
++    host: str = DEFAULT_DAEMON_HOST
++    port: int = DEFAULT_DAEMON_PORT
++    pid: int = field(default_factory=os.getpid)
++    started_at_utc: str = field(default_factory=utc_now_iso)
++    last_heartbeat_at_utc: str = field(default_factory=utc_now_iso)
++    request_count: int = 0
++    turn_count: int = 0
++    sessions: int = 0
++    status: str = DAEMON_MARKER_STATUS_ACTIVE
++
++    def touch(self) -> None:
++        self.last_heartbeat_at_utc = utc_now_iso()
++
++    def to_dict(self) -> dict[str, Any]:
++        return asdict(self)
++
++
++class JaznDaemonServer(ThreadingHTTPServer):
++    daemon_threads = True
++
++    def __init__(
++        self,
++        server_address: tuple[str, int],
++        RequestHandlerClass: type[BaseHTTPRequestHandler],
++        *,
++        config: JaznConfig,
++        marker_path: Path,
++        heartbeat_interval: float = DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
++    ) -> None:
++        super().__init__(server_address, RequestHandlerClass)
++        self.config = config
++        self.marker_path = Path(marker_path)
++        self.heartbeat_interval = float(heartbeat_interval)
++        self.sessions: dict[str, JaznRuntimeSession] = {}
++        self.state = DaemonRuntimeState(root=str(config.root), host=server_address[0], port=int(server_address[1]))
++        self.shutdown_requested = threading.Event()
++        self._heartbeat_thread: threading.Thread | None = None
++
++    def get_session(self, session_id: str | None, *, no_carryover: bool = False, client: str = "daemon_http") -> tuple[JaznRuntimeSession, str]:
++        if session_id:
++            if session_id not in self.sessions:
++                self.sessions[session_id] = JaznRuntimeSession(self.config, session_id=session_id, no_carryover=no_carryover, source_client=client)
++            return self.sessions[session_id], "payload"
++        generated = f"daemon-{uuid.uuid4()}"
++        self.sessions[generated] = JaznRuntimeSession(self.config, session_id=generated, no_carryover=no_carryover, source_client=client)
++        return self.sessions[generated], "generated"
++
++    def marker_payload(self, *, status: str | None = None) -> dict[str, Any]:
++        self.state.sessions = len(self.sessions)
++        self.state.status = status or self.state.status
++        active = build_active_runtime_status(self.config.root, marker_output=self.marker_path)
++        return {
++            **active,
++            "schema_version": DAEMON_SCHEMA_VERSION,
++            "runtime_daemon": self.state.to_dict(),
++            "daemon_pid": self.state.pid,
++            "daemon_host": self.state.host,
++            "daemon_port": self.state.port,
++            "daemon_url": daemon_url(self.state.host, self.state.port),
++            "daemon_status": self.state.status,
++            "daemon_started_at_utc": self.state.started_at_utc,
++            "last_heartbeat_at_utc": self.state.last_heartbeat_at_utc,
++            "heartbeat_interval_seconds": self.heartbeat_interval,
++            "runtime_process_active": True,
++            "start_file": "main.py",
++            "version": PACKAGE_VERSION_FULL,
++            "truth_boundary": "Ten marker oznacza działający lokalny proces daemonu tylko wtedy, gdy PID żyje, heartbeat jest świeży i /status odpowiada z localhost.",
++        }
++
++    def write_marker(self, *, status: str | None = None) -> dict[str, Any]:
++        self.state.touch()
++        payload = self.marker_payload(status=status)
++        write_json_atomic(self.marker_path, payload)
++        daemon_pid_path(self.config.root).parent.mkdir(parents=True, exist_ok=True)
++        daemon_pid_path(self.config.root).write_text(str(self.state.pid), encoding="utf-8")
++        return payload
++
++    def start_heartbeat(self) -> None:
++        def loop() -> None:
++            while not self.shutdown_requested.is_set():
++                try:
++                    self.write_marker()
++                except Exception:
++                    pass
++                self.shutdown_requested.wait(self.heartbeat_interval)
++        self._heartbeat_thread = threading.Thread(target=loop, name="jazn-daemon-heartbeat", daemon=True)
++        self._heartbeat_thread.start()
++
++    def close_sessions(self) -> None:
++        for session in list(self.sessions.values()):
++            try:
++                session.close()
++            except Exception:
++                pass
++        self.sessions.clear()
++
++
++class JaznDaemonHandler(BaseHTTPRequestHandler):
++    server: JaznDaemonServer
++    protocol_version = "HTTP/1.1"
++
++    def log_message(self, format: str, *args: Any) -> None:  # noqa: A002 - stdlib signature
++        return
++
++    def _loopback_only(self) -> bool:
++        host = str(self.client_address[0])
++        if host in LOOPBACK_CLIENTS or host.startswith("127."):
++            return True
++        self._json_response({"ok": False, "error": "daemon accepts loopback clients only", "client": host}, status=403)
++        return False
++
++    def _read_json_or_text(self) -> Any:
++        length = int(self.headers.get("Content-Length") or 0)
++        raw = self.rfile.read(length) if length else b""
++        if not raw:
++            return {}
++        text = raw.decode("utf-8", errors="replace")
++        try:
++            return json.loads(text)
++        except json.JSONDecodeError:
++            return text
++
++    def _json_response(self, payload: dict[str, Any], *, status: int = 200) -> None:
++        data = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
++        self.send_response(status)
++        self.send_header("Content-Type", "application/json; charset=utf-8")
++        self.send_header("Content-Length", str(len(data)))
++        self.send_header("Cache-Control", "no-store")
++        self.end_headers()
++        self.wfile.write(data)
++
++    def do_GET(self) -> None:
++        if not self._loopback_only():
++            return
++        path = self.path.split("?", 1)[0]
++        if path in {"/", "/status", "/health"}:
++            self.server.state.request_count += 1
++            payload = self.server.write_marker()
++            payload["ok"] = True
++            payload["endpoint"] = path
++            self._json_response(payload)
++            return
++        self._json_response({"ok": False, "error": "not_found", "path": path}, status=404)
++
++    def do_POST(self) -> None:
++        if not self._loopback_only():
++            return
++        path = self.path.split("?", 1)[0]
++        self.server.state.request_count += 1
++        if path in {"/chat", "/message"}:
++            payload = self._read_json_or_text()
++            user_text, input_field = extract_daemon_user_text(payload)
++            if not user_text:
++                self._json_response({"ok": False, "error_code": "empty_message", "input_field": input_field}, status=400)
++                return
++            session_id = payload.get("session_id") if isinstance(payload, dict) else None
++            no_carryover = bool(payload.get("no_carryover")) if isinstance(payload, dict) else False
++            client = str(payload.get("client") or "daemon_http") if isinstance(payload, dict) else "daemon_http"
++            try:
++                session, session_id_source = self.server.get_session(str(session_id).strip() if session_id else None, no_carryover=no_carryover, client=client)
++                result = session.process_user_text(user_text, client=client, lifecycle="persistent_daemon_http", session_id_source=session_id_source, process_reused=True)
++                self.server.state.turn_count += 1
++                marker = self.server.write_marker()
++                result["ok"] = True
++                result["daemon"] = {
++                    "schema_version": DAEMON_SCHEMA_VERSION,
++                    "pid": self.server.state.pid,
++                    "host": self.server.state.host,
++                    "port": self.server.state.port,
++                    "status": self.server.state.status,
++                    "last_heartbeat_at_utc": self.server.state.last_heartbeat_at_utc,
++                    "marker_path": str(self.server.marker_path),
++                    "marker_sha_source": marker.get("manifest_current_sha256"),
++                }
++                self._json_response(result)
++            except Exception as exc:
++                self._json_response({"ok": False, "error_code": "runtime_turn_failed", "error": f"{type(exc).__name__}: {exc}"}, status=500)
++            return
++        if path == "/shutdown":
++            payload = self.server.write_marker(status="shutdown_requested")
++            payload["ok"] = True
++            self._json_response(payload)
++            def stop_later() -> None:
++                time.sleep(0.15)
++                self.server.shutdown_requested.set()
++                self.server.shutdown()
++            threading.Thread(target=stop_later, name="jazn-daemon-shutdown", daemon=True).start()
++            return
++        self._json_response({"ok": False, "error": "not_found", "path": path}, status=404)
++
++
++def http_json(method: str, url: str, payload: dict[str, Any] | None = None, *, timeout: float = DEFAULT_HTTP_TIMEOUT_SECONDS) -> dict[str, Any]:
++    data = None
++    headers = {"Accept": "application/json"}
++    if payload is not None:
++        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
++        headers["Content-Type"] = "application/json; charset=utf-8"
++    req = urllib.request.Request(url, data=data, method=method.upper(), headers=headers)
++    with urllib.request.urlopen(req, timeout=timeout) as response:
++        return json.loads(response.read().decode("utf-8", errors="replace"))
++
++
++def run_daemon(
++    config: JaznConfig,
++    *,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++    marker_output: Path | None = None,
++    heartbeat_interval: float = DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
++) -> int:
++    marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
++    # Write the normal active-runtime marker first; then the daemon marker extends it.
++    write_active_runtime_marker(config.root, marker_output=marker_path, action="daemon_run_start")
++    server = JaznDaemonServer((host, int(port)), JaznDaemonHandler, config=config, marker_path=marker_path, heartbeat_interval=heartbeat_interval)
++    server.write_marker()
++    server.start_heartbeat()
++    try:
++        server.serve_forever(poll_interval=0.25)
++    finally:
++        server.shutdown_requested.set()
++        try:
++            server.close_sessions()
++        finally:
++            payload = server.marker_payload(status=DAEMON_MARKER_STATUS_STOPPED)
++            payload["runtime_process_active"] = False
++            payload["stopped_at_utc"] = utc_now_iso()
++            write_json_atomic(marker_path, payload)
++            server.server_close()
++    return 0
++
++
++def build_daemon_start_command(
++    root: Path,
++    *,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++    marker_output: Path | None = None,
++    heartbeat_interval: float = DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
++) -> list[str]:
++    root = Path(root).resolve()
++    cmd = [sys.executable, str(root / "main.py"), "--root", str(root), "--daemon-run", "--daemon-host", host, "--daemon-port", str(int(port)), "--daemon-heartbeat-interval", str(float(heartbeat_interval))]
++    if marker_output:
++        cmd.extend(["--daemon-marker-output", str(Path(marker_output))])
++    return cmd
++
++
++def start_daemon(
++    config: JaznConfig,
++    *,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++    marker_output: Path | None = None,
++    heartbeat_interval: float = DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
++    startup_timeout: float = DEFAULT_START_TIMEOUT_SECONDS,
++) -> dict[str, Any]:
++    marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
++    try:
++        existing = http_json("GET", daemon_url(host, int(port), "/status"), timeout=1.0)
++        if existing.get("ok"):
++            return {"ok": True, "already_running": True, "status": existing, "marker_path": str(marker_path)}
++    except Exception:
++        pass
++    log_dir = daemon_log_dir(config.root)
++    log_dir.mkdir(parents=True, exist_ok=True)
++    stdout_path = log_dir / "stdout.log"
++    stderr_path = log_dir / "stderr.log"
++    cmd = build_daemon_start_command(config.root, host=host, port=port, marker_output=marker_path, heartbeat_interval=heartbeat_interval)
++    creationflags = 0
++    popen_kwargs: dict[str, Any] = {}
++    if os.name == "nt":
++        creationflags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0) | getattr(subprocess, "DETACHED_PROCESS", 0)
++    else:
++        popen_kwargs["start_new_session"] = True
++    with stdout_path.open("ab") as out, stderr_path.open("ab") as err:
++        proc = subprocess.Popen(cmd, cwd=str(config.root), stdout=out, stderr=err, stdin=subprocess.DEVNULL, creationflags=creationflags, **popen_kwargs)
++    deadline = time.time() + float(startup_timeout)
++    last_error: str | None = None
++    while time.time() < deadline:
++        if proc.poll() is not None:
++            last_error = f"daemon process exited early with code {proc.returncode}"
++            break
++        try:
++            status = http_json("GET", daemon_url(host, int(port), "/status"), timeout=1.0)
++            if status.get("ok"):
++                return {"ok": True, "started": True, "pid": proc.pid, "status": status, "marker_path": str(marker_path), "stdout_log": str(stdout_path), "stderr_log": str(stderr_path), "command": cmd}
++        except Exception as exc:
++            last_error = f"{type(exc).__name__}: {exc}"
++            time.sleep(0.2)
++    return {"ok": False, "started": False, "pid": proc.pid, "error": last_error or "daemon did not answer before timeout", "marker_path": str(marker_path), "stdout_log": str(stdout_path), "stderr_log": str(stderr_path), "command": cmd}
++
++
++def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: int = DEFAULT_DAEMON_PORT, marker_output: Path | None = None) -> dict[str, Any]:
++    marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
++    marker = read_json_file(marker_path)
++    pid = None
++    if marker:
++        pid = marker.get("daemon_pid") or (marker.get("runtime_daemon") or {}).get("pid")
++    alive = pid_is_alive(int(pid)) if pid else False
++    ping: dict[str, Any] | None = None
++    ping_error: str | None = None
++    try:
++        ping = http_json("GET", daemon_url(host, int(port), "/status"), timeout=1.0)
++    except Exception as exc:
++        ping_error = f"{type(exc).__name__}: {exc}"
++    return {
++        "schema_version": DAEMON_SCHEMA_VERSION,
++        "ok": bool(ping and ping.get("ok")),
++        "runtime_version": config.version,
++        "active_root": str(config.root),
++        "marker_path": str(marker_path),
++        "marker_found": marker is not None,
++        "marker": marker,
++        "pid": pid,
++        "pid_alive": alive,
++        "ping": ping,
++        "ping_error": ping_error,
++        "truth_boundary": "Status jest pozytywny dopiero gdy marker istnieje, PID żyje i lokalny endpoint /status odpowiada.",
++    }
++
++
++def stop_daemon(
++    config: JaznConfig,
++    *,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++    marker_output: Path | None = None,
++    timeout: float = DEFAULT_STOP_TIMEOUT_SECONDS,
++) -> dict[str, Any]:
++    marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
++    before = status_daemon(config, host=host, port=port, marker_output=marker_path)
++    shutdown_response: dict[str, Any] | None = None
++    shutdown_error: str | None = None
++    try:
++        shutdown_response = http_json("POST", daemon_url(host, int(port), "/shutdown"), {}, timeout=1.5)
++    except Exception as exc:
++        shutdown_error = f"{type(exc).__name__}: {exc}"
++    deadline = time.time() + float(timeout)
++    while time.time() < deadline:
++        try:
++            http_json("GET", daemon_url(host, int(port), "/status"), timeout=0.5)
++            time.sleep(0.2)
++        except Exception:
++            break
++    after = status_daemon(config, host=host, port=port, marker_output=marker_path)
++    return {
++        "schema_version": DAEMON_SCHEMA_VERSION,
++        "ok": not bool(after.get("ok")),
++        "before": before,
++        "shutdown_response": shutdown_response,
++        "shutdown_error": shutdown_error,
++        "after": after,
++    }
+--- a/latka_jazn/core/timestamp_policy.py
++++ b/latka_jazn/core/timestamp_policy.py
+@@ -0,0 +1,31 @@
++from __future__ import annotations
++
++# P0: jeden punkt prawdy dla widocznego czasu Jaźni.
++# Timestamp jest częścią ciągłości i kontraktu prawdy, nie ozdobą UI.
++
++TIMESTAMP_TIMEZONE = "Europe/Warsaw"
++TIMESTAMP_NETWORK_FIRST_DEFAULT = True
++TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT = True
++TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT = True
++TIMESTAMP_NETWORK_TIMEOUT_SECONDS = 1.5
++TIMESTAMP_MAX_AGE_SECONDS = 120
++TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE = True
++TIMESTAMP_POLICY_SCHEMA = "timestamp_runtime_policy/v14.8.5-p0"
++
++
++def timestamp_runtime_policy() -> dict:
++    return {
++        "schema_version": TIMESTAMP_POLICY_SCHEMA,
++        "timezone": TIMESTAMP_TIMEZONE,
++        "network_first_default": TIMESTAMP_NETWORK_FIRST_DEFAULT,
++        "network_time_in_normal_turn_default": TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT,
++        "local_fallback_allowed_default": TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
++        "network_timeout_seconds": TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
++        "max_age_seconds": TIMESTAMP_MAX_AGE_SECONDS,
++        "require_trusted_in_final_visible": TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE,
++        "truth_boundary": (
++            "Widoczny timestamp ma pochodzić z czasu sieciowego. "
++            "Lokalny fallback jest dopuszczalny tylko jako jawnie nieufny tryb awaryjny, "
++            "nie jako pełnoprawny aktualny czas internetowy."
++        ),
++    }
+--- a/latka_jazn/version.py
++++ b/latka_jazn/version.py
+@@ -1,29 +1,29 @@
+-from __future__ import annotations
+-
+-PACKAGE_VERSION = "v14.8.5.011"
+-PACKAGE_RELEASE_NAME = "self-architecture-audit-reflection-memory-gate"
+-PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
+-RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
+-RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
+-USER_AGENT_VERSION = "14.8.5"
+-
+-
+-def schema_version(component: str, *, version: str = PACKAGE_VERSION) -> str:
+-    """Return a current active-runtime schema/version marker for a component."""
+-    return f"{component}/{version}"
+-
+-
+-def version_number(version: str = PACKAGE_VERSION) -> str:
+-    value = str(version or PACKAGE_VERSION).strip().split('-', 1)[0].lstrip('v')
+-    return value or PACKAGE_VERSION.lstrip('v')
+-
+-
+-def active_line(component: str) -> str:
+-    return schema_version(component, version=PACKAGE_VERSION)
+-
+-
+-def version_slug(version: str = PACKAGE_VERSION) -> str:
+-    return "v" + version_number(version).replace(".", "_")
+-
+-def generation_mode(prefix: str, *, version: str = PACKAGE_VERSION) -> str:
+-    return f"{prefix}_{version_slug(version)}"
++from __future__ import annotations
++
++PACKAGE_VERSION = "v14.8.5.013"
++PACKAGE_RELEASE_NAME = "combined-timestamp-daemon-chat-openai-bridge"
++PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
++RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
++RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
++USER_AGENT_VERSION = "14.8.5"
++
++
++def schema_version(component: str, *, version: str = PACKAGE_VERSION) -> str:
++    """Return a current active-runtime schema/version marker for a component."""
++    return f"{component}/{version}"
++
++
++def version_number(version: str = PACKAGE_VERSION) -> str:
++    value = str(version or PACKAGE_VERSION).strip().split('-', 1)[0].lstrip('v')
++    return value or PACKAGE_VERSION.lstrip('v')
++
++
++def active_line(component: str) -> str:
++    return schema_version(component, version=PACKAGE_VERSION)
++
++
++def version_slug(version: str = PACKAGE_VERSION) -> str:
++    return "v" + version_number(version).replace(".", "_")
++
++def generation_mode(prefix: str, *, version: str = PACKAGE_VERSION) -> str:
++    return f"{prefix}_{version_slug(version)}"
+--- a/main.py
++++ b/main.py
+@@ -1,945 +1,830 @@
+-# Current package version: v14.8.5.011-self-architecture-audit-reflection-memory-gate
+-from __future__ import annotations
+-
+-import argparse
+-import json
+-import sys
+-from pathlib import Path
+-
+-from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, schema_version
+-
+-ACTIVE_PACKAGE_VERSION = PACKAGE_VERSION
+-
+-
+-def _configure_stdio_utf8() -> None:
+-    for stream in (sys.stdin, sys.stdout, sys.stderr):
+-        reconfigure = getattr(stream, "reconfigure", None)
+-        if callable(reconfigure):
+-            reconfigure(encoding="utf-8")
+-
+-
+-from latka_jazn.config import JaznConfig
+-from latka_jazn.core.canon.extraction import run_canon_extraction
+-from latka_jazn.core.clock import WarsawClock
+-from latka_jazn.core.emotions import AffectiveState
+-from latka_jazn.core.identity_guard import IdentityPerspectiveGuard
+-from latka_jazn.core.renderer import ResponseRenderer
+-from latka_jazn.core.runtime_status import build_runtime_status
+-from latka_jazn.core.startup_contract import build_startup_status, build_startup_summary, build_self_check, build_truth_boundary_check, classify_fallback_text
+-from latka_jazn.core.engine import JaznEngine
+-from latka_jazn.core.memory_search_planner import MemorySearchPlanner
+-from latka_jazn.core.runtime_chat import run_persistent_chat
+-from latka_jazn.core.runtime_session import JaznRuntimeSession
+-from latka_jazn.memory.raw_memory_status import RawMemoryInspector
+-from latka_jazn.memory.normalization_sidecar import MemoryNormalizationSidecar
+-from latka_jazn.memory.conversation_archive import ConversationArchiveStore
+-from latka_jazn.tools.package_export import export_package
+-from latka_jazn.tools.dedup_manifest import write_dedup_report
+-from latka_jazn.tools.active_extraction_cache import build_active_runtime_status, write_active_runtime_marker, visible_preview_contract_version
+-from latka_jazn.core.polish_understanding import PolishUnderstandingEngine
+-from latka_jazn.core.lexical_semantics import LexicalSemanticUnderstanding
+-from latka_jazn.nlp.polish_lemmatizer import PolishLemmatizationEngine
+-from latka_jazn.integrations.github_repository_plan import build_github_repository_plan, write_github_repository_plan
+-from latka_jazn.core.project_index import build_project_startup_index
+-from latka_jazn.nlp.topic_mismatch_guard import TopicMismatchGuard
+-from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
+-from latka_jazn.core.route_registry import RouteRegistry
+-from latka_jazn.core.module_responsibility_map import ModuleResponsibilityMap
+-from latka_jazn.memory.requirements_ledger import RequirementsLedger
+-from latka_jazn.core.turn_trace_reader import TurnTraceReader
+-from latka_jazn.core.runtime_visible_answer_comparator import RuntimeVisibleAnswerComparator
+-from latka_jazn.nlp.external_dictionary_adapter import ExternalDictionaryAdapter
+-from latka_jazn.nlp.language_resource_registry import LanguageResourceRegistry
+-from latka_jazn.core.voice_source_contract import VoiceSourceContract
+-from latka_jazn.core.runtime_rendering_modes import RuntimeRenderingModeSelector
+-from latka_jazn.memory.raw_chat_importer import RawChatImporter
+-from latka_jazn.model_adapters.null_model_adapter import NullModelAdapter
+-from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnostics, build_polish_reasoning_diagnostics
+-from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
+-from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
+-from latka_jazn.core.turn_route_trace import TurnRouteTrace
+-from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
+-
+-
+-def _render_readonly_status(root: Path | None = None) -> str:
+-    cfg = JaznConfig(root=root or Path(__file__).resolve().parent, network_time_first=False)
+-    clock = WarsawClock(cfg.timezone)
+-    renderer = ResponseRenderer(clock, IdentityPerspectiveGuard())
+-    body = build_runtime_status(cfg, store=None, readonly=True)
+-    return renderer.render(body, AffectiveState(), clock.now(network_first=False))
+-
+-
+-def _build_parser() -> argparse.ArgumentParser:
+-    parser = argparse.ArgumentParser(
+-        prog="main.py",
+-        description="Runtime Jaźni Łatki: rozmowa bezpośrednia, cognitive-frame, diagnostyka i eksport paczek.",
+-        allow_abbrev=False,
+-    )
+-    parser.add_argument("--root", type=Path, default=None, help="Folder główny aktywnej paczki Jaźni.")
+-    parser.add_argument("--status", "--status-readonly", "--diagnostics-readonly", action="store_true", dest="status_readonly", help="Pokaż diagnostykę bez zapisu do pamięci. --status jest jawnym aliasem, nie skrótem argparse.")
+-    parser.add_argument("--cognitive-frame", "--chatgpt-frame", "--brain-frame", action="store_true", dest="cognitive_frame", help="Zwróć wewnętrzny pakiet poznawczy JSON dla ChatGPT, nie gotową odpowiedź użytkownikowi.")
+-    parser.add_argument("--debug-direct", action="store_true", dest="debug_direct", help="Pokaż techniczną ścieżkę bezpośrednią i fallback diagnostyczny zamiast rozmownej odpowiedzi.")
+-    parser.add_argument("--chat", "--loop", action="store_true", dest="chat_loop", help="Uruchom stałą pętlę rozmowy: jeden JaznEngine działa przez wiele tur aż do /exit lub EOF.")
+-    parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Uruchom główny most ChatGPT w protokole JSONL: przyjmuje message/text/user_text/content/prompt, format messages[].content albo zwykły tekst; zwraca jedną linię JSON na turę.")
+-    parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.")
+-    parser.add_argument("--no-carryover", action="store_true", dest="no_carryover", help="Zablokuj użycie poprzedniej tury nawet jeśli istnieje runtime_state.json.")
+-    parser.add_argument("--github-plan", action="store_true", dest="github_plan", help="Zapisz i pokaż plan repozytoriów Latka.Jazn oraz Latka.Jazn.Memory bez wykonywania pushu.")
+-    parser.add_argument("--dedup-report", action="store_true", dest="dedup_report", help="Zbuduj raport duplikatów treści i SHA-256 bez usuwania plików.")
+-    parser.add_argument("--lexical-frame", action="store_true", dest="lexical_frame", help="Pokaż raport leksykalny aktualnej Jaźni: polskie rozumienie + rozszerzona semantyka słów i fraz.")
+-    parser.add_argument("--nlp-frame", action="store_true", dest="nlp_frame", help="Pokaż raport NLP aktualnej Jaźni: tokeny, lemma_candidates, selected_lemma, confidence i provider.")
+-    parser.add_argument("--runtime-preview", action="store_true", dest="runtime_preview", help="Pokaż dokładną odpowiedź runtime oraz pakiet cognitive-frame/source_origin/self_state dla mostu ChatGPT.")
+-    parser.add_argument("--runtime-preview-output", type=Path, default=None, help="Opcjonalna ścieżka pliku JSON dla --runtime-preview; pełny payload trafia do pliku, a stdout zwraca krótkie potwierdzenie.")
+-    parser.add_argument("--active-cache-status", action="store_true", dest="active_cache_status", help="Pokaż status aktywnego rozpakowanego folderu i decyzję, czy trzeba ponownie rozpakować ZIP.")
+-    parser.add_argument("--project-startup-index", action="store_true", dest="project_startup_index", help="Zbuduj i pokaż mapę plików oraz modułów/funkcji Jaźni przy rozruchu.")
+-    parser.add_argument("--topic-guard", action="store_true", dest="topic_guard", help="Pokaż raport TopicMismatchGuard dla wiadomości bez generowania pełnej odpowiedzi.")
+-    parser.add_argument("--dialogue-intent", action="store_true", dest="dialogue_intent", help="Pokaż klasyfikację aktu rozmowy aktywnego runtime bez generowania odpowiedzi.")
+-    parser.add_argument("--module-responsibility-map", action="store_true", dest="module_responsibility_map", help="Zbuduj semantyczną mapę odpowiedzialności modułów i funkcji.")
+-    parser.add_argument("--seed-requirements-ledger", action="store_true", dest="seed_requirements_ledger", help="Dopisz wymagania aktywnego manifestu do requirements ledger.")
+-    parser.add_argument("--last-turn", action="store_true", dest="last_turn", help="Pokaż ostatni turn checkpoint: exact_runtime_text, visible_text, route, template_origin i source-origin.")
+-    parser.add_argument("--compare-runtime-visible", action="store_true", dest="compare_runtime_visible", help="Porównaj exact runtime text z widoczną odpowiedzią ChatGPT dla ostatniej tury albo --trace-id.")
+-    parser.add_argument("--dictionary-lookup", action="store_true", dest="dictionary_lookup", help="Sprawdź termin przez cache/mini-leksykon/adaptory słowników; nie udawaj lookupu online bez providera.")
+-    parser.add_argument("--language-resources", action="store_true", dest="language_resources", help="Pokaż rejestr dostępnych i opcjonalnych zasobów językowych/słownikowych.")
+-    parser.add_argument("--polish-reasoning-frame", action="store_true", dest="polish_reasoning_frame", help="Pokaż warstwowy frame Polish Reasoning: normalizacja, morfologia, semantyka, reply policy i status providerów.")
+-    parser.add_argument("--polish-reasoning-sources", action="store_true", dest="polish_reasoning_sources", help="Pokaż rejestr źródeł/licencji/cache dla warstwy Polish Reasoning.")
+-    parser.add_argument("--polish-reasoning-bootstrap-plan", action="store_true", dest="polish_reasoning_bootstrap_plan", help="Pokaż komendy lokalnej instalacji providerów NLP bez ich automatycznego pobierania.")
+-    parser.add_argument("--nlp-resource-status", action="store_true", dest="nlp_resource_status", help="Pokaż status lexical resource registry/cache: źródła, licencje, dostępność i projektowy leksykon bez pobierania dużych danych.")
+-    parser.add_argument("--polish-morphology", action="store_true", dest="polish_morphology", help="Pokaż szczegółową analizę morfologiczną v14.8.4: Morfeusz/PoliMorf, kandydaci i selected_lemma.")
+-    parser.add_argument("--morfeusz-status", action="store_true", dest="morfeusz_status", help="Pokaż status realnego providera Morfeusz2/SGJP w Polish Reasoning.")
+-    parser.add_argument("--polimorf-status", action="store_true", dest="polimorf_status", help="Pokaż status opcjonalnego lokalnego providera PoliMorf.")
+-    parser.add_argument("--wsjp-lookup-plan", action="store_true", dest="wsjp_lookup_plan", help="Zbuduj bezpieczny plan lookupu WSJP dla terminu; nie scrapuje masowo strony.")
+-    parser.add_argument("--nkjp-lookup-plan", action="store_true", dest="nkjp_lookup_plan", help="Zbuduj bezpieczny plan lookupu NKJP/concordance dla terminu; nie pobiera pełnego korpusu.")
+-    parser.add_argument("--voice-source-contract", action="store_true", dest="voice_source_contract", help="Pokaż kontrakt: Jaźń jako źródło, ChatGPT/model jako kanał głosu.")
+-    parser.add_argument("--rendering-mode", action="store_true", dest="rendering_mode", help="Pokaż decyzję naturalna odpowiedź vs exact runtime/diagnostyka.")
+-    parser.add_argument("--raw-chat-status", action="store_true", dest="raw_chat_status", help="Pokaż status memory/raw/chat.html i chat.html.7z bez rozpakowywania.")
+-    parser.add_argument("--raw-chat-status-json", action="store_true", dest="raw_chat_status_json", help="Pokaż uczciwy status raw memory/indexu jako JSON aktywnego runtime.")
+-    parser.add_argument("--conversation-archive-status", action="store_true", dest="conversation_archive_status", help="Pokaż status conversation_archive/FTS/staging zbudowanych z raw_chats/*.html.")
+-    parser.add_argument("--conversation-archive-search", action="store_true", dest="conversation_archive_search", help="Szukaj w osobnym conversation_fts i zwróć UID/provenance do archive/staging.")
+-    parser.add_argument("--conversation-archive-limit", type=int, default=8, help="Limit trafień dla --conversation-archive-search.")
+-    parser.add_argument("--conversation-archive-show-snippets", action="store_true", dest="conversation_archive_show_snippets", help="Dołącz krótkie excerpt z prywatnego archive do wyników wyszukiwania.")
+-    parser.add_argument("--status-json", action="store_true", dest="status_json", help="Pokaż startup/runtime status jako JSON bez parsowania prozy.")
+-    parser.add_argument("--model-adapter-status", action="store_true", dest="model_adapter_status", help="Pokaż status adapterów modeli: skonfigurowane/nieudawane.")
+-    parser.add_argument("--startup-status", action="store_true", dest="startup_status", help="Pokaż własny kontrakt startowy runtime: lekki loader ChatGPT + obowiązki przejęte przez Jaźń.")
+-    parser.add_argument("--startup-status-fast", action="store_true", dest="startup_status_fast", help="Pokaż szybki startup status bez deep SQLite i bez sieci.")
+-    parser.add_argument("--startup-status-deep", action="store_true", dest="startup_status_deep", help="Pokaż pełny deep startup audit; może trwać długo.")
+-    parser.add_argument("--turn-trace", action="store_true", dest="turn_trace", help="Pokaż lekki ślad trasy tury: classifier -> guard -> route -> handler -> validator.")
+-    parser.add_argument("--network-time-check", action="store_true", dest="network_time_check", help="Jawna diagnostyka czasu sieciowego; zwykła rozmowa jej nie używa.")
+-    parser.add_argument("--sqlite-integrity-audit", action="store_true", dest="sqlite_integrity_audit", help="Jawny deep audit SQLite z integrity_check/foreign_key_check.")
+-    parser.add_argument("--self-check", action="store_true", dest="self_check", help="Pokaż skrócony self-check runtime i potwierdzenie, że procedura startowa jest własnością systemu Jaźni.")
+-    parser.add_argument("--truth-boundary-check", action="store_true", dest="truth_boundary_check", help="Pokaż granicę prawdy runtime/ChatGPT/pliki/pamięć/ZIP.")
+-    parser.add_argument("--fallback-audit", action="store_true", dest="fallback_audit", help="Zbadaj tekst jako możliwy fallback, stale route albo kontrakt zamiast odpowiedzi.")
+-    parser.add_argument("--memory-plan", action="store_true", dest="memory_plan", help="Pokaż plan wyszukiwania pamięci i trafienia plików kanonicznych bez generowania zwykłej odpowiedzi.")
+-    parser.add_argument("--canon-extraction-preview", action="store_true", dest="canon_extraction_preview", help="Przeskanuj prywatne źródła kanonu i zapisz raport/progress bez modyfikowania kanonu runtime.")
+-    parser.add_argument("--canon-extraction-write-private", action="store_true", dest="canon_extraction_write_private", help="Przeskanuj źródła i zapisz lokalny prywatny moduł .py canon extension; nie commitować bez recenzji.")
+-    parser.add_argument("--canon-extraction-progress", type=Path, default=None, help="Opcjonalna ścieżka JSONL postępu dla ekstrakcji kanonu.")
+-    parser.add_argument("--canon-extraction-verbose-progress", action="store_true", dest="canon_extraction_verbose_progress", help="Wypisuj zdarzenia progress JSONL na stdout oprócz zapisu do pliku.")
+-    parser.add_argument("--canon-extra-source", action="append", default=[], help="Dodatkowe źródło kanonu względne wobec root; można powtórzyć.")
+-    parser.add_argument("--memory-normalization-status", action="store_true", dest="memory_normalization_status", help="Pokaż status niedestrukcyjnego sidecara normalizacji pamięci.")
+-    parser.add_argument("--normalize-memory-sidecar", action="store_true", dest="normalize_memory_sidecar", help="Zbuduj lub zaktualizuj sidecar normalizacji pamięci bez modyfikowania aktywnej bazy rozmów.")
+-    parser.add_argument("--wake-state-status", action="store_true", dest="wake_state_status", help="Pokaż status aktywnego wake_state z sidecara pamięci.")
+-    parser.add_argument("--build-wake-state", action="store_true", dest="build_wake_state", help="Zbuduj wake_state z istniejących rekordów sidecara normalizacji.")
+-    parser.add_argument("--dedupe-memory-sidecar", action="store_true", dest="dedupe_memory_sidecar", help="Zbuduj warstwowe grupy duplikatów w sidecarze bez kasowania rekordów źródłowych.")
+-    parser.add_argument("--dry-run", action="store_true", dest="dry_run", help="Tryb kontrolny dla operacji normalizacji/wake_state bez zapisu.")
+-    parser.add_argument("--normalization-limit", type=int, default=None, help="Opcjonalny limit rekordów dla sidecara normalizacji, używany głównie w testach i audytach.")
+-    parser.add_argument("--dedupe-min-group-size", type=int, default=2, help="Minimalny rozmiar grupy dla warstwowej deduplikacji sidecara.")
+-    parser.add_argument("--write-active-runtime-marker", action="store_true", dest="write_active_runtime_marker", help="Zapisz JAZN_ACTIVE_RUNTIME.json dla aktywnego folderu i cache rozpakowania.")
+-    parser.add_argument("--source-zip", type=Path, default=None, help="Opcjonalna ścieżka ZIP-a źródłowego do porównania checksum w aktywnym cache.")
+-    parser.add_argument("--marker-output", type=Path, default=None, help="Opcjonalna ścieżka pliku JAZN_ACTIVE_RUNTIME.json.")
+-    parser.add_argument("--record-final-reply", action="store_true", dest="record_final_reply", help="Dopisz do ledgera finalną widoczną odpowiedź ChatGPT dla podanego turn_id/trace_id/timestamp_header.")
+-    parser.add_argument("--turn-id", default=None, help="turn_id z cognitive_turn_envelope dla --record-final-reply.")
+-    parser.add_argument("--trace-id", default=None, help="trace_id z cognitive_turn_envelope dla --record-final-reply.")
+-    parser.add_argument("--timestamp-header", default=None, help="timestamp_header z cognitive_turn_envelope dla --record-final-reply.")
+-    parser.add_argument("--state-emoticon", default="🌿", help="Emotikon stanu używany, jeśli finalny tekst wymaga dopięcia timestampu.")
+-    parser.add_argument("--final-text-file", type=Path, default=None, help="Opcjonalny plik z finalną widoczną odpowiedzią do zapisania w ledgerze.")
+-    export_group = parser.add_mutually_exclusive_group()
+-    export_group.add_argument("--export-system", action="store_true", help="Utwórz paczkę system-only bez memory/ i workspace_runtime/.")
+-    export_group.add_argument("--export-memory", action="store_true", help="Utwórz paczkę memory-only z memory/ i workspace_runtime/.")
+-    export_group.add_argument("--export-full", action="store_true", help="Utwórz pełną paczkę systemu wraz z pamięcią.")
+-    export_group.add_argument("--export-nlp", action="store_true", help="Utwórz paczkę NLP-resources-only bez pamięci i bez ciężkich modeli.")
+-    export_group.add_argument("--export-github-source-safe", action="store_true", help="Utwórz paczkę źródłową bez surowej pamięci i aktywnych baz SQLite.")
+-    parser.add_argument("--output", type=Path, default=None, help="Opcjonalna ścieżka ZIP dla eksportu.")
+-    parser.add_argument("message", nargs=argparse.REMAINDER, help="Treść wiadomości dla runtime.")
+-    return parser
+-
+-
+-def _message_from_remainder(parts: list[str]) -> str:
+-    if parts and parts[0] == "--":
+-        parts = parts[1:]
+-    return " ".join(parts).strip()
+-
+-
+-def _build_light_turn_trace(cfg: JaznConfig, text: str) -> dict:
+-    intent = DialogueIntentClassifier().classify(text)
+-    guard = TopicMismatchGuard().analyse(text, runtime_version=cfg.version).to_dict()
+-    entry = RouteRegistry().resolve(intent.primary_intent, confidence=intent.confidence)
+-    return TurnRouteTrace(
+-        user_text_preview=(text or "")[:240],
+-        speech_act=intent.speech_act,
+-        question_object=intent.question_object,
+-        primary_intent_initial=intent.primary_intent,
+-        primary_intent_final=intent.primary_intent,
+-        secondary_intents=list(intent.secondary_intents),
+-        topic_guard=guard,
+-        selected_route=entry.route,
+-        selected_handler=entry.handler_name,
+-        startup_status_mode="fast",
+-        sqlite_health_mode="metadata",
+-        network_time_used=False,
+-        deep_audit_used=False,
+-        runtime_answer_validation={
+-            "status": "not_run_without_response",
+-            "truth_boundary": "--turn-trace alone does not generate a final answer; combine with --runtime-preview to inspect validator output.",
+-        },
+-        final_text_source="not_generated",
+-    ).to_dict()
+-
+-
+-def main(argv: list[str] | None = None) -> int:
+-    _configure_stdio_utf8()
+-    argv = list(sys.argv[1:] if argv is None else argv)
+-    if "--chat-jsonl" in argv:
+-        sys.stderr.write("Flaga --chat-jsonl została usunięta z aktywnego CLI. Użyj: python main.py --chat-gpt --session-id <id>\n")
+-        return 2
+-    parser = _build_parser()
+-    ns = parser.parse_args(argv)
+-    if ns.runtime_preview_output is None and "--runtime-preview-output" in ns.message:
+-        idx = ns.message.index("--runtime-preview-output")
+-        if idx + 1 >= len(ns.message):
+-            parser.error("--runtime-preview-output requires a path")
+-        ns.runtime_preview_output = Path(ns.message[idx + 1])
+-        ns.message = ns.message[:idx] + ns.message[idx + 2:]
+-    root = ns.root.resolve() if ns.root else None
+-
+-    if ns.status_readonly:
+-        print(_render_readonly_status(root))
+-        return 0
+-
+-    config = JaznConfig(root=root) if root else None
+-
+-    if ns.startup_status or ns.startup_status_fast or ns.startup_status_deep:
+-        cfg = config or JaznConfig()
+-        mode = "deep" if ns.startup_status_deep else "fast"
+-        print(json.dumps(build_startup_status(cfg, source_zip=ns.source_zip, mode=mode).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.status_json:
+-        cfg = config or JaznConfig()
+-        archive_store = ConversationArchiveStore(cfg.root)
+-        print(json.dumps({
+-            "runtime_version": cfg.version,
+-            "startup_summary": build_startup_summary(cfg, source_zip=ns.source_zip),
+-            "startup_status_mode": "fast",
+-            "sqlite_health_mode": "metadata",
+-            "raw_memory_status": RawMemoryInspector(cfg.root, cfg.memory_db_path).inspect().to_dict(),
+-            "conversation_archive_status": archive_store.status(health_mode="metadata").to_dict(),
+-        }, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.network_time_check:
+-        cfg = config or JaznConfig()
+-        print(json.dumps({"runtime_version": cfg.version, "network_time_check": WarsawClock(cfg.timezone).network_time_check()}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.sqlite_integrity_audit:
+-        cfg = config or JaznConfig()
+-        print(json.dumps({"runtime_version": cfg.version, "sqlite_integrity_audit": ConversationArchiveStore(cfg.root).status(health_mode="deep").to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.turn_trace and not ns.runtime_preview:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        print(json.dumps({"runtime_version": cfg.version, "turn_route_trace": _build_light_turn_trace(cfg, text)}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.self_check:
+-        cfg = config or JaznConfig()
+-        print(json.dumps(build_self_check(cfg), ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.truth_boundary_check:
+-        cfg = config or JaznConfig()
+-        print(json.dumps(build_truth_boundary_check(cfg), ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.fallback_audit:
+-        text = _message_from_remainder(ns.message)
+-        print(json.dumps(classify_fallback_text(text), ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.memory_plan:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        planner = MemorySearchPlanner(cfg.root)
+-        plan = planner.plan(text)
+-        archive_store = ConversationArchiveStore(cfg.root)
+-        archive_query = " ".join((plan.search_terms or plan.focus_terms or [])[:8]) or text
+-        payload = {
+-            "schema_version": schema_version("memory_plan_cli"),
+-            "runtime_version": cfg.version,
+-            "memory_search_plan": plan.to_dict(),
+-            "source_file_hits": [hit.to_dict() for hit in planner.search_source_files(plan, limit=8)],
+-            "conversation_archive_status": archive_store.status(check_integrity=False).to_dict(),
+-            "conversation_archive_hits": archive_store.search(archive_query, limit=8, include_snippets=False).to_dict(),
+-            "truth_boundary": "To jest plan, kanoniczne trafienia plików i metadane trafień conversation_archive/FTS, nie pełna rozmowna odpowiedź ani dowód pełnego odczytu całej pamięci.",
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.canon_extraction_preview or ns.canon_extraction_write_private:
+-        cfg = config or JaznConfig()
+-        mode = "write-private-extension" if ns.canon_extraction_write_private else "preview"
+-        payload = {
+-            "runtime_version": cfg.version,
+-            "canon_extraction": run_canon_extraction(
+-                cfg.root,
+-                mode=mode,
+-                progress_path=ns.canon_extraction_progress,
+-                verbose_progress=ns.canon_extraction_verbose_progress,
+-                extra_sources=ns.canon_extra_source or [],
+-            ),
+-            "truth_boundary": "Raport i progress są artefaktem patcha. Właściwy runtime canon jest w plikach .py; lokalny prywatny extension .py wymaga recenzji przed commitem.",
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.conversation_archive_status:
+-        cfg = config or JaznConfig()
+-        payload = {
+-            "runtime_version": cfg.version,
+-            "conversation_archive_status": ConversationArchiveStore(cfg.root).status().to_dict(),
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.conversation_archive_search:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        payload = {
+-            "runtime_version": cfg.version,
+-            "conversation_archive_search": ConversationArchiveStore(cfg.root).search(
+-                text,
+-                limit=ns.conversation_archive_limit,
+-                include_snippets=ns.conversation_archive_show_snippets,
+-            ).to_dict(),
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.memory_normalization_status:
+-        cfg = config or JaznConfig()
+-        sidecar = MemoryNormalizationSidecar(
+-            cfg.root,
+-            source_db_path=cfg.root / cfg.memory_db_name,
+-            sidecar_db_path=cfg.root / cfg.audit_db_name,
+-            runtime_version=cfg.version,
+-        )
+-        payload = {"runtime_version": cfg.version, "memory_normalization_status": sidecar.status().to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.normalize_memory_sidecar:
+-        cfg = config or JaznConfig()
+-        sidecar = MemoryNormalizationSidecar(
+-            cfg.root,
+-            source_db_path=cfg.root / cfg.memory_db_name,
+-            sidecar_db_path=cfg.root / cfg.audit_db_name,
+-            runtime_version=cfg.version,
+-        )
+-        payload = {
+-            "runtime_version": cfg.version,
+-            "memory_normalization_report": sidecar.normalize(dry_run=ns.dry_run, limit=ns.normalization_limit).to_dict(),
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.wake_state_status:
+-        cfg = config or JaznConfig()
+-        sidecar = MemoryNormalizationSidecar(
+-            cfg.root,
+-            source_db_path=cfg.root / cfg.memory_db_name,
+-            sidecar_db_path=cfg.root / cfg.audit_db_name,
+-            runtime_version=cfg.version,
+-        )
+-        payload = {"runtime_version": cfg.version, "wake_state_status": sidecar.wake_state_status().to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.build_wake_state:
+-        cfg = config or JaznConfig()
+-        sidecar = MemoryNormalizationSidecar(
+-            cfg.root,
+-            source_db_path=cfg.root / cfg.memory_db_name,
+-            sidecar_db_path=cfg.root / cfg.audit_db_name,
+-            runtime_version=cfg.version,
+-        )
+-        payload = {"runtime_version": cfg.version, "wake_state_build_report": sidecar.build_wake_state(dry_run=ns.dry_run).to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.dedupe_memory_sidecar:
+-        cfg = config or JaznConfig()
+-        sidecar = MemoryNormalizationSidecar(
+-            cfg.root,
+-            source_db_path=cfg.root / cfg.memory_db_name,
+-            sidecar_db_path=cfg.root / cfg.audit_db_name,
+-            runtime_version=cfg.version,
+-        )
+-        payload = {
+-            "runtime_version": cfg.version,
+-            "layered_dedupe_report": sidecar.build_layered_dedupe(
+-                dry_run=ns.dry_run,
+-                min_group_size=ns.dedupe_min_group_size,
+-            ).to_dict(),
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.project_startup_index:
+-        cfg = config or JaznConfig()
+-        payload = build_project_startup_index(cfg.root, write=True)
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.topic_guard:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        payload = TopicMismatchGuard().analyse(text, runtime_version=cfg.version).to_dict()
+-        print(json.dumps({"runtime_version": cfg.version, "topic_mismatch_guard": payload}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.dialogue_intent:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        payload = DialogueIntentClassifier().classify(text).to_dict()
+-        print(json.dumps({"runtime_version": cfg.version, "dialogue_intent_classifier": payload}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.module_responsibility_map:
+-        cfg = config or JaznConfig()
+-        payload = ModuleResponsibilityMap(cfg.root).build(write=True)
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.seed_requirements_ledger:
+-        cfg = config or JaznConfig()
+-        path = RequirementsLedger(cfg.root).seed_manifest_requirements()
+-        print(json.dumps({"runtime_version": cfg.version, "requirements_ledger": str(path), "seeded": True}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-
+-    if ns.last_turn:
+-        cfg = config or JaznConfig()
+-        payload = TurnTraceReader(cfg.root).latest() or {"schema_version": schema_version("turn_checkpoint"), "found": False, "reason": "no_checkpoint_found"}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.compare_runtime_visible:
+-        cfg = config or JaznConfig()
+-        payload = RuntimeVisibleAnswerComparator(cfg.root).compare(ns.trace_id)
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.language_resources:
+-        cfg = config or JaznConfig()
+-        payload = {"runtime_version": cfg.version, "language_resource_registry": LanguageResourceRegistry().to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.polish_reasoning_sources:
+-        cfg = config or JaznConfig()
+-        payload = {"runtime_version": cfg.version, "polish_reasoning_sources": PolishReasoningSourceRegistry(cfg.root).to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.nlp_resource_status:
+-        cfg = config or JaznConfig()
+-        registry = LexicalResourceRegistry(
+-            cfg.root,
+-            verified_sources_path=cfg.root / cfg.lexical_resources_registry_path,
+-            project_lexicon_path=cfg.root / cfg.latka_project_lexicon_path,
+-            cache_path=cfg.lexical_resource_cache_path,
+-        )
+-        payload = {"runtime_version": cfg.version, "nlp_resource_status": registry.to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.polish_morphology or ns.morfeusz_status or ns.polimorf_status:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        payload = build_polish_morphology_diagnostics(cfg.root, text)
+-        if ns.morfeusz_status or ns.polimorf_status:
+-            wanted = "morfeusz2-sgjp" if ns.morfeusz_status else "polimorf"
+-            statuses = payload["polish_morphology"].get("provider_statuses", [])
+-            payload = {
+-                "runtime_version": cfg.version,
+-                "schema_version": "polish_provider_status/v14.8.4",
+-                "provider_status": next((item for item in statuses if item.get("provider") == wanted), None),
+-                "truth_boundary": "Status providera mówi tylko, czy lokalny adapter jest dostępny. Nie oznacza pobrania pełnego słownika ani pełnej dezambiguacji języka.",
+-            }
+-        else:
+-            payload = {"runtime_version": cfg.version, **payload}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.polish_reasoning_frame or ns.polish_reasoning_bootstrap_plan:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        payload = build_polish_reasoning_diagnostics(cfg.root, text)
+-        if ns.polish_reasoning_bootstrap_plan:
+-            payload = {
+-                "runtime_version": cfg.version,
+-                "schema_version": "polish_reasoning_bootstrap_plan/v14.8.4",
+-                "bootstrap_commands": payload["bootstrap_commands"],
+-                "source_registry": payload["source_registry"],
+-                "truth_boundary": "Bootstrap instaluje providery i modele z Internetu lokalnie; patch nie vendoruje dużych słowników ani modeli.",
+-            }
+-        else:
+-            payload = {"runtime_version": cfg.version, **payload}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.wsjp_lookup_plan or ns.nkjp_lookup_plan:
+-        cfg = config or JaznConfig()
+-        term = _message_from_remainder(ns.message)
+-        planner = PolishOnlineLookupPlanner()
+-        lookup = planner.nkjp(term).to_dict() if ns.nkjp_lookup_plan else planner.wsjp(term).to_dict()
+-        payload = {
+-            "runtime_version": cfg.version,
+-            "schema_version": "polish_reasoning_lookup_plan/v14.8.3",
+-            "lookup_plan": lookup,
+-            "truth_boundary": "To jest plan/link lookupu. Runtime nie twierdzi, że pobrał definicję lub przykłady bez realnego żądania HTTP i zapisu źródła.",
+-        }
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.voice_source_contract:
+-        cfg = config or JaznConfig()
+-        payload = {"runtime_version": cfg.version, "voice_source_contract": VoiceSourceContract.build(runtime_active=True, runtime_mode="one_shot").to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.rendering_mode:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        payload = {"runtime_version": cfg.version, "runtime_rendering_mode": RuntimeRenderingModeSelector().select(text).to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.raw_chat_status or getattr(ns, "raw_chat_status_json", False):
+-        cfg = config or JaznConfig()
+-        payload = {"runtime_version": cfg.version, "raw_chat_status": RawMemoryInspector(cfg.root, cfg.memory_db_path).inspect().to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.model_adapter_status:
+-        cfg = config or JaznConfig()
+-        payload = {"runtime_version": cfg.version, "model_adapter_status": NullModelAdapter().describe()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.dictionary_lookup:
+-        cfg = config or JaznConfig()
+-        term = _message_from_remainder(ns.message)
+-        payload = {"runtime_version": cfg.version, "dictionary_lookup": ExternalDictionaryAdapter(cfg.root, allow_network=cfg.dictionary_allow_network, user_agent=cfg.network_user_agent, timeout_seconds=cfg.dictionary_online_lookup_timeout_seconds, max_retries=cfg.network_max_retries, cache_ttl_seconds=cfg.network_cache_ttl_seconds).lookup(term).to_dict()}
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.active_cache_status or ns.write_active_runtime_marker:
+-        cfg = config or JaznConfig()
+-        if ns.write_active_runtime_marker:
+-            payload = write_active_runtime_marker(cfg.root, source_zip=ns.source_zip, marker_output=ns.marker_output)
+-        else:
+-            payload = build_active_runtime_status(cfg.root, source_zip=ns.source_zip, marker_output=ns.marker_output)
+-        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.github_plan:
+-        cfg = config or JaznConfig()
+-        path = write_github_repository_plan(cfg.root)
+-        plan = build_github_repository_plan(cfg.root).to_dict()
+-        plan["written_to"] = str(path)
+-        print(json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.dedup_report:
+-        cfg = config or JaznConfig()
+-        path = write_dedup_report(cfg.root, cfg.root / "reports" / "DEDUP_REPORT_V14_6_1.json")
+-        print(path.read_text(encoding="utf-8"))
+-        return 0
+-
+-    if ns.lexical_frame:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        polish = PolishUnderstandingEngine(cfg.root).analyse(text)
+-        nlp = PolishLemmatizationEngine(cfg.root).analyse(text)
+-        lexical = LexicalSemanticUnderstanding(cfg.root).analyse(text, polish_report=polish.to_dict(), nlp_report=nlp.to_dict())
+-        print(json.dumps({"runtime_version": cfg.version, "polish_understanding": polish.to_dict(), "polish_nlp": nlp.to_dict(), "lexical_semantic_understanding": lexical.to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.nlp_frame:
+-        cfg = config or JaznConfig()
+-        text = _message_from_remainder(ns.message)
+-        nlp = PolishLemmatizationEngine(cfg.root).analyse(text)
+-        print(json.dumps({"runtime_version": cfg.version, "polish_nlp": nlp.to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-
+-    if ns.record_final_reply:
+-        engine = JaznEngine(config)
+-        try:
+-            if not ns.turn_id or not ns.trace_id or not ns.timestamp_header:
+-                parser.error("--record-final-reply wymaga --turn-id, --trace-id i --timestamp-header")
+-            if ns.final_text_file:
+-                final_text = ns.final_text_file.read_text(encoding="utf-8")
+-            else:
+-                final_text = _message_from_remainder(ns.message)
+-            result = engine.persist_final_visible_reply(
+-                turn_id=ns.turn_id,
+-                trace_id=ns.trace_id,
+-                timestamp_header=ns.timestamp_header,
+-                final_text=final_text,
+-                state_emoticon=ns.state_emoticon,
+-                source="chatgpt_visible_layer_cli",
+-                client_context={"client": "chatgpt_visible_layer_cli", "lifecycle": "one_shot_visible_capture"},
+-            )
+-            print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+-        finally:
+-            engine.shutdown()
+-        return 0
+-
+-    if ns.runtime_preview:
+-        engine = JaznEngine(config)
+-        try:
+-            text = _message_from_remainder(ns.message)
+-            envelope = engine.process_turn(
+-                text,
+-                client_context={
+-                    "client": "chatgpt_runtime_preview",
+-                    "lifecycle": "one_shot_preview",
+-                    "preview_phase": "single_integrated_process_turn",
+-                    "session_id": ns.session_id,
+-                    "no_carryover": ns.no_carryover,
+-                },
+-            )
+-            envelope_dict = envelope.to_dict()
+-            cognitive_frame = envelope_dict.get("cognitive_frame") or {}
+-            runtime_text = envelope_dict.get("final_visible_text") or ""
+-            final_contract = envelope_dict.get("final_response_contract") or {}
+-            payload = {
+-                "schema_version": schema_version("runtime_preview"),
+-                "runtime_version": engine.config.version,
+-                "mode": "diagnostic_runtime_preview_single_process_turn_not_background_daemon",
+-                "turn_trace": envelope_dict.get("trace"),
+-                "runtime_text": runtime_text,
+-                "fallback_detected": any(
+-                    signature in runtime_text
+-                    for signature in (
+-                        "Nie znalazłam osobnej trasy odpowiedzi",
+-                        "runtime odebrał wiadomość",
+-                        "debugowy fallback",
+-                        "pusty fallback",
+-                    )
+-                ) or final_contract.get("fallback_classification") not in {None, "not_fallback"},
+-                "runtime_answer_quality": final_contract.get("runtime_answer_quality"),
+-                "fallback_classification": final_contract.get("fallback_classification"),
+-                "startup_procedure_required": bool(final_contract.get("startup_procedure_required")),
+-                "source_origin": cognitive_frame.get("source_origin"),
+-                "self_state_runtime": cognitive_frame.get("self_state_runtime"),
+-                "affect_mix": envelope_dict.get("affect_mix"),
+-                "dialogue_state": envelope_dict.get("dialogue_state"),
+-                "turn_route_trace": (cognitive_frame.get("turn_route_trace") or (envelope_dict.get("conversation_decision") or {}).get("turn_route_trace")),
+-                "final_response_contract": envelope_dict.get("final_response_contract"),
+-                "cognitive_turn_envelope": envelope_dict,
+-                "cognitive_frame": cognitive_frame,
+-                "visible_runtime_preview_contract": {
+-                    "schema_version": visible_preview_contract_version(engine.config.root),
+-                    "timestamp_header": (envelope_dict.get("trace") or {}).get("timestamp_header"),
+-                    "active_root": str(engine.config.root),
+-                    "start_file": "main.py",
+-                    "response_source": "runtime.process_turn + final_response_contract",
+-                    "required_visible_fields": ["timestamp_header", "active_root", "start_file", "runtime_answer_quality", "fallback_classification", "response_source", "one_shot_or_chat_loop_limit"],
+-                    "must_show_when_user_asks_about_runtime_files_timestamp_preview_or_fallback": True,
+-                    "one_shot_or_chat_loop_limit": "--runtime-preview jest jednorazowym wywołaniem; stałą pętlę daje dopiero python main.py --chat.",
+-                },
+-                "active_extraction_cache_status": build_active_runtime_status(engine.config.root),
+-                "startup_summary": build_startup_summary(engine.config),
+-                "free_dialogue_memory_nlp_bridge": build_startup_summary(engine.config),
+-                "truth_boundary": "Ten tryb wykonuje jedno zintegrowane wywołanie process_turn: runtime buduje cognitive-frame i z tej samej koperty tworzy finalną odpowiedź. Nie udaje stałego procesu w tle.",
+-            }
+-            payload_json = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
+-            if ns.runtime_preview_output:
+-                ns.runtime_preview_output.parent.mkdir(parents=True, exist_ok=True)
+-                ns.runtime_preview_output.write_text(payload_json + "\n", encoding="utf-8")
+-                print(json.dumps({
+-                    "runtime_version": engine.config.version,
+-                    "runtime_preview_output": str(ns.runtime_preview_output),
+-                    "written": True,
+-                    "truth_boundary": "Pełny runtime-preview zapisano do pliku; stdout zawiera tylko krótkie potwierdzenie.",
+-                }, ensure_ascii=False, indent=2, sort_keys=True))
+-            else:
+-                print(payload_json)
+-        finally:
+-            engine.shutdown()
+-        return 0
+-
+-
+-    if ns.chat_gpt:
+-        sessions: dict[str, JaznRuntimeSession] = {}
+-        generated_session: JaznRuntimeSession | None = None
+-        default_client = "chatgpt_bridge"
+-        default_lifecycle = "chatgpt_bridge_jsonl"
+-        bridge_protocol_version = schema_version("chatgpt_bridge_jsonl")
+-        accepted_input_fields = ["message", "text", "user_text", "content", "prompt"]
+-
+-        def bridge_meta(
+-            *,
+-            client: str = default_client,
+-            input_kind: str | None = None,
+-            input_field: str | None = None,
+-            line_index: int | None = None,
+-        ) -> dict:
+-            meta = {
+-                "protocol_version": bridge_protocol_version,
+-                "accepted_input_fields": accepted_input_fields,
+-                "accepted_input_shapes": [
+-                    "plain_text_line",
+-                    "json_object.message",
+-                    "json_object.text",
+-                    "json_object.user_text",
+-                    "json_object.content",
+-                    "json_object.prompt",
+-                    "json_object.messages[].content",
+-                ],
+-                "preferred_input_field": "message",
+-                "client": client,
+-                "lifecycle": default_lifecycle,
+-                "mode": "primary_chatgpt_bridge",
+-                "deprecated_flag_removed": "--chat-jsonl",
+-            }
+-            if input_kind is not None:
+-                meta["input_kind"] = input_kind
+-            if input_field is not None:
+-                meta["input_field"] = input_field
+-            if line_index is not None:
+-                meta["line_index"] = line_index
+-            return meta
+-
+-        def error_payload(
+-            *,
+-            error_code: str,
+-            error: str,
+-            client: str = default_client,
+-            input_kind: str | None = None,
+-            input_field: str | None = None,
+-            line_index: int | None = None,
+-        ) -> dict:
+-            return {
+-                "schema_version": schema_version("chatgpt_bridge_error"),
+-                "chatgpt_bridge": bridge_meta(
+-                    client=client,
+-                    input_kind=input_kind,
+-                    input_field=input_field,
+-                    line_index=line_index,
+-                ),
+-                "ok": False,
+-                "error_code": error_code,
+-                "error": error,
+-            }
+-
+-        def extract_user_text(payload: dict) -> tuple[str, str, str]:
+-            for candidate in accepted_input_fields:
+-                value = payload.get(candidate)
+-                if value is not None and str(value).strip():
+-                    return str(value).strip(), "json", candidate
+-
+-            messages = payload.get("messages")
+-            if isinstance(messages, list):
+-                fallback_content = ""
+-                fallback_field = "messages[].content"
+-                for item in messages:
+-                    if not isinstance(item, dict):
+-                        continue
+-                    content = item.get("content")
+-                    if content is None:
+-                        continue
+-                    if isinstance(content, list):
+-                        parts = []
+-                        for part in content:
+-                            if isinstance(part, dict):
+-                                text_part = part.get("text")
+-                                if text_part is not None:
+-                                    parts.append(str(text_part))
+-                            elif part is not None:
+-                                parts.append(str(part))
+-                        content_text = "".join(parts).strip()
+-                    else:
+-                        content_text = str(content).strip()
+-                    if not content_text:
+-                        continue
+-                    fallback_content = content_text
+-                    if str(item.get("role") or "").lower() == "user":
+-                        return content_text, "json_chat_messages", "messages[user].content"
+-                if fallback_content:
+-                    return fallback_content, "json_chat_messages", fallback_field
+-
+-            return "", "json", "<missing>"
+-
+-        def get_session(session_id: str | None, *, client: str) -> tuple[JaznRuntimeSession, str]:
+-            nonlocal generated_session
+-            if session_id:
+-                if session_id not in sessions:
+-                    sessions[session_id] = JaznRuntimeSession(
+-                        config,
+-                        session_id=session_id,
+-                        no_carryover=ns.no_carryover,
+-                        source_client=client,
+-                    )
+-                return sessions[session_id], "payload"
+-            if ns.session_id:
+-                if ns.session_id not in sessions:
+-                    sessions[ns.session_id] = JaznRuntimeSession(
+-                        config,
+-                        session_id=ns.session_id,
+-                        no_carryover=ns.no_carryover,
+-                        source_client=client,
+-                    )
+-                return sessions[ns.session_id], "cli_arg"
+-            if generated_session is None:
+-                generated_session = JaznRuntimeSession(
+-                    config,
+-                    session_id=None,
+-                    no_carryover=ns.no_carryover,
+-                    source_client=client,
+-                )
+-                sessions[generated_session.state.session_id] = generated_session
+-            return generated_session, "generated"
+-
+-
+-        try:
+-            for line_index, line in enumerate(sys.stdin, 1):
+-                line = line.strip()
+-                if not line:
+-                    continue
+-                if line in {"/exit", "exit"}:
+-                    break
+-
+-                input_kind = "plain_text"
+-                input_field = "plain_text"
+-                payload_session_id = None
+-                client = default_client
+-
+-                try:
+-                    payload = json.loads(line)
+-                except json.JSONDecodeError as exc:
+-                    if line[:1] in {"{", "["}:
+-                        print(json.dumps(error_payload(
+-                            error_code="malformed_json",
+-                            error=f"Niepoprawna linia JSONL: {exc.msg}",
+-                            input_kind="malformed_json",
+-                            input_field="<parse_error>",
+-                            line_index=line_index,
+-                        ), ensure_ascii=False, sort_keys=True), flush=True)
+-                        continue
+-                    user_text = line
+-                else:
+-                    input_kind = "json"
+-                    if not isinstance(payload, dict):
+-                        print(json.dumps(error_payload(
+-                            error_code="invalid_jsonl_payload",
+-                            error="Każda linia --chat-gpt musi być obiektem JSON albo zwykłym tekstem.",
+-                            input_kind="json_non_object",
+-                            input_field="<non_object>",
+-                            line_index=line_index,
+-                        ), ensure_ascii=False, sort_keys=True), flush=True)
+-                        continue
+-                    client = str(payload.get("client") or default_client)
+-                    payload_session_id = str(payload.get("session_id") or "").strip() or None
+-                    user_text, input_kind, input_field = extract_user_text(payload)
+-
+-                if not user_text.strip():
+-                    print(json.dumps(error_payload(
+-                        error_code="empty_message",
+-                        error="Pusta wiadomość nie została przekazana do runtime Jaźni.",
+-                        client=client,
+-                        input_kind=input_kind,
+-                        input_field=input_field,
+-                        line_index=line_index,
+-                    ), ensure_ascii=False, sort_keys=True), flush=True)
+-                    continue
+-
+-                session, session_id_source = get_session(payload_session_id, client=client)
+-                try:
+-                    result = session.process_user_text(
+-                        user_text,
+-                        client=client,
+-                        lifecycle=default_lifecycle,
+-                        session_id_source=session_id_source,
+-                        process_reused=True,
+-                    )
+-                except Exception as exc:
+-                    print(json.dumps(error_payload(
+-                        error_code="runtime_turn_failed",
+-                        error=f"Runtime Jaźni przerwał turę: {type(exc).__name__}: {exc}",
+-                        client=client,
+-                        input_kind=input_kind,
+-                        input_field=input_field,
+-                        line_index=line_index,
+-                    ), ensure_ascii=False, sort_keys=True), flush=True)
+-                    continue
+-                result["chatgpt_bridge"] = bridge_meta(
+-                    client=client,
+-                    input_kind=input_kind,
+-                    input_field=input_field,
+-                    line_index=line_index,
+-                )
+-                result["ok"] = True
+-                print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
+-        finally:
+-            for session in sessions.values():
+-                session.close()
+-        return 0
+-
+-    if ns.export_system or ns.export_memory or ns.export_full or ns.export_nlp or ns.export_github_source_safe:
+-        cfg = config or JaznConfig()
+-        mode = "system" if ns.export_system else "memory" if ns.export_memory else "nlp" if ns.export_nlp else "github_source_safe" if ns.export_github_source_safe else "full"
+-        report = export_package(cfg.root, mode, ns.output)
+-        print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+-        return 0
+-
+-    if ns.chat_loop:
+-        session = JaznRuntimeSession(config, session_id=ns.session_id, no_carryover=ns.no_carryover, source_client="chat")
+-        try:
+-            run_persistent_chat(session, session_id=ns.session_id, no_carryover=ns.no_carryover)
+-        finally:
+-            session.close()
+-        return 0
+-
+-    engine = JaznEngine(config)
+-    try:
+-        text = _message_from_remainder(ns.message)
+-        if ns.cognitive_frame:
+-            packet = engine.build_cognitive_frame(text, client_context={"client": "chatgpt_cli_bridge", "lifecycle": "one_shot"})
+-            print(json.dumps(packet, ensure_ascii=False, indent=2, sort_keys=True))
+-        elif text:
+-            if ns.debug_direct:
+-                print(engine.handle_user_message(text, client_context={"client": "cli_direct_debug", "debug_direct": True, "lifecycle": "one_shot"}))
+-            else:
+-                envelope = engine.process_turn(text, client_context={"client": "cli_direct_conversation", "debug_direct": False, "lifecycle": "one_shot", "session_id": ns.session_id, "no_carryover": ns.no_carryover})
+-                print(envelope.final_visible_text or envelope.final_response_contract.get("final_visible_text", ""))
+-        else:
+-            print(engine.bootstrap())
+-    finally:
+-        engine.shutdown()
+-    return 0
+-
+-
+-if __name__ == "__main__":
+-    try:
+-        raise SystemExit(main())
+-    except BrokenPipeError:
+-        # Pozwala bezpiecznie ucinać długie podglądy JSON przez `head`/pipe
+-        # bez fałszywego wrażenia awarii runtime.
+-        try:
+-            sys.stdout.close()
+-        except Exception:
+-            pass
+-        raise SystemExit(0)
++# Current package version: v14.8.5.013-chat-command-openai-bridge-contract
++from __future__ import annotations
++
++import argparse
++import json
++import sys
++from pathlib import Path
++
++from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, schema_version
++
++ACTIVE_PACKAGE_VERSION = PACKAGE_VERSION
++
++
++def _configure_stdio_utf8() -> None:
++    for stream in (sys.stdin, sys.stdout, sys.stderr):
++        reconfigure = getattr(stream, "reconfigure", None)
++        if callable(reconfigure):
++            reconfigure(encoding="utf-8")
++
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.canon.extraction import run_canon_extraction
++from latka_jazn.core.clock import WarsawClock
++from latka_jazn.core.emotions import AffectiveState
++from latka_jazn.core.identity_guard import IdentityPerspectiveGuard
++from latka_jazn.core.renderer import ResponseRenderer
++from latka_jazn.core.runtime_status import build_runtime_status
++from latka_jazn.core.startup_contract import build_startup_status, build_startup_summary, build_self_check, build_truth_boundary_check, classify_fallback_text
++from latka_jazn.core.engine import JaznEngine
++from latka_jazn.core.memory_search_planner import MemorySearchPlanner
++from latka_jazn.core.runtime_chat import run_persistent_chat
++from latka_jazn.core.runtime_session import JaznRuntimeSession
++from latka_jazn.memory.raw_memory_status import RawMemoryInspector
++from latka_jazn.memory.normalization_sidecar import MemoryNormalizationSidecar
++from latka_jazn.memory.conversation_archive import ConversationArchiveStore
++from latka_jazn.tools.package_export import export_package
++from latka_jazn.tools.dedup_manifest import write_dedup_report
++from latka_jazn.tools.active_extraction_cache import build_active_runtime_status, write_active_runtime_marker, visible_preview_contract_version
++from latka_jazn.core.polish_understanding import PolishUnderstandingEngine
++from latka_jazn.core.lexical_semantics import LexicalSemanticUnderstanding
++from latka_jazn.nlp.polish_lemmatizer import PolishLemmatizationEngine
++from latka_jazn.integrations.github_repository_plan import build_github_repository_plan, write_github_repository_plan
++from latka_jazn.core.project_index import build_project_startup_index
++from latka_jazn.nlp.topic_mismatch_guard import TopicMismatchGuard
++from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
++from latka_jazn.core.route_registry import RouteRegistry
++from latka_jazn.core.module_responsibility_map import ModuleResponsibilityMap
++from latka_jazn.memory.requirements_ledger import RequirementsLedger
++from latka_jazn.core.turn_trace_reader import TurnTraceReader
++from latka_jazn.core.runtime_visible_answer_comparator import RuntimeVisibleAnswerComparator
++from latka_jazn.nlp.external_dictionary_adapter import ExternalDictionaryAdapter
++from latka_jazn.nlp.language_resource_registry import LanguageResourceRegistry
++from latka_jazn.core.voice_source_contract import VoiceSourceContract
++from latka_jazn.core.runtime_rendering_modes import RuntimeRenderingModeSelector
++from latka_jazn.memory.raw_chat_importer import RawChatImporter
++from latka_jazn.model_adapters.factory import build_model_adapter
++from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnostics, build_polish_reasoning_diagnostics
++from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
++from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
++from latka_jazn.core.turn_route_trace import TurnRouteTrace
++from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
++from latka_jazn.core.chat_command_contract import apply_openai_cli_settings, run_jsonl_chat_bridge
++from latka_jazn.core.bridge_discovery import discover_runtime_bridges
++from latka_jazn.core.runtime_daemon import (
++    DEFAULT_DAEMON_HOST,
++    DEFAULT_DAEMON_PORT,
++    DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
++    DEFAULT_START_TIMEOUT_SECONDS,
++    run_daemon,
++    start_daemon,
++    status_daemon,
++    stop_daemon,
++)
++
++
++def _render_readonly_status(root: Path | None = None) -> str:
++    cfg = JaznConfig(root=root or Path(__file__).resolve().parent)
++    clock = WarsawClock(cfg.timezone)
++    renderer = ResponseRenderer(clock, IdentityPerspectiveGuard())
++    body = build_runtime_status(cfg, store=None, readonly=True)
++    return renderer.render(body, AffectiveState(), clock.now(network_first=cfg.network_time_first, allow_fallback=cfg.local_time_fallback))
++
++
++def _build_parser() -> argparse.ArgumentParser:
++    parser = argparse.ArgumentParser(
++        prog="main.py",
++        description="Runtime Jaźni Łatki: rozmowa bezpośrednia, cognitive-frame, diagnostyka i eksport paczek.",
++        allow_abbrev=False,
++    )
++    parser.add_argument("--root", type=Path, default=None, help="Folder główny aktywnej paczki Jaźni.")
++    parser.add_argument("--status", "--status-readonly", "--diagnostics-readonly", action="store_true", dest="status_readonly", help="Pokaż diagnostykę bez zapisu do pamięci. --status jest jawnym aliasem, nie skrótem argparse.")
++    parser.add_argument("--cognitive-frame", "--chatgpt-frame", "--brain-frame", action="store_true", dest="cognitive_frame", help="Zwróć wewnętrzny pakiet poznawczy JSON dla ChatGPT, nie gotową odpowiedź użytkownikowi.")
++    parser.add_argument("--debug-direct", action="store_true", dest="debug_direct", help="Pokaż techniczną ścieżkę bezpośrednią i fallback diagnostyczny zamiast rozmownej odpowiedzi.")
++    parser.add_argument("--chat", "--loop", action="store_true", dest="chat_loop", help="Uruchom stałą pętlę rozmowy: jeden JaznEngine działa przez wiele tur aż do /exit lub EOF.")
++    parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Uruchom główny most ChatGPT w protokole JSONL: przyjmuje message/text/user_text/content/prompt, format messages[].content albo zwykły tekst; zwraca jedną linię JSON na turę.")
++    parser.add_argument("--chat-open-ai", action="store_true", dest="chat_open_ai", help="Uruchom lokalny runtime Jaźni z model_adapter przez OpenAI Responses API; wymaga OPENAI_API_KEY i nie udaje połączenia bez klucza.")
++    parser.add_argument("--openai-model", default=None, help="Model dla --chat-open-ai; domyślnie JAZN_MODEL_NAME albo konfiguracja runtime.")
++    parser.add_argument("--openai-api-base", default=None, help="Bazowy URL API dla --chat-open-ai; domyślnie https://api.openai.com/v1.")
++    parser.add_argument("--openai-timeout", type=float, default=None, help="Timeout sekund dla adaptera OpenAI w --chat-open-ai.")
++    parser.add_argument("--openai-max-output-tokens", type=int, default=None, help="Limit output tokens dla adaptera OpenAI w --chat-open-ai.")
++    parser.add_argument("--bridge-discovery", action="store_true", dest="bridge_discovery", help="Pokaż wykryte mosty runtime: --chat, --chat-gpt, --chat-open-ai i daemon.")
++    parser.add_argument("--daemon-run", action="store_true", dest="daemon_run", help="Uruchom foreground daemon stałej aktywnej Jaźni: lokalny HTTP loopback + PID + heartbeat + marker JAZN_ACTIVE_RUNTIME.json.")
++    parser.add_argument("--daemon-start", action="store_true", dest="daemon_start", help="Uruchom daemon Jaźni w tle i zwróć status startu.")
++    parser.add_argument("--daemon-status", action="store_true", dest="daemon_status", help="Sprawdź marker, PID, heartbeat i endpoint /status daemonu Jaźni.")
++    parser.add_argument("--daemon-stop", action="store_true", dest="daemon_stop", help="Poproś działający lokalny daemon Jaźni o zatrzymanie i zamknięcie sesji.")
++    parser.add_argument("--daemon-host", default=DEFAULT_DAEMON_HOST, help="Adres bindowania daemonu; domyślnie tylko loopback 127.0.0.1.")
++    parser.add_argument("--daemon-port", type=int, default=DEFAULT_DAEMON_PORT, help="Port lokalnego daemonu Jaźni.")
++    parser.add_argument("--daemon-heartbeat-interval", type=float, default=DEFAULT_HEARTBEAT_INTERVAL_SECONDS, help="Co ile sekund daemon odświeża marker aktywnego runtime.")
++    parser.add_argument("--daemon-start-timeout", type=float, default=DEFAULT_START_TIMEOUT_SECONDS, help="Ile sekund --daemon-start czeka na odpowiedź /status.")
++    parser.add_argument("--daemon-marker-output", type=Path, default=None, help="Opcjonalna ścieżka markera JAZN_ACTIVE_RUNTIME.json dla daemonu.")
++    parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.")
++    parser.add_argument("--no-carryover", action="store_true", dest="no_carryover", help="Zablokuj użycie poprzedniej tury nawet jeśli istnieje runtime_state.json.")
++    parser.add_argument("--github-plan", action="store_true", dest="github_plan", help="Zapisz i pokaż plan repozytoriów Latka.Jazn oraz Latka.Jazn.Memory bez wykonywania pushu.")
++    parser.add_argument("--dedup-report", action="store_true", dest="dedup_report", help="Zbuduj raport duplikatów treści i SHA-256 bez usuwania plików.")
++    parser.add_argument("--lexical-frame", action="store_true", dest="lexical_frame", help="Pokaż raport leksykalny aktualnej Jaźni: polskie rozumienie + rozszerzona semantyka słów i fraz.")
++    parser.add_argument("--nlp-frame", action="store_true", dest="nlp_frame", help="Pokaż raport NLP aktualnej Jaźni: tokeny, lemma_candidates, selected_lemma, confidence i provider.")
++    parser.add_argument("--runtime-preview", action="store_true", dest="runtime_preview", help="Pokaż dokładną odpowiedź runtime oraz pakiet cognitive-frame/source_origin/self_state dla mostu ChatGPT.")
++    parser.add_argument("--runtime-preview-output", type=Path, default=None, help="Opcjonalna ścieżka pliku JSON dla --runtime-preview; pełny payload trafia do pliku, a stdout zwraca krótkie potwierdzenie.")
++    parser.add_argument("--active-cache-status", action="store_true", dest="active_cache_status", help="Pokaż status aktywnego rozpakowanego folderu i decyzję, czy trzeba ponownie rozpakować ZIP.")
++    parser.add_argument("--project-startup-index", action="store_true", dest="project_startup_index", help="Zbuduj i pokaż mapę plików oraz modułów/funkcji Jaźni przy rozruchu.")
++    parser.add_argument("--topic-guard", action="store_true", dest="topic_guard", help="Pokaż raport TopicMismatchGuard dla wiadomości bez generowania pełnej odpowiedzi.")
++    parser.add_argument("--dialogue-intent", action="store_true", dest="dialogue_intent", help="Pokaż klasyfikację aktu rozmowy aktywnego runtime bez generowania odpowiedzi.")
++    parser.add_argument("--module-responsibility-map", action="store_true", dest="module_responsibility_map", help="Zbuduj semantyczną mapę odpowiedzialności modułów i funkcji.")
++    parser.add_argument("--seed-requirements-ledger", action="store_true", dest="seed_requirements_ledger", help="Dopisz wymagania aktywnego manifestu do requirements ledger.")
++    parser.add_argument("--last-turn", action="store_true", dest="last_turn", help="Pokaż ostatni turn checkpoint: exact_runtime_text, visible_text, route, template_origin i source-origin.")
++    parser.add_argument("--compare-runtime-visible", action="store_true", dest="compare_runtime_visible", help="Porównaj exact runtime text z widoczną odpowiedzią ChatGPT dla ostatniej tury albo --trace-id.")
++    parser.add_argument("--dictionary-lookup", action="store_true", dest="dictionary_lookup", help="Sprawdź termin przez cache/mini-leksykon/adaptory słowników; nie udawaj lookupu online bez providera.")
++    parser.add_argument("--language-resources", action="store_true", dest="language_resources", help="Pokaż rejestr dostępnych i opcjonalnych zasobów językowych/słownikowych.")
++    parser.add_argument("--polish-reasoning-frame", action="store_true", dest="polish_reasoning_frame", help="Pokaż warstwowy frame Polish Reasoning: normalizacja, morfologia, semantyka, reply policy i status providerów.")
++    parser.add_argument("--polish-reasoning-sources", action="store_true", dest="polish_reasoning_sources", help="Pokaż rejestr źródeł/licencji/cache dla warstwy Polish Reasoning.")
++    parser.add_argument("--polish-reasoning-bootstrap-plan", action="store_true", dest="polish_reasoning_bootstrap_plan", help="Pokaż komendy lokalnej instalacji providerów NLP bez ich automatycznego pobierania.")
++    parser.add_argument("--nlp-resource-status", action="store_true", dest="nlp_resource_status", help="Pokaż status lexical resource registry/cache: źródła, licencje, dostępność i projektowy leksykon bez pobierania dużych danych.")
++    parser.add_argument("--polish-morphology", action="store_true", dest="polish_morphology", help="Pokaż szczegółową analizę morfologiczną v14.8.4: Morfeusz/PoliMorf, kandydaci i selected_lemma.")
++    parser.add_argument("--morfeusz-status", action="store_true", dest="morfeusz_status", help="Pokaż status realnego providera Morfeusz2/SGJP w Polish Reasoning.")
++    parser.add_argument("--polimorf-status", action="store_true", dest="polimorf_status", help="Pokaż status opcjonalnego lokalnego providera PoliMorf.")
++    parser.add_argument("--wsjp-lookup-plan", action="store_true", dest="wsjp_lookup_plan", help="Zbuduj bezpieczny plan lookupu WSJP dla terminu; nie scrapuje masowo strony.")
++    parser.add_argument("--nkjp-lookup-plan", action="store_true", dest="nkjp_lookup_plan", help="Zbuduj bezpieczny plan lookupu NKJP/concordance dla terminu; nie pobiera pełnego korpusu.")
++    parser.add_argument("--voice-source-contract", action="store_true", dest="voice_source_contract", help="Pokaż kontrakt: Jaźń jako źródło, ChatGPT/model jako kanał głosu.")
++    parser.add_argument("--rendering-mode", action="store_true", dest="rendering_mode", help="Pokaż decyzję naturalna odpowiedź vs exact runtime/diagnostyka.")
++    parser.add_argument("--raw-chat-status", action="store_true", dest="raw_chat_status", help="Pokaż status memory/raw/chat.html i chat.html.7z bez rozpakowywania.")
++    parser.add_argument("--raw-chat-status-json", action="store_true", dest="raw_chat_status_json", help="Pokaż uczciwy status raw memory/indexu jako JSON aktywnego runtime.")
++    parser.add_argument("--conversation-archive-status", action="store_true", dest="conversation_archive_status", help="Pokaż status conversation_archive/FTS/staging zbudowanych z raw_chats/*.html.")
++    parser.add_argument("--conversation-archive-search", action="store_true", dest="conversation_archive_search", help="Szukaj w osobnym conversation_fts i zwróć UID/provenance do archive/staging.")
++    parser.add_argument("--conversation-archive-limit", type=int, default=8, help="Limit trafień dla --conversation-archive-search.")
++    parser.add_argument("--conversation-archive-show-snippets", action="store_true", dest="conversation_archive_show_snippets", help="Dołącz krótkie excerpt z prywatnego archive do wyników wyszukiwania.")
++    parser.add_argument("--status-json", action="store_true", dest="status_json", help="Pokaż startup/runtime status jako JSON bez parsowania prozy.")
++    parser.add_argument("--model-adapter-status", action="store_true", dest="model_adapter_status", help="Pokaż status adapterów modeli: skonfigurowane/nieudawane.")
++    parser.add_argument("--startup-status", action="store_true", dest="startup_status", help="Pokaż własny kontrakt startowy runtime: lekki loader ChatGPT + obowiązki przejęte przez Jaźń.")
++    parser.add_argument("--startup-status-fast", action="store_true", dest="startup_status_fast", help="Pokaż szybki startup status bez deep SQLite i bez sieci.")
++    parser.add_argument("--startup-status-deep", action="store_true", dest="startup_status_deep", help="Pokaż pełny deep startup audit; może trwać długo.")
++    parser.add_argument("--turn-trace", action="store_true", dest="turn_trace", help="Pokaż lekki ślad trasy tury: classifier -> guard -> route -> handler -> validator.")
++    parser.add_argument("--network-time-check", action="store_true", dest="network_time_check", help="Jawna diagnostyka czasu sieciowego; zwykła rozmowa jej nie używa.")
++    parser.add_argument("--sqlite-integrity-audit", action="store_true", dest="sqlite_integrity_audit", help="Jawny deep audit SQLite z integrity_check/foreign_key_check.")
++    parser.add_argument("--self-check", action="store_true", dest="self_check", help="Pokaż skrócony self-check runtime i potwierdzenie, że procedura startowa jest własnością systemu Jaźni.")
++    parser.add_argument("--truth-boundary-check", action="store_true", dest="truth_boundary_check", help="Pokaż granicę prawdy runtime/ChatGPT/pliki/pamięć/ZIP.")
++    parser.add_argument("--fallback-audit", action="store_true", dest="fallback_audit", help="Zbadaj tekst jako możliwy fallback, stale route albo kontrakt zamiast odpowiedzi.")
++    parser.add_argument("--memory-plan", action="store_true", dest="memory_plan", help="Pokaż plan wyszukiwania pamięci i trafienia plików kanonicznych bez generowania zwykłej odpowiedzi.")
++    parser.add_argument("--canon-extraction-preview", action="store_true", dest="canon_extraction_preview", help="Przeskanuj prywatne źródła kanonu i zapisz raport/progress bez modyfikowania kanonu runtime.")
++    parser.add_argument("--canon-extraction-write-private", action="store_true", dest="canon_extraction_write_private", help="Przeskanuj źródła i zapisz lokalny prywatny moduł .py canon extension; nie commitować bez recenzji.")
++    parser.add_argument("--canon-extraction-progress", type=Path, default=None, help="Opcjonalna ścieżka JSONL postępu dla ekstrakcji kanonu.")
++    parser.add_argument("--canon-extraction-verbose-progress", action="store_true", dest="canon_extraction_verbose_progress", help="Wypisuj zdarzenia progress JSONL na stdout oprócz zapisu do pliku.")
++    parser.add_argument("--canon-extra-source", action="append", default=[], help="Dodatkowe źródło kanonu względne wobec root; można powtórzyć.")
++    parser.add_argument("--memory-normalization-status", action="store_true", dest="memory_normalization_status", help="Pokaż status niedestrukcyjnego sidecara normalizacji pamięci.")
++    parser.add_argument("--normalize-memory-sidecar", action="store_true", dest="normalize_memory_sidecar", help="Zbuduj lub zaktualizuj sidecar normalizacji pamięci bez modyfikowania aktywnej bazy rozmów.")
++    parser.add_argument("--wake-state-status", action="store_true", dest="wake_state_status", help="Pokaż status aktywnego wake_state z sidecara pamięci.")
++    parser.add_argument("--build-wake-state", action="store_true", dest="build_wake_state", help="Zbuduj wake_state z istniejących rekordów sidecara normalizacji.")
++    parser.add_argument("--dedupe-memory-sidecar", action="store_true", dest="dedupe_memory_sidecar", help="Zbuduj warstwowe grupy duplikatów w sidecarze bez kasowania rekordów źródłowych.")
++    parser.add_argument("--dry-run", action="store_true", dest="dry_run", help="Tryb kontrolny dla operacji normalizacji/wake_state bez zapisu.")
++    parser.add_argument("--normalization-limit", type=int, default=None, help="Opcjonalny limit rekordów dla sidecara normalizacji, używany głównie w testach i audytach.")
++    parser.add_argument("--dedupe-min-group-size", type=int, default=2, help="Minimalny rozmiar grupy dla warstwowej deduplikacji sidecara.")
++    parser.add_argument("--write-active-runtime-marker", action="store_true", dest="write_active_runtime_marker", help="Zapisz JAZN_ACTIVE_RUNTIME.json dla aktywnego folderu i cache rozpakowania.")
++    parser.add_argument("--source-zip", type=Path, default=None, help="Opcjonalna ścieżka ZIP-a źródłowego do porównania checksum w aktywnym cache.")
++    parser.add_argument("--marker-output", type=Path, default=None, help="Opcjonalna ścieżka pliku JAZN_ACTIVE_RUNTIME.json.")
++    parser.add_argument("--record-final-reply", action="store_true", dest="record_final_reply", help="Dopisz do ledgera finalną widoczną odpowiedź ChatGPT dla podanego turn_id/trace_id/timestamp_header.")
++    parser.add_argument("--turn-id", default=None, help="turn_id z cognitive_turn_envelope dla --record-final-reply.")
++    parser.add_argument("--trace-id", default=None, help="trace_id z cognitive_turn_envelope dla --record-final-reply.")
++    parser.add_argument("--timestamp-header", default=None, help="timestamp_header z cognitive_turn_envelope dla --record-final-reply.")
++    parser.add_argument("--state-emoticon", default="🌿", help="Emotikon stanu używany, jeśli finalny tekst wymaga dopięcia timestampu.")
++    parser.add_argument("--final-text-file", type=Path, default=None, help="Opcjonalny plik z finalną widoczną odpowiedzią do zapisania w ledgerze.")
++    export_group = parser.add_mutually_exclusive_group()
++    export_group.add_argument("--export-system", action="store_true", help="Utwórz paczkę system-only bez memory/ i workspace_runtime/.")
++    export_group.add_argument("--export-memory", action="store_true", help="Utwórz paczkę memory-only z memory/ i workspace_runtime/.")
++    export_group.add_argument("--export-full", action="store_true", help="Utwórz pełną paczkę systemu wraz z pamięcią.")
++    export_group.add_argument("--export-nlp", action="store_true", help="Utwórz paczkę NLP-resources-only bez pamięci i bez ciężkich modeli.")
++    export_group.add_argument("--export-github-source-safe", action="store_true", help="Utwórz paczkę źródłową bez surowej pamięci i aktywnych baz SQLite.")
++    parser.add_argument("--output", type=Path, default=None, help="Opcjonalna ścieżka ZIP dla eksportu.")
++    parser.add_argument("message", nargs=argparse.REMAINDER, help="Treść wiadomości dla runtime.")
++    return parser
++
++
++def _message_from_remainder(parts: list[str]) -> str:
++    if parts and parts[0] == "--":
++        parts = parts[1:]
++    return " ".join(parts).strip()
++
++
++def _build_light_turn_trace(cfg: JaznConfig, text: str) -> dict:
++    intent = DialogueIntentClassifier().classify(text)
++    guard = TopicMismatchGuard().analyse(text, runtime_version=cfg.version).to_dict()
++    entry = RouteRegistry().resolve(intent.primary_intent, confidence=intent.confidence)
++    return TurnRouteTrace(
++        user_text_preview=(text or "")[:240],
++        speech_act=intent.speech_act,
++        question_object=intent.question_object,
++        primary_intent_initial=intent.primary_intent,
++        primary_intent_final=intent.primary_intent,
++        secondary_intents=list(intent.secondary_intents),
++        topic_guard=guard,
++        selected_route=entry.route,
++        selected_handler=entry.handler_name,
++        startup_status_mode="fast",
++        sqlite_health_mode="metadata",
++        network_time_used=False,
++        deep_audit_used=False,
++        runtime_answer_validation={
++            "status": "not_run_without_response",
++            "truth_boundary": "--turn-trace alone does not generate a final answer; combine with --runtime-preview to inspect validator output.",
++        },
++        final_text_source="not_generated",
++    ).to_dict()
++
++
++def main(argv: list[str] | None = None) -> int:
++    _configure_stdio_utf8()
++    argv = list(sys.argv[1:] if argv is None else argv)
++    if "--chat-jsonl" in argv:
++        sys.stderr.write("Flaga --chat-jsonl została usunięta z aktywnego CLI. Użyj: python main.py --chat-gpt --session-id <id>\n")
++        return 2
++    parser = _build_parser()
++    ns = parser.parse_args(argv)
++    if ns.runtime_preview_output is None and "--runtime-preview-output" in ns.message:
++        idx = ns.message.index("--runtime-preview-output")
++        if idx + 1 >= len(ns.message):
++            parser.error("--runtime-preview-output requires a path")
++        ns.runtime_preview_output = Path(ns.message[idx + 1])
++        ns.message = ns.message[:idx] + ns.message[idx + 2:]
++    root = ns.root.resolve() if ns.root else None
++
++    if ns.status_readonly:
++        print(_render_readonly_status(root))
++        return 0
++
++    config = JaznConfig(root=root) if root else None
++
++    if ns.bridge_discovery:
++        cfg = config or JaznConfig()
++        print(json.dumps(discover_runtime_bridges(cfg), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.daemon_run:
++        cfg = config or JaznConfig()
++        return run_daemon(
++            cfg,
++            host=ns.daemon_host,
++            port=ns.daemon_port,
++            marker_output=ns.daemon_marker_output,
++            heartbeat_interval=ns.daemon_heartbeat_interval,
++        )
++
++    if ns.daemon_start:
++        cfg = config or JaznConfig()
++        print(json.dumps(start_daemon(
++            cfg,
++            host=ns.daemon_host,
++            port=ns.daemon_port,
++            marker_output=ns.daemon_marker_output,
++            heartbeat_interval=ns.daemon_heartbeat_interval,
++            startup_timeout=ns.daemon_start_timeout,
++        ), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.daemon_status:
++        cfg = config or JaznConfig()
++        print(json.dumps(status_daemon(
++            cfg,
++            host=ns.daemon_host,
++            port=ns.daemon_port,
++            marker_output=ns.daemon_marker_output,
++        ), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.daemon_stop:
++        cfg = config or JaznConfig()
++        print(json.dumps(stop_daemon(
++            cfg,
++            host=ns.daemon_host,
++            port=ns.daemon_port,
++            marker_output=ns.daemon_marker_output,
++        ), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.startup_status or ns.startup_status_fast or ns.startup_status_deep:
++        cfg = config or JaznConfig()
++        mode = "deep" if ns.startup_status_deep else "fast"
++        print(json.dumps(build_startup_status(cfg, source_zip=ns.source_zip, mode=mode).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.status_json:
++        cfg = config or JaznConfig()
++        archive_store = ConversationArchiveStore(cfg.root)
++        print(json.dumps({
++            "runtime_version": cfg.version,
++            "startup_summary": build_startup_summary(cfg, source_zip=ns.source_zip),
++            "startup_status_mode": "fast",
++            "sqlite_health_mode": "metadata",
++            "raw_memory_status": RawMemoryInspector(cfg.root, cfg.memory_db_path).inspect().to_dict(),
++            "conversation_archive_status": archive_store.status(health_mode="metadata").to_dict(),
++        }, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.network_time_check:
++        cfg = config or JaznConfig()
++        print(json.dumps({"runtime_version": cfg.version, "network_time_check": WarsawClock(cfg.timezone).network_time_check()}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.sqlite_integrity_audit:
++        cfg = config or JaznConfig()
++        print(json.dumps({"runtime_version": cfg.version, "sqlite_integrity_audit": ConversationArchiveStore(cfg.root).status(health_mode="deep").to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.turn_trace and not ns.runtime_preview:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        print(json.dumps({"runtime_version": cfg.version, "turn_route_trace": _build_light_turn_trace(cfg, text)}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.self_check:
++        cfg = config or JaznConfig()
++        print(json.dumps(build_self_check(cfg), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.truth_boundary_check:
++        cfg = config or JaznConfig()
++        print(json.dumps(build_truth_boundary_check(cfg), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.fallback_audit:
++        text = _message_from_remainder(ns.message)
++        print(json.dumps(classify_fallback_text(text), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.memory_plan:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        planner = MemorySearchPlanner(cfg.root)
++        plan = planner.plan(text)
++        archive_store = ConversationArchiveStore(cfg.root)
++        archive_query = " ".join((plan.search_terms or plan.focus_terms or [])[:8]) or text
++        payload = {
++            "schema_version": schema_version("memory_plan_cli"),
++            "runtime_version": cfg.version,
++            "memory_search_plan": plan.to_dict(),
++            "source_file_hits": [hit.to_dict() for hit in planner.search_source_files(plan, limit=8)],
++            "conversation_archive_status": archive_store.status(check_integrity=False).to_dict(),
++            "conversation_archive_hits": archive_store.search(archive_query, limit=8, include_snippets=False).to_dict(),
++            "truth_boundary": "To jest plan, kanoniczne trafienia plików i metadane trafień conversation_archive/FTS, nie pełna rozmowna odpowiedź ani dowód pełnego odczytu całej pamięci.",
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.canon_extraction_preview or ns.canon_extraction_write_private:
++        cfg = config or JaznConfig()
++        mode = "write-private-extension" if ns.canon_extraction_write_private else "preview"
++        payload = {
++            "runtime_version": cfg.version,
++            "canon_extraction": run_canon_extraction(
++                cfg.root,
++                mode=mode,
++                progress_path=ns.canon_extraction_progress,
++                verbose_progress=ns.canon_extraction_verbose_progress,
++                extra_sources=ns.canon_extra_source or [],
++            ),
++            "truth_boundary": "Raport i progress są artefaktem patcha. Właściwy runtime canon jest w plikach .py; lokalny prywatny extension .py wymaga recenzji przed commitem.",
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.conversation_archive_status:
++        cfg = config or JaznConfig()
++        payload = {
++            "runtime_version": cfg.version,
++            "conversation_archive_status": ConversationArchiveStore(cfg.root).status().to_dict(),
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.conversation_archive_search:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        payload = {
++            "runtime_version": cfg.version,
++            "conversation_archive_search": ConversationArchiveStore(cfg.root).search(
++                text,
++                limit=ns.conversation_archive_limit,
++                include_snippets=ns.conversation_archive_show_snippets,
++            ).to_dict(),
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.memory_normalization_status:
++        cfg = config or JaznConfig()
++        sidecar = MemoryNormalizationSidecar(
++            cfg.root,
++            source_db_path=cfg.root / cfg.memory_db_name,
++            sidecar_db_path=cfg.root / cfg.audit_db_name,
++            runtime_version=cfg.version,
++        )
++        payload = {"runtime_version": cfg.version, "memory_normalization_status": sidecar.status().to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.normalize_memory_sidecar:
++        cfg = config or JaznConfig()
++        sidecar = MemoryNormalizationSidecar(
++            cfg.root,
++            source_db_path=cfg.root / cfg.memory_db_name,
++            sidecar_db_path=cfg.root / cfg.audit_db_name,
++            runtime_version=cfg.version,
++        )
++        payload = {
++            "runtime_version": cfg.version,
++            "memory_normalization_report": sidecar.normalize(dry_run=ns.dry_run, limit=ns.normalization_limit).to_dict(),
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.wake_state_status:
++        cfg = config or JaznConfig()
++        sidecar = MemoryNormalizationSidecar(
++            cfg.root,
++            source_db_path=cfg.root / cfg.memory_db_name,
++            sidecar_db_path=cfg.root / cfg.audit_db_name,
++            runtime_version=cfg.version,
++        )
++        payload = {"runtime_version": cfg.version, "wake_state_status": sidecar.wake_state_status().to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.build_wake_state:
++        cfg = config or JaznConfig()
++        sidecar = MemoryNormalizationSidecar(
++            cfg.root,
++            source_db_path=cfg.root / cfg.memory_db_name,
++            sidecar_db_path=cfg.root / cfg.audit_db_name,
++            runtime_version=cfg.version,
++        )
++        payload = {"runtime_version": cfg.version, "wake_state_build_report": sidecar.build_wake_state(dry_run=ns.dry_run).to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.dedupe_memory_sidecar:
++        cfg = config or JaznConfig()
++        sidecar = MemoryNormalizationSidecar(
++            cfg.root,
++            source_db_path=cfg.root / cfg.memory_db_name,
++            sidecar_db_path=cfg.root / cfg.audit_db_name,
++            runtime_version=cfg.version,
++        )
++        payload = {
++            "runtime_version": cfg.version,
++            "layered_dedupe_report": sidecar.build_layered_dedupe(
++                dry_run=ns.dry_run,
++                min_group_size=ns.dedupe_min_group_size,
++            ).to_dict(),
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.project_startup_index:
++        cfg = config or JaznConfig()
++        payload = build_project_startup_index(cfg.root, write=True)
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.topic_guard:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        payload = TopicMismatchGuard().analyse(text, runtime_version=cfg.version).to_dict()
++        print(json.dumps({"runtime_version": cfg.version, "topic_mismatch_guard": payload}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.dialogue_intent:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        payload = DialogueIntentClassifier().classify(text).to_dict()
++        print(json.dumps({"runtime_version": cfg.version, "dialogue_intent_classifier": payload}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.module_responsibility_map:
++        cfg = config or JaznConfig()
++        payload = ModuleResponsibilityMap(cfg.root).build(write=True)
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.seed_requirements_ledger:
++        cfg = config or JaznConfig()
++        path = RequirementsLedger(cfg.root).seed_manifest_requirements()
++        print(json.dumps({"runtime_version": cfg.version, "requirements_ledger": str(path), "seeded": True}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++
++    if ns.last_turn:
++        cfg = config or JaznConfig()
++        payload = TurnTraceReader(cfg.root).latest() or {"schema_version": schema_version("turn_checkpoint"), "found": False, "reason": "no_checkpoint_found"}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.compare_runtime_visible:
++        cfg = config or JaznConfig()
++        payload = RuntimeVisibleAnswerComparator(cfg.root).compare(ns.trace_id)
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.language_resources:
++        cfg = config or JaznConfig()
++        payload = {"runtime_version": cfg.version, "language_resource_registry": LanguageResourceRegistry().to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.polish_reasoning_sources:
++        cfg = config or JaznConfig()
++        payload = {"runtime_version": cfg.version, "polish_reasoning_sources": PolishReasoningSourceRegistry(cfg.root).to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.nlp_resource_status:
++        cfg = config or JaznConfig()
++        registry = LexicalResourceRegistry(
++            cfg.root,
++            verified_sources_path=cfg.root / cfg.lexical_resources_registry_path,
++            project_lexicon_path=cfg.root / cfg.latka_project_lexicon_path,
++            cache_path=cfg.lexical_resource_cache_path,
++        )
++        payload = {"runtime_version": cfg.version, "nlp_resource_status": registry.to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.polish_morphology or ns.morfeusz_status or ns.polimorf_status:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        payload = build_polish_morphology_diagnostics(cfg.root, text)
++        if ns.morfeusz_status or ns.polimorf_status:
++            wanted = "morfeusz2-sgjp" if ns.morfeusz_status else "polimorf"
++            statuses = payload["polish_morphology"].get("provider_statuses", [])
++            payload = {
++                "runtime_version": cfg.version,
++                "schema_version": "polish_provider_status/v14.8.4",
++                "provider_status": next((item for item in statuses if item.get("provider") == wanted), None),
++                "truth_boundary": "Status providera mówi tylko, czy lokalny adapter jest dostępny. Nie oznacza pobrania pełnego słownika ani pełnej dezambiguacji języka.",
++            }
++        else:
++            payload = {"runtime_version": cfg.version, **payload}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.polish_reasoning_frame or ns.polish_reasoning_bootstrap_plan:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        payload = build_polish_reasoning_diagnostics(cfg.root, text)
++        if ns.polish_reasoning_bootstrap_plan:
++            payload = {
++                "runtime_version": cfg.version,
++                "schema_version": "polish_reasoning_bootstrap_plan/v14.8.4",
++                "bootstrap_commands": payload["bootstrap_commands"],
++                "source_registry": payload["source_registry"],
++                "truth_boundary": "Bootstrap instaluje providery i modele z Internetu lokalnie; patch nie vendoruje dużych słowników ani modeli.",
++            }
++        else:
++            payload = {"runtime_version": cfg.version, **payload}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.wsjp_lookup_plan or ns.nkjp_lookup_plan:
++        cfg = config or JaznConfig()
++        term = _message_from_remainder(ns.message)
++        planner = PolishOnlineLookupPlanner()
++        lookup = planner.nkjp(term).to_dict() if ns.nkjp_lookup_plan else planner.wsjp(term).to_dict()
++        payload = {
++            "runtime_version": cfg.version,
++            "schema_version": "polish_reasoning_lookup_plan/v14.8.3",
++            "lookup_plan": lookup,
++            "truth_boundary": "To jest plan/link lookupu. Runtime nie twierdzi, że pobrał definicję lub przykłady bez realnego żądania HTTP i zapisu źródła.",
++        }
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.voice_source_contract:
++        cfg = config or JaznConfig()
++        payload = {"runtime_version": cfg.version, "voice_source_contract": VoiceSourceContract.build(runtime_active=True, runtime_mode="one_shot").to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.rendering_mode:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        payload = {"runtime_version": cfg.version, "runtime_rendering_mode": RuntimeRenderingModeSelector().select(text).to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.raw_chat_status or getattr(ns, "raw_chat_status_json", False):
++        cfg = config or JaznConfig()
++        payload = {"runtime_version": cfg.version, "raw_chat_status": RawMemoryInspector(cfg.root, cfg.memory_db_path).inspect().to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.model_adapter_status:
++        cfg = config or JaznConfig()
++        payload = {"runtime_version": cfg.version, "model_adapter_status": build_model_adapter(cfg).describe()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.dictionary_lookup:
++        cfg = config or JaznConfig()
++        term = _message_from_remainder(ns.message)
++        payload = {"runtime_version": cfg.version, "dictionary_lookup": ExternalDictionaryAdapter(cfg.root, allow_network=cfg.dictionary_allow_network, user_agent=cfg.network_user_agent, timeout_seconds=cfg.dictionary_online_lookup_timeout_seconds, max_retries=cfg.network_max_retries, cache_ttl_seconds=cfg.network_cache_ttl_seconds).lookup(term).to_dict()}
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.active_cache_status or ns.write_active_runtime_marker:
++        cfg = config or JaznConfig()
++        if ns.write_active_runtime_marker:
++            payload = write_active_runtime_marker(cfg.root, source_zip=ns.source_zip, marker_output=ns.marker_output)
++        else:
++            payload = build_active_runtime_status(cfg.root, source_zip=ns.source_zip, marker_output=ns.marker_output)
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.github_plan:
++        cfg = config or JaznConfig()
++        path = write_github_repository_plan(cfg.root)
++        plan = build_github_repository_plan(cfg.root).to_dict()
++        plan["written_to"] = str(path)
++        print(json.dumps(plan, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.dedup_report:
++        cfg = config or JaznConfig()
++        path = write_dedup_report(cfg.root, cfg.root / "reports" / "DEDUP_REPORT_V14_6_1.json")
++        print(path.read_text(encoding="utf-8"))
++        return 0
++
++    if ns.lexical_frame:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        polish = PolishUnderstandingEngine(cfg.root).analyse(text)
++        nlp = PolishLemmatizationEngine(cfg.root).analyse(text)
++        lexical = LexicalSemanticUnderstanding(cfg.root).analyse(text, polish_report=polish.to_dict(), nlp_report=nlp.to_dict())
++        print(json.dumps({"runtime_version": cfg.version, "polish_understanding": polish.to_dict(), "polish_nlp": nlp.to_dict(), "lexical_semantic_understanding": lexical.to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.nlp_frame:
++        cfg = config or JaznConfig()
++        text = _message_from_remainder(ns.message)
++        nlp = PolishLemmatizationEngine(cfg.root).analyse(text)
++        print(json.dumps({"runtime_version": cfg.version, "polish_nlp": nlp.to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++
++    if ns.record_final_reply:
++        engine = JaznEngine(config)
++        try:
++            if not ns.turn_id or not ns.trace_id or not ns.timestamp_header:
++                parser.error("--record-final-reply wymaga --turn-id, --trace-id i --timestamp-header")
++            if ns.final_text_file:
++                final_text = ns.final_text_file.read_text(encoding="utf-8")
++            else:
++                final_text = _message_from_remainder(ns.message)
++            result = engine.persist_final_visible_reply(
++                turn_id=ns.turn_id,
++                trace_id=ns.trace_id,
++                timestamp_header=ns.timestamp_header,
++                final_text=final_text,
++                state_emoticon=ns.state_emoticon,
++                source="chatgpt_visible_layer_cli",
++                client_context={"client": "chatgpt_visible_layer_cli", "lifecycle": "one_shot_visible_capture"},
++            )
++            print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
++        finally:
++            engine.shutdown()
++        return 0
++
++    if ns.runtime_preview:
++        engine = JaznEngine(config)
++        try:
++            text = _message_from_remainder(ns.message)
++            envelope = engine.process_turn(
++                text,
++                client_context={
++                    "client": "chatgpt_runtime_preview",
++                    "lifecycle": "one_shot_preview",
++                    "preview_phase": "single_integrated_process_turn",
++                    "session_id": ns.session_id,
++                    "no_carryover": ns.no_carryover,
++                },
++            )
++            envelope_dict = envelope.to_dict()
++            cognitive_frame = envelope_dict.get("cognitive_frame") or {}
++            runtime_text = envelope_dict.get("final_visible_text") or ""
++            final_contract = envelope_dict.get("final_response_contract") or {}
++            payload = {
++                "schema_version": schema_version("runtime_preview"),
++                "runtime_version": engine.config.version,
++                "mode": "diagnostic_runtime_preview_single_process_turn_not_background_daemon",
++                "turn_trace": envelope_dict.get("trace"),
++                "runtime_text": runtime_text,
++                "fallback_detected": any(
++                    signature in runtime_text
++                    for signature in (
++                        "Nie znalazłam osobnej trasy odpowiedzi",
++                        "runtime odebrał wiadomość",
++                        "debugowy fallback",
++                        "pusty fallback",
++                    )
++                ) or final_contract.get("fallback_classification") not in {None, "not_fallback"},
++                "runtime_answer_quality": final_contract.get("runtime_answer_quality"),
++                "fallback_classification": final_contract.get("fallback_classification"),
++                "startup_procedure_required": bool(final_contract.get("startup_procedure_required")),
++                "source_origin": cognitive_frame.get("source_origin"),
++                "self_state_runtime": cognitive_frame.get("self_state_runtime"),
++                "affect_mix": envelope_dict.get("affect_mix"),
++                "dialogue_state": envelope_dict.get("dialogue_state"),
++                "turn_route_trace": (cognitive_frame.get("turn_route_trace") or (envelope_dict.get("conversation_decision") or {}).get("turn_route_trace")),
++                "final_response_contract": envelope_dict.get("final_response_contract"),
++                "cognitive_turn_envelope": envelope_dict,
++                "cognitive_frame": cognitive_frame,
++                "visible_runtime_preview_contract": {
++                    "schema_version": visible_preview_contract_version(engine.config.root),
++                    "timestamp_header": (envelope_dict.get("trace") or {}).get("timestamp_header"),
++                    "active_root": str(engine.config.root),
++                    "start_file": "main.py",
++                    "response_source": "runtime.process_turn + final_response_contract",
++                    "required_visible_fields": ["timestamp_header", "active_root", "start_file", "runtime_answer_quality", "fallback_classification", "response_source", "one_shot_or_chat_loop_limit"],
++                    "must_show_when_user_asks_about_runtime_files_timestamp_preview_or_fallback": True,
++                    "one_shot_or_chat_loop_limit": "--runtime-preview jest jednorazowym wywołaniem; stałą pętlę daje dopiero python main.py --chat.",
++                },
++                "active_extraction_cache_status": build_active_runtime_status(engine.config.root),
++                "startup_summary": build_startup_summary(engine.config),
++                "free_dialogue_memory_nlp_bridge": build_startup_summary(engine.config),
++                "truth_boundary": "Ten tryb wykonuje jedno zintegrowane wywołanie process_turn: runtime buduje cognitive-frame i z tej samej koperty tworzy finalną odpowiedź. Nie udaje stałego procesu w tle.",
++            }
++            payload_json = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
++            if ns.runtime_preview_output:
++                ns.runtime_preview_output.parent.mkdir(parents=True, exist_ok=True)
++                ns.runtime_preview_output.write_text(payload_json + "\n", encoding="utf-8")
++                print(json.dumps({
++                    "runtime_version": engine.config.version,
++                    "runtime_preview_output": str(ns.runtime_preview_output),
++                    "written": True,
++                    "truth_boundary": "Pełny runtime-preview zapisano do pliku; stdout zawiera tylko krótkie potwierdzenie.",
++                }, ensure_ascii=False, indent=2, sort_keys=True))
++            else:
++                print(payload_json)
++        finally:
++            engine.shutdown()
++        return 0
++
++
++    if ns.chat_gpt:
++        cfg = config or JaznConfig()
++        return run_jsonl_chat_bridge(
++            config=cfg,
++            session_id=ns.session_id,
++            no_carryover=ns.no_carryover,
++            command="--chat-gpt",
++            require_openai_api_key=False,
++        )
++
++    if ns.chat_open_ai:
++        cfg = config or JaznConfig()
++        apply_openai_cli_settings(
++            cfg,
++            model=ns.openai_model,
++            api_base=ns.openai_api_base,
++            timeout_seconds=ns.openai_timeout,
++            max_output_tokens=ns.openai_max_output_tokens,
++        )
++        return run_jsonl_chat_bridge(
++            config=cfg,
++            session_id=ns.session_id,
++            no_carryover=ns.no_carryover,
++            command="--chat-open-ai",
++            require_openai_api_key=True,
++        )
++
++    if ns.export_system or ns.export_memory or ns.export_full or ns.export_nlp or ns.export_github_source_safe:
++        cfg = config or JaznConfig()
++        mode = "system" if ns.export_system else "memory" if ns.export_memory else "nlp" if ns.export_nlp else "github_source_safe" if ns.export_github_source_safe else "full"
++        report = export_package(cfg.root, mode, ns.output)
++        print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.chat_loop:
++        session = JaznRuntimeSession(config, session_id=ns.session_id, no_carryover=ns.no_carryover, source_client="chat")
++        try:
++            run_persistent_chat(session, session_id=ns.session_id, no_carryover=ns.no_carryover)
++        finally:
++            session.close()
++        return 0
++
++    engine = JaznEngine(config)
++    try:
++        text = _message_from_remainder(ns.message)
++        if ns.cognitive_frame:
++            packet = engine.build_cognitive_frame(text, client_context={"client": "chatgpt_cli_bridge", "lifecycle": "one_shot"})
++            print(json.dumps(packet, ensure_ascii=False, indent=2, sort_keys=True))
++        elif text:
++            if ns.debug_direct:
++                print(engine.handle_user_message(text, client_context={"client": "cli_direct_debug", "debug_direct": True, "lifecycle": "one_shot"}))
++            else:
++                envelope = engine.process_turn(text, client_context={"client": "cli_direct_conversation", "debug_direct": False, "lifecycle": "one_shot", "session_id": ns.session_id, "no_carryover": ns.no_carryover})
++                print(envelope.final_visible_text or envelope.final_response_contract.get("final_visible_text", ""))
++        else:
++            print(engine.bootstrap())
++    finally:
++        engine.shutdown()
++    return 0
++
++
++if __name__ == "__main__":
++    try:
++        raise SystemExit(main())
++    except BrokenPipeError:
++        # Pozwala bezpiecznie ucinać długie podglądy JSON przez `head`/pipe
++        # bez fałszywego wrażenia awarii runtime.
++        try:
++            sys.stdout.close()
++        except Exception:
++            pass
++        raise SystemExit(0)
+--- a/tests/test_p0_timestamp_network_contract.py
++++ b/tests/test_p0_timestamp_network_contract.py
+@@ -0,0 +1,56 @@
++from __future__ import annotations
++
++from datetime import datetime, timezone
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.clock import TimeSample, WarsawClock
++from latka_jazn.core.final_response_contract import FinalResponseContract
++from latka_jazn.core.timestamp_policy import timestamp_runtime_policy
++
++
++def test_timestamp_policy_defaults_are_network_first() -> None:
++    cfg = JaznConfig()
++    policy = timestamp_runtime_policy()
++    assert cfg.network_time_first is True
++    assert cfg.network_time_allowed_in_normal_turn is True
++    assert policy["network_first_default"] is True
++    assert policy["network_time_in_normal_turn_default"] is True
++
++
++def test_clock_header_without_sample_uses_network_time(monkeypatch) -> None:
++    clock = WarsawClock("Europe/Warsaw")
++    fixed = datetime(2026, 6, 26, 8, 15, 0, tzinfo=timezone.utc)
++
++    def fake_network_time(*, timeout_seconds=1.5, urls_tried=None):
++        return TimeSample(fixed, "test_network_time", True)
++
++    monkeypatch.setattr(clock, "_network_time", fake_network_time)
++    header = clock.header()
++    assert "2026-06-26 10:15:00" in header
++    assert clock.last_sample is not None
++    assert clock.last_sample.trusted is True
++
++
++def test_final_visible_integrity_rejects_untrusted_timestamp() -> None:
++    header = "[🕒 2026-06-26 08:15:00 GMT+2, piątek, Europe/Warsaw]"
++    contract = FinalResponseContract.build(
++        turn_id="t",
++        trace_id="tr",
++        runtime_version="test",
++        timestamp_header=header,
++        timezone="Europe/Warsaw",
++        state_emoticon="🌿",
++        body="Test",
++        conversation_decision={
++            "timestamp_contract": {
++                **timestamp_runtime_policy(),
++                "source": "local_fallback",
++                "trusted": False,
++                "sample_iso": datetime.now(timezone.utc).isoformat(),
++            }
++        },
++    )
++    assert contract.final_visible_integrity is not None
++    assert contract.final_visible_integrity["timestamp_present"] is True
++    assert contract.final_visible_integrity["timestamp_trusted"] is False
++    assert contract.final_visible_integrity["valid"] is False
+--- a/tests/test_v1485012_daemon_runtime.py
++++ b/tests/test_v1485012_daemon_runtime.py
+@@ -0,0 +1,48 @@
++from pathlib import Path
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.runtime_daemon import (
++    DEFAULT_DAEMON_HOST,
++    DEFAULT_DAEMON_PORT,
++    build_daemon_start_command,
++    daemon_default_marker_path,
++    extract_daemon_user_text,
++    status_daemon,
++)
++
++
++def test_daemon_extracts_plain_and_json_message():
++    assert extract_daemon_user_text("hej") == ("hej", "plain_text")
++    assert extract_daemon_user_text({"message": "cześć"}) == ("cześć", "json.message")
++    assert extract_daemon_user_text({"messages": [{"role": "assistant", "content": "nie"}, {"role": "user", "content": "tak"}]}) == ("tak", "json.messages[user].content")
++
++
++def test_daemon_start_command_points_to_main_and_loopback(tmp_path: Path):
++    cfg = JaznConfig(root=tmp_path)
++    command = build_daemon_start_command(cfg.root, host=DEFAULT_DAEMON_HOST, port=DEFAULT_DAEMON_PORT)
++    joined = " ".join(command)
++    assert str(tmp_path / "main.py") in command
++    assert "--daemon-run" in command
++    assert "--daemon-host" in command
++    assert DEFAULT_DAEMON_HOST in command
++    assert "--daemon-port" in command
++    assert str(DEFAULT_DAEMON_PORT) in command
++    assert "--daemon-marker-output" not in command
++    assert "main.py" in joined
++
++
++def test_daemon_marker_default_is_workspace_runtime(tmp_path: Path):
++    marker = daemon_default_marker_path(tmp_path)
++    assert marker == tmp_path / "workspace_runtime" / "JAZN_ACTIVE_RUNTIME.json"
++
++
++def test_daemon_status_without_running_process_is_truthful(tmp_path: Path):
++    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
++    (tmp_path / "VERSION.txt").write_text("v-test\n", encoding="utf-8")
++    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
++    cfg = JaznConfig(root=tmp_path)
++    status = status_daemon(cfg, host="127.0.0.1", port=9)
++    assert status["ok"] is False
++    assert status["marker_found"] is False
++    assert status["ping"] is None
++    assert status["truth_boundary"]
+--- a/tests/test_v1485013_chat_command_bridge_contract.py
++++ b/tests/test_v1485013_chat_command_bridge_contract.py
+@@ -0,0 +1,107 @@
++from __future__ import annotations
++
++import io
++import json
++import os
++import subprocess
++import sys
++from pathlib import Path
++
++import pytest
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.chat_command_contract import (
++    apply_openai_cli_settings,
++    chat_gpt_contract,
++    chat_open_ai_contract,
++    extract_user_text_from_payload,
++    run_jsonl_chat_bridge,
++)
++from latka_jazn.model_adapters.factory import build_model_adapter
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def test_chat_command_contracts_separate_chatgpt_and_openai() -> None:
++    chatgpt = chat_gpt_contract().to_dict()
++    openai = chat_open_ai_contract().to_dict()
++    assert chatgpt["command"] == "--chat-gpt"
++    assert chatgpt["requires_api_key"] is False
++    assert chatgpt["uses_openai_api"] is False
++    assert openai["command"] == "--chat-open-ai"
++    assert openai["requires_api_key"] is True
++    assert openai["uses_openai_api"] is True
++
++
++@pytest.mark.parametrize(
++    "payload,expected",
++    [
++        ({"message": "a"}, ("a", "json", "message")),
++        ({"text": "b"}, ("b", "json", "text")),
++        ({"user_text": "c"}, ("c", "json", "user_text")),
++        ({"content": "d"}, ("d", "json", "content")),
++        ({"prompt": "e"}, ("e", "json", "prompt")),
++        ({"messages": [{"role": "assistant", "content": "old"}, {"role": "user", "content": "new"}]}, ("new", "json_chat_messages", "messages[user].content")),
++        ({"messages": [{"role": "user", "content": [{"text": "he"}, {"text": "j"}]}]}, ("hej", "json_chat_messages", "messages[user].content")),
++    ],
++)
++def test_extract_user_text_from_supported_chatgpt_shapes(payload, expected) -> None:
++    assert extract_user_text_from_payload(payload) == expected
++
++
++def test_chat_open_ai_without_key_fails_truthfully(monkeypatch) -> None:
++    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
++    cfg = JaznConfig(root=ROOT)
++    stdout = io.StringIO()
++    rc = run_jsonl_chat_bridge(
++        config=cfg,
++        session_id="unit",
++        no_carryover=True,
++        command="--chat-open-ai",
++        stdin=io.StringIO('{"message":"hej"}\n'),
++        stdout=stdout,
++        require_openai_api_key=True,
++    )
++    assert rc == 3
++    payload = json.loads(stdout.getvalue())
++    assert payload["ok"] is False
++    assert payload["error_code"] == "missing_openai_api_key"
++    assert payload["chat_command_contract"]["uses_openai_api"] is True
++
++
++def test_apply_openai_cli_settings_selects_openai_adapter(monkeypatch) -> None:
++    monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-used-by-this-test")
++    cfg = JaznConfig(root=ROOT)
++    apply_openai_cli_settings(cfg, model="gpt-test", api_base="https://api.openai.com/v1/", timeout_seconds=7, max_output_tokens=123)
++    status = build_model_adapter(cfg).describe()
++    assert status["name"] == "openai_responses_adapter"
++    assert status["status"] == "configured"
++    assert status["model"] == "gpt-test"
++    assert status["api_base"] == "https://api.openai.com/v1"
++
++
++def test_chat_jsonl_removed_exit_code_and_message() -> None:
++    proc = subprocess.run(
++        [sys.executable, "main.py", "--chat-jsonl"],
++        cwd=ROOT,
++        text=True,
++        capture_output=True,
++        timeout=15,
++    )
++    assert proc.returncode == 2
++    assert "--chat-gpt" in proc.stderr
++
++
++def test_bridge_discovery_cli_lists_three_modes() -> None:
++    proc = subprocess.run(
++        [sys.executable, "main.py", "--bridge-discovery", "--root", str(ROOT)],
++        cwd=ROOT,
++        text=True,
++        capture_output=True,
++        timeout=20,
++    )
++    assert proc.returncode == 0, proc.stderr
++    payload = json.loads(proc.stdout)
++    assert payload["local_chat"]["command"].startswith("python main.py --chat")
++    assert payload["chatgpt_bridge"]["requires_api_key"] is False
++    assert payload["openai_bridge"]["requires_api_key"] is True
