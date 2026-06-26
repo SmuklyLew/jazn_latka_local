@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.011-self-architecture-audit-reflection-memory-gate
+# Current package version: v14.8.5.013-chat-command-openai-bridge-contract
 from __future__ import annotations
 
 import argparse
@@ -53,20 +53,32 @@ from latka_jazn.nlp.language_resource_registry import LanguageResourceRegistry
 from latka_jazn.core.voice_source_contract import VoiceSourceContract
 from latka_jazn.core.runtime_rendering_modes import RuntimeRenderingModeSelector
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
-from latka_jazn.model_adapters.null_model_adapter import NullModelAdapter
+from latka_jazn.model_adapters.factory import build_model_adapter
 from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnostics, build_polish_reasoning_diagnostics
 from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
+from latka_jazn.core.chat_command_contract import apply_openai_cli_settings, run_jsonl_chat_bridge
+from latka_jazn.core.bridge_discovery import discover_runtime_bridges
+from latka_jazn.core.runtime_daemon import (
+    DEFAULT_DAEMON_HOST,
+    DEFAULT_DAEMON_PORT,
+    DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
+    DEFAULT_START_TIMEOUT_SECONDS,
+    run_daemon,
+    start_daemon,
+    status_daemon,
+    stop_daemon,
+)
 
 
 def _render_readonly_status(root: Path | None = None) -> str:
-    cfg = JaznConfig(root=root or Path(__file__).resolve().parent, network_time_first=False)
+    cfg = JaznConfig(root=root or Path(__file__).resolve().parent)
     clock = WarsawClock(cfg.timezone)
     renderer = ResponseRenderer(clock, IdentityPerspectiveGuard())
     body = build_runtime_status(cfg, store=None, readonly=True)
-    return renderer.render(body, AffectiveState(), clock.now(network_first=False))
+    return renderer.render(body, AffectiveState(), clock.now(network_first=cfg.network_time_first, allow_fallback=cfg.local_time_fallback))
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -81,6 +93,21 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--debug-direct", action="store_true", dest="debug_direct", help="Pokaż techniczną ścieżkę bezpośrednią i fallback diagnostyczny zamiast rozmownej odpowiedzi.")
     parser.add_argument("--chat", "--loop", action="store_true", dest="chat_loop", help="Uruchom stałą pętlę rozmowy: jeden JaznEngine działa przez wiele tur aż do /exit lub EOF.")
     parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Uruchom główny most ChatGPT w protokole JSONL: przyjmuje message/text/user_text/content/prompt, format messages[].content albo zwykły tekst; zwraca jedną linię JSON na turę.")
+    parser.add_argument("--chat-open-ai", action="store_true", dest="chat_open_ai", help="Uruchom lokalny runtime Jaźni z model_adapter przez OpenAI Responses API; wymaga OPENAI_API_KEY i nie udaje połączenia bez klucza.")
+    parser.add_argument("--openai-model", default=None, help="Model dla --chat-open-ai; domyślnie JAZN_MODEL_NAME albo konfiguracja runtime.")
+    parser.add_argument("--openai-api-base", default=None, help="Bazowy URL API dla --chat-open-ai; domyślnie https://api.openai.com/v1.")
+    parser.add_argument("--openai-timeout", type=float, default=None, help="Timeout sekund dla adaptera OpenAI w --chat-open-ai.")
+    parser.add_argument("--openai-max-output-tokens", type=int, default=None, help="Limit output tokens dla adaptera OpenAI w --chat-open-ai.")
+    parser.add_argument("--bridge-discovery", action="store_true", dest="bridge_discovery", help="Pokaż wykryte mosty runtime: --chat, --chat-gpt, --chat-open-ai i daemon.")
+    parser.add_argument("--daemon-run", action="store_true", dest="daemon_run", help="Uruchom foreground daemon stałej aktywnej Jaźni: lokalny HTTP loopback + PID + heartbeat + marker JAZN_ACTIVE_RUNTIME.json.")
+    parser.add_argument("--daemon-start", action="store_true", dest="daemon_start", help="Uruchom daemon Jaźni w tle i zwróć status startu.")
+    parser.add_argument("--daemon-status", action="store_true", dest="daemon_status", help="Sprawdź marker, PID, heartbeat i endpoint /status daemonu Jaźni.")
+    parser.add_argument("--daemon-stop", action="store_true", dest="daemon_stop", help="Poproś działający lokalny daemon Jaźni o zatrzymanie i zamknięcie sesji.")
+    parser.add_argument("--daemon-host", default=DEFAULT_DAEMON_HOST, help="Adres bindowania daemonu; domyślnie tylko loopback 127.0.0.1.")
+    parser.add_argument("--daemon-port", type=int, default=DEFAULT_DAEMON_PORT, help="Port lokalnego daemonu Jaźni.")
+    parser.add_argument("--daemon-heartbeat-interval", type=float, default=DEFAULT_HEARTBEAT_INTERVAL_SECONDS, help="Co ile sekund daemon odświeża marker aktywnego runtime.")
+    parser.add_argument("--daemon-start-timeout", type=float, default=DEFAULT_START_TIMEOUT_SECONDS, help="Ile sekund --daemon-start czeka na odpowiedź /status.")
+    parser.add_argument("--daemon-marker-output", type=Path, default=None, help="Opcjonalna ścieżka markera JAZN_ACTIVE_RUNTIME.json dla daemonu.")
     parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.")
     parser.add_argument("--no-carryover", action="store_true", dest="no_carryover", help="Zablokuj użycie poprzedniej tury nawet jeśli istnieje runtime_state.json.")
     parser.add_argument("--github-plan", action="store_true", dest="github_plan", help="Zapisz i pokaż plan repozytoriów Latka.Jazn oraz Latka.Jazn.Memory bez wykonywania pushu.")
@@ -122,7 +149,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--startup-status-fast", action="store_true", dest="startup_status_fast", help="Pokaż szybki startup status bez deep SQLite i bez sieci.")
     parser.add_argument("--startup-status-deep", action="store_true", dest="startup_status_deep", help="Pokaż pełny deep startup audit; może trwać długo.")
     parser.add_argument("--turn-trace", action="store_true", dest="turn_trace", help="Pokaż lekki ślad trasy tury: classifier -> guard -> route -> handler -> validator.")
-    parser.add_argument("--network-time-check", action="store_true", dest="network_time_check", help="Jawna diagnostyka czasu sieciowego; zwykła rozmowa jej nie używa.")
+    parser.add_argument("--network-time-check", action="store_true", dest="network_time_check", help="Jawna diagnostyka czasu sieciowego; zwykła rozmowa wymaga trusted network time albo blokuje normalną odpowiedź.")
     parser.add_argument("--sqlite-integrity-audit", action="store_true", dest="sqlite_integrity_audit", help="Jawny deep audit SQLite z integrity_check/foreign_key_check.")
     parser.add_argument("--self-check", action="store_true", dest="self_check", help="Pokaż skrócony self-check runtime i potwierdzenie, że procedura startowa jest własnością systemu Jaźni.")
     parser.add_argument("--truth-boundary-check", action="store_true", dest="truth_boundary_check", help="Pokaż granicę prawdy runtime/ChatGPT/pliki/pamięć/ZIP.")
@@ -214,6 +241,53 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     config = JaznConfig(root=root) if root else None
+
+    if ns.bridge_discovery:
+        cfg = config or JaznConfig()
+        print(json.dumps(discover_runtime_bridges(cfg), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.daemon_run:
+        cfg = config or JaznConfig()
+        return run_daemon(
+            cfg,
+            host=ns.daemon_host,
+            port=ns.daemon_port,
+            marker_output=ns.daemon_marker_output,
+            heartbeat_interval=ns.daemon_heartbeat_interval,
+        )
+
+    if ns.daemon_start:
+        cfg = config or JaznConfig()
+        print(json.dumps(start_daemon(
+            cfg,
+            host=ns.daemon_host,
+            port=ns.daemon_port,
+            marker_output=ns.daemon_marker_output,
+            heartbeat_interval=ns.daemon_heartbeat_interval,
+            startup_timeout=ns.daemon_start_timeout,
+        ), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.daemon_status:
+        cfg = config or JaznConfig()
+        print(json.dumps(status_daemon(
+            cfg,
+            host=ns.daemon_host,
+            port=ns.daemon_port,
+            marker_output=ns.daemon_marker_output,
+        ), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.daemon_stop:
+        cfg = config or JaznConfig()
+        print(json.dumps(stop_daemon(
+            cfg,
+            host=ns.daemon_host,
+            port=ns.daemon_port,
+            marker_output=ns.daemon_marker_output,
+        ), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
 
     if ns.startup_status or ns.startup_status_fast or ns.startup_status_deep:
         cfg = config or JaznConfig()
@@ -532,7 +606,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.model_adapter_status:
         cfg = config or JaznConfig()
-        payload = {"runtime_version": cfg.version, "model_adapter_status": NullModelAdapter().describe()}
+        payload = {"runtime_version": cfg.version, "model_adapter_status": build_model_adapter(cfg).describe()}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
@@ -683,220 +757,31 @@ def main(argv: list[str] | None = None) -> int:
 
 
     if ns.chat_gpt:
-        sessions: dict[str, JaznRuntimeSession] = {}
-        generated_session: JaznRuntimeSession | None = None
-        default_client = "chatgpt_bridge"
-        default_lifecycle = "chatgpt_bridge_jsonl"
-        bridge_protocol_version = schema_version("chatgpt_bridge_jsonl")
-        accepted_input_fields = ["message", "text", "user_text", "content", "prompt"]
+        cfg = config or JaznConfig()
+        return run_jsonl_chat_bridge(
+            config=cfg,
+            session_id=ns.session_id,
+            no_carryover=ns.no_carryover,
+            command="--chat-gpt",
+            require_openai_api_key=False,
+        )
 
-        def bridge_meta(
-            *,
-            client: str = default_client,
-            input_kind: str | None = None,
-            input_field: str | None = None,
-            line_index: int | None = None,
-        ) -> dict:
-            meta = {
-                "protocol_version": bridge_protocol_version,
-                "accepted_input_fields": accepted_input_fields,
-                "accepted_input_shapes": [
-                    "plain_text_line",
-                    "json_object.message",
-                    "json_object.text",
-                    "json_object.user_text",
-                    "json_object.content",
-                    "json_object.prompt",
-                    "json_object.messages[].content",
-                ],
-                "preferred_input_field": "message",
-                "client": client,
-                "lifecycle": default_lifecycle,
-                "mode": "primary_chatgpt_bridge",
-                "deprecated_flag_removed": "--chat-jsonl",
-            }
-            if input_kind is not None:
-                meta["input_kind"] = input_kind
-            if input_field is not None:
-                meta["input_field"] = input_field
-            if line_index is not None:
-                meta["line_index"] = line_index
-            return meta
-
-        def error_payload(
-            *,
-            error_code: str,
-            error: str,
-            client: str = default_client,
-            input_kind: str | None = None,
-            input_field: str | None = None,
-            line_index: int | None = None,
-        ) -> dict:
-            return {
-                "schema_version": schema_version("chatgpt_bridge_error"),
-                "chatgpt_bridge": bridge_meta(
-                    client=client,
-                    input_kind=input_kind,
-                    input_field=input_field,
-                    line_index=line_index,
-                ),
-                "ok": False,
-                "error_code": error_code,
-                "error": error,
-            }
-
-        def extract_user_text(payload: dict) -> tuple[str, str, str]:
-            for candidate in accepted_input_fields:
-                value = payload.get(candidate)
-                if value is not None and str(value).strip():
-                    return str(value).strip(), "json", candidate
-
-            messages = payload.get("messages")
-            if isinstance(messages, list):
-                fallback_content = ""
-                fallback_field = "messages[].content"
-                for item in messages:
-                    if not isinstance(item, dict):
-                        continue
-                    content = item.get("content")
-                    if content is None:
-                        continue
-                    if isinstance(content, list):
-                        parts = []
-                        for part in content:
-                            if isinstance(part, dict):
-                                text_part = part.get("text")
-                                if text_part is not None:
-                                    parts.append(str(text_part))
-                            elif part is not None:
-                                parts.append(str(part))
-                        content_text = "".join(parts).strip()
-                    else:
-                        content_text = str(content).strip()
-                    if not content_text:
-                        continue
-                    fallback_content = content_text
-                    if str(item.get("role") or "").lower() == "user":
-                        return content_text, "json_chat_messages", "messages[user].content"
-                if fallback_content:
-                    return fallback_content, "json_chat_messages", fallback_field
-
-            return "", "json", "<missing>"
-
-        def get_session(session_id: str | None, *, client: str) -> tuple[JaznRuntimeSession, str]:
-            nonlocal generated_session
-            if session_id:
-                if session_id not in sessions:
-                    sessions[session_id] = JaznRuntimeSession(
-                        config,
-                        session_id=session_id,
-                        no_carryover=ns.no_carryover,
-                        source_client=client,
-                    )
-                return sessions[session_id], "payload"
-            if ns.session_id:
-                if ns.session_id not in sessions:
-                    sessions[ns.session_id] = JaznRuntimeSession(
-                        config,
-                        session_id=ns.session_id,
-                        no_carryover=ns.no_carryover,
-                        source_client=client,
-                    )
-                return sessions[ns.session_id], "cli_arg"
-            if generated_session is None:
-                generated_session = JaznRuntimeSession(
-                    config,
-                    session_id=None,
-                    no_carryover=ns.no_carryover,
-                    source_client=client,
-                )
-                sessions[generated_session.state.session_id] = generated_session
-            return generated_session, "generated"
-
-
-        try:
-            for line_index, line in enumerate(sys.stdin, 1):
-                line = line.strip()
-                if not line:
-                    continue
-                if line in {"/exit", "exit"}:
-                    break
-
-                input_kind = "plain_text"
-                input_field = "plain_text"
-                payload_session_id = None
-                client = default_client
-
-                try:
-                    payload = json.loads(line)
-                except json.JSONDecodeError as exc:
-                    if line[:1] in {"{", "["}:
-                        print(json.dumps(error_payload(
-                            error_code="malformed_json",
-                            error=f"Niepoprawna linia JSONL: {exc.msg}",
-                            input_kind="malformed_json",
-                            input_field="<parse_error>",
-                            line_index=line_index,
-                        ), ensure_ascii=False, sort_keys=True), flush=True)
-                        continue
-                    user_text = line
-                else:
-                    input_kind = "json"
-                    if not isinstance(payload, dict):
-                        print(json.dumps(error_payload(
-                            error_code="invalid_jsonl_payload",
-                            error="Każda linia --chat-gpt musi być obiektem JSON albo zwykłym tekstem.",
-                            input_kind="json_non_object",
-                            input_field="<non_object>",
-                            line_index=line_index,
-                        ), ensure_ascii=False, sort_keys=True), flush=True)
-                        continue
-                    client = str(payload.get("client") or default_client)
-                    payload_session_id = str(payload.get("session_id") or "").strip() or None
-                    user_text, input_kind, input_field = extract_user_text(payload)
-
-                if not user_text.strip():
-                    print(json.dumps(error_payload(
-                        error_code="empty_message",
-                        error="Pusta wiadomość nie została przekazana do runtime Jaźni.",
-                        client=client,
-                        input_kind=input_kind,
-                        input_field=input_field,
-                        line_index=line_index,
-                    ), ensure_ascii=False, sort_keys=True), flush=True)
-                    continue
-
-                session, session_id_source = get_session(payload_session_id, client=client)
-                try:
-                    result = session.process_user_text(
-                        user_text,
-                        client=client,
-                        lifecycle=default_lifecycle,
-                        session_id_source=session_id_source,
-                        process_reused=True,
-                    )
-                except Exception as exc:
-                    print(json.dumps(error_payload(
-                        error_code="runtime_turn_failed",
-                        error=f"Runtime Jaźni przerwał turę: {type(exc).__name__}: {exc}",
-                        client=client,
-                        input_kind=input_kind,
-                        input_field=input_field,
-                        line_index=line_index,
-                    ), ensure_ascii=False, sort_keys=True), flush=True)
-                    continue
-                result["chatgpt_bridge"] = bridge_meta(
-                    client=client,
-                    input_kind=input_kind,
-                    input_field=input_field,
-                    line_index=line_index,
-                )
-                result["ok"] = True
-                print(json.dumps(result, ensure_ascii=False, sort_keys=True), flush=True)
-        finally:
-            for session in sessions.values():
-                session.close()
-        return 0
+    if ns.chat_open_ai:
+        cfg = config or JaznConfig()
+        apply_openai_cli_settings(
+            cfg,
+            model=ns.openai_model,
+            api_base=ns.openai_api_base,
+            timeout_seconds=ns.openai_timeout,
+            max_output_tokens=ns.openai_max_output_tokens,
+        )
+        return run_jsonl_chat_bridge(
+            config=cfg,
+            session_id=ns.session_id,
+            no_carryover=ns.no_carryover,
+            command="--chat-open-ai",
+            require_openai_api_key=True,
+        )
 
     if ns.export_system or ns.export_memory or ns.export_full or ns.export_nlp or ns.export_github_source_safe:
         cfg = config or JaznConfig()

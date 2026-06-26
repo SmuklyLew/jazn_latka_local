@@ -5,6 +5,7 @@ from latka_jazn.config import JaznConfig
 from latka_jazn.core.engine import JaznEngine
 from latka_jazn.core.runtime_session_state import RuntimeSessionStateStore
 from latka_jazn.core.session_provenance import build_session_provenance, repair_final_visible_integrity, validate_final_visible_integrity
+from latka_jazn.core.runtime_truth_gate import apply_runtime_truth_gate
 
 from latka_jazn.version import schema_version
 
@@ -76,6 +77,10 @@ class JaznRuntimeSession:
         result["final_visible_integrity"] = validate_final_visible_integrity(result)
         if integrity_repairs:
             result["final_visible_integrity"]["repairs"] = integrity_repairs
+        result, gate_payload = apply_runtime_truth_gate(result)
+        if gate_payload.get("normal_response_allowed") is False:
+            result["final_visible_integrity"]["runtime_truth_gate_blocked"] = True
+            result["final_visible_integrity"]["runtime_truth_gate_errors"] = list(gate_payload.get("errors") or [])
         return result
 
     def close(self) -> None:

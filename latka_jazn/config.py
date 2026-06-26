@@ -4,6 +4,12 @@ from pathlib import Path
 import os
 
 from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
+from latka_jazn.core.timestamp_policy import (
+    TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
+    TIMESTAMP_NETWORK_FIRST_DEFAULT,
+    TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT,
+    TIMESTAMP_TIMEZONE,
+)
 
 DEFAULT_MAX_SQLITE_FILE_BYTES = 480 * 1024 * 1024
 
@@ -32,7 +38,7 @@ def _env_int(name: str, default: int) -> int:
 class JaznConfig:
     version: str = PACKAGE_VERSION
     root: Path = field(default_factory=lambda: Path(__file__).resolve().parents[1])
-    timezone: str = "Europe/Warsaw"
+    timezone: str = TIMESTAMP_TIMEZONE
     timestamp_format: str = "[🕒 %Y-%m-%d %H:%M:%S GMT%z, %A, Europe/Warsaw]"
     memory_db_name: str = field(default_factory=lambda: os.environ.get("JAZN_RUNTIME_MEMORY_DB", "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3").strip())
     audit_db_name: str = field(default_factory=lambda: os.environ.get("JAZN_AUDIT_DB", "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3").strip())
@@ -49,12 +55,12 @@ class JaznConfig:
     raw_memory_dir: str = "memory/raw"
     versioned_memory_dir: str = "memory/versioned_sources"
     require_first_person_identity: bool = True
-    network_time_first: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_FIRST", False))
-    local_time_fallback: bool = True
+    network_time_first: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_FIRST", TIMESTAMP_NETWORK_FIRST_DEFAULT))
+    local_time_fallback: bool = TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT
     startup_status_default_mode: str = field(default_factory=lambda: os.environ.get("JAZN_STARTUP_STATUS_MODE", "fast").strip().lower())
     sqlite_health_default_mode: str = field(default_factory=lambda: os.environ.get("JAZN_SQLITE_HEALTH_MODE", "metadata").strip().lower())
     turn_trace_enabled: bool = field(default_factory=lambda: _env_bool("JAZN_TURN_TRACE", False))
-    network_time_allowed_in_normal_turn: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_IN_TURN", False))
+    network_time_allowed_in_normal_turn: bool = field(default_factory=lambda: _env_bool("JAZN_NETWORK_TIME_IN_TURN", TIMESTAMP_NETWORK_IN_NORMAL_TURN_DEFAULT))
     auto_import_raw_chat_html_on_bootstrap: bool = True
     raw_chat_html_auto_import_limit: int | None = None
     idle_reflection_thresholds: tuple[int, ...] = (300, 600, 21600)

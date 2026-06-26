@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.011"
-PACKAGE_RELEASE_NAME = "self-architecture-audit-reflection-memory-gate"
+PACKAGE_VERSION = "v14.8.5.014"
+PACKAGE_RELEASE_NAME = "strict-runtime-truth-fast-continuity-openai-state-gateway"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL

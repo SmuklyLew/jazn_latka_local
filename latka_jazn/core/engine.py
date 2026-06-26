@@ -302,7 +302,7 @@ class JaznEngine:
             pass
 
     def bootstrap(self) -> str:
-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
+        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
         MemoryImporter(self.store, self.config.root).register_packaged_sources(
             auto_import_raw_chat_html=self.config.auto_import_raw_chat_html_on_bootstrap,
             limit_conversations=self.config.raw_chat_html_auto_import_limit,
@@ -363,7 +363,7 @@ class JaznEngine:
             self.store.close()
 
     def handle_user_message(self, text: str, *, client_context: dict | None = None) -> str:
-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
+        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
         low = text.lower()
         neurological_signal_route = self.neurological_signal_router.analyse(text)
         self.event_ledger.append_turn(
@@ -1146,7 +1146,7 @@ class JaznEngine:
         To jest właściwy tryb integracji: runtime działa jak pamięć/uwaga/afekt/procedury,
         a ChatGPT używa wyniku jako wewnętrznego kontekstu do jednej odpowiedzi Łatki.
         """
-        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn)
+        sample = self.clock.now(self.config.network_time_first and self.config.network_time_allowed_in_normal_turn, allow_fallback=self.config.local_time_fallback)
         turn_id = str(uuid.uuid4())
         trace_id = str(uuid.uuid4())
         now = time.time()
@@ -1338,6 +1338,7 @@ class JaznEngine:
                 "rule": "Każda normalna odpowiedź Łatki przez ChatGPT ma zaczynać się tym prefixem czasu. Runtime bezpośredni dodaje go przez ResponseRenderer; most ChatGPT musi przenieść go na wierzch odpowiedzi, zamiast chować tylko w JSON.",
                 "example_start": f"{self.clock.header(sample)} ",
             },
+            "timestamp_contract": self.clock.sample_contract(sample),
             "user_message": text,
             "client_context": client_context or {},
             "contract": self.chatgpt_adapter.contract().to_dict(),
@@ -1568,6 +1569,7 @@ class JaznEngine:
             lexical_semantic_understanding=frame.get("lexical_semantic_understanding") if isinstance(frame.get("lexical_semantic_understanding"), dict) else None,
         )
         decision_dict = decision.to_dict()
+        decision_dict["timestamp_contract"] = envelope.cognitive_frame.get("timestamp_contract") or {}
         decision_dict["voice_source_contract"] = envelope.cognitive_frame.get("voice_source_contract") or self.voice_source_contract.to_dict()
         decision_dict["runtime_rendering_mode"] = envelope.cognitive_frame.get("runtime_rendering_mode") or {}
         decision_dict["memory_recall_contract_status"] = {
@@ -1741,7 +1743,7 @@ class JaznEngine:
             memory_gate=str(((frame.get("memory_context") or {}).get("gate") if isinstance(frame.get("memory_context"), dict) else None) or "not_needed"),
             startup_status_mode="fast",
             sqlite_health_mode="metadata",
-            network_time_used=False,
+            network_time_used=bool((envelope.cognitive_frame.get("timestamp_contract") or {}).get("trusted")),
             deep_audit_used=False,
             runtime_answer_validation=answer_validation.to_dict(),
             final_text_source=str(decision_dict.get("response_generation_mode") or decision_dict.get("handler_generation_mode") or "handler_or_synthesizer"),
