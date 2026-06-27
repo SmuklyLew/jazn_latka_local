@@ -390,6 +390,14 @@ def build_daemon_start_command(
     return cmd
 
 
+def _daemon_pid_from_status(status: dict[str, Any]) -> int | None:
+    value = status.get("daemon_pid") or (status.get("runtime_daemon") or {}).get("pid")
+    try:
+        return int(value) if value else None
+    except (TypeError, ValueError):
+        return None
+
+
 def start_daemon(
     config: JaznConfig,
     *,
@@ -402,8 +410,16 @@ def start_daemon(
     marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
     try:
         existing = http_json("GET", daemon_url(host, int(port), "/status"), timeout=1.0)
-        if existing.get("ok"):
-            return {"ok": True, "already_running": True, "status": existing, "marker_path": str(marker_path)}
+        if existing.get("active_state") in {"active_trusted", "active_degraded"}:
+            return {
+                "ok": bool(existing.get("ok")),
+                "already_running": True,
+                "started": False,
+                "degraded": existing.get("active_state") == "active_degraded",
+                "pid": _daemon_pid_from_status(existing),
+                "status": existing,
+                "marker_path": str(marker_path),
+            }
     except Exception:
         pass
     log_dir = daemon_log_dir(config.root)
