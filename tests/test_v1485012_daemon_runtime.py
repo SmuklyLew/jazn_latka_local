@@ -98,3 +98,38 @@ def test_start_daemon_reuses_reachable_degraded_daemon(monkeypatch, tmp_path: Pa
     assert result["started"] is False
     assert result["degraded"] is True
     assert result["pid"] == 1234
+
+
+def test_status_daemon_uses_endpoint_pid_match_when_os_probe_fails(monkeypatch, tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    marker_path = daemon_default_marker_path(tmp_path)
+    marker_path.parent.mkdir(parents=True, exist_ok=True)
+    marker_path.write_text(
+        '{"daemon_pid": 1234, "runtime_daemon": {"pid": 1234}, "runtime_process_active": true}',
+        encoding="utf-8",
+    )
+    cfg = JaznConfig(root=tmp_path)
+
+    def fake_http_json(method: str, url: str, payload=None, *, timeout: float = 1.0):
+        return {
+            "ok": False,
+            "active_state": "active_degraded",
+            "daemon_pid": 1234,
+            "runtime_daemon": {"pid": 1234},
+            "runtime_process_active": True,
+            "timestamp_trusted": False,
+        }
+
+    monkeypatch.setattr(runtime_daemon_module, "pid_is_alive", lambda pid: False)
+    monkeypatch.setattr(runtime_daemon_module, "http_json", fake_http_json)
+
+    status = runtime_daemon_module.status_daemon(cfg, host=DEFAULT_DAEMON_HOST, port=DEFAULT_DAEMON_PORT)
+
+    assert status["pid_alive"] is True
+    assert status["pid_alive_os_probe"] is False
+    assert status["pid_alive_source"] == "endpoint_pid_match"
+    assert status["endpoint_pid_matches"] is True
+    assert status["active_state"] == "active_degraded"
+    assert status["ok"] is False
