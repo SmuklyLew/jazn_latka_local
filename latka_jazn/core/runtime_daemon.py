@@ -398,6 +398,13 @@ def _daemon_pid_from_status(status: dict[str, Any]) -> int | None:
         return None
 
 
+def _endpoint_confirms_pid(pid: int | None, ping: dict[str, Any] | None) -> bool:
+    if not pid or not isinstance(ping, dict):
+        return False
+    ping_pid = _daemon_pid_from_status(ping)
+    return bool(ping_pid and int(ping_pid) == int(pid) and ping.get("runtime_process_active") is True)
+
+
 def start_daemon(
     config: JaznConfig,
     *,
@@ -457,7 +464,8 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
     pid = None
     if marker:
         pid = marker.get("daemon_pid") or (marker.get("runtime_daemon") or {}).get("pid")
-    alive = pid_is_alive(int(pid)) if pid else False
+    pid_int = int(pid) if pid else None
+    os_pid_alive = pid_is_alive(pid_int) if pid_int else False
     ping: dict[str, Any] | None = None
     ping_error: str | None = None
     try:
@@ -465,6 +473,14 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
     except Exception as exc:
         ping_error = f"{type(exc).__name__}: {exc}"
     endpoint_reachable = ping is not None
+    endpoint_pid_matches = _endpoint_confirms_pid(pid_int, ping)
+    alive = bool(os_pid_alive or endpoint_pid_matches)
+    if os_pid_alive:
+        pid_alive_source = "os_process_probe"
+    elif endpoint_pid_matches:
+        pid_alive_source = "endpoint_pid_match"
+    else:
+        pid_alive_source = "unverified"
     timestamp_trusted = (ping or {}).get("timestamp_trusted") if isinstance(ping, dict) else None
     active_state = daemon_active_state(marker_found=marker is not None, pid_alive=alive, ping_ok=endpoint_reachable, timestamp_trusted=timestamp_trusted)
     return {
@@ -479,11 +495,14 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
         "marker": marker,
         "pid": pid,
         "pid_alive": alive,
+        "pid_alive_os_probe": os_pid_alive,
+        "pid_alive_source": pid_alive_source,
+        "endpoint_pid_matches": endpoint_pid_matches,
         "endpoint_reachable": endpoint_reachable,
         "ping": ping,
         "ping_error": ping_error,
         "timestamp_trusted": timestamp_trusted,
-        "truth_boundary": "Status active_trusted wymaga markera, żywego PID, lokalnego endpointu /status i zaufanego czasu sieciowego. Żywy proces bez trusted timestampu jest active_degraded, nie pełnym sukcesem.",
+        "truth_boundary": "Status active_trusted wymaga markera, potwierdzonego procesu, lokalnego endpointu /status i zaufanego czasu sieciowego. Na Windows PID może być potwierdzony przez zgodny PID z lokalnego endpointu, ale bez trusted timestampu pozostaje active_degraded.",
     }
 
 
