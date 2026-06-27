@@ -25,7 +25,7 @@ from latka_jazn.tools.active_extraction_cache import (
     build_active_runtime_status,
     write_active_runtime_marker,
 )
-from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, schema_version
+from latka_jazn.version import PACKAGE_VERSION, schema_version
 
 DEFAULT_DAEMON_HOST = "127.0.0.1"
 DEFAULT_DAEMON_PORT = 8787
@@ -208,7 +208,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "heartbeat_interval_seconds": self.heartbeat_interval,
             "runtime_process_active": True,
             "start_file": "main.py",
-            "version": PACKAGE_VERSION_FULL,
+            "version": PACKAGE_VERSION,
             "truth_boundary": "Ten marker oznacza działający lokalny proces daemonu tylko wtedy, gdy PID żyje, heartbeat jest świeży, /status odpowiada z localhost i active_state nie ukrywa trybu degraded.",
         }
 
