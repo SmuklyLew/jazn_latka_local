@@ -1,14 +1,19 @@
 from pathlib import Path
 
 from latka_jazn.config import JaznConfig
+from latka_jazn.core import runtime_daemon as runtime_daemon_module
 from latka_jazn.core.runtime_daemon import (
     DEFAULT_DAEMON_HOST,
     DEFAULT_DAEMON_PORT,
+    JaznDaemonHandler,
+    JaznDaemonServer,
     build_daemon_start_command,
     daemon_default_marker_path,
     extract_daemon_user_text,
     status_daemon,
 )
+from latka_jazn.tools.active_extraction_cache import write_active_runtime_marker
+from latka_jazn.version import PACKAGE_VERSION
 
 
 def test_daemon_extracts_plain_and_json_message():
@@ -46,3 +51,85 @@ def test_daemon_status_without_running_process_is_truthful(tmp_path: Path):
     assert status["marker_found"] is False
     assert status["ping"] is None
     assert status["truth_boundary"]
+
+
+def test_daemon_marker_payload_uses_clean_package_version(tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    marker_path = daemon_default_marker_path(tmp_path)
+    write_active_runtime_marker(tmp_path, marker_output=marker_path)
+    cfg = JaznConfig(root=tmp_path)
+    server = JaznDaemonServer((DEFAULT_DAEMON_HOST, 0), JaznDaemonHandler, config=cfg, marker_path=marker_path)
+    try:
+        payload = server.marker_payload()
+    finally:
+        server.server_close()
+
+    assert payload["version"] == PACKAGE_VERSION
+    assert payload["version"] == (tmp_path / "VERSION.txt").read_text(encoding="utf-8").strip()
+    assert payload["cache_miss_reasons"] == []
+    assert payload["marker_refresh_required"] is False
+
+
+def test_start_daemon_reuses_reachable_degraded_daemon(monkeypatch, tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    cfg = JaznConfig(root=tmp_path)
+
+    def fake_http_json(method: str, url: str, payload=None, *, timeout: float = 1.0):
+        return {
+            "ok": False,
+            "active_state": "active_degraded",
+            "daemon_pid": 1234,
+            "runtime_daemon": {"pid": 1234},
+        }
+
+    def fail_popen(*args, **kwargs):
+        raise AssertionError("start_daemon must not spawn a duplicate process when a degraded daemon already answers")
+
+    monkeypatch.setattr(runtime_daemon_module, "http_json", fake_http_json)
+    monkeypatch.setattr(runtime_daemon_module.subprocess, "Popen", fail_popen)
+
+    result = runtime_daemon_module.start_daemon(cfg, host=DEFAULT_DAEMON_HOST, port=DEFAULT_DAEMON_PORT)
+
+    assert result["already_running"] is True
+    assert result["started"] is False
+    assert result["degraded"] is True
+    assert result["pid"] == 1234
+
+
+def test_status_daemon_uses_endpoint_pid_match_when_os_probe_fails(monkeypatch, tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    marker_path = daemon_default_marker_path(tmp_path)
+    marker_path.parent.mkdir(parents=True, exist_ok=True)
+    marker_path.write_text(
+        '{"daemon_pid": 1234, "runtime_daemon": {"pid": 1234}, "runtime_process_active": true}',
+        encoding="utf-8",
+    )
+    cfg = JaznConfig(root=tmp_path)
+
+    def fake_http_json(method: str, url: str, payload=None, *, timeout: float = 1.0):
+        return {
+            "ok": False,
+            "active_state": "active_degraded",
+            "daemon_pid": 1234,
+            "runtime_daemon": {"pid": 1234},
+            "runtime_process_active": True,
+            "timestamp_trusted": False,
+        }
+
+    monkeypatch.setattr(runtime_daemon_module, "pid_is_alive", lambda pid: False)
+    monkeypatch.setattr(runtime_daemon_module, "http_json", fake_http_json)
+
+    status = runtime_daemon_module.status_daemon(cfg, host=DEFAULT_DAEMON_HOST, port=DEFAULT_DAEMON_PORT)
+
+    assert status["pid_alive"] is True
+    assert status["pid_alive_os_probe"] is False
+    assert status["pid_alive_source"] == "endpoint_pid_match"
+    assert status["endpoint_pid_matches"] is True
+    assert status["active_state"] == "active_degraded"
+    assert status["ok"] is False

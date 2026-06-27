@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.014"
-PACKAGE_RELEASE_NAME = "strict-runtime-truth-fast-continuity-openai-state-gateway"
+PACKAGE_VERSION = "v14.8.5.015"
+PACKAGE_RELEASE_NAME = "runtime-bump-active-runtime-access-contract"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
@@ -24,6 +24,7 @@ def active_line(component: str) -> str:
 
 def version_slug(version: str = PACKAGE_VERSION) -> str:
     return "v" + version_number(version).replace(".", "_")
+
 
 def generation_mode(prefix: str, *, version: str = PACKAGE_VERSION) -> str:
     return f"{prefix}_{version_slug(version)}"
