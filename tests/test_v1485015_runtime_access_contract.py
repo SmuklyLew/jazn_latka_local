@@ -10,10 +10,10 @@ from latka_jazn.tools.active_extraction_cache import write_active_runtime_marker
 from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CONTRACT_VERSION
 
 
-def test_runtime_version_is_bumped_to_1485015() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.015"
+def test_runtime_version_is_bumped_to_14850161() -> None:
+    assert PACKAGE_VERSION == "v14.8.5.016.1"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "runtime-bump-active-runtime-access-contract"
+    assert PACKAGE_RELEASE_NAME == "runtime-preview-compact-dev-preview-hotfix"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:

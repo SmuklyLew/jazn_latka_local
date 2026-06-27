@@ -114,8 +114,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--dedup-report", action="store_true", dest="dedup_report", help="Zbuduj raport duplikatĂłw treĹ›ci i SHA-256 bez usuwania plikĂłw.")
     parser.add_argument("--lexical-frame", action="store_true", dest="lexical_frame", help="PokaĹĽ raport leksykalny aktualnej JaĹşni: polskie rozumienie + rozszerzona semantyka sĹ‚Ăłw i fraz.")
     parser.add_argument("--nlp-frame", action="store_true", dest="nlp_frame", help="PokaĹĽ raport NLP aktualnej JaĹşni: tokeny, lemma_candidates, selected_lemma, confidence i provider.")
-    parser.add_argument("--runtime-preview", action="store_true", dest="runtime_preview", help="PokaĹĽ dokĹ‚adnÄ… odpowiedĹş runtime oraz pakiet cognitive-frame/source_origin/self_state dla mostu ChatGPT.")
-    parser.add_argument("--runtime-preview-output", type=Path, default=None, help="Opcjonalna Ĺ›cieĹĽka pliku JSON dla --runtime-preview; peĹ‚ny payload trafia do pliku, a stdout zwraca krĂłtkie potwierdzenie.")
+    parser.add_argument("--runtime-preview", action="store_true", dest="runtime_preview", help="Pokaż krótki, czytelny podgląd jednej tury runtime: final_visible_text + kluczowe pola diagnostyczne. Nie wypisuje pełnej koperty cognitive-frame do terminala.")
+    parser.add_argument("--dev-preview", action="store_true", dest="dev_preview", help="Tryb deweloperski: pokaż pełny payload runtime-preview/cognitive-frame na stdout albo zapisz go przez --runtime-preview-output.")
+    parser.add_argument("--runtime-preview-output", type=Path, default=None, help="Opcjonalna ścieżka pliku JSON dla --runtime-preview/--dev-preview; pełny payload trafia do pliku, a stdout zwraca tylko krótki, czytelny wynik.")
     parser.add_argument("--active-cache-status", action="store_true", dest="active_cache_status", help="PokaĹĽ status aktywnego rozpakowanego folderu i decyzjÄ™, czy trzeba ponownie rozpakowaÄ‡ ZIP.")
     parser.add_argument("--project-startup-index", action="store_true", dest="project_startup_index", help="Zbuduj i pokaĹĽ mapÄ™ plikĂłw oraz moduĹ‚Ăłw/funkcji JaĹşni przy rozruchu.")
     parser.add_argument("--topic-guard", action="store_true", dest="topic_guard", help="PokaĹĽ raport TopicMismatchGuard dla wiadomoĹ›ci bez generowania peĹ‚nej odpowiedzi.")
@@ -680,35 +681,40 @@ def main(argv: list[str] | None = None) -> int:
             engine.shutdown()
         return 0
 
-    if ns.runtime_preview:
+    if ns.runtime_preview or ns.dev_preview:
         engine = JaznEngine(config)
         try:
             text = _message_from_remainder(ns.message)
             envelope = engine.process_turn(
                 text,
                 client_context={
-                    "client": "chatgpt_runtime_preview",
+                    "client": "chatgpt_runtime_preview" if ns.runtime_preview else "chatgpt_dev_preview",
                     "lifecycle": "one_shot_preview",
                     "preview_phase": "single_integrated_process_turn",
                     "session_id": ns.session_id,
                     "no_carryover": ns.no_carryover,
+                    "terminal_mode": "compact" if ns.runtime_preview else "full_dev_payload",
                 },
             )
             envelope_dict = envelope.to_dict()
             cognitive_frame = envelope_dict.get("cognitive_frame") or {}
             runtime_text = envelope_dict.get("final_visible_text") or ""
             final_contract = envelope_dict.get("final_response_contract") or {}
+            integrity = final_contract.get("final_visible_integrity") if isinstance(final_contract.get("final_visible_integrity"), dict) else {}
+            dialogue_classifier = cognitive_frame.get("dialogue_intent_classifier") or envelope_dict.get("dialogue_intent_classifier") or {}
+            route_trace = cognitive_frame.get("turn_route_trace") or (envelope_dict.get("conversation_decision") or {}).get("turn_route_trace") or {}
+            conversation_decision = envelope_dict.get("conversation_decision") if isinstance(envelope_dict.get("conversation_decision"), dict) else {}
             payload = {
-                "schema_version": schema_version("runtime_preview"),
+                "schema_version": schema_version("runtime_preview_full_payload"),
                 "runtime_version": engine.config.version,
-                "mode": "diagnostic_runtime_preview_single_process_turn_not_background_daemon",
+                "mode": "diagnostic_dev_preview_full_payload_single_process_turn_not_background_daemon",
                 "turn_trace": envelope_dict.get("trace"),
                 "runtime_text": runtime_text,
                 "fallback_detected": any(
                     signature in runtime_text
                     for signature in (
-                        "Nie znalazĹ‚am osobnej trasy odpowiedzi",
-                        "runtime odebraĹ‚ wiadomoĹ›Ä‡",
+                        "Nie znalazłam osobnej trasy odpowiedzi",
+                        "runtime odebrał wiadomość",
                         "debugowy fallback",
                         "pusty fallback",
                     )
@@ -720,7 +726,7 @@ def main(argv: list[str] | None = None) -> int:
                 "self_state_runtime": cognitive_frame.get("self_state_runtime"),
                 "affect_mix": envelope_dict.get("affect_mix"),
                 "dialogue_state": envelope_dict.get("dialogue_state"),
-                "turn_route_trace": (cognitive_frame.get("turn_route_trace") or (envelope_dict.get("conversation_decision") or {}).get("turn_route_trace")),
+                "turn_route_trace": route_trace,
                 "final_response_contract": envelope_dict.get("final_response_contract"),
                 "cognitive_turn_envelope": envelope_dict,
                 "cognitive_frame": cognitive_frame,
@@ -732,25 +738,39 @@ def main(argv: list[str] | None = None) -> int:
                     "response_source": "runtime.process_turn + final_response_contract",
                     "required_visible_fields": ["timestamp_header", "active_root", "start_file", "runtime_answer_quality", "fallback_classification", "response_source", "one_shot_or_chat_loop_limit"],
                     "must_show_when_user_asks_about_runtime_files_timestamp_preview_or_fallback": True,
-                    "one_shot_or_chat_loop_limit": "--runtime-preview jest jednorazowym wywoĹ‚aniem; staĹ‚Ä… pÄ™tlÄ™ daje dopiero python main.py --chat.",
+                    "one_shot_or_chat_loop_limit": "--runtime-preview i --dev-preview są jednorazowymi wywołaniami; stałą pętlę daje dopiero python main.py --chat.",
                 },
                 "active_extraction_cache_status": build_active_runtime_status(engine.config.root),
                 "startup_summary": build_startup_summary(engine.config),
                 "free_dialogue_memory_nlp_bridge": build_startup_summary(engine.config),
-                "truth_boundary": "Ten tryb wykonuje jedno zintegrowane wywoĹ‚anie process_turn: runtime buduje cognitive-frame i z tej samej koperty tworzy finalnÄ… odpowiedĹş. Nie udaje staĹ‚ego procesu w tle.",
+                "truth_boundary": "--dev-preview wykonuje jedno zintegrowane wywołanie process_turn i pokazuje pełną kopertę techniczną. To nie jest widoczna odpowiedź Łatki dla użytkownika ani dowód procesu w tle.",
+            }
+            compact = {
+                "schema_version": schema_version("runtime_preview_compact"),
+                "runtime_version": engine.config.version,
+                "mode": "runtime_preview_compact_not_user_visible_latka_reply",
+                "final_visible_text": runtime_text,
+                "runtime_route": final_contract.get("runtime_route") or conversation_decision.get("selected_route") or route_trace.get("selected_route"),
+                "primary_intent": dialogue_classifier.get("primary_intent") or conversation_decision.get("detected_user_intent"),
+                "diagnostic_request": dialogue_classifier.get("diagnostic_request"),
+                "fallback_classification": final_contract.get("fallback_classification"),
+                "runtime_answer_quality": final_contract.get("runtime_answer_quality"),
+                "timestamp_trusted": integrity.get("timestamp_trusted") if integrity else final_contract.get("timestamp_trusted"),
+                "final_visible_integrity_valid": integrity.get("valid") if integrity else None,
+                "normal_response_blocked": envelope_dict.get("normal_response_blocked"),
+                "runtime_response_status": envelope_dict.get("runtime_response_status"),
+                "full_payload_written_to": str(ns.runtime_preview_output) if ns.runtime_preview_output else None,
+                "dev_preview_command": "python main.py --dev-preview <tekst>",
+                "truth_boundary": "To jest krótki podgląd diagnostyczny jednej tury runtime. Nie traktuj samego --runtime-preview jako rozmowy z Łatką; do stałej rozmowy służy --chat, a pełny JSON techniczny jest w --dev-preview albo --runtime-preview-output.",
             }
             payload_json = json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True)
             if ns.runtime_preview_output:
                 ns.runtime_preview_output.parent.mkdir(parents=True, exist_ok=True)
                 ns.runtime_preview_output.write_text(payload_json + "\n", encoding="utf-8")
-                print(json.dumps({
-                    "runtime_version": engine.config.version,
-                    "runtime_preview_output": str(ns.runtime_preview_output),
-                    "written": True,
-                    "truth_boundary": "PeĹ‚ny runtime-preview zapisano do pliku; stdout zawiera tylko krĂłtkie potwierdzenie.",
-                }, ensure_ascii=False, indent=2, sort_keys=True))
-            else:
+            if ns.dev_preview and not ns.runtime_preview_output:
                 print(payload_json)
+            else:
+                print(json.dumps(compact, ensure_ascii=False, indent=2, sort_keys=True))
         finally:
             engine.shutdown()
         return 0

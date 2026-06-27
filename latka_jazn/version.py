@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.015"
-PACKAGE_RELEASE_NAME = "runtime-bump-active-runtime-access-contract"
+PACKAGE_VERSION = "v14.8.5.016.1"
+PACKAGE_RELEASE_NAME = "runtime-preview-compact-dev-preview-hotfix"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
