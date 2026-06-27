@@ -4,11 +4,14 @@ from latka_jazn.config import JaznConfig
 from latka_jazn.core.runtime_daemon import (
     DEFAULT_DAEMON_HOST,
     DEFAULT_DAEMON_PORT,
+    JaznDaemonHandler,
+    JaznDaemonServer,
     build_daemon_start_command,
     daemon_default_marker_path,
     extract_daemon_user_text,
     status_daemon,
 )
+from latka_jazn.version import PACKAGE_VERSION
 
 
 def test_daemon_extracts_plain_and_json_message():
@@ -46,3 +49,20 @@ def test_daemon_status_without_running_process_is_truthful(tmp_path: Path):
     assert status["marker_found"] is False
     assert status["ping"] is None
     assert status["truth_boundary"]
+
+
+def test_daemon_marker_payload_uses_clean_package_version(tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    cfg = JaznConfig(root=tmp_path)
+    server = JaznDaemonServer((DEFAULT_DAEMON_HOST, 0), JaznDaemonHandler, config=cfg, marker_path=daemon_default_marker_path(tmp_path))
+    try:
+        payload = server.marker_payload()
+    finally:
+        server.server_close()
+
+    assert payload["version"] == PACKAGE_VERSION
+    assert payload["version"] == (tmp_path / "VERSION.txt").read_text(encoding="utf-8").strip()
+    assert payload["cache_miss_reasons"] == []
+    assert payload["marker_refresh_required"] is False
