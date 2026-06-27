@@ -8,6 +8,7 @@ Ta wersja domyka poprzedni porządkowy commit `v14.8.5.015` i podbija faktyczny 
 - `latka_jazn/version.py` deklaruje `PACKAGE_VERSION = "v14.8.5.015"`.
 - `PACKAGE_RELEASE_NAME` ustawiono na `runtime-bump-active-runtime-access-contract`.
 - Dodano `latka_jazn/core/active_runtime_access_contract.py`, czyli jawny kontrakt pracy z rozpakowanym folderem Jaźni.
+- Doprecyzowano `write_active_runtime_marker()`, żeby marker zapisany po odświeżeniu nie przechowywał starych flag `marker_refresh_required=true` / `marker_differs=true` z diagnostyki sprzed zapisu.
 - Dodano test `tests/test_v1485015_runtime_access_contract.py`.
 - Zachowano wcześniejszą higienę repo: `pyrightconfig.json` oraz `.gitignore` dla lokalnych artefaktów patchowania.
 
@@ -29,9 +30,10 @@ Ta wersja domyka poprzedni porządkowy commit `v14.8.5.015` i podbija faktyczny 
 python -m compileall main.py latka_jazn tests
 python -m pytest tests/test_v1485015_runtime_access_contract.py -q
 python -m pytest tests/test_p0_timestamp_network_contract.py tests/test_v1485012_daemon_runtime.py tests/test_v1485013_chat_command_bridge_contract.py tests/test_v1485014_strict_runtime_truth_gate.py tests/test_v1485014_fast_continuity_and_gateway.py -q
+python main.py --write-active-runtime-marker
 python main.py --active-cache-status
-python main.py --model-adapter-status
 python main.py --bridge-discovery
+python main.py --model-adapter-status
 ```
 
 ## Granica prawdy
