@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.006-runtime-marker-schema-integrity-hotfix
+# Current package version: v14.8.5.015-runtime-bump-active-runtime-access-contract
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -261,6 +261,11 @@ def write_active_runtime_marker(root: Path, *, source_zip: Path | None = None, m
     ]
     status.setdefault("cache_hit_reasons", []).append("active_marker_written_now")
     status["existing_marker_found"] = True
+    status["marker_refresh_required"] = any(
+        reason.startswith(marker_only_prefixes)
+        for reason in status["cache_miss_reasons"]
+    )
+    status["marker_differs"] = any("differs" in reason for reason in status["cache_miss_reasons"])
     hard_missing = {"active_root_missing", "VERSION.txt_missing", "start_file_missing_main_run_jazn", "MANIFEST_CURRENT.json_missing"}
     status["should_reuse_existing_extraction"] = not any(reason in hard_missing for reason in status["cache_miss_reasons"])
     marker = {
