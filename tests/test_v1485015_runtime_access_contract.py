@@ -10,10 +10,10 @@ from latka_jazn.tools.active_extraction_cache import write_active_runtime_marker
 from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CONTRACT_VERSION
 
 
-def test_runtime_version_is_current_route_contract_audit() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.016.2"
+def test_runtime_version_is_current_cosmetic_health_check_spacing_hotfix() -> None:
+    assert PACKAGE_VERSION == "v14.8.5.016.3"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "route-contract-audit"
+    assert PACKAGE_RELEASE_NAME == "cosmetic-health-check-spacing-hotfix"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:
