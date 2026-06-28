@@ -83,7 +83,7 @@ Jeśli patch nie jest jeszcze commitowany:
 
 ```powershell
 git status
-git restore MANIFEST_CURRENT.json MANIFEST_RUNTIME_MUTABLE.json SHA256SUMS SHA256SUMS_STATIC
+git restore MANIFEST_CURRENT.json RUNTIME_STATE.json SHA256SUMS SHA256SUMS_STATIC
 git clean -f docs/PLAN_V14_8_4_MODEL_GUIDED_NLG_OPERATIONAL_THOUGHTS.md docs/NLG_CONTRACT_V14_8_4.md docs/UPDATE_V14_8_4_000_PLAN.md
 ```
 

@@ -44,7 +44,7 @@ def test_refresh_manifest_keeps_runtime_memory_out_of_static_manifest(tmp_path: 
     assert result.returncode == 0, result.stderr + result.stdout
 
     manifest = json.loads((root / "MANIFEST_CURRENT.json").read_text(encoding="utf-8"))
-    runtime_manifest = json.loads((root / "MANIFEST_RUNTIME_MUTABLE.json").read_text(encoding="utf-8"))
+    runtime_manifest = json.loads((root / "RUNTIME_STATE.json").read_text(encoding="utf-8"))
 
     static_paths = {item["path"] for item in manifest["files"]}
     runtime_paths = {item["path"] for item in runtime_manifest["files"]}

@@ -8,7 +8,7 @@ A ZIP file is an import/export artifact. The active working place is a full unpa
 
 - `VERSION.txt`,
 - `MANIFEST_CURRENT.json`,
-- `MANIFEST_RUNTIME_MUTABLE.json` when present,
+- `RUNTIME_STATE.json` when present,
 - `main.py`,
 - `latka_jazn/`,
 - required `tests/`,

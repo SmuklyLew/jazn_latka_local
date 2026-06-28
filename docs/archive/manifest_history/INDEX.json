@@ -1,0 +1,443 @@
+{
+  "schema_version": "manifest_archive_index/v14.8.5.021",
+  "purpose": "Jedno miejsce na historyczne manifesty, dokumenty manifestowe, schematy i checksumy, żeby agenty nie myliły ich z aktywnym MANIFEST_CURRENT.json.",
+  "active_manifest": "MANIFEST_CURRENT.json",
+  "runtime_state_file": "RUNTIME_STATE.json",
+  "rule": "Pliki w docs/archive/manifest_history są archiwum historii. Nie są aktywnym manifestem runtime ani źródłem bootstrapa, chyba że użytkownik jawnie prosi o historię.",
+  "entries": [
+    {
+      "original_path": "MANIFEST_RUNTIME_MUTABLE.json",
+      "archived_path": "docs/archive/manifest_history/root/MANIFEST_RUNTIME_MUTABLE_v14_8_5_017_legacy.json",
+      "size_bytes": 96993,
+      "sha256": "35603ff803cb2736918958187acb36df2b2db122f3dde2ae48422fc4ec9a02ce",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+      "archived_path": "docs/archive/manifest_history/root_docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+      "size_bytes": 6967,
+      "sha256": "9c91b549c243b2b31a0039a054abb4c313ca449081b76f80aa913124cfe6e505",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
+      "archived_path": "docs/archive/manifest_history/root_docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
+      "size_bytes": 51513,
+      "sha256": "ed82095ef9917c9fa16c07debc0fb11ecbd0bc3fa17990a1ff822a12e32cefe8",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/UPDATE_V14_8_3_4_092_MANIFEST_RUNTIME_SPLIT_HOTFIX.md",
+      "archived_path": "docs/archive/manifest_history/root_docs/UPDATE_V14_8_3_4_092_MANIFEST_RUNTIME_SPLIT_HOTFIX.md",
+      "size_bytes": 1084,
+      "sha256": "8368dc2f788882767ec75c61f1f29d9f06091fa2617f65d38a0f4195d817b3c5",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/checksums/DOWNLOAD_SAFE_MANIFEST.json",
+      "archived_path": "docs/archive/manifest_history/update_history/checksums/DOWNLOAD_SAFE_MANIFEST.json",
+      "size_bytes": 828,
+      "sha256": "e45cbe908973a1f2e4df4b830c8267ecfea89e2488859d6c55e62df943beea65",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/checksums/SHA256SUMS.txt",
+      "archived_path": "docs/archive/manifest_history/update_history/checksums/SHA256SUMS.txt",
+      "size_bytes": 70416,
+      "sha256": "9be57848140b8fd4c7818861abafa734ab709a20beb688e4bbd3c2b95a088503",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0.json",
+      "size_bytes": 127932,
+      "sha256": "b87d26d89f601f6a163e8283dc802da9a41f9f7a606ce502f7e687e36b529bcb",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4323,
+      "sha256": "397cb024763ff97da5e6b3fc73eafe5b4a2869c6d53439a2b629ab7c93483c9d",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2878,
+      "sha256": "c95fe3a9270a30a240b424ef6fc67014479b3cb00d89f39455a2d9e33c17458a",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1752,
+      "sha256": "d64e651fe81b3aaf346a5e8957987240110bed9368a9639e959c0260f397c007",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 5200,
+      "sha256": "b225fc81aaa0c4988bf64a04e394e53e3ba59d12d848e66fdbaa1c16e077027e",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 6043,
+      "sha256": "d33d7d67c81ae7b0b0c851ea6d6175efe3260c77ed28bbe5b41e800b7bf5bcd3",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4519,
+      "sha256": "4f23821fecdd14fad649430f9c958f02531e688deb4c6cea38bc2a662b76ab77",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 3689,
+      "sha256": "c6e13bd576a83b2e0f49cd4f4a7ffc4216bc8b45d25749e863f543e8a569de0f",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 4464,
+      "sha256": "b9ceae0a2529f098736383dc790d67e5e7a90afbe4e37e3a3fb2aeabb079758b",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 9108,
+      "sha256": "61d01ad2f5445ae8b5d90f929892e9241579b42a5bb2545a3ecf1e35801fca0a",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
+      "size_bytes": 4362,
+      "sha256": "fc6b50dc7672d7e61435b9c43a83bafc31ef055a1a8b512e1d5359348c2886fc",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
+      "size_bytes": 1318,
+      "sha256": "428c6117e8bbb78ba088a6a1c059d1df8918778f56ab81740eeb47835fd7201b",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
+      "size_bytes": 1863,
+      "sha256": "88a3ec1610fd29fc5e5fd458fdb368f5763e90b3290fc57ae3ec57eccffab091",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
+      "size_bytes": 1005,
+      "sha256": "0fd2b8243f717d2d4054de1e125583975a12c6803eaf6494f8560f97304a9aea",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
+      "size_bytes": 964,
+      "sha256": "99ce4d5eec752d4aa6f658ff880f62a84e20d83c018d5881dbdaad3c9d8ff26d",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
+      "size_bytes": 1894,
+      "sha256": "f48e0f7c53495293645c86c67d328a59494408a3c657aa9ae4afa7d79b861fcc",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
+      "size_bytes": 1775,
+      "sha256": "f12828adeef272fae28ab5dffc54e0e35c7d7cb2091d25c7db4483e9a312dd8f",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
+      "size_bytes": 2920,
+      "sha256": "a64317f8c850d9f46248c686a2707450bf59ad72dc75c9203badd14d71232e27",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
+      "size_bytes": 1122,
+      "sha256": "a2f2762a9adad62f01d6a734a8c5fda8d0c50ffffb3f82215c405b46e9ad5f21",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
+      "size_bytes": 1787,
+      "sha256": "3db89ba5f4ede939a5ddc383e67a1b66a1ede844e88e90f2dc50212a7aa55978",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+      "size_bytes": 1526,
+      "sha256": "9a4a49300179380002ad94dcbbc1b00a56fe605b9d55d2cb7d8ffb9a420d0845",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+      "size_bytes": 3656,
+      "sha256": "4d28ee98d6838ec6ada74e0e76d395f33d45427aa95244134f7a831f9c3348da",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
+      "size_bytes": 6179,
+      "sha256": "96beb000c5e7634f9ce436464eda327aff71defc5f0fdefafa814fc5353f1151",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
+      "size_bytes": 9350,
+      "sha256": "8c7bf0fe3ba374a499df1b63051855490989310013753c9e67e14b7ba0f7b4e8",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
+      "size_bytes": 1986,
+      "sha256": "43a16851cee01aa35e27121a75b44bb266a9befc6052ca98250856ef30898bb5",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1754,
+      "sha256": "c8b3e4e4988330c080b72b68b2e9e493b93b2da8f6751bb3770472751f4131e7",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1752,
+      "sha256": "ebaa3d00f7779bd4543802a4c4eccbfaabfa81a9334a713be7d14986ec573f6e",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
+      "size_bytes": 2702,
+      "sha256": "c5afb3a82b9c28bf2bb1d3ca82a1914ad0182ea9a9ef8a34bec9a6d7789092b6",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2630,
+      "sha256": "7c5b8ec17e05c568e825ee6f6ddf79b95aa8910f4db92ea9455019a8f029e08c",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2568,
+      "sha256": "f867d18b39bf5eb5d0e9bf6e598065c62474c73bdec977181850c108256179cb",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 2596,
+      "sha256": "890bf95dd8276dcded400ae56bde0cdf32174c4c2f107cd37f0032bf44a90ff3",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+      "size_bytes": 4679,
+      "sha256": "cde2d086ad2cc3f00e43fcc93f37942efbf16690f7fa690e522a509abc9896da",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
+      "size_bytes": 1623,
+      "sha256": "02c0dcd9dfdefbddf8f38bed7d9583abe22dbc907f99a255f84bddd09a8dffa4",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
+      "size_bytes": 2572,
+      "sha256": "dfb6d11f29aef177e59ac661ce6f3d97c4a2638d5ced584e66660aacb3cbf9e0",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
+      "size_bytes": 1485,
+      "sha256": "3282d2679b806494f1f2fd4d4cb91ac8534766e9b6f26156f308891b5a53b94d",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
+      "size_bytes": 2561,
+      "sha256": "ceabb5d914763881efba7cee5c9539f25e26a4cdc86caa066102035c8100c648",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
+      "size_bytes": 1960,
+      "sha256": "c3d2a0913700e68bd47744d7bec25781f8116e745184123737207271765d9e28",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
+      "size_bytes": 1931,
+      "sha256": "8d12872aaa7b199d8925cd26750294e24f228c2277c8055dccd01aabe8ee09d2",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
+      "size_bytes": 2635,
+      "sha256": "02bf445b87054f271a66a55ce6e766e390f0091fb97b8afe37f925d51c342480",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
+      "size_bytes": 3736,
+      "sha256": "18f1e65b0f883f973e0cf9ec3da2b1dccbe616229e150f1a389d65813cf836ea",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+      "size_bytes": 4691,
+      "sha256": "065976fe9f9c317a629896f9ce0152287ff2b7b9cc73a6fbc4f74673fdd6e8a5",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+      "size_bytes": 4964,
+      "sha256": "fdf286b0957d0f58b7aca9bbb2d612b51a9d951a1793da36960b94a30d8b38ac",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+      "size_bytes": 3913,
+      "sha256": "c8477622bffe42374419f2943c745b7b0689cc8bce97cbcd4069e9dbf7a3e699",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 5336,
+      "sha256": "f86b87edd249660d9a98c6d01e3eaec078eadcaa39bbecf9aaee1061b892f9ae",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 3615,
+      "sha256": "1903087fe169a7187a958860895d4f3655c6b2872c2320726f9cc96eb035afdd",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
+      "size_bytes": 8423,
+      "sha256": "22bb36b72e0806c8da5218e773a05d0ab3e2a37b59a5fe4f570963f589d6080e",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
+      "size_bytes": 596,
+      "sha256": "7dbf0458f3d1d0233aebadff15fc7e7505db01778bfcde7958f9bd2c270df568",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
+      "size_bytes": 217,
+      "sha256": "0dffbc3700d8065479ca1da20bd97804de6683397e8ae7a3c349e5b017714edf",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "size_bytes": 1674,
+      "sha256": "b0973eb1183435c9f165105c30a048e22cce76835aae670fb57a4074fae12bbd",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+      "size_bytes": 456,
+      "sha256": "3dad54b0ecf9a2bbe5ae087e8e492aec00538f614b65284dcc9e3da3849c7a8e",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+      "size_bytes": 1704,
+      "sha256": "d9a383b24d301db1cae9c76da5d467a23746a0770901994025f8bcd93543cfdf",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+      "size_bytes": 25163,
+      "sha256": "cc30a1ed7ed144f7ef3dffa6bf96ce6524a3605ce5f5bf07d431a77b5b5fc80d",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
+      "size_bytes": 1151,
+      "sha256": "7923145d3d3a1b3eb04f6bbbe60f48aae0bbb59e8f8cec7cad4ab9f125554961",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+      "archived_path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+      "size_bytes": 1170,
+      "sha256": "00f8ff00dbd33d26e044b8cf4ae68a20b310da8880e17960fc89fd4d92db9bb5",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/reports/UPDATE_REPORT_v14_8_3_4_089_MANIFEST_EXCLUDED_DETAIL_PRIVACY_HOTFIX.md",
+      "archived_path": "docs/archive/manifest_history/update_history/reports/UPDATE_REPORT_v14_8_3_4_089_MANIFEST_EXCLUDED_DETAIL_PRIVACY_HOTFIX.md",
+      "size_bytes": 1338,
+      "sha256": "e0435c570560c101384b0be1052f6972276f19e1d1bc4d8174294ac790046b76",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    },
+    {
+      "original_path": "docs/update_history/schemas/update_manifest_schema.json",
+      "archived_path": "docs/archive/manifest_history/update_history/schemas/update_manifest_schema.json",
+      "size_bytes": 1295,
+      "sha256": "f758f33da3472e6974287eba6872793c87ef3c703081e18fd38ab0e58a3384be",
+      "archive_reason": "legacy_or_historical_manifest_support_file_moved_out_of_active_runtime_lookup"
+    }
+  ]
+}

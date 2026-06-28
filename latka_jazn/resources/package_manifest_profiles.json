@@ -1,17 +1,23 @@
 {
-  "schema_version": "package_manifest_profiles/v14.8.2.4",
+  "schema_version": "package_manifest_profiles/v14.8.5.021",
   "profiles": {
     "static_package": {
       "description": "source code, docs, tests, config, resources; stable SHA after export",
       "include": [
+        "AGENTS.md",
+        "AGENTS.chatgpt.md",
+        "AGENTS.codex.md",
+        "AGENTS.lmstudio.md",
         "latka_jazn/**",
         "tests/**",
+        "tools/**",
         "docs/**",
         "README.md",
         "START_CHATGPT_FROM_HERE.txt",
         "VERSION.txt",
         "pyproject.toml",
-        "main.py"
+        "main.py",
+        "MANIFEST_CURRENT.json"
       ]
     },
     "runtime_dynamic": {
@@ -43,9 +49,39 @@
         "*.sqlite3-wal",
         "*.sqlite3-shm"
       ]
+    },
+    "active_manifest": {
+      "description": "single active static snapshot manifest",
+      "include": [
+        "MANIFEST_CURRENT.json"
+      ],
+      "exclude": [
+        "docs/archive/manifest_history/**",
+        "RUNTIME_STATE.json"
+      ]
+    },
+    "runtime_state": {
+      "description": "mutable runtime/private-memory state snapshot; not a package manifest",
+      "include": [
+        "RUNTIME_STATE.json",
+        "workspace_runtime/**",
+        "memory/raw/**",
+        "memory/processed_chats/**",
+        "memory/sqlite/**"
+      ],
+      "exclude": [
+        "MANIFEST_CURRENT.json"
+      ]
+    },
+    "archived_manifest_history": {
+      "description": "legacy historical manifests preserved for audit only",
+      "include": [
+        "docs/archive/manifest_history/**"
+      ],
+      "active_for_bootstrap": false
     }
   },
-  "truth_boundary": "Static manifest integrity is separate from live runtime and memory files. v14.8.2.4 preserves history and marks the active package as logic-routing-memory-grounding repair.",
+  "truth_boundary": "Static package manifest, runtime state and archived manifest history are separated so agents do not confuse old manifests with active runtime.",
   "active_version": "v14.8.2.4-logic-routing-memory-grounding-repair",
   "current_version": "v14.8.2.4-logic-routing-memory-grounding-repair"
 }

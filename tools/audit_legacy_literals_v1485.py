@@ -43,7 +43,7 @@ SCAN_ROOTS = (
     "README.md",
     "START_CHATGPT_FROM_HERE.txt",
     "MANIFEST_CURRENT.json",
-    "MANIFEST_RUNTIME_MUTABLE.json",
+    "RUNTIME_STATE.json",
     "latka_jazn",
     "tests",
     "tools",
@@ -75,7 +75,7 @@ ACTIVE_CONTROL_FILES = {
     "README.md",
     "START_CHATGPT_FROM_HERE.txt",
     "MANIFEST_CURRENT.json",
-    "MANIFEST_RUNTIME_MUTABLE.json",
+    "RUNTIME_STATE.json",
     "latka_jazn/__init__.py",
     "latka_jazn/config.py",
 }
@@ -130,7 +130,7 @@ def classify(path: Path, root: Path, literal: str, line: str = "") -> str:
         return "resource_history_allowed"
     if rel.startswith("tests/"):
         return "test_should_update"
-    if rel.startswith("MANIFEST_") or rel in {"MANIFEST_CURRENT.json", "MANIFEST_RUNTIME_MUTABLE.json"}:
+    if rel.startswith("MANIFEST_") or rel in {"MANIFEST_CURRENT.json", "RUNTIME_STATE.json"}:
         return "manifest_mismatch"
     if rel in ACTIVE_CONTROL_FILES or rel in ACTIVE_RUNTIME_FILES:
         return "active_runtime_blocker"

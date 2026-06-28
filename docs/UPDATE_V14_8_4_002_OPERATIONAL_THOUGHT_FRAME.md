@@ -55,7 +55,7 @@ py main.py --active-cache-status
 ## Rollback
 
 ```powershell
-git restore --staged latka_jazn/core/operational_thought_frame.py tests/test_v1484_operational_thought_frame.py docs/UPDATE_V14_8_4_002_OPERATIONAL_THOUGHT_FRAME.md MANIFEST_CURRENT.json MANIFEST_RUNTIME_MUTABLE.json
-git restore MANIFEST_CURRENT.json MANIFEST_RUNTIME_MUTABLE.json
+git restore --staged latka_jazn/core/operational_thought_frame.py tests/test_v1484_operational_thought_frame.py docs/UPDATE_V14_8_4_002_OPERATIONAL_THOUGHT_FRAME.md MANIFEST_CURRENT.json RUNTIME_STATE.json
+git restore MANIFEST_CURRENT.json RUNTIME_STATE.json
 git clean -fd -- latka_jazn/core/operational_thought_frame.py tests/test_v1484_operational_thought_frame.py docs/UPDATE_V14_8_4_002_OPERATIONAL_THOUGHT_FRAME.md
 ```
