@@ -30,6 +30,7 @@ from latka_jazn.core.engine import JaznEngine
 from latka_jazn.core.memory_search_planner import MemorySearchPlanner
 from latka_jazn.core.runtime_chat import run_persistent_chat
 from latka_jazn.core.runtime_session import JaznRuntimeSession
+from latka_jazn.core.runtime_truth_gate import apply_runtime_truth_gate
 from latka_jazn.memory.raw_memory_status import RawMemoryInspector
 from latka_jazn.memory.normalization_sidecar import MemoryNormalizationSidecar
 from latka_jazn.memory.conversation_archive import ConversationArchiveStore
@@ -705,7 +706,7 @@ def main(argv: list[str] | None = None) -> int:
                     "terminal_mode": "compact" if ns.runtime_preview else "full_dev_payload",
                 },
             )
-            envelope_dict = envelope.to_dict()
+            envelope_dict, runtime_truth_gate = apply_runtime_truth_gate(envelope.to_dict())
             cognitive_frame = envelope_dict.get("cognitive_frame") or {}
             runtime_text = envelope_dict.get("final_visible_text") or ""
             final_contract = envelope_dict.get("final_response_contract") or {}
@@ -718,6 +719,7 @@ def main(argv: list[str] | None = None) -> int:
                 "runtime_version": engine.config.version,
                 "mode": "diagnostic_dev_preview_full_payload_single_process_turn_not_background_daemon",
                 "turn_trace": envelope_dict.get("trace"),
+                "final_visible_text": runtime_text,
                 "runtime_text": runtime_text,
                 "fallback_detected": any(
                     signature in runtime_text
@@ -737,6 +739,9 @@ def main(argv: list[str] | None = None) -> int:
                 "dialogue_state": envelope_dict.get("dialogue_state"),
                 "turn_route_trace": route_trace,
                 "final_response_contract": envelope_dict.get("final_response_contract"),
+                "normal_response_blocked": envelope_dict.get("normal_response_blocked"),
+                "runtime_response_status": envelope_dict.get("runtime_response_status"),
+                "runtime_truth_gate": runtime_truth_gate,
                 "cognitive_turn_envelope": envelope_dict,
                 "cognitive_frame": cognitive_frame,
                 "visible_runtime_preview_contract": {
@@ -764,6 +769,7 @@ def main(argv: list[str] | None = None) -> int:
                 "diagnostic_request": dialogue_classifier.get("diagnostic_request"),
                 "fallback_classification": final_contract.get("fallback_classification"),
                 "runtime_answer_quality": final_contract.get("runtime_answer_quality"),
+                "runtime_truth_gate": runtime_truth_gate,
                 "timestamp_trusted": integrity.get("timestamp_trusted") if integrity else final_contract.get("timestamp_trusted"),
                 "final_visible_integrity_valid": integrity.get("valid") if integrity else None,
                 "normal_response_blocked": envelope_dict.get("normal_response_blocked"),
@@ -839,7 +845,8 @@ def main(argv: list[str] | None = None) -> int:
                 print(engine.handle_user_message(text, client_context={"client": "cli_direct_debug", "debug_direct": True, "lifecycle": "one_shot"}))
             else:
                 envelope = engine.process_turn(text, client_context={"client": "cli_direct_conversation", "debug_direct": False, "lifecycle": "one_shot", "session_id": ns.session_id, "no_carryover": ns.no_carryover})
-                print(envelope.final_visible_text or envelope.final_response_contract.get("final_visible_text", ""))
+                envelope_dict, _runtime_truth_gate = apply_runtime_truth_gate(envelope.to_dict())
+                print(envelope_dict.get("final_visible_text", ""))
         else:
             print(engine.bootstrap())
     finally:

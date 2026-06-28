@@ -18,7 +18,10 @@ def _fake_envelope_dict() -> dict:
             "runtime_answer_quality": "topic_aligned",
             "final_visible_integrity": {
                 "valid": True,
+                "timestamp_present": True,
+                "timestamp_source": "test_network_time",
                 "timestamp_trusted": True,
+                "timestamp_freshness_ok": True,
             },
         },
         "cognitive_frame": {
@@ -80,6 +83,8 @@ def test_runtime_preview_stdout_is_compact_not_full_cognitive_dump(monkeypatch, 
     assert payload["runtime_route"] == "runtime_health_check_after_update"
     assert payload["primary_intent"] == "runtime_health_check_after_update"
     assert payload["diagnostic_request"] is True
+    assert payload["runtime_truth_gate"]["active_state"] == "active_trusted"
+    assert payload["runtime_truth_gate"]["ok"] is True
     assert payload["full_payload_written_to"] is None
     assert "cognitive_turn_envelope" not in payload
     assert "cognitive_frame" not in payload
