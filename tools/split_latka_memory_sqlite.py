@@ -427,7 +427,7 @@ def build_table_shards(
         batch = []
 
     def finish_current() -> None:
-        nonlocal con, path, shard_id, row_count, batch
+        nonlocal con, batch
         if con is None or path is None:
             return
         if batch:
@@ -561,7 +561,7 @@ def build_fts_shards(
             fts_batch = []
 
     def finish_current() -> None:
-        nonlocal con, path, shard_id, row_count
+        nonlocal con
         if con is None or path is None:
             return
         flush()
