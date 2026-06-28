@@ -53,8 +53,9 @@ def chat_gpt_contract() -> ChatCommandContract:
         truth_boundary=(
             "--chat-gpt jest mostem dla aplikacji ChatGPT/copy-paste/JSONL. "
             "Nie wymaga OPENAI_API_KEY i nie wykonuje żądań do OpenAI API. "
-            "Domyślnie zwraca pełny pakiet JSONL; --chat-gpt-final-only albo --chat-gpt --final-only "
-            "wypisuje tylko final_visible_text dla czytelnego terminala bez zmiany routingu."
+            "Domyślnie zwraca pełny pakiet JSONL. "
+            "Tryby czytelnego terminala to: `--chat-gpt-final-only` albo `--chat-gpt --final-only`. "
+            "Oba wypisują tylko final_visible_text bez zmiany routingu."
         ),
     )
 
