@@ -7,6 +7,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from .base import ModelAdapterRequest, ModelAdapterResponse
+from .adapter_contract import AdapterContract, describe_with_contract
 from .openai_state_tracker import OpenAIStateTracker
 
 class OpenaiResponsesAdapter:
@@ -22,16 +23,39 @@ class OpenaiResponsesAdapter:
 
     def describe(self) -> dict:
         configured = bool(self.api_key and self.model)
-        return {
-            "schema_version": "openai_responses_adapter/v14.8.2.4",
-            "name": self.name,
-            "status": "configured" if configured else "not_configured",
-            "model": self.model,
-            "api_base": self.api_base,
-            "state_tracker": "enabled" if self.state_tracker else "disabled",
-            "conversation_state_contract": "previous_response_id jest ciągłością OpenAI Responses API, nie dowodem aktywnej Jaźni",
-            "truth_boundary": "Model generuje język z kontekstu przekazanego przez Jaźń. Nie jest źródłem jej tożsamości ani pamięci.",
-        }
+        failure_reason = None
+        if not self.api_key:
+            failure_reason = "openai_api_key_missing"
+        elif not self.model:
+            failure_reason = "model_name_missing"
+        contract = AdapterContract(
+            adapter_id=self.name,
+            provider="openai",
+            kind="remote_responses_api",
+            available=configured,
+            model_name=self.model or None,
+            endpoint=self.api_base,
+            can_generate_model_guided_speech=configured,
+            failure_reason=failure_reason,
+            requires_api_key=True,
+            truth_boundary=(
+                "OpenAI jest zewnętrznym backendem generowania języka z kontekstu przekazanego przez Jaźń. "
+                "Nie jest źródłem jej tożsamości ani pamięci; status nie wykonuje live probe endpointu."
+            ),
+        )
+        return describe_with_contract(
+            contract=contract,
+            legacy={
+                "name": self.name,
+                "status": "configured" if configured else "not_configured",
+                "model": self.model,
+                "api_base": self.api_base,
+                "state_tracker": "enabled" if self.state_tracker else "disabled",
+                "conversation_state_contract": (
+                    "previous_response_id jest ciągłością OpenAI Responses API, nie dowodem aktywnej Jaźni"
+                ),
+            },
+        )
 
     def generate(self, request: ModelAdapterRequest) -> ModelAdapterResponse:
         if not self.api_key or not self.model:

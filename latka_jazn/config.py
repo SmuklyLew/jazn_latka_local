@@ -99,6 +99,8 @@ class JaznConfig:
     model_max_output_tokens: int = field(default_factory=lambda: _env_int("JAZN_MODEL_MAX_OUTPUT_TOKENS", 800))
     local_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LOCAL_MODEL_NAME", "").strip())
     local_model_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_LOCAL_MODEL_API_BASE", "http://127.0.0.1:11434").strip().rstrip("/"))
+    llama_cpp_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LLAMA_CPP_MODEL_NAME", "").strip())
+    llama_cpp_model_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_LLAMA_CPP_API_BASE", "http://127.0.0.1:8080/v1").strip().rstrip("/"))
 
     @property
     def runtime_workspace_dir(self) -> Path:
