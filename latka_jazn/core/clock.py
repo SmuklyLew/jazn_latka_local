@@ -241,20 +241,10 @@ class WarsawClock:
                 dt = dt.replace(tzinfo=timezone.utc)
             freshness_seconds = abs(int((datetime.now(timezone.utc) - dt.astimezone(timezone.utc)).total_seconds()))
             if freshness_seconds > max_age_seconds:
-                return TimeSample(
-                    datetime.now(self.tz),
-                    "injected_trusted_time_stale",
-                    False,
-                    error=f"injected trusted time is stale: {freshness_seconds}s > {max_age_seconds}s",
-                )
+                return None
             return TimeSample(dt.astimezone(self.tz), source, True)
-        except Exception as exc:
-            return TimeSample(
-                datetime.now(self.tz),
-                "injected_trusted_time_invalid",
-                False,
-                error=f"{type(exc).__name__}: {exc}",
-            )
+        except Exception:
+            return None
 
     def _injected_time_max_age_seconds(self) -> int | None:
         raw = os.environ.get("JAZN_TRUSTED_TIME_MAX_AGE_SECONDS", "").strip()
