@@ -59,7 +59,7 @@ class CapabilityStatusHandler:
             route = "internet_access_status"
         elif intent in {"runtime_health_check", "runtime_health_check_after_update"}:
             body = (
-                "Działam w aktywnym folderze runtime. Krótki health-check: "
+                "Działam w aktywnym folderze runtime. Krótki raport health-check: "
                 f"runtime_version={status.get('runtime_version')}, active_cache_version={active_cache.get('version')}, "
                 f"active_root={active_cache.get('active_root') or status.get('active_root')}, start_file={status.get('start_file')}, "
                 f"active_database={status.get('active_database')}, active_runtime_write_database={status.get('active_runtime_write_database')}, "

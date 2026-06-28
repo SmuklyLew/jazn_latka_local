@@ -8,7 +8,7 @@ from latka_jazn.core.route_registry import RouteRegistry
 
 
 class _FakeConfig:
-    version = "v14.8.5.016.2"
+    version = "v14.8.5.016.3"
     root = "/tmp/fake-jazn"
     memory_db_path = "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3"
 
@@ -47,7 +47,11 @@ def test_capability_status_handler_answers_plain_healthcheck_directly(monkeypatc
     result = CapabilityStatusHandler().handle("Działasz?", {"intent": "runtime_health_check", "config": _FakeConfig()})
     body = result.body.lower()
     assert result.route == "runtime_health_check"
-    assert "runtime_version=v14.8.5.016.2" in result.body
+    assert "runtime_version=v14.8.5.016.3" in result.body
     assert "active_database" in body
     assert "cache_miss_reasons" in body
     assert "granica prawdy" in body
+
+    assert "krótki raport health-check" in body
+    assert "krótkihealth-check" not in body
+    assert "krótkiraport" not in body
