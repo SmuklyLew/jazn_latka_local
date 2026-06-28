@@ -26,10 +26,30 @@ WAŻNE:
 
 Przykłady:
 
-    py split_zip_sha.py "D:\\.AI\\jazn_v14.8.3.1" --part-size-mb 500
-
     py split_zip_sha.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --name jazn_latka_v14.8.5.017 --part-size-mb 480 --force
 
+    py .\split_zip_sha.py "D:\.AI\jazn_latka_local" `
+  --out "D:\Desktop\pakiet" `
+  --name "jazn_latka_version" `
+  --part-size-mb 450 `
+  --compresslevel 6 `
+  --force `
+  --exclude ".git/*" `
+  --exclude ".vscode/*" `
+  --exclude ".codex/.codex/log/*" `
+  --exclude ".pytest_cache/*" `
+  --exclude ".pytest-tmp/*" `
+  --exclude ".mypy_cache/*" `
+  --exclude ".ruff_cache/*" `
+  --exclude "__pycache__/*" `
+  --exclude "*.pyc" `
+  --exclude "*.tmp" `
+  --exclude "*.partial" `
+  --exclude "*.tmp_extract_part" `
+  --exclude "exports/*" `
+  --exclude "reports/*" `
+  --exclude "*.patch"
+    
 Konfiguracja bez argumentów CLI jest niżej w sekcji USTAWIENIA DOMYŚLNE.
 """
 
