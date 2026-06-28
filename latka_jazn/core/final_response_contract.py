@@ -216,7 +216,7 @@ class FinalResponseContract:
         degraded_allowed = bool(contract.get("allow_degraded_local_visible", TIMESTAMP_ALLOW_DEGRADED_LOCAL_VISIBLE))
         trust_ok = True if trusted is None and not contract else bool(trusted) or not trust_required
         degraded_visible_ok = bool(degraded_allowed and has_timestamp and freshness_ok)
-        valid = bool(has_timestamp and freshness_ok and (trust_ok or degraded_visible_ok))
+        valid = bool(has_timestamp and freshness_ok and trust_ok)
         return {
             "schema_version": schema_version("final_response_contract_validation"),
             "timestamp_policy": timestamp_runtime_policy(),
