@@ -6,9 +6,11 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
+import latka_jazn.core.chat_command_contract as chat_command_module
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.chat_command_contract import (
     apply_openai_cli_settings,
@@ -31,6 +33,7 @@ def test_chat_command_contracts_separate_chatgpt_and_openai() -> None:
     assert openai["command"] == "--chat-open-ai"
     assert openai["requires_api_key"] is True
     assert openai["uses_openai_api"] is True
+    assert "final_visible_text" in chatgpt["output_modes"]
 
 
 @pytest.mark.parametrize(
@@ -105,3 +108,62 @@ def test_bridge_discovery_cli_lists_three_modes() -> None:
     assert payload["local_chat"]["command"].startswith("python main.py --chat")
     assert payload["chatgpt_bridge"]["requires_api_key"] is False
     assert payload["openai_bridge"]["requires_api_key"] is True
+
+
+def _install_fake_runtime_session(monkeypatch, final_text: str = "[czas] Widoczna odpowiedź Łatki.") -> None:
+    class FakeRuntimeSession:
+        def __init__(self, config, session_id=None, no_carryover=False, source_client="test") -> None:
+            self.config = config
+            self.state = SimpleNamespace(session_id=session_id or "fake-session")
+            self.closed = False
+
+        def process_user_text(self, user_text: str, *, client: str, lifecycle: str, session_id_source: str, process_reused: bool) -> dict:
+            return {
+                "ok": True,
+                "final_visible_text": final_text,
+                "final_response_contract": {"final_visible_text": final_text},
+                "exact_runtime_text": final_text,
+            }
+
+        def close(self) -> None:
+            self.closed = True
+
+    monkeypatch.setattr(chat_command_module, "JaznRuntimeSession", FakeRuntimeSession)
+
+
+def test_chat_gpt_default_output_stays_jsonl(monkeypatch) -> None:
+    _install_fake_runtime_session(monkeypatch)
+    stdout = io.StringIO()
+
+    rc = chat_command_module.run_jsonl_chat_bridge(
+        config=JaznConfig(root=ROOT),
+        session_id="unit-jsonl",
+        no_carryover=True,
+        command="--chat-gpt",
+        stdin=io.StringIO("hej\n"),
+        stdout=stdout,
+    )
+
+    assert rc == 0
+    payload = json.loads(stdout.getvalue())
+    assert payload["final_visible_text"] == "[czas] Widoczna odpowiedź Łatki."
+    assert payload["chat_bridge"]["command"] == "--chat-gpt"
+
+
+def test_chat_gpt_final_only_outputs_only_final_visible_text(monkeypatch) -> None:
+    _install_fake_runtime_session(monkeypatch)
+    stdout = io.StringIO()
+
+    rc = chat_command_module.run_jsonl_chat_bridge(
+        config=JaznConfig(root=ROOT),
+        session_id="unit-final-only",
+        no_carryover=True,
+        command="--chat-gpt",
+        stdin=io.StringIO("hej\n"),
+        stdout=stdout,
+        output_mode="final_visible_text",
+    )
+
+    assert rc == 0
+    assert stdout.getvalue() == "[czas] Widoczna odpowiedź Łatki.\n"
+    assert not stdout.getvalue().lstrip().startswith("{")

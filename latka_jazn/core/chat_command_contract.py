@@ -4,7 +4,7 @@ import json
 import os
 import sys
 from dataclasses import asdict, dataclass
-from typing import Any, TextIO
+from typing import Any, Literal, TextIO
 
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.runtime_session import JaznRuntimeSession
@@ -13,6 +13,8 @@ from latka_jazn.version import schema_version
 ACCEPTED_CHATGPT_INPUT_FIELDS = ("message", "text", "user_text", "content", "prompt")
 CHATGPT_BRIDGE_PROTOCOL = schema_version("chatgpt_bridge_jsonl")
 CHAT_OPENAI_PROTOCOL = schema_version("chat_open_ai_jsonl")
+CHAT_BRIDGE_OUTPUT_MODES = ("jsonl", "final_visible_text")
+BridgeOutputMode = Literal["jsonl", "final_visible_text"]
 
 
 @dataclass(slots=True)
@@ -33,6 +35,7 @@ class ChatCommandContract:
         "json_object.prompt",
         "json_object.messages[].content",
     )
+    output_modes: tuple[str, ...] = CHAT_BRIDGE_OUTPUT_MODES
     truth_boundary: str = ""
 
     def to_dict(self) -> dict[str, Any]:
@@ -49,7 +52,9 @@ def chat_gpt_contract() -> ChatCommandContract:
         engine_reused_between_turns=True,
         truth_boundary=(
             "--chat-gpt jest mostem dla aplikacji ChatGPT/copy-paste/JSONL. "
-            "Nie wymaga OPENAI_API_KEY i nie wykonuje żądań do OpenAI API; zwraca pakiet runtime/final_visible_text dla tej warstwy."
+            "Nie wymaga OPENAI_API_KEY i nie wykonuje żądań do OpenAI API. "
+            "Domyślnie zwraca pełny pakiet JSONL; --chat-gpt-final-only albo --chat-gpt --final-only "
+            "wypisuje tylko final_visible_text dla czytelnego terminala bez zmiany routingu."
         ),
     )
 
@@ -136,6 +141,35 @@ def apply_openai_cli_settings(
     return config
 
 
+def extract_final_visible_text_from_result(payload: dict[str, Any]) -> str:
+    """Return the visible Łatka reply from a chat bridge payload.
+
+    The JSONL protocol remains the default source of truth. This helper is only
+    for the human-readable --chat-gpt-final-only rendering mode.
+    """
+    final: Any = payload.get("final_visible_text")
+    final_contract = payload.get("final_response_contract")
+    if final is None and isinstance(final_contract, dict):
+        final = final_contract.get("final_visible_text")
+    provenance = payload.get("runtime_provenance")
+    if final is None and isinstance(provenance, dict):
+        final = provenance.get("visible_answer_text")
+    if final is None:
+        final = payload.get("exact_runtime_text")
+    if final is None and payload.get("error"):
+        error_code = str(payload.get("error_code") or "chat_bridge_error")
+        final = f"[{error_code}] {payload.get('error')}"
+    return str(final or "").strip()
+
+
+def write_chat_bridge_payload(stdout: TextIO, payload: dict[str, Any], *, output_mode: BridgeOutputMode = "jsonl") -> None:
+    if output_mode == "final_visible_text":
+        stdout.write(extract_final_visible_text_from_result(payload) + "\n")
+    else:
+        stdout.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
+    stdout.flush()
+
+
 def run_jsonl_chat_bridge(
     *,
     config: JaznConfig,
@@ -145,9 +179,12 @@ def run_jsonl_chat_bridge(
     stdin: TextIO | None = None,
     stdout: TextIO | None = None,
     require_openai_api_key: bool = False,
+    output_mode: BridgeOutputMode = "jsonl",
 ) -> int:
     stdin = stdin or sys.stdin
     stdout = stdout or sys.stdout
+    if output_mode not in CHAT_BRIDGE_OUTPUT_MODES:
+        raise ValueError(f"unsupported chat bridge output_mode: {output_mode}")
     contract = command_contract(command)
     protocol_version = CHAT_OPENAI_PROTOCOL if command == "--chat-open-ai" else CHATGPT_BRIDGE_PROTOCOL
     default_client = "openai_api_bridge" if command == "--chat-open-ai" else "chatgpt_bridge"
@@ -305,8 +342,7 @@ def run_jsonl_chat_bridge(
             result["chat_command_contract"] = contract
             # v14.8.5.014: most nie może nadpisać blokady runtime truth gate przez ok=True.
             result["ok"] = bool(result.get("ok", True))
-            stdout.write(json.dumps(result, ensure_ascii=False, sort_keys=True) + "\n")
-            stdout.flush()
+            write_chat_bridge_payload(stdout, result, output_mode=output_mode)
     finally:
         for session in sessions.values():
             session.close()
