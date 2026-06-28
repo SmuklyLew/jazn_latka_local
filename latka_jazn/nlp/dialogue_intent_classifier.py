@@ -11,6 +11,7 @@ from latka_jazn.nlp.speech_act_detector import SpeechActDetector
 from latka_jazn.nlp.question_object_detector import QuestionObjectDetector
 from latka_jazn.nlp.creative_material_detector import CreativeMaterialDetector
 from latka_jazn.nlp.source_preservation_detector import SourcePreservationDetector
+from latka_jazn.core.route_contract_matrix import RouteContractMatrix
 from latka_jazn.version import schema_version
 
 DIACRITIC_MAP = str.maketrans("ąćęłńóśźżĄĆĘŁŃÓŚŹŻ", "acelnoszzACELNOSZZ")
@@ -87,6 +88,8 @@ class DialogueIntentClassifier:
         "która jest godzina", "ktora jest godzina", "która jest godzina", "gtora jest godzina",
         "jaka jest godzina", "jaki jest czas", "która godzina", "ktora godzina",
         "podaj godzinę", "podaj godzine", "czas teraz", "godzina teraz",
+        "jaka jest pora", "wiesz jaka jest pora", "wiesz która godzina", "wiesz ktora godzina",
+        "jaki mamy dzień", "jaki mamy dzien",
     )
     MEMORY_EXPERIENCE_FOLLOWUP_TERMS = (
         "przeżycia", "przezycia", "jakieś przeżycia", "jakies przezycia",
@@ -215,6 +218,7 @@ class DialogueIntentClassifier:
 
     def __init__(self) -> None:
         self.ellipsis = EllipsisResolver(); self.calibrator = IntentConfidenceCalibrator(); self.speech = SpeechActDetector(); self.qobj = QuestionObjectDetector(); self.creative = CreativeMaterialDetector(); self.preserve_detector = SourcePreservationDetector()
+        self.route_contract_matrix = RouteContractMatrix()
     @classmethod
     def normalize(cls, text: str) -> str: return re.sub(r"\s+", " ", unicodedata.normalize("NFC", text or "").strip().lower())
     @staticmethod
@@ -272,6 +276,20 @@ class DialogueIntentClassifier:
         has_repair_plan=self._has_any(norm,folded,self.SYSTEM_REPAIR_PLAN_TERMS)
         has_self_architecture_audit=self._has_any(norm,folded,self.SELF_ARCHITECTURE_AUDIT_TERMS)
         has_repetition_bug=self._has_any(norm,folded,self.REPETITION_BUG_TERMS)
+        route_contract_hint = self.route_contract_matrix.classify(norm)
+        if route_contract_hint.primary_intent and route_contract_hint.primary_intent != "ordinary_dialogue":
+            return self._report(
+                norm,
+                folded,
+                route_contract_hint.primary_intent,
+                [f"route_contract_matrix:{route_contract_hint.primary_intent}", *route_contract_hint.evidence],
+                0.94,
+                route_contract_hint.secondary_intents,
+                diag=route_contract_hint.diagnostic_request,
+                ident=route_contract_hint.asks_identity_boundary,
+                speech_act=speech.speech_act,
+                question_object=route_contract_hint.question_object,
+            )
         has_current_time=self._has_any(norm,folded,self.CURRENT_TIME_TERMS)
         has_memory_experience_followup=self._has_any(norm,folded,self.MEMORY_EXPERIENCE_FOLLOWUP_TERMS)
         previous_folded=self.fold(previous_text or "")

@@ -243,6 +243,9 @@ def main(argv: list[str] | None = None) -> int:
 
     config = JaznConfig(root=root) if root else None
 
+    if ns.runtime_preview_output and not (ns.runtime_preview or ns.dev_preview):
+        parser.error("--runtime-preview-output wymaga --runtime-preview albo --dev-preview")
+
     if ns.bridge_discovery:
         cfg = config or JaznConfig()
         print(json.dumps(discover_runtime_bridges(cfg), ensure_ascii=False, indent=2, sort_keys=True))

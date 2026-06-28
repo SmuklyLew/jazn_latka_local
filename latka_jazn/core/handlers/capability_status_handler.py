@@ -21,6 +21,7 @@ class CapabilityStatusHandler:
     handled_intents = (
         "capability_status_question",
         "internet_access_question",
+        "runtime_health_check",
         "runtime_health_check_after_update",
     )
 
@@ -56,7 +57,7 @@ class CapabilityStatusHandler:
             )
             satisfied = ["internet_access", "provider_status", "truth_boundary", "source_origin"]
             route = "internet_access_status"
-        elif intent == "runtime_health_check_after_update":
+        elif intent in {"runtime_health_check", "runtime_health_check_after_update"}:
             body = (
                 "Działam w aktywnym folderze runtime. Krótki health-check: "
                 f"runtime_version={status.get('runtime_version')}, active_cache_version={active_cache.get('version')}, "
@@ -67,11 +68,15 @@ class CapabilityStatusHandler:
                 f"cache_miss_reasons={active_cache.get('cache_miss_reasons') or []}, "
                 f"runtime_write_raw_memory_status={raw_memory.get('status') or 'status_not_available'} "
                 "(kontrolny status małej bazy bieżących zapisów; główny indeks rozmów to conversation_archive/FTS). "
-                "To jest pytanie o stan działania po aktualizacji, nie polecenie wykonania nowej aktualizacji kodu. "
-                "Granica prawdy: tryb `--runtime-preview` jest jednorazowy, a stała rozmowa istnieje lokalnie tylko w `--chat` do EOF albo /exit."
+                + (
+                    "To jest pytanie o stan działania po aktualizacji, nie polecenie wykonania nowej aktualizacji kodu. "
+                    if intent == "runtime_health_check_after_update"
+                    else "To jest pytanie diagnostyczne o działanie runtime, nie zwykła rozmowa ani deklaracja stałego życia w tle. "
+                )
+                + "Granica prawdy: tryb `--runtime-preview` jest jednorazowy, a stała rozmowa istnieje lokalnie tylko w `--chat` do EOF albo /exit."
             )
             satisfied = ["runtime_status", "version", "active_database", "cache_reuse", "memory_status", "truth_boundary"]
-            route = "runtime_health_check_after_update"
+            route = "runtime_health_check_after_update" if intent == "runtime_health_check_after_update" else "runtime_health_check"
         else:
             enabled_cli = ", ".join(name for name, ok in sorted(cli.items()) if ok) or "brak jawnej listy CLI"
             body = (
