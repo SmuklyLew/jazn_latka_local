@@ -86,7 +86,10 @@ def test_codex_session_bridge_send_processes_direct_when_server_missing(tmp_path
     assert bridge.status()["queues"]["processed"] == 1
 
 
-def test_codex_session_bridge_send_keeps_direct_voice_text_clean(tmp_path: Path):
+def test_codex_session_bridge_send_keeps_direct_voice_text_clean(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("JAZN_TRUSTED_TIME_ISO", "2026-06-28T15:59:22+02:00")
+    monkeypatch.setenv("JAZN_TRUSTED_TIME_SOURCE", "chatgpt_web_time_tool")
+    monkeypatch.setenv("JAZN_TRUSTED_TIME_MAX_AGE_SECONDS", "999999999")
     bridge = CodexSessionBridge(tmp_path / "bridge")
 
     response = bridge.send(

@@ -11,7 +11,10 @@ from tools.rebuild_latka_memory_database import Progress, Rebuilder, SourceSpec
 
 
 def test_clock_header_has_timestamp_and_gmt():
-    header = WarsawClock().header()
+    # This unit test validates formatting only.  Do not let it perform a
+    # network time probe: on CI, Windows, or ChatGPT sandboxes that can turn a
+    # deterministic formatting assertion into a slow/hanging integration check.
+    header = WarsawClock().header(network_first=False)
     assert header.startswith("[🕒 ")
     assert "GMT+" in header or "GMT-" in header or "GMT0" in header
     assert "Europe/Warsaw" in header

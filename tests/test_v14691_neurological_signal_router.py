@@ -35,7 +35,7 @@ def test_affective_granularity_keeps_zlecenie_out_of_error_tension() -> None:
 
 
 def test_runtime_workday_message_is_not_debug_correction() -> None:
-    cfg = JaznConfig(version=VERSION, root=Path(__file__).resolve().parents[1], memory_db_name="workspace_runtime/test_v14691_workday.sqlite3")
+    cfg = JaznConfig(version=VERSION, root=Path(__file__).resolve().parents[1], memory_db_name="workspace_runtime/test_v14691_workday.sqlite3", allow_network=False, network_time_first=False)
     engine = JaznEngine(cfg)
     try:
         envelope = engine.process_turn("Za chwilę jadę na kolejne zlecenie, dziś 9 sztuk drzwi.", client_context={"client": "pytest", "lifecycle": "one_shot"})

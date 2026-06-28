@@ -66,7 +66,7 @@ def test_active_tree_has_no_legacy_manifest_files_outside_archive() -> None:
         if rel.startswith((
             ".git/", ".pytest-tmp/", "workspace_runtime/",
             "docs/archive/manifest_history/", "patchs/", "reports/",
-            "memory/",
+            "memory/", "tests_before_",
         )) or "/__pycache__/" in rel or rel.startswith("__pycache__/"):
             continue
         if rel in {

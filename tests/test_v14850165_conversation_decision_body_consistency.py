@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
@@ -13,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 def _run_chat_gpt_healthcheck(tmp_path: Path) -> dict:
     env = os.environ.copy()
     env["PYTHONIOENCODING"] = "utf-8"
+    env["JAZN_TRUSTED_TIME_ISO"] = datetime.now(timezone.utc).isoformat()
+    env["JAZN_TRUSTED_TIME_SOURCE"] = "chatgpt_web_time_tool"
+    env["JAZN_TRUSTED_TIME_MAX_AGE_SECONDS"] = "999999999"
     proc = subprocess.run(
         [
             sys.executable,
