@@ -37,18 +37,9 @@ jobs:
     - name: Test with pytest
       run: |
         pytest \
-<<<<<<< HEAD
           tests/test_archive_workspace_runtime_sqlite.py \
           tests/test_v1485013_chat_command_bridge_contract.py \
           tests/test_v14850164_chat_gpt_final_only_cli.py \
           tests/test_v14850165_conversation_decision_body_consistency.py \
           tests/test_v1485015_runtime_access_contract.py \
           -q
-=======
-  tests/test_archive_workspace_runtime_sqlite.py \
-  tests/test_v1485013_chat_command_bridge_contract.py \
-  tests/test_v14850164_chat_gpt_final_only_cli.py \
-  tests/test_v14850165_conversation_decision_body_consistency.py \
-  tests/test_v1485015_runtime_access_contract.py \
-  -q
->>>>>>> origin/master
