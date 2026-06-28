@@ -27,6 +27,7 @@ from latka_jazn.core.identity_guard import IdentityPerspectiveGuard
 from latka_jazn.core.renderer import ResponseRenderer
 from latka_jazn.core.runtime_status import build_runtime_status
 from latka_jazn.core.startup_contract import build_startup_status, build_startup_summary, build_self_check, build_truth_boundary_check, classify_fallback_text
+from latka_jazn.core.self_knowledge_contract import build_self_knowledge_packet
 from latka_jazn.core.engine import JaznEngine
 from latka_jazn.core.memory_search_planner import MemorySearchPlanner
 from latka_jazn.core.runtime_chat import run_persistent_chat
@@ -157,6 +158,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--network-time-check", action="store_true", dest="network_time_check", help="Jawna diagnostyka czasu sieciowego; zwykĹ‚a rozmowa wymaga trusted network time albo blokuje normalnÄ… odpowiedĹş.")
     parser.add_argument("--sqlite-integrity-audit", action="store_true", dest="sqlite_integrity_audit", help="Jawny deep audit SQLite z integrity_check/foreign_key_check.")
     parser.add_argument("--self-check", action="store_true", dest="self_check", help="PokaĹĽ skrĂłcony self-check runtime i potwierdzenie, ĹĽe procedura startowa jest wĹ‚asnoĹ›ciÄ… systemu JaĹşni.")
+    parser.add_argument("--self-knowledge-status", action="store_true", dest="self_knowledge_status", help="Pokaż operacyjny kontrakt: kim jest Łatka, co może pamiętać, czego się uczy, co umie i jak mówi o emocjach bez zmyślania.")
+    parser.add_argument("--self-knowledge-deep", action="store_true", dest="self_knowledge_deep", help="Z --self-knowledge-status wykonaj głębszą diagnostykę SQLite warstw pamięci.")
     parser.add_argument("--truth-boundary-check", action="store_true", dest="truth_boundary_check", help="PokaĹĽ granicÄ™ prawdy runtime/ChatGPT/pliki/pamiÄ™Ä‡/ZIP.")
     parser.add_argument("--fallback-audit", action="store_true", dest="fallback_audit", help="Zbadaj tekst jako moĹĽliwy fallback, stale route albo kontrakt zamiast odpowiedzi.")
     parser.add_argument("--memory-plan", action="store_true", dest="memory_plan", help="PokaĹĽ plan wyszukiwania pamiÄ™ci i trafienia plikĂłw kanonicznych bez generowania zwykĹ‚ej odpowiedzi.")
@@ -339,6 +342,11 @@ def main(argv: list[str] | None = None) -> int:
     if ns.self_check:
         cfg = config or JaznConfig()
         print(json.dumps(build_self_check(cfg), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.self_knowledge_status:
+        cfg = config or JaznConfig()
+        print(json.dumps({"runtime_version": cfg.version, "self_knowledge_status": build_self_knowledge_packet(cfg, deep=ns.self_knowledge_deep).to_dict()}, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
     if ns.truth_boundary_check:
