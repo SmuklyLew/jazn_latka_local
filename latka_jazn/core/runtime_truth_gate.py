@@ -6,12 +6,15 @@ from typing import Any
 from latka_jazn.version import schema_version
 
 STRICT_RUNTIME_TRUTH_SCHEMA = schema_version("strict_runtime_truth_gate")
-TIMESTAMP_BLOCKING_ERRORS = {
+TIMESTAMP_DEGRADED_ERRORS = {
     "timestamp_untrusted",
     "timestamp_source_not_network",
-    "timestamp_stale_or_missing_freshness",
+}
+TIMESTAMP_BLOCKING_ERRORS = {
     "timestamp_missing",
+    "timestamp_stale_or_missing_freshness",
     "final_visible_integrity_invalid",
+    "final_response_contract_missing",
 }
 NETWORK_SOURCE_PREFIXES = (
     "https://",
@@ -19,6 +22,13 @@ NETWORK_SOURCE_PREFIXES = (
     "network_",
     "ntp_",
     "test_network",
+)
+TRUSTED_EXTERNAL_TIME_SOURCE_PREFIXES = (
+    "chatgpt_web_time_tool",
+    "chatgpt_loader_time",
+    "openai_web_time_tool",
+    "external_trusted_time",
+    "injected_trusted_time",
 )
 LOCAL_OR_UNTRUSTED_SOURCE_MARKERS = (
     "local_fallback",
@@ -45,9 +55,9 @@ class RuntimeTruthGateResult:
     final_visible_integrity_valid: bool | None = None
     untrusted_timestamp_header: str | None = None
     truth_boundary: str = (
-        "Brama prawdy runtime dopuszcza zwykłą odpowiedź Jaźni tylko wtedy, gdy finalny widoczny tekst ma "
-        "timestamp obecny, świeży i zaufany. Lokalny fallback może zostać pokazany wyłącznie jako stan degraded/awaryjny, "
-        "nigdy jako normalna odpowiedź z pełnym statusem ok=true."
+        "Brama prawdy runtime dopuszcza zwykłą odpowiedź Jaźni, gdy finalny widoczny tekst ma "
+        "timestamp obecny i świeży. Czas sieciowy albo zaufany czas wstrzyknięty przez loader daje stan active_trusted. "
+        "Lokalny fallback bez zaufanego źródła daje stan active_degraded, ale nie blokuje samej rozmowy."
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -60,6 +70,8 @@ def _source_is_network(source: Any) -> bool:
         return False
     if any(marker in value for marker in LOCAL_OR_UNTRUSTED_SOURCE_MARKERS):
         return False
+    if value.startswith(TRUSTED_EXTERNAL_TIME_SOURCE_PREFIXES):
+        return True
     return value.startswith(NETWORK_SOURCE_PREFIXES) or "#http-date" in value
 
 
@@ -96,15 +108,18 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
         errors.append("timestamp_source_not_network")
     if not freshness_ok:
         errors.append("timestamp_stale_or_missing_freshness")
-    if not valid:
+    if not valid and (not present or not freshness_ok):
         errors.append("final_visible_integrity_invalid")
 
-    ok = not errors
+    blocking_errors = [error for error in errors if error in TIMESTAMP_BLOCKING_ERRORS]
+    degraded_errors = [error for error in errors if error in TIMESTAMP_DEGRADED_ERRORS]
+    ok = not blocking_errors
+    degraded = bool(degraded_errors) and ok
     return RuntimeTruthGateResult(
         ok=ok,
         normal_response_allowed=ok,
-        active_state="active_trusted" if ok else "active_degraded",
-        error_code=None if ok else "timestamp_network_unavailable",
+        active_state="active_degraded" if degraded else ("active_trusted" if ok else "active_blocked"),
+        error_code="timestamp_degraded" if degraded else (None if ok else "runtime_truth_gate_blocked"),
         errors=errors,
         timestamp_source=str(source) if source is not None else None,
         timestamp_trusted=bool(trusted) if trusted is not None else None,
@@ -154,7 +169,17 @@ def apply_runtime_truth_gate(result: dict[str, Any]) -> tuple[dict[str, Any], di
     else:
         updated.setdefault("ok", True)
         updated["normal_response_blocked"] = False
-        updated["runtime_response_status"] = "normal_response_allowed"
+        if gate.active_state == "active_degraded":
+            updated["timestamp_degraded"] = True
+            updated["runtime_response_status"] = "normal_response_allowed_degraded_timestamp"
+            decision = updated.get("conversation_decision") if isinstance(updated.get("conversation_decision"), dict) else {}
+            decision = dict(decision)
+            decision["runtime_truth_gate"] = gate_payload
+            decision["normal_response_allowed"] = True
+            decision["timestamp_degraded"] = True
+            updated["conversation_decision"] = decision
+        else:
+            updated["runtime_response_status"] = "normal_response_allowed"
     return updated, gate_payload
 
 

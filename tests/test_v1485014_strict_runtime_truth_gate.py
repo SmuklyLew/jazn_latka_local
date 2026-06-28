@@ -41,11 +41,12 @@ def _contract(*, trusted: bool, source: str) -> dict:
     ).to_dict()
 
 
-def test_truth_gate_blocks_untrusted_local_timestamp() -> None:
+def test_truth_gate_allows_degraded_local_timestamp_without_blocking() -> None:
     gate = evaluate_final_response_contract(_contract(trusted=False, source="local_fallback"))
-    assert gate.ok is False
-    assert gate.normal_response_allowed is False
-    assert gate.error_code == "timestamp_network_unavailable"
+    assert gate.ok is True
+    assert gate.normal_response_allowed is True
+    assert gate.active_state == "active_degraded"
+    assert gate.error_code == "timestamp_degraded"
     assert "timestamp_untrusted" in gate.errors
     assert "timestamp_source_not_network" in gate.errors
 
@@ -57,19 +58,21 @@ def test_truth_gate_allows_fresh_network_timestamp() -> None:
     assert gate.errors == []
 
 
-def test_apply_truth_gate_replaces_visible_text_with_degraded_error() -> None:
+def test_apply_truth_gate_marks_degraded_timestamp_without_replacing_visible_text() -> None:
     result = {
         "final_response_contract": _contract(trusted=False, source="local_fallback"),
         "final_visible_text": "normalna odpowiedź nie może przejść",
         "conversation_decision": {},
     }
     updated, payload = apply_runtime_truth_gate(result)
-    assert payload["normal_response_allowed"] is False
-    assert updated["ok"] is False
-    assert updated["error_code"] == "timestamp_network_unavailable"
-    assert updated["normal_response_blocked"] is True
-    assert "czas lokalny niezweryfikowany" in updated["final_visible_text"]
-    assert updated["blocked_final_visible_text"] == "normalna odpowiedź nie może przejść"
+    assert payload["normal_response_allowed"] is True
+    assert payload["active_state"] == "active_degraded"
+    assert updated["ok"] is True
+    assert updated["normal_response_blocked"] is False
+    assert updated["timestamp_degraded"] is True
+    assert updated["runtime_response_status"] == "normal_response_allowed_degraded_timestamp"
+    assert updated["final_visible_text"] == "normalna odpowiedź nie może przejść"
+    assert "blocked_final_visible_text" not in updated
 
 
 class _FakeSession:

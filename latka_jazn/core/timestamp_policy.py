@@ -10,6 +10,7 @@ TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT = True
 TIMESTAMP_NETWORK_TIMEOUT_SECONDS = 1.5
 TIMESTAMP_MAX_AGE_SECONDS = 120
 TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE = True
+TIMESTAMP_ALLOW_DEGRADED_LOCAL_VISIBLE = True
 TIMESTAMP_POLICY_SCHEMA = "timestamp_runtime_policy/v14.8.5.014-strict"
 
 
@@ -23,9 +24,10 @@ def timestamp_runtime_policy() -> dict:
         "network_timeout_seconds": TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
         "max_age_seconds": TIMESTAMP_MAX_AGE_SECONDS,
         "require_trusted_in_final_visible": TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE,
+        "allow_degraded_local_visible": TIMESTAMP_ALLOW_DEGRADED_LOCAL_VISIBLE,
         "truth_boundary": (
-            "Widoczny timestamp ma pochodzić z czasu sieciowego. "
-            "Lokalny fallback jest dopuszczalny tylko jako jawnie nieufny tryb awaryjny, "
-            "nie jako pełnoprawny aktualny czas internetowy."
+            "Widoczny timestamp ma preferować czas sieciowy albo zaufany czas wstrzyknięty przez loader. "
+            "Lokalny fallback jest dopuszczalny jako jawnie zdegradowany tryb awaryjny, "
+            "który nie blokuje zwykłej rozmowy, ale nie jest pełnoprawnym aktualnym czasem internetowym."
         ),
     }

@@ -5,10 +5,11 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from time import perf_counter
 from typing import Any
 import email.utils
-import json, re, urllib.request
+import json, os, re, urllib.request
 
 from .timestamp_policy import (
     TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
+    TIMESTAMP_MAX_AGE_SECONDS,
     TIMESTAMP_NETWORK_FIRST_DEFAULT,
     TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
     timestamp_runtime_policy,
@@ -107,6 +108,10 @@ class WarsawClock:
         allow_fallback: bool = TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
         timeout_seconds: float = TIMESTAMP_NETWORK_TIMEOUT_SECONDS,
     ) -> TimeSample:
+        injected = self._injected_trusted_time()
+        if injected:
+            self.last_sample = injected
+            return injected
         if network_first:
             sample = self._network_time(timeout_seconds=timeout_seconds)
             if sample:
@@ -129,6 +134,17 @@ class WarsawClock:
         started = perf_counter()
         urls_tried: list[str] = []
         try:
+            injected = self._injected_trusted_time()
+            if injected:
+                elapsed_ms = int((perf_counter() - started) * 1000)
+                return NetworkTimeCheckResult(
+                    status="ok",
+                    source=injected.source,
+                    datetime_iso=injected.dt.isoformat(),
+                    elapsed_ms=elapsed_ms,
+                    timeout_seconds=timeout_seconds,
+                    urls_tried=[injected.source],
+                ).to_dict()
             sample = self._network_time(timeout_seconds=timeout_seconds, urls_tried=urls_tried)
             elapsed_ms = int((perf_counter() - started) * 1000)
             if sample is None:
@@ -187,7 +203,14 @@ class WarsawClock:
 
         # Fallback sieciowy oparty o nagłówek Date ze strony, której treść zwykle
         # jest dostępna nawet wtedy, gdy API czasu ma limit lub awarię.
-        for url in ["https://www.timeanddate.com/worldclock/poland/warsaw", "https://www.google.com/generate_204"]:
+        for url in [
+            "https://www.timeanddate.com/worldclock/poland/warsaw",
+            "https://www.google.com/generate_204",
+            "https://api.github.com",
+            "https://www.cloudflare.com/cdn-cgi/trace",
+            "https://www.microsoft.com",
+            "https://www.openai.com",
+        ]:
             if urls_tried is not None:
                 urls_tried.append(url)
             try:
@@ -206,6 +229,54 @@ class WarsawClock:
                 continue
         return None
 
+    def _injected_trusted_time(self) -> TimeSample | None:
+        raw = os.environ.get("JAZN_TRUSTED_TIME_ISO", "").strip()
+        if not raw:
+            return None
+        source = os.environ.get("JAZN_TRUSTED_TIME_SOURCE", "chatgpt_loader_time").strip() or "chatgpt_loader_time"
+        max_age_seconds = self._injected_time_max_age_seconds() or TIMESTAMP_MAX_AGE_SECONDS
+        try:
+            dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            freshness_seconds = abs(int((datetime.now(timezone.utc) - dt.astimezone(timezone.utc)).total_seconds()))
+            if freshness_seconds > max_age_seconds:
+                return TimeSample(
+                    datetime.now(self.tz),
+                    "injected_trusted_time_stale",
+                    False,
+                    error=f"injected trusted time is stale: {freshness_seconds}s > {max_age_seconds}s",
+                )
+            return TimeSample(dt.astimezone(self.tz), source, True)
+        except Exception as exc:
+            return TimeSample(
+                datetime.now(self.tz),
+                "injected_trusted_time_invalid",
+                False,
+                error=f"{type(exc).__name__}: {exc}",
+            )
+
+    def _injected_time_max_age_seconds(self) -> int | None:
+        raw = os.environ.get("JAZN_TRUSTED_TIME_MAX_AGE_SECONDS", "").strip()
+        if not raw:
+            return None
+        try:
+            value = int(raw)
+        except ValueError:
+            return None
+        return value if value > 0 else None
+
+    @staticmethod
+    def _source_is_injected_trusted_time(source: str | None) -> bool:
+        value = str(source or "").strip().lower()
+        return value.startswith((
+            "chatgpt_web_time_tool",
+            "chatgpt_loader_time",
+            "openai_web_time_tool",
+            "external_trusted_time",
+            "injected_trusted_time",
+        ))
+
     def _local_time_sample(self) -> TimeSample:
         return TimeSample(datetime.now(self.tz), "local_fallback", False)
 
@@ -220,8 +291,13 @@ class WarsawClock:
         return f"[🕒 {dt:%Y-%m-%d %H:%M:%S} GMT{sign}{offset_hours}, {POLISH_WEEKDAYS[dt.weekday()]}, Europe/Warsaw]"
     def sample_contract(self, sample: TimeSample | None = None) -> dict[str, Any]:
         sample = sample or self.last_sample or self.now(network_first=TIMESTAMP_NETWORK_FIRST_DEFAULT)
+        policy = timestamp_runtime_policy()
+        injected_max_age = self._injected_time_max_age_seconds()
+        if injected_max_age is not None and self._source_is_injected_trusted_time(sample.source):
+            # Keep injected-time freshness validation consistent with the clock acceptance policy.
+            policy["max_age_seconds"] = injected_max_age
         return {
-            **timestamp_runtime_policy(),
+            **policy,
             "timestamp_header": self.header(sample),
             "sample_iso": sample.dt.isoformat(),
             "source": sample.source,
