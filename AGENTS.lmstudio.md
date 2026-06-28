@@ -4,7 +4,7 @@
 LM Studio jest lokalnym backendem testowym LLM dla projektu Łatka / Jaźń. Nie jest samodzielną Jaźnią. Może służyć do testów naturalnej rozmowy i adapterów, ale źródłem prawdy o Jaźni pozostaje runtime `main.py` z aktywnym markerem.
 
 ## Uruchomienie runtime
-Najpierw sprawdź folder, marker i statusy tak samo jak w `AGENTS.chatgpt.md`. Nie traktuj samego dostępnego modelu lokalnego jako uruchomionej Jaźni.
+Najpierw Przeczytaj `AGENTS.md`, potem ten plik. Nie traktuj samego dostępnego modelu lokalnego jako uruchomionej Jaźni.
 
 ## OpenAI-compatible local API
 LM Studio może działać jako OpenAI-compatible endpoint. Typowy lokalny base URL:
