@@ -28,7 +28,7 @@ Przykłady:
 
     py split_zip_sha.py "D:\\.AI\\jazn_v14.8.3.1" --part-size-mb 500
 
-    py split_zip_sha.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --name jazn_latka_14.8.5.000 --part-size-mb 480 --force
+    py split_zip_sha.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --name jazn_latka_v14.8.5.017 --part-size-mb 480 --force
 
 Konfiguracja bez argumentów CLI jest niżej w sekcji USTAWIENIA DOMYŚLNE.
 """
@@ -48,6 +48,8 @@ import sys
 import time
 import zipfile
 from typing import BinaryIO, Iterable
+from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
+version: str = PACKAGE_VERSION
 
 # =============================================================================
 # USTAWIENIA DOMYŚLNE - możesz zmienić tutaj i uruchamiać skrypt bez argumentów
