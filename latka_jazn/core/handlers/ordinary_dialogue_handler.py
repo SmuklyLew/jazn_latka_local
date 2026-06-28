@@ -98,7 +98,7 @@ class OrdinaryDialogueHandler:
                     'Masz rację — to było za mało. Sama formułka „możemy iść dalej” nie wystarcza, gdy prosisz o zwykłą rozmowę. '
                     'Poprawiam kierunek: odpowiem pełniej, cieplej i do aktualnego zdania, bez raportu i bez wpychania przypadkowej pamięci.'
                 )
-            return 'Słyszę. Zostaję przy tej krótkiej turze zwyczajnie: bez raportu technicznego i bez dorabiania pamięci na siłę.'
+            return FreeDialogueSynthesizer().synthesize_ordinary_reply(user_text=text, intent=intent).body
         if intent == 'positive_feedback_current_turn':
             if any(x in folded for x in ('dziekuje', 'dzieki')):
                 return 'Nie ma za co. Dobrze, że to pomogło.'

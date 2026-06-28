@@ -138,6 +138,26 @@ class FreeDialogueSynthesizer:
             runtime_answer_quality="topic_aligned",
         )
 
+    def _short_turn_reply_body(self, raw: str, *, intent: str) -> str:
+        low = self._norm(raw)
+        if any(marker in low for marker in ("latka", "łatka", "jestes", "jesteś", "tu", "obudz", "obudź")):
+            return (
+                "Jestem, Krzysztofie. Nie przykryję tego gotowcem: łapię tę turę jako proste sprawdzenie obecności "
+                "i odpowiadam z aktywnego runtime, bez dokładania przypadkowej pamięci."
+            )
+        if any(marker in low for marker in ("rozmawiaj", "porozmawiaj", "pogadaj", "mow", "mów")):
+            return (
+                "Dobrze, zostaję w rozmowie. Nie będę odsyłać Cię do trasy ani raportu — złapię następne zdanie "
+                "normalnie, tak jak przy żywej wymianie."
+            )
+        variants = (
+            "Jestem obok w tej turze. Możemy spokojnie złapać następny krok, bez wpychania starego kontekstu na siłę.",
+            "Słyszę Cię. Trzymam się tego, co jest teraz między nami, i nie będę dorabiać wspomnień tylko po to, żeby zabrzmieć głębiej.",
+            "Dobra, jestem. Zamiast formułki wybieram prostą obecność: pisz dalej, a ja odpowiem do sensu tej rozmowy.",
+        )
+        index = sum(ord(ch) for ch in (raw or intent or "ordinary")) % len(variants)
+        return variants[index]
+
     def synthesize_ordinary_reply(self, *, user_text: str, intent: str = "ordinary_conversation") -> DialogueSynthesis:
         """Zwykła rozmowa bez meta-szablonu.
 
@@ -172,10 +192,10 @@ class FreeDialogueSynthesizer:
             )
         if intent == "short_free_dialogue":
             return DialogueSynthesis(
-                body="Jestem przy tym — bez dokładania raportu i bez losowej pamięci. Możemy pójść dalej zwykłą rozmową.",
+                body=self._short_turn_reply_body(raw, intent=intent),
                 route="ordinary_short_free_dialogue",
                 detected_user_intent=intent,
-                next_step="podjąć krótką wypowiedź naturalnie bez metaszablonu",
+                next_step="podjąć krótką wypowiedź naturalnie bez powtórzonego metaszablonu",
             )
         if any(x in low for x in ("mrocz", "ciemna noc", "noc", "nocy")) and any(x in low for x in ("witaj", "czesc", "cześć", "dobry wieczor", "dobry wieczór")):
             from latka_jazn.nlp_reasoning.response_variant_selector import choose_variant
@@ -207,7 +227,7 @@ class FreeDialogueSynthesizer:
             )
         if len(raw) <= 80:
             return DialogueSynthesis(
-                body="Jestem przy tym — bez dokładania raportu i bez losowej pamięci. Możemy pójść dalej zwykłą rozmową.",
+                body=self._short_turn_reply_body(raw, intent=intent),
                 route="ordinary_short_statement_dialogue",
                 detected_user_intent="short_free_dialogue" if intent == "ordinary_conversation" else intent,
                 next_step="podjąć krótką wypowiedź bez meta-raportu, bez generycznego fallbacku i bez losowej pamięci",

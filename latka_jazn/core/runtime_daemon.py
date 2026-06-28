@@ -74,16 +74,45 @@ def write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
     os.replace(tmp, path)
 
 
+def _env_bool_value(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "tak", "on"}
+
+
+def _env_float_value(name: str, default: float) -> float:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return default
+
+
 def daemon_timestamp_contract(config: JaznConfig) -> dict[str, Any]:
-    # /status i heartbeat muszą być szybkie. Nie wykonujemy tu sieciowego czasu,
-    # bo blokowałoby to lokalny daemon przy awarii DNS/sieci. Zwykłe odpowiedzi
-    # nadal przechodzą przez ścisłą bramę timestampu w JaznRuntimeSession.
+    # /status nadal musi być szybki, ale nie może z definicji fałszować stanu
+    # czasu. Jeśli daemon może pobrać zaufany czas sieciowy albo dostał świeży
+    # czas wstrzyknięty przez loader, marker ma prawo przejść w active_trusted.
+    # Gdy sieć zawiedzie, wracamy do jawnego active_degraded.
     clock = WarsawClock(config.timezone)
-    sample = clock.now(network_first=False, allow_fallback=True)
+    network_allowed = bool(getattr(config, "allow_network", True)) and _env_bool_value("JAZN_DAEMON_STATUS_NETWORK_TIME", True)
+    timeout_seconds = _env_float_value("JAZN_DAEMON_STATUS_NETWORK_TIME_TIMEOUT", 0.8)
+    sample = clock.now(
+        network_first=network_allowed and bool(getattr(config, "network_time_first", True)),
+        allow_fallback=True,
+        timeout_seconds=timeout_seconds,
+    )
     contract = clock.sample_contract(sample)
-    contract["source"] = "daemon_status_network_time_not_checked"
-    contract["trusted"] = False
-    contract["error"] = "daemon status is responsive-only; run --network-time-check or a real turn to verify network timestamp"
+    contract["daemon_status_network_time_checked"] = network_allowed
+    contract["daemon_status_network_time_timeout_seconds"] = timeout_seconds
+    if contract.get("trusted") is True:
+        contract["daemon_status_time_mode"] = "trusted_time_confirmed"
+        contract["error"] = None
+    else:
+        contract["daemon_status_time_mode"] = "degraded_local_fallback"
+        contract["error"] = "daemon status could not confirm trusted network or injected time; active_state remains active_degraded"
     return contract
 
 
