@@ -8,6 +8,7 @@ import re
 
 from latka_jazn.version import schema_version
 from latka_jazn.core.timestamp_policy import (
+    TIMESTAMP_ALLOW_DEGRADED_LOCAL_VISIBLE,
     TIMESTAMP_MAX_AGE_SECONDS,
     TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE,
     timestamp_runtime_policy,
@@ -212,8 +213,10 @@ class FinalResponseContract:
             except Exception:
                 freshness_ok = False
         trust_required = bool(contract.get("require_trusted_in_final_visible", TIMESTAMP_REQUIRE_TRUSTED_IN_FINAL_VISIBLE))
+        degraded_allowed = bool(contract.get("allow_degraded_local_visible", TIMESTAMP_ALLOW_DEGRADED_LOCAL_VISIBLE))
         trust_ok = True if trusted is None and not contract else bool(trusted) or not trust_required
-        valid = bool(has_timestamp and freshness_ok and trust_ok)
+        degraded_visible_ok = bool(degraded_allowed and has_timestamp and freshness_ok)
+        valid = bool(has_timestamp and freshness_ok and (trust_ok or degraded_visible_ok))
         return {
             "schema_version": schema_version("final_response_contract_validation"),
             "timestamp_policy": timestamp_runtime_policy(),
@@ -226,6 +229,8 @@ class FinalResponseContract:
             "timestamp_max_age_seconds": max_age_seconds,
             "timestamp_freshness_ok": freshness_ok,
             "timestamp_trust_ok": trust_ok,
+            "timestamp_degraded_allowed": degraded_allowed,
+            "timestamp_degraded_visible_ok": degraded_visible_ok,
             "valid": valid,
             "text_sha256": hashlib.sha256(visible.encode("utf-8")).hexdigest(),
         }
