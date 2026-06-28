@@ -30,7 +30,7 @@ class RouteRegistry:
         "external_research_request": 80, "practical_repair_advice": 78,
         "automotive_warning_light_question": 77, "visual_style_advice": 76,
         "module_inventory_request": 96, "system_capability_gap_question": 96,
-        "runtime_restart_request": 98, "runtime_health_check_after_update": 97, "internet_access_question": 96, "capability_status_question": 95,
+        "runtime_restart_request": 98, "runtime_health_check": 97, "runtime_health_check_after_update": 97, "presence_check": 87, "identity_presence_check": 89, "identity_continuity_check": 88, "time_awareness_question": 86, "self_state_time_awareness": 88, "internet_access_question": 96, "capability_status_question": 95,
         "user_memory_recall_request": 92,
         "self_memory_recall_request": 91,
         "direct_latka_voice_request": 97,
@@ -65,9 +65,14 @@ class RouteRegistry:
         "identity_boundary_question": ("identity_boundary", "IdentityBoundaryHandler"),
         "identity_direct_question": ("identity_runtime_truth_contract", "IdentityRuntimeTruthHandler"),
         "self_state_question": ("self_state", "SelfStateHandler"),
+        "self_state_time_awareness": ("self_state", "SelfStateHandler"),
         "reciprocal_self_state_question": ("self_state", "SelfStateHandler"),
         "self_preference_question": ("self_state", "SelfStateHandler"),
         "self_plan_question": ("self_plan", "SelfStateHandler"),
+        "presence_check": ("presence_status", "PresenceStatusHandler"),
+        "identity_presence_check": ("identity_presence_status", "PresenceStatusHandler"),
+        "identity_continuity_check": ("identity_runtime_truth_contract", "IdentityRuntimeTruthHandler"),
+        "time_awareness_question": ("time_awareness", "TimeAwarenessHandler"),
         "self_expression_request": ("self_expression", "SelfStateHandler"),
         "negative_feedback_current_turn": ("ordinary_dialogue", "OrdinaryDialogueHandler"),
         "positive_feedback_current_turn": ("ordinary_dialogue", "OrdinaryDialogueHandler"),
@@ -87,6 +92,7 @@ class RouteRegistry:
         "dictionary_lookup_request": ("dictionary_lookup", "DictionaryLookupHandler"),
         "language_question": ("dictionary_lookup", "DictionaryLookupHandler"),
         "external_research_request": ("external_research", "ExternalResearchHandler"),
+        "runtime_health_check": ("runtime_health_check", "CapabilityStatusHandler"),
         "runtime_health_check_after_update": ("runtime_health_check_after_update", "CapabilityStatusHandler"),
         "internet_access_question": ("internet_access_status", "CapabilityStatusHandler"),
         "capability_status_question": ("capability_status", "CapabilityStatusHandler"),
@@ -115,8 +121,12 @@ class RouteRegistry:
             return ["runtime_status", "model_channel_boundary", "no_background_process_claim"]
         if intent == "runtime_restart_request":
             return ["runtime_status", "process_lifecycle", "truth_boundary"]
-        if intent == "runtime_health_check_after_update":
+        if intent in {"runtime_health_check", "runtime_health_check_after_update"}:
             return ["runtime_status", "version", "active_database", "cache_reuse", "memory_status", "truth_boundary"]
+        if intent in {"presence_check", "identity_presence_check"}:
+            return ["presence_response", "process_lifecycle", "truth_boundary"] + (["identity_continuity"] if intent == "identity_presence_check" else [])
+        if intent == "identity_continuity_check":
+            return ["runtime_identity", "model_channel_boundary", "process_lifecycle", "truth_boundary"]
         if intent == "internet_access_question":
             return ["internet_access", "provider_status", "truth_boundary", "source_origin"]
         if intent == "capability_status_question":
@@ -153,10 +163,12 @@ class RouteRegistry:
             return ["problem", "tools_or_materials", "steps", "risks", "when_to_stop"]
         if intent in {"dictionary_lookup_request", "language_question"}:
             return ["term", "language", "source_or_cache", "truth_boundary"]
-        if intent in {"self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_expression_request"}:
+        if intent in {"self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_expression_request", "self_state_time_awareness"}:
             return ["operational_state", "truth_boundary", "no_random_memory_excerpt"]
         if intent == "sleep_closure_statement":
             return ["current_turn_closure", "warmth", "no_diagnostics", "no_random_memory_excerpt"]
+        if intent == "time_awareness_question":
+            return ["current_time", "timezone", "source_or_fallback", "truth_boundary"]
         if intent == "current_time_question":
             return ["current_time", "timezone", "source_or_fallback", "truth_boundary"]
         if intent == "memory_experience_question":

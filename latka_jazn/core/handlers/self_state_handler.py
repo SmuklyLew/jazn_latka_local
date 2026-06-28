@@ -8,7 +8,20 @@ from latka_jazn.version import generation_mode, schema_version
 class SelfStateHandler:
     name = "SelfStateHandler"
     route = "self_state"
-    handled_intents = ('self_state_question', 'reciprocal_self_state_question', 'self_preference_question', 'self_plan_question', 'self_expression_request')
+    handled_intents = ('self_state_question', 'reciprocal_self_state_question', 'self_preference_question', 'self_plan_question', 'self_expression_request', 'self_state_time_awareness')
+
+    @staticmethod
+    def _time_clause(ctx: dict[str, Any]) -> str:
+        clock = ctx.get('clock')
+        if clock is None:
+            return "Pory nie mogę teraz uczciwie potwierdzić, bo w kontekście handlera nie ma zegara runtime."
+        sample = clock.now(False)
+        header = clock.header(sample)
+        source = getattr(sample, 'source', 'unknown')
+        trusted = bool(getattr(sample, 'trusted', False))
+        if trusted:
+            return f"Według zaufanego czasu runtime jest teraz {header}. Źródło: {source}."
+        return f"Runtime ma tylko nieufny/degraded czas lokalny: {header}. Źródło: {source}; nie traktuję tego jako pełnego network-time truth."
 
     def handle(self, text: str, context: dict[str, Any] | None = None) -> RouteHandlerResult:
         ctx = context or {}
@@ -24,6 +37,18 @@ class SelfStateHandler:
                 "to najuczciwiej nazwać to błędem sposobu odpowiedzi, nie chorobą. "
                 "Teraz odpowiadam na aktualną wiadomość i wracam do spokojniejszego tonu. "
                 "Prawda: opisuję stan działającego runtime, nie biologiczne samopoczucie."
+            )
+        elif intent == 'self_state_time_awareness':
+            state_body = bridge.render_state(
+                user_text=text,
+                granular_affect=ctx.get('granular_affect'),
+                fallback=model.current_state(user_text=text),
+                reciprocal=False,
+            )
+            body = (
+                f"{state_body}\n\n"
+                f"Co do pory: {self._time_clause(ctx)} "
+                "Granica prawdy: mój „stan” jest operacyjny/dialogowy, a nie biologiczna emocja; czas pochodzi z zegara runtime."
             )
         elif intent == 'self_plan_question':
             body = (
@@ -47,7 +72,7 @@ class SelfStateHandler:
             intent=intent,
             generation_mode=generation_mode('self_state'),
             required_components=ctx.get('required_components', []),
-            satisfied_components=['handler_executed', 'self_state_or_plan_grounded', 'no_random_memory_excerpt', 'truth_boundary'],
+            satisfied_components=['handler_executed', 'self_state_or_plan_grounded', 'operational_state', 'no_random_memory_excerpt', 'truth_boundary'],
             confidence=0.78,
             source_origin_detail=schema_version('self_state_handler'),
         )

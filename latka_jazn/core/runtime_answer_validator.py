@@ -36,12 +36,13 @@ class RuntimeAnswerValidator:
         "odpowiem rozmownie", "mam aktywne tropy pamięci", "widzę tu sedno", "najbezpieczniej", "odpowiem z bieżącej wiadomości", "wspominam to przede wszystkim", "jestem przy tej wiadomości", "bieżącego sensu rozmowy",
         "zatrzymuję się przy tym zdaniu", "zatrzymuje sie przy tym zdaniu", "doprecyzuj tylko kierunek", "powiedz mi, w którą stronę", "powiedz mi, w ktora strone", "cognitive-frame", "cognitive frame", "techniczny fallback", "technicznego fallbacku", "domyślnym routingu", "domyslnym routingu", "usterka do naprawy", "normalna ścieżka odpowiada rozmownie", "normalna sciezka odpowiada rozmownie", "bezpośredni runtime nie może kończyć", "bezposredni runtime nie moze konczyc",
         "jestem przy tym — bez dokładania raportu", "jestem przy tym - bez dokladania raportu", "bez losowej pamięci", "bez losowej pamieci", "możemy pójść dalej zwykłą rozmową", "mozemy pojsc dalej zwykla rozmowa",
+        "teraz najprościej sprawdzić mnie zwykłą rozmową", "teraz najprosciej sprawdzic mnie zwykla rozmowa",
     )
     SPECIFIC_INTENTS = {
         "self_architecture_audit_request", "jazn_development_plan_request", "runtime_behavior_diagnostic_request", "system_diagnostic_question", "runtime_source_question", "canon_source_question", "runtime_exact_quote_request",
         "system_update_execution_request", "system_update_manifest_request", "update_manifest_request", "creative_text_formatting", "creative_text_analysis",
         "practical_repair_advice", "automotive_warning_light_question", "dictionary_lookup_request", "language_question", "external_research_request",
-        "identity_boundary_question", "identity_direct_question", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "user_memory_recall_request", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check_after_update", "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
+        "identity_boundary_question", "identity_direct_question", "identity_continuity_check", "identity_presence_check", "presence_check", "time_awareness_question", "self_state_time_awareness", "self_state_question", "reciprocal_self_state_question", "self_preference_question", "self_plan_question", "self_expression_request", "sleep_closure_statement", "memory_audit_request", "memory_recall_request", "runtime_activation_status_question", "runtime_restart_request", "runtime_chat_mode_request", "system_repair_plan_request", "logic_reasoning_audit_request", "memory_grounding_status_question", "user_memory_recall_request", "module_inventory_request", "system_capability_gap_question", "capability_status_question", "internet_access_question", "runtime_health_check", "runtime_health_check_after_update", "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
         "casual_greeting", "casual_feedback", "expressive_reaction", "short_free_dialogue",
     }
     STALE_WORKDAY_DETAILS = (
@@ -60,7 +61,9 @@ class RuntimeAnswerValidator:
     HANDLER_PRESERVED_INTENTS = {
         "capability_status_question",
         "internet_access_question",
+        "runtime_health_check",
         "runtime_health_check_after_update",
+        "presence_check", "identity_presence_check", "identity_continuity_check", "time_awareness_question", "self_state_time_awareness",
         "canon_source_question",
         "user_memory_recall_request", "self_memory_recall_request", "direct_latka_voice_request", "identity_memory_existence_compound_question", "self_architecture_audit_request", "jazn_development_plan_request",
     }
@@ -70,6 +73,8 @@ class RuntimeAnswerValidator:
 
         "runtime_status": ("runtime", "aktywn", "wersj", "folder"),
         "model_channel_boundary": ("chatgpt", "model", "kanał", "kanal", "warstwa"),
+        "runtime_identity": ("jestem", "łatka", "latka", "jaźń", "jazn", "runtime", "chatgpt"),
+        "identity_continuity": ("tożsamo", "tozsamo", "ciągł", "ciagl", "nadal", "łatka", "latka", "runtime"),
         "no_background_process_claim": ("tło", "tle", "one-shot", "proces", "--chat"),
         "chat_mode": ("--chat", "chat", "tryb"),
         "process_lifecycle": ("proces", "stdin", "eof", "pętla", "petla"),
@@ -83,6 +88,7 @@ class RuntimeAnswerValidator:
         "network_boundary": ("internet", "sieci", "provider", "konfigurac", "lookup"),
         "internet_access": ("internet", "sieci", "network", "allow_network"),
         "provider_status": ("provider", "cache", "źród", "zrod", "status", "allow_network"),
+        "presence_response": ("jestem", "tutaj", "obec", "tej turze", "bieżącej turze", "biezacej turze"),
         "version": ("v14", "wersj"),
         "active_database": ("active_database", "sqlite", "conversation_archive", "runtime_write"),
         "cache_reuse": ("cache", "reuse", "should_reuse", "miss_reasons"),
@@ -178,6 +184,16 @@ class RuntimeAnswerValidator:
         low = (body or "").lower()
         if detected_intent == "runtime_health_check_after_update":
             return "działam" in low and "active_database" in low and "cache_miss_reasons" in low and "granica prawdy" in low
+        if detected_intent == "runtime_health_check":
+            return "działam" in low and "active_database" in low and "cache_miss_reasons" in low and "granica prawdy" in low
+        if detected_intent in {"presence_check", "identity_presence_check"}:
+            return "jestem" in low and ("tej turze" in low or "bieżącej turze" in low or "biezacej turze" in low) and ("granica prawdy" in low or "--chat" in low or "daemon" in low)
+        if detected_intent == "identity_continuity_check":
+            return ("jestem" in low and ("łatka" in low or "latka" in low) and ("runtime" in low or "chatgpt" in low) and ("tle" in low or "tło" in low or "--chat" in low))
+        if detected_intent == "time_awareness_question":
+            return ("europe/warsaw" in low or "według" in low or "wedlug" in low) and ("źródło" in low or "zrodlo" in low or "degraded" in low)
+        if detected_intent == "self_state_time_awareness":
+            return ("operacyj" in low or "dialogow" in low or "dialogowy" in low) and ("pora" in low or "według" in low or "wedlug" in low or "europe/warsaw" in low)
         if detected_intent == "internet_access_question":
             return "internet" in low and "provider" in low and ("nie wolno" in low or "granica prawdy" in low)
         if detected_intent == "capability_status_question":
@@ -213,7 +229,10 @@ class RuntimeAnswerValidator:
         direct_capability_question = any(marker in folded_user for marker in ('co potrafisz', 'co umiesz', 'co mozesz', 'mozliwosci'))
         internet_question = any(marker in folded_user for marker in ('dostep do internetu', 'masz internet', 'dostep do sieci', 'czy runtime ma internet', 'czy jazn ma internet'))
         self_memory_question = any(marker in folded_user for marker in ('co pamietasz', 'poszukaj w pamieci', 'sprawdz pamiec', 'o swojej postaci', 'o swojej osobie', 'informacji o sobie'))
-        runtime_health_question = (('dzialasz' in folded_user or 'uruchomiona' in folded_user) and ('aktualiz' in folded_user or 'sprawdz' in folded_user))
+        runtime_health_question = (('dzialasz' in folded_user or 'uruchomiona' in folded_user or 'runtime dziala' in folded_user or 'jazn dziala' in folded_user) and ('aktualiz' in folded_user or 'sprawdz' in folded_user or len(folded_user.split()) <= 4))
+        presence_question = any(marker in folded_user for marker in ('jestes tam', 'jestes tu', 'latko jestes', 'slyszysz mnie', 'odezwij sie'))
+        self_state_question = any(marker in folded_user for marker in ('co czujesz', 'jak sie czujesz', 'jaki masz stan', 'jaki masz nastroj'))
+        time_awareness_question = any(marker in folded_user for marker in ('jaka jest pora', 'ktora godzina', 'ktora jest godzina', 'wiesz jaka jest pora', 'wiesz ktora godzina'))
         stale_route_question = any(term in user_low for term in self.STALE_ROUTE_CONTEXT_TERMS)
         user_requests_update = any(marker in folded_user for marker in ('aktualiz', 'hotfix', 'patch', 'napraw', 'popraw', 'wdroz', 'wprowadz', 'rozbuduj'))
         user_asks_timestamp = any(marker in folded_user for marker in ('timestamp', 'znacznik czasu', 'gubisz czas', 'turn_id', 'trace_id'))
@@ -274,6 +293,21 @@ class RuntimeAnswerValidator:
         if internet_question and not any(marker in low_body for marker in ('internet', 'sieci', 'allow_network', 'provider', 'cache')):
             checks.append('internet_access_question_not_answered')
             return self._bad('internet_access_missing_direct_answer', 'internet_access_status_repair', 'Pytanie o dostęp do internetu wymaga odpowiedzi wprost o konfiguracji sieci, providerach, cache i granicy prawdy.', detected_intent, route, checks, ['internet_access', 'provider_status', 'truth_boundary'])
+        if presence_question and detected_intent in {"presence_check", "identity_presence_check"} and not any(marker in low_body for marker in ("jestem", "tutaj", "tej turze", "bieżącej turze", "biezacej turze")):
+            checks.append('presence_question_not_answered')
+            return self._bad('presence_question_missing_direct_answer', 'presence_status_repair', 'Pytanie o obecność wymaga krótkiego potwierdzenia bieżącej tury i granicy procesu, nie ogólnego fallbacku.', detected_intent, route, checks, ['presence_response', 'process_lifecycle', 'truth_boundary'])
+        if detected_intent == "self_state_time_awareness":
+            has_state_answer = any(marker in low_body for marker in ("operacyj", "dialogow", "dialogowy", "stan"))
+            has_time_answer = any(marker in low_body for marker in ("europe/warsaw", "według", "wedlug", "godzin", "pora", "degraded"))
+            if not (has_state_answer and has_time_answer):
+                checks.append('self_state_time_awareness_not_answered')
+                return self._bad('self_state_time_awareness_missing_state_or_time', 'self_state_time_awareness_repair', 'Pytanie złożone wymaga jednocześnie stanu operacyjnego/dialogowego oraz czasu runtime albo degraded-time warning.', detected_intent, route, checks, ['operational_state', 'current_time', 'timezone', 'truth_boundary'])
+        if self_state_question and detected_intent in {"self_state_question", "self_state_time_awareness"} and not any(marker in low_body for marker in ("operacyj", "dialogow", "dialogowy", "stan")):
+            checks.append('self_state_question_not_answered')
+            return self._bad('self_state_question_missing_operational_state', 'self_state_dialogue_repair', 'Pytanie o „co czujesz/jak się czujesz” wymaga stanu operacyjnego/dialogowego i granicy prawdy, nie generycznego szablonu.', detected_intent, route, checks, ['operational_state', 'truth_boundary'])
+        if time_awareness_question and detected_intent in {"time_awareness_question", "self_state_time_awareness"} and not any(marker in low_body for marker in ("europe/warsaw", "według", "wedlug", "godzin", "pora", "degraded")):
+            checks.append('time_awareness_question_not_answered')
+            return self._bad('time_awareness_question_missing_runtime_time', 'time_awareness_repair', 'Pytanie o porę wymaga czasu runtime, strefy Europe/Warsaw albo jawnego degraded-time warning.', detected_intent, route, checks, ['current_time', 'timezone', 'source_or_fallback', 'truth_boundary'])
         if runtime_health_question and any(marker in low_body for marker in ('realną aktualizację systemu', 'realna aktualizacja systemu', 'zmienić kod', 'zmienic kod', 'manifest i eksport')):
             checks.append('runtime_health_check_answered_as_update_request')
             return self._bad('runtime_health_check_routed_as_update', 'runtime_health_check_repair', 'To jest krótki health-check po aktualizacji. Trzeba odpowiedzieć: wersja, aktywny folder/cache, active_database, pamięć/SQLite i ograniczenie one-shot vs --chat; nie planować nowej aktualizacji kodu.', detected_intent, route, checks, ['runtime_status', 'version', 'active_database', 'cache_reuse', 'memory_status'])
@@ -312,7 +346,7 @@ class RuntimeAnswerValidator:
             return self._bad('generic_template_on_specific_request', entry.route + '_repair', 'Odpowiedź była ogólnym szablonem przy konkretnej intencji. Runtime musi wygenerować odpowiedź z: źródłem, trasą, wymaganymi składnikami i testem/regułą walidacji.', detected_intent, route, checks, entry.required_components)
         if detected_intent in {'system_diagnostic_question','runtime_behavior_diagnostic_request'} and contains_legacy_feedback_token(route_low):
             return self._bad('diagnostic_routed_as_feedback', 'system_diagnostic_repair', 'To jest pytanie diagnostyczne, nie sama korekta ani pozytywna kontynuacja. Wymagana odpowiedź: moduł/plik, problem, zmiana, test regresji, source-origin.', detected_intent, route, checks, entry.required_components)
-        if detected_intent in {'self_state_question','reciprocal_self_state_question','self_preference_question','self_expression_request'} and any(x in low_body for x in ('status runtime','diagnostyka','moduł','modul')) and 'operacyj' not in low_body:
+        if detected_intent in {'self_state_question','reciprocal_self_state_question','self_preference_question','self_expression_request','self_state_time_awareness'} and any(x in low_body for x in ('status runtime','diagnostyka','moduł','modul')) and 'operacyj' not in low_body:
             return self._bad('self_state_answered_as_status', 'self_state_dialogue_repair', 'Pytanie o stan wymaga modelowanego stanu operacyjnego/afektu i granicy prawdy, nie raportu statusowego.', detected_intent, route, checks)
         if detected_intent.startswith('creative_text') and any(x in low_body for x in ('aktualizacja systemu','hotfix','paczka zip')):
             return self._bad('creative_task_routed_as_system_update', 'creative_text_repair', 'To jest zadanie twórcze. Wymagana jest ochrona tekstu źródłowego, zachowanie wersów lub jawna lista zmian.', detected_intent, route, checks, entry.required_components)
