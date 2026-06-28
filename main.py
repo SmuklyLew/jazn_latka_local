@@ -93,6 +93,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--debug-direct", action="store_true", dest="debug_direct", help="PokaĹĽ technicznÄ… Ĺ›cieĹĽkÄ™ bezpoĹ›redniÄ… i fallback diagnostyczny zamiast rozmownej odpowiedzi.")
     parser.add_argument("--chat", "--loop", action="store_true", dest="chat_loop", help="Uruchom staĹ‚Ä… pÄ™tlÄ™ rozmowy: jeden JaznEngine dziaĹ‚a przez wiele tur aĹĽ do /exit lub EOF.")
     parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Uruchom gĹ‚Ăłwny most ChatGPT w protokole JSONL: przyjmuje message/text/user_text/content/prompt, format messages[].content albo zwykĹ‚y tekst; zwraca jednÄ… liniÄ™ JSON na turÄ™.")
+    parser.add_argument("--chat-gpt-final-only", action="store_true", dest="chat_gpt_final_only", help="SkrĂłt: uruchom --chat-gpt i wypisz na stdout tylko final_visible_text dla kaĹĽdej tury; nie zmienia routingu ani stanu runtime.")
+    parser.add_argument("--final-only", action="store_true", dest="final_only", help="Z --chat-gpt wypisz na stdout tylko final_visible_text dla kaĹĽdej tury; alias czytelny dla czĹ‚owieka.")
     parser.add_argument("--chat-open-ai", action="store_true", dest="chat_open_ai", help="Uruchom lokalny runtime JaĹşni z model_adapter przez OpenAI Responses API; wymaga OPENAI_API_KEY i nie udaje poĹ‚Ä…czenia bez klucza.")
     parser.add_argument("--openai-model", default=None, help="Model dla --chat-open-ai; domyĹ›lnie JAZN_MODEL_NAME albo konfiguracja runtime.")
     parser.add_argument("--openai-api-base", default=None, help="Bazowy URL API dla --chat-open-ai; domyĹ›lnie https://api.openai.com/v1.")
@@ -245,6 +247,10 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.runtime_preview_output and not (ns.runtime_preview or ns.dev_preview):
         parser.error("--runtime-preview-output wymaga --runtime-preview albo --dev-preview")
+    if ns.chat_gpt_final_only:
+        ns.chat_gpt = True
+    if ns.final_only and not ns.chat_gpt:
+        parser.error("--final-only wymaga --chat-gpt albo uĹĽyj samodzielnego --chat-gpt-final-only")
 
     if ns.bridge_discovery:
         cfg = config or JaznConfig()
@@ -787,6 +793,7 @@ def main(argv: list[str] | None = None) -> int:
             no_carryover=ns.no_carryover,
             command="--chat-gpt",
             require_openai_api_key=False,
+            output_mode="final_visible_text" if (ns.chat_gpt_final_only or ns.final_only) else "jsonl",
         )
 
     if ns.chat_open_ai:
