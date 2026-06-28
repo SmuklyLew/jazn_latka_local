@@ -122,6 +122,14 @@ def extract_user_text_from_payload(payload: dict[str, Any]) -> tuple[str, str, s
     return "", "json", "<missing>"
 
 
+
+def apply_chatgpt_cli_settings(config: JaznConfig) -> JaznConfig:
+    """Select the truthful ChatGPT host adapter for the --chat-gpt bridge."""
+    config.model_adapter = "chatgpt_runtime_adapter"
+    if not os.environ.get("JAZN_MODEL_NAME"):
+        config.model_name = os.environ.get("JAZN_CHATGPT_MODEL_NAME", "chatgpt_host_model").strip() or "chatgpt_host_model"
+    return config
+
 def apply_openai_cli_settings(
     config: JaznConfig,
     *,
@@ -186,6 +194,8 @@ def run_jsonl_chat_bridge(
     stdout = stdout or sys.stdout
     if output_mode not in CHAT_BRIDGE_OUTPUT_MODES:
         raise ValueError(f"unsupported chat bridge output_mode: {output_mode}")
+    if command == "--chat-gpt":
+        apply_chatgpt_cli_settings(config)
     contract = command_contract(command)
     protocol_version = CHAT_OPENAI_PROTOCOL if command == "--chat-open-ai" else CHATGPT_BRIDGE_PROTOCOL
     default_client = "openai_api_bridge" if command == "--chat-open-ai" else "chatgpt_bridge"

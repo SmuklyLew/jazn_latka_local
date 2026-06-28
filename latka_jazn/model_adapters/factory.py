@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .null_model_adapter import NullModelAdapter
+from .chatgpt_runtime_adapter import ChatgptRuntimeAdapter
 from .openai_responses_adapter import OpenaiResponsesAdapter
 from .local_llm_adapter import LocalLlmAdapter
 from .adapter_contract import ContractOnlyModelAdapter, backend_config_skeletons
@@ -10,6 +11,11 @@ from .adapter_contract import ContractOnlyModelAdapter, backend_config_skeletons
 
 def build_model_adapter(config: Any):
     name = str(getattr(config, "model_adapter", "null") or "null").strip().lower()
+    if name in {"chatgpt", "chatgpt_runtime", "chatgpt_runtime_adapter", "chat_gpt", "chat-gpt"}:
+        return ChatgptRuntimeAdapter(
+            model=str(getattr(config, "model_name", "chatgpt_host_model") or "chatgpt_host_model"),
+            root=getattr(config, "root", None),
+        )
     if name in {"openai", "openai_responses", "openai_responses_adapter"} and bool(getattr(config, "allow_network", True)):
         return OpenaiResponsesAdapter(
             model=str(getattr(config, "model_name", "gpt-5.2")),

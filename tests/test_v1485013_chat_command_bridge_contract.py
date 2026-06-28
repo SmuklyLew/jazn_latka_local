@@ -13,6 +13,7 @@ import pytest
 import latka_jazn.core.chat_command_contract as chat_command_module
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.chat_command_contract import (
+    apply_chatgpt_cli_settings,
     apply_openai_cli_settings,
     chat_gpt_contract,
     chat_open_ai_contract,
@@ -73,6 +74,21 @@ def test_chat_open_ai_without_key_fails_truthfully(monkeypatch) -> None:
     assert payload["ok"] is False
     assert payload["error_code"] == "missing_openai_api_key"
     assert payload["chat_command_contract"]["uses_openai_api"] is True
+
+
+def test_apply_chatgpt_cli_settings_selects_chatgpt_host_adapter(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    cfg = JaznConfig(root=ROOT)
+    apply_chatgpt_cli_settings(cfg)
+    status = build_model_adapter(cfg).describe()
+
+    assert cfg.model_adapter == "chatgpt_runtime_adapter"
+    assert status["name"] == "chatgpt_runtime_adapter"
+    assert status["provider"] == "chatgpt_host"
+    assert status["status"] == "host_bridge_available"
+    assert status["model"] == "chatgpt_host_model"
+    assert status["requires_api_key"] is False
+    assert status["can_generate_model_guided_speech"] is False
 
 
 def test_apply_openai_cli_settings_selects_openai_adapter(monkeypatch) -> None:

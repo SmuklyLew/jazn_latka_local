@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import io
 import json
 import sys
 from pathlib import Path
@@ -60,7 +61,7 @@ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegist
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
-from latka_jazn.core.chat_command_contract import apply_openai_cli_settings, run_jsonl_chat_bridge
+from latka_jazn.core.chat_command_contract import apply_chatgpt_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge
 from latka_jazn.core.bridge_discovery import discover_runtime_bridges
 from latka_jazn.core.runtime_daemon import (
     DEFAULT_DAEMON_HOST,
@@ -617,6 +618,16 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.model_adapter_status:
         cfg = config or JaznConfig()
+        if ns.chat_gpt or ns.chat_gpt_final_only:
+            cfg = apply_chatgpt_cli_settings(cfg)
+        elif ns.chat_open_ai:
+            cfg = apply_openai_cli_settings(
+                cfg,
+                model=ns.openai_model,
+                api_base=ns.openai_api_base,
+                timeout_seconds=ns.openai_timeout,
+                max_output_tokens=ns.openai_max_output_tokens,
+            )
         payload = {"runtime_version": cfg.version, "model_adapter_status": build_model_adapter_status(cfg)}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
@@ -792,14 +803,25 @@ def main(argv: list[str] | None = None) -> int:
 
 
     if ns.chat_gpt:
-        cfg = config or JaznConfig()
+        cfg = apply_chatgpt_cli_settings(config or JaznConfig())
+        output_mode = "final_visible_text" if (ns.chat_gpt_final_only or ns.final_only) else "jsonl"
+        bridge_text = _message_from_remainder(ns.message)
+        bridge_stdin = io.StringIO(bridge_text + "\n") if bridge_text else None
+        if bridge_stdin is None and output_mode == "final_visible_text" and sys.stdin.isatty():
+            print(
+                "--chat-gpt-final-only wymaga wiadomości po fladze albo danych na stdin, np. "
+                "python -X utf8 main.py --chat-gpt-final-only -- \"Cześć Łatko\"",
+                file=sys.stderr,
+            )
+            return 2
         return run_jsonl_chat_bridge(
             config=cfg,
             session_id=ns.session_id,
             no_carryover=ns.no_carryover,
             command="--chat-gpt",
+            stdin=bridge_stdin,
             require_openai_api_key=False,
-            output_mode="final_visible_text" if (ns.chat_gpt_final_only or ns.final_only) else "jsonl",
+            output_mode=output_mode,
         )
 
     if ns.chat_open_ai:

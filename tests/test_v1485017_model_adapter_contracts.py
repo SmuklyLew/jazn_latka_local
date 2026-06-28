@@ -23,6 +23,44 @@ def test_default_status_is_truthful_null_adapter_without_openai_key(monkeypatch)
     assert status["normal_runtime_requires_openai_api_key"] is False
 
 
+def test_chatgpt_runtime_adapter_status_is_not_null_and_does_not_claim_local_generation(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("JAZN_MODEL_ADAPTER", "chatgpt_runtime_adapter")
+    monkeypatch.setenv("JAZN_MODEL_NAME", "chatgpt-host-test")
+
+    status = build_model_adapter_status(JaznConfig())
+    response = build_model_adapter(JaznConfig()).generate(ModelAdapterRequest(prompt="test"))
+
+    assert status["adapter_id"] == "chatgpt_runtime_adapter"
+    assert status["provider"] == "chatgpt_host"
+    assert status["kind"] == "hosted_chatgpt_bridge"
+    assert status["status"] == "host_bridge_available"
+    assert status["available"] is True
+    assert status["model"] == "chatgpt-host-test"
+    assert status["can_generate_model_guided_speech"] is False
+    assert status["requires_api_key"] is False
+    assert response.status == "requires_host_chatgpt_visible_response"
+    assert response.text == ""
+
+
+def test_model_adapter_status_cli_respects_chat_gpt_bridge(monkeypatch, capsys) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("JAZN_MODEL_ADAPTER", raising=False)
+    monkeypatch.delenv("JAZN_MODEL_NAME", raising=False)
+
+    assert main.main(["--chat-gpt", "--model-adapter-status"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+
+    status = payload["model_adapter_status"]
+    assert status["adapter_id"] == "chatgpt_runtime_adapter"
+    assert status["provider"] == "chatgpt_host"
+    assert status["status"] == "host_bridge_available"
+    assert status["selected_adapter"] == "chatgpt_runtime_adapter"
+    assert status["model"] == "chatgpt_host_model"
+    assert status["requires_api_key"] is False
+    assert status["can_generate_model_guided_speech"] is False
+
+
 def test_openai_status_separates_configuration_from_runtime_identity(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setenv("JAZN_MODEL_ADAPTER", "openai")
