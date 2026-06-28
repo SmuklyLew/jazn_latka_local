@@ -34,6 +34,9 @@ def test_chat_command_contracts_separate_chatgpt_and_openai() -> None:
     assert openai["requires_api_key"] is True
     assert openai["uses_openai_api"] is True
     assert "final_visible_text" in chatgpt["output_modes"]
+    assert "--chat-gpt-final-only" in chatgpt["truth_boundary"]
+    assert "--chat-gpt --final-only" in chatgpt["truth_boundary"]
+    assert "--chat-gpt--final-only" not in chatgpt["truth_boundary"]
 
 
 @pytest.mark.parametrize(
