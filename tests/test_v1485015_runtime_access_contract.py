@@ -10,10 +10,10 @@ from latka_jazn.tools.active_extraction_cache import write_active_runtime_marker
 from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CONTRACT_VERSION
 
 
-def test_runtime_version_is_current_chat_gpt_alias_truth_boundary_hotfix() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.016.6"
+def test_runtime_version_is_current_model_adapter_contracts() -> None:
+    assert PACKAGE_VERSION == "v14.8.5.017"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "chat-gpt-alias-truth-boundary-hotfix"
+    assert PACKAGE_RELEASE_NAME == "model-adapter-contracts"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:

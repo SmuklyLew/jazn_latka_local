@@ -1,4 +1,4 @@
-﻿# Current package version: v14.8.5.014-strict-runtime-truth-fast-continuity-openai-state-gateway
+# Current package version: v14.8.5.017-model-adapter-contracts
 from __future__ import annotations
 
 import argparse
@@ -54,7 +54,7 @@ from latka_jazn.nlp.language_resource_registry import LanguageResourceRegistry
 from latka_jazn.core.voice_source_contract import VoiceSourceContract
 from latka_jazn.core.runtime_rendering_modes import RuntimeRenderingModeSelector
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
-from latka_jazn.model_adapters.factory import build_model_adapter
+from latka_jazn.model_adapters.factory import build_model_adapter_status
 from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnostics, build_polish_reasoning_diagnostics
 from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
@@ -617,7 +617,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.model_adapter_status:
         cfg = config or JaznConfig()
-        payload = {"runtime_version": cfg.version, "model_adapter_status": build_model_adapter(cfg).describe()}
+        payload = {"runtime_version": cfg.version, "model_adapter_status": build_model_adapter_status(cfg)}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
