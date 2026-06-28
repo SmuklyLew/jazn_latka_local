@@ -90,6 +90,7 @@ from latka_jazn.core.untrusted_source_guard import UntrustedSourceGuard
 from latka_jazn.memory.memory_recall_contract import MemoryRecallContractBuilder
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
 from latka_jazn.model_adapters.factory import build_model_adapter
+from latka_jazn.core.self_knowledge_contract import build_self_knowledge_summary
 
 
 def _sync_conversation_decision_body(
@@ -1401,6 +1402,7 @@ class JaznEngine:
             "dialogue_context": dialogue_context,
             "runtime_operating_model": runtime_operating_context,
             "startup_summary": build_startup_summary(self.config),
+            "self_knowledge_summary": build_self_knowledge_summary(self.config),
             "free_dialogue_memory_nlp_bridge": build_startup_summary(self.config),
             "truth_boundary_check": build_truth_boundary_check(self.config),
             "source_origin": source_origin.to_dict(),

@@ -1,0 +1,120 @@
+{
+  "generated_at_utc": "2026-06-28T21:55:35.245544+00:00",
+  "root": "D:\\.AI\\jazn_latka_local",
+  "version": "v14.8.5.017",
+  "file_count": 1385,
+  "static_file_count": 1385,
+  "mutable_runtime_file_count": 0,
+  "runtime_mutable_file_count": 209,
+  "archive_file_count": 165,
+  "excluded_file_count": 2284,
+  "excluded_file_detail_count": 12,
+  "excluded_file_detail_suppressed_count": 2272,
+  "deferred_hash_file_count": 0,
+  "active_database": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+  "audit_database": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+  "sqlite_diagnostics": [
+    {
+      "path": "memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3",
+      "exists": true,
+      "size_bytes": 126214144,
+      "integrity_check": "ok",
+      "foreign_key_check_count": 0,
+      "tables": [
+        "archive_sources",
+        "content_locations",
+        "conversation_locations",
+        "conversation_occurrence_locations",
+        "fts_locations",
+        "manifest_meta",
+        "message_locations",
+        "occurrence_locations",
+        "shard_files",
+        "staging_locations"
+      ]
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+      "exists": true,
+      "size_bytes": 1462272,
+      "integrity_check": "ok",
+      "foreign_key_check_count": 0,
+      "tables": [
+        "audit_db_meta",
+        "audit_runtime_events"
+      ]
+    },
+    {
+      "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+      "exists": true,
+      "size_bytes": 515506176,
+      "integrity_check": "ok",
+      "foreign_key_check_count": 0,
+      "tables": [
+        "episodic_memories",
+        "events",
+        "journal",
+        "legacy_conversations",
+        "legacy_messages",
+        "meta",
+        "procedural_rules",
+        "reflection_entries",
+        "semantic_facts",
+        "source_files",
+        "truth_audits"
+      ],
+      "legacy_messages_count": 0
+    },
+    {
+      "path": "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3",
+      "exists": true,
+      "size_bytes": 94126080,
+      "integrity_check": "ok",
+      "foreign_key_check_count": 0,
+      "tables": [
+        "fts_docs",
+        "message_fts",
+        "message_fts_config",
+        "message_fts_data",
+        "message_fts_docsize",
+        "message_fts_idx",
+        "shard_meta"
+      ]
+    },
+    {
+      "path": "memory/sqlite/staging_v1/staging_memory_0001.sqlite3",
+      "exists": true,
+      "size_bytes": 116953088,
+      "integrity_check": "ok",
+      "foreign_key_check_count": 0,
+      "tables": [
+        "shard_meta",
+        "staging_evidence",
+        "staging_memory_entries"
+      ]
+    },
+    {
+      "path": "workspace_runtime/dictionary_cache.sqlite3",
+      "exists": true,
+      "size_bytes": 49152,
+      "integrity_check": "ok",
+      "foreign_key_check_count": 0,
+      "tables": [
+        "dictionary_entries",
+        "failed_lookups",
+        "language_resource_config",
+        "lexical_resource_cache",
+        "lookup_events",
+        "source_license_notes",
+        "sqlite_sequence"
+      ]
+    }
+  ],
+  "outputs": [
+    "D:\\.AI\\jazn_latka_local\\MANIFEST_CURRENT.json",
+    "D:\\.AI\\jazn_latka_local\\RUNTIME_STATE.json",
+    "D:\\.AI\\jazn_latka_local\\SHA256SUMS",
+    "D:\\.AI\\jazn_latka_local\\SHA256SUMS_STATIC",
+    "D:\\.AI\\jazn_latka_local\\docs\\archive\\manifest_history\\last_refresh_report.json"
+  ]
+}

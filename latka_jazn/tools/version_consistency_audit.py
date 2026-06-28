@@ -21,7 +21,7 @@ ACTIVE_CONTROL_FILES = (
     "ACTIVE_RUNTIME_CACHE_CONTRACT.json",
     "BOOTSTRAP_JAZN_CURRENT.json",
     "MANIFEST_CURRENT.json",
-    "MANIFEST_RUNTIME_MUTABLE.json",
+    "RUNTIME_STATE.json",
     "latka_jazn/__init__.py",
     "latka_jazn/config.py",
     "latka_jazn/core/startup_contract.py",

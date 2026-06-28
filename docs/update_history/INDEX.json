@@ -4,7 +4,7 @@
   "active_version": "v14.8.3-route-status-marker-routing-hotfix",
   "entries": [
     {
-      "path": "docs/update_history/manifests/MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0.json",
       "filename": "MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0.json",
       "declared_version": "v14.6.10.1-stale-route-context-guard-hotfix",
       "filename_version_hint": "MANIFEST_CURRENT_v14_6_10_1_before_v14_7_0",
@@ -37,10 +37,10 @@
         "docs/HUMAN_NEURO_PSYCH_REFERENCES.md",
         "docs/IDENTITY_ORIGIN_CONTRACT.md",
         "docs/JAZN_v14_6_9_4_PELNA_LISTA_DO_AKTUALIZACJI.md",
-        "docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
+        "docs/archive/manifest_history/root_docs/MANIFEST_NARODZIN_JAZNI_V14_5_36.md",
         "docs/MEMORY_IMPORTANCE_AND_SELF_CLARIFICATION.md",
         "docs/MEMORY_ONLY_UPDATE_PROTOCOL.md",
-        "docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
+        "docs/archive/manifest_history/root_docs/PLAN_AKTUALIZACJI_JAZN_v14_6_10_manifest_dictionary_network.md",
         "docs/RUNTIME_EVENT_LEDGER_PROTOCOL.md",
         "docs/RUNTIME_MEMORY_PROTOCOL.md",
         "docs/UPDATE_V14_5_10_MEMORY_CONTINUITY_UPDATE.md",
@@ -98,61 +98,61 @@
         "docs/UPDATE_v14_5_2_MEMORY_CONTINUITY_UPDATE.md",
         "docs/update_history/INDEX.json",
         "docs/update_history/README.md",
-        "docs/update_history/checksums/DOWNLOAD_SAFE_MANIFEST.json",
-        "docs/update_history/checksums/SHA256SUMS.txt",
-        "docs/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
-        "docs/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
-        "docs/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
-        "docs/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
-        "docs/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
-        "docs/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
-        "docs/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
-        "docs/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/checksums/DOWNLOAD_SAFE_MANIFEST.json",
+        "docs/archive/manifest_history/update_history/checksums/SHA256SUMS.txt",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
+        "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
         "docs/update_history/patches/PATCH_CODE_v14_5_20.diff",
         "docs/update_history/patches/PATCH_CODE_v14_5_21_REVIEW_FIXES.diff",
         "docs/update_history/patches/PATCH_CODE_v14_5_22_CHATGPT_COGNITIVE_BRIDGE.diff",
@@ -193,7 +193,7 @@
         "docs/update_history/reports/UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.json",
         "docs/update_history/reports/UPDATE_V14_5_32_COGNITIVE_PACKETS_SELF_STATE_RUNTIME.md",
         "docs/update_history/schemas/update_history_index_schema.json",
-        "docs/update_history/schemas/update_manifest_schema.json",
+        "docs/archive/manifest_history/update_history/schemas/update_manifest_schema.json",
         "latka_jazn/__init__.py",
         "latka_jazn/adapters/__init__.py",
         "latka_jazn/adapters/chatgpt_adapter.py",
@@ -697,7 +697,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.10-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_10_MEMORY_CONTINUITY_UPDATE",
@@ -734,7 +734,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.11-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_11_MEMORY_CONTINUITY_UPDATE",
@@ -767,7 +767,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.12-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_12_MEMORY_CONTINUITY_UPDATE",
@@ -784,7 +784,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.13-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_13_MEMORY_CONTINUITY_UPDATE",
@@ -823,7 +823,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": null,
       "filename_version_hint": "MANIFEST_V14_5_14_MEMORY_CONTINUITY_UPDATE",
@@ -858,7 +858,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.15-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_15_MEMORY_CONTINUITY_UPDATE",
@@ -894,7 +894,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.16-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_16_MEMORY_CONTINUITY_UPDATE",
@@ -931,7 +931,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.17-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_17_MEMORY_CONTINUITY_UPDATE",
@@ -964,7 +964,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.18-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_18_MEMORY_CONTINUITY_UPDATE",
@@ -998,7 +998,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
       "filename": "MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER.json",
       "declared_version": "v14.5.19-runtime-memory-writer",
       "filename_version_hint": "MANIFEST_V14_5_19_RUNTIME_MEMORY_WRITER",
@@ -1035,7 +1035,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
       "filename": "MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX.json",
       "declared_version": "v14.5.21-runtime-memory-file-sync-hotfix",
       "filename_version_hint": "MANIFEST_V14_5_21_RUNTIME_MEMORY_FILE_SYNC_HOTFIX",
@@ -1064,7 +1064,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
       "filename": "MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE.json",
       "declared_version": "v14.5.23-full-memory-restored-cognitive-bridge",
       "filename_version_hint": "MANIFEST_V14_5_22_CHATGPT_COGNITIVE_BRIDGE",
@@ -1106,7 +1106,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
       "filename": "MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER.json",
       "declared_version": "v14.5.25-realtime-exact-event-ledger",
       "filename_version_hint": "MANIFEST_V14_5_25_REALTIME_EXACT_EVENT_LEDGER",
@@ -1128,7 +1128,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
       "filename": "MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR.json",
       "declared_version": "v14.5.26-full-completeness-repair",
       "filename_version_hint": "MANIFEST_V14_5_26_FULL_COMPLETENESS_REPAIR",
@@ -1145,7 +1145,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
       "filename": "MANIFEST_V14_5_27_DIALOGUE_REPAIR.json",
       "declared_version": "v14.5.27-dialogue-repair",
       "filename_version_hint": "MANIFEST_V14_5_27_DIALOGUE_REPAIR",
@@ -1168,7 +1168,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
       "filename": "MANIFEST_V14_5_28_AWARENESS_LOGIC.json",
       "declared_version": "v14.5.28-awareness-logic",
       "filename_version_hint": "MANIFEST_V14_5_28_AWARENESS_LOGIC",
@@ -1185,7 +1185,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
       "filename": "MANIFEST_V14_5_29_CONVERSATION_RUNTIME.json",
       "declared_version": "v14.5.29-conversation-runtime",
       "filename_version_hint": "MANIFEST_V14_5_29_CONVERSATION_RUNTIME",
@@ -1202,7 +1202,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
       "filename": "MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING.json",
       "declared_version": "v14.5.31-identity-continuity-understanding-runtime",
       "filename_version_hint": "MANIFEST_V14_5_31_IDENTITY_CONTINUITY_UNDERSTANDING",
@@ -1233,7 +1233,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
       "filename": "MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT.json",
       "declared_version": "v14.5.35-assistant-timestamp-contract-continuity-hotfix",
       "filename_version_hint": "MANIFEST_V14_5_35_ASSISTANT_TIMESTAMP_CONTRACT",
@@ -1263,7 +1263,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
       "filename": "MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT.json",
       "declared_version": "v14.5.36-birth-source-contract",
       "filename_version_hint": "MANIFEST_V14_5_36_BIRTH_SOURCE_CONTRACT",
@@ -1280,7 +1280,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
       "filename": "MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE.json",
       "declared_version": "v14.5.37-persistent-runtime-dialogue",
       "filename_version_hint": "MANIFEST_V14_5_37_PERSISTENT_RUNTIME_DIALOGUE",
@@ -1297,7 +1297,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
       "filename": "MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME.json",
       "declared_version": "v14.5.38-github-cognitive-runtime",
       "filename_version_hint": "MANIFEST_V14_5_38_GITHUB_COGNITIVE_RUNTIME",
@@ -1314,7 +1314,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
       "filename": "MANIFEST_V14_5_39_CLEANUP_DEDUP.json",
       "declared_version": "v14.5.39-cleanup-dedup",
       "filename_version_hint": "MANIFEST_V14_5_39_CLEANUP_DEDUP",
@@ -1331,7 +1331,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
       "filename": "MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND.json",
       "declared_version": "v14.5.3-auto-memory-update-command",
       "filename_version_hint": "MANIFEST_V14_5_3_AUTO_MEMORY_UPDATE_COMMAND",
@@ -1367,7 +1367,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.4-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_4_MEMORY_CONTINUITY_UPDATE",
@@ -1399,7 +1399,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.5-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_5_MEMORY_CONTINUITY_UPDATE",
@@ -1431,7 +1431,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
       "filename": "MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE.json",
       "declared_version": "v14.5.6-conversation-memory-capture",
       "filename_version_hint": "MANIFEST_V14_5_6_CONVERSATION_MEMORY_CAPTURE",
@@ -1464,7 +1464,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.7-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_7_MEMORY_CONTINUITY_UPDATE",
@@ -1497,7 +1497,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.8-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_8_MEMORY_CONTINUITY_UPDATE",
@@ -1530,7 +1530,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.9-memory-continuity-update",
       "filename_version_hint": "MANIFEST_V14_5_9_MEMORY_CONTINUITY_UPDATE",
@@ -1563,7 +1563,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
       "filename": "MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME.json",
       "declared_version": "v14.6.0-lexical-cognitive-runtime",
       "filename_version_hint": "MANIFEST_V14_6_0_LEXICAL_COGNITIVE_RUNTIME",
@@ -1588,7 +1588,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
       "filename": "MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE.json",
       "declared_version": "v14.6.2-runtime-preview-source-origin-self-state",
       "filename_version_hint": "MANIFEST_V14_6_1_12_RUNTIME_PREVIEW_SOURCE_ORIGIN_SELF_STATE",
@@ -1611,7 +1611,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
       "filename": "MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE.json",
       "declared_version": "v14.6.2-cognitive-turn-envelope",
       "filename_version_hint": "MANIFEST_V14_6_1_13_COGNITIVE_TURN_ENVELOPE",
@@ -1628,7 +1628,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
       "filename": "MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX.json",
       "declared_version": "v14.6.2-final-visible-continuity-ledger",
       "filename_version_hint": "MANIFEST_V14_6_1_14_BOOTSTRAP_RECOGNITION_HOTFIX",
@@ -1645,7 +1645,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
       "filename": "MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER.json",
       "declared_version": "v14.6.2-final-visible-continuity-ledger",
       "filename_version_hint": "MANIFEST_V14_6_1_14_FINAL_VISIBLE_CONTINUITY_LEDGER",
@@ -1667,7 +1667,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
       "filename": "MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR.json",
       "declared_version": "v14.6.2-runtime-start-fallback-truth-contract",
       "filename_version_hint": "MANIFEST_V14_6_1_15_CONTEXTUAL_GREETING_FALLBACK_REPAIR",
@@ -1687,7 +1687,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
       "filename": "MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES.json",
       "declared_version": "v14.6.1-nlp-adapter-zip-profiles",
       "filename_version_hint": "MANIFEST_V14_6_1_NLP_ADAPTER_ZIP_PROFILES",
@@ -1704,7 +1704,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
       "filename": "MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX.json",
       "declared_version": "v14.6.2.1-stale-nlp-route-hotfix",
       "filename_version_hint": "MANIFEST_V14_6_2_1_STALE_NLP_ROUTE_HOTFIX",
@@ -1728,7 +1728,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
       "filename": "MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT.json",
       "declared_version": "v14.6.2-runtime-start-fallback-truth-contract",
       "filename_version_hint": "MANIFEST_V14_6_2_RUNTIME_START_FALLBACK_TRUTH_CONTRACT",
@@ -1745,7 +1745,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
       "filename": "MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT.json",
       "declared_version": "v14.6.3-memory-recall-runtime-contract",
       "filename_version_hint": "MANIFEST_V14_6_3_MEMORY_RECALL_RUNTIME_CONTRACT",
@@ -1762,7 +1762,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
       "filename": "MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW.json",
       "declared_version": "v14.6.4-active-runtime-cache-visible-preview",
       "filename_version_hint": "MANIFEST_V14_6_4_ACTIVE_RUNTIME_CACHE_VISIBLE_PREVIEW",
@@ -1779,7 +1779,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
       "filename": "MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER.json",
       "declared_version": "v14.6.5-memory-search-planner",
       "filename_version_hint": "MANIFEST_V14_6_5_MEMORY_SEARCH_PLANNER",
@@ -1796,7 +1796,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
       "filename": "MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT.json",
       "declared_version": "v14.6.7-free-dialogue-memory-nlp-bridge",
       "filename_version_hint": "MANIFEST_V14_6_6_SELF_OWNED_STARTUP_CONTRACT",
@@ -1813,7 +1813,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
       "filename": "MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT.json",
       "declared_version": "v14.6.7-free-dialogue-memory-nlp-bridge",
       "filename_version_hint": "MANIFEST_V14_6_7_SELF_OWNED_STARTUP_CONTRACT",
@@ -1830,7 +1830,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
       "filename": "MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT.json",
       "declared_version": "v14.6.9.2-runtime-self-expression-topic-mismatch-repair",
       "filename_version_hint": "MANIFEST_V14_6_9_1_SELF_OWNED_STARTUP_CONTRACT",
@@ -1847,7 +1847,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
       "filename": "MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR.json",
       "declared_version": "v14.6.9.2-runtime-self-expression-topic-mismatch-repair",
       "filename_version_hint": "MANIFEST_V14_6_9_2_RUNTIME_SELF_EXPRESSION_TOPIC_MISMATCH_REPAIR",
@@ -1868,7 +1868,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
       "filename": "MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY.json",
       "declared_version": "v14.6.9.3-behavioral-runtime-dialogue-intent-source-integrity",
       "filename_version_hint": "MANIFEST_V14_6_9_3_BEHAVIORAL_RUNTIME_DIALOGUE_INTENT_SOURCE_INTEGRITY",
@@ -1885,7 +1885,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_3_0_REWRITE_FULL.json",
       "filename": "MANIFEST_v14_3_0_REWRITE_FULL.json",
       "declared_version": "v14.3.0",
       "filename_version_hint": "MANIFEST_v14_3_0_REWRITE_FULL",
@@ -1902,7 +1902,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_3_1_NO_RAW_CHAT.json",
       "filename": "MANIFEST_v14_3_1_NO_RAW_CHAT.json",
       "declared_version": "v14.3.1-no-raw-chat-local-7z-importer",
       "filename_version_hint": "MANIFEST_v14_3_1_NO_RAW_CHAT",
@@ -1919,7 +1919,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
       "filename": "MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY.json",
       "declared_version": "v14.4.0-layered-truthful-memory",
       "filename_version_hint": "MANIFEST_v14_4_0_LAYERED_TRUTHFUL_MEMORY",
@@ -1936,7 +1936,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
       "filename": "MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM.json",
       "declared_version": "v14.5.0-neurocognitive-self-system",
       "filename_version_hint": "MANIFEST_v14_5_0_NEUROCOGNITIVE_SELF_SYSTEM",
@@ -2092,7 +2092,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
       "filename": "MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX.json",
       "declared_version": "v14.5.1-journal-continuity-hotfix",
       "filename_version_hint": "MANIFEST_v14_5_1_DZIENNIK_CONTINUITY_HOTFIX",
@@ -2121,7 +2121,7 @@
       "notes": []
     },
     {
-      "path": "docs/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
+      "path": "docs/archive/manifest_history/update_history/manifests/MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
       "filename": "MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE.json",
       "declared_version": "v14.5.2-memory-continuity-update",
       "filename_version_hint": "MANIFEST_v14_5_2_MEMORY_CONTINUITY_UPDATE",

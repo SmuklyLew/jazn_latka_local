@@ -18,6 +18,7 @@ from latka_jazn.memory.conversation_archive import build_conversation_archive_st
 from latka_jazn.memory.normalization_sidecar import build_memory_normalization_status, build_wake_state_status
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
 from latka_jazn.model_adapters.factory import build_model_adapter
+from latka_jazn.core.self_knowledge_contract import build_self_knowledge_packet, build_self_knowledge_summary
 
 SCHEMA_VERSION = "self_owned_startup_contract/v14.6.10"
 MINIMAL_LOADER_RESOURCE = "latka_jazn/resources/chatgpt_startup_loader_v14_8_2_4.txt"
@@ -59,6 +60,7 @@ class StartupStatus:
     manifest_profile_status: dict[str, Any]
     voice_source_contract_status: dict[str, Any]
     model_adapter_status: dict[str, Any]
+    self_knowledge_status: dict[str, Any]
     raw_chat_importer_status: dict[str, Any]
     cli_capabilities: dict[str, bool]
     responsibility_split: dict[str, Any]
@@ -293,6 +295,7 @@ def build_startup_status(config: JaznConfig | None = None, *, source_zip: Path |
         manifest_profile_status=manifest_profile_status(root),
         voice_source_contract_status=VoiceSourceContract.build(runtime_active=True, runtime_mode="one_shot").to_dict(),
         model_adapter_status=build_model_adapter(cfg).describe(),
+        self_knowledge_status=build_self_knowledge_packet(cfg, deep=(mode == "deep")).to_dict(),
         raw_chat_importer_status=RawChatImporter(root).inspect().to_dict(),
         cli_capabilities=cli_capabilities(start_file),
         responsibility_split=split,
@@ -307,6 +310,8 @@ def build_startup_status(config: JaznConfig | None = None, *, source_zip: Path |
             'latka_jazn/core/project_index.py',
             'latka_jazn/nlp/topic_mismatch_guard.py',
             'latka_jazn/core/voice_source_contract.py',
+            'latka_jazn/core/self_knowledge_contract.py',
+            'latka_jazn/resources/canon/LATKA_SELF_KNOWLEDGE_CONTRACT.json',
             'latka_jazn/core/runtime_rendering_modes.py',
             'latka_jazn/memory/memory_recall_contract.py',
             'latka_jazn/memory/raw_chat_importer.py',
@@ -343,6 +348,7 @@ def build_startup_summary(config: JaznConfig | None = None, *, source_zip: Path 
         "marker_status": (data.get("active_cache_status") or {}).get("schema_version"),
         "cache_status": data.get("active_cache_status"),
         "model_adapter_status": data.get("model_adapter_status"),
+        "self_knowledge_summary": build_self_knowledge_summary(cfg),
         "raw_memory_status": {
             "status": raw_diag.get("status") or ("archive" if raw.get("chat_html_archive_present") else "missing"),
             "has_chat_html": raw.get("chat_html_present"),
@@ -374,6 +380,8 @@ def build_self_check(config: JaznConfig | None = None) -> dict[str, Any]:
         'topic_mismatch_guard_owned_by_runtime': (root / 'latka_jazn/nlp/topic_mismatch_guard.py').exists(),
         'voice_source_contract_owned_by_runtime': (root / 'latka_jazn/core/voice_source_contract.py').exists(),
         'model_adapter_contract_owned_by_runtime': (root / 'latka_jazn/model_adapters/base.py').exists(),
+        'self_knowledge_contract_owned_by_runtime': (root / 'latka_jazn/core/self_knowledge_contract.py').exists(),
+        'self_knowledge_resource_present': (root / 'latka_jazn/resources/canon/LATKA_SELF_KNOWLEDGE_CONTRACT.json').exists(),
         'raw_chat_importer_owned_by_runtime': (root / 'latka_jazn/memory/raw_chat_importer.py').exists(),
         'project_startup_index_status': project_startup_index_status(root),
         'chatgpt_instruction_role': 'minimal_loader_only',

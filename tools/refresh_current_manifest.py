@@ -64,7 +64,7 @@ CONVERSATION_FTS_DATABASE = 'memory/sqlite/conversation_fts_v1/conversation_fts_
 STAGING_DATABASE = 'memory/sqlite/staging_v1/staging_memory_0001.sqlite3'
 STORAGE_LAYOUT = 'conversation_archive_v1+fts_v1+staging_v1+runtime_write_v1'
 HASH_SIZE_LIMIT = 64 * 1024 * 1024
-CONTROL_EXCLUDED = {'MANIFEST_CURRENT.json','MANIFEST_RUNTIME_MUTABLE.json','SHA256SUMS','SHA256SUMS_STATIC'}
+CONTROL_EXCLUDED = {'MANIFEST_CURRENT.json','RUNTIME_STATE.json','SHA256SUMS','SHA256SUMS_STATIC'}
 EXCLUDE_DIR_PARTS = {'__pycache__','.pytest_cache','.pytest-tmp','.git','.mypy_cache','.ruff_cache'}
 TRANSIENT_SUFFIXES = ('-wal','-shm','.sqlite3-wal','.sqlite3-shm','.tmp','.tmp_extract_part','.partial')
 EXCLUDE_PREFIXES = ('exports/',)
@@ -82,7 +82,7 @@ MUTABLE_PATTERNS = (
     'memory/sqlite/**/*_shards.json',
     'memory/sqlite/sqlite_audit_report.json',
 )
-ARCHIVE_PATTERNS = ('backups/**','docs/update_history/**','memory/versioned_sources/**','memory/raw/*.7z','memory/sqlite/*.bak','patches/**','*.patch','*.bak_*','**/*.bak_*')
+ARCHIVE_PATTERNS = ('backups/**','docs/archive/**','memory/versioned_sources/**','memory/raw/*.7z','memory/sqlite/*.bak','patches/**','patchs/**','reports/**','*.patch','*.bak_*','**/*.bak_*')
 
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
@@ -175,7 +175,7 @@ def build(root: Path) -> tuple[dict[str,Any],dict[str,Any]]:
         archive=classification=='archive_or_backup'
         if mutable:
             # Keep runtime/private-memory paths out of MANIFEST_CURRENT.
-            # They live only in MANIFEST_RUNTIME_MUTABLE so active-cache hashes
+            # They live only in RUNTIME_STATE so active-cache hashes
             # are stable and static package manifests do not swallow memory state.
             entry = _manifest_entry(rel, st.st_size, '', True, classification, False, 'runtime_or_private_memory_hash_deferred')
             mutable_entries.append(entry)
@@ -205,27 +205,27 @@ def build(root: Path) -> tuple[dict[str,Any],dict[str,Any]]:
         'schema_version':f'manifest_current/v{semver}',**common,
         'file_count':len(entries),'static_file_count':len(static_entries),'mutable_runtime_file_count':0,'runtime_mutable_file_count':len(mutable_entries),'archive_file_count':len(archive_entries),'excluded_file_count':excluded_file_count,'deferred_hash_file_count':len(deferred),
         'hash_size_limit_bytes':HASH_SIZE_LIMIT,
-        'runtime_mutable_manifest':'MANIFEST_RUNTIME_MUTABLE.json',
+        'runtime_state_file':'RUNTIME_STATE.json',
         'runtime_memory_split_policy':{
             'static_manifest':'MANIFEST_CURRENT.json contains static code/documentation/project files only.',
-            'runtime_manifest':'MANIFEST_RUNTIME_MUTABLE.json contains workspace_runtime, raw/private memory, processed chat graphs and SQLite stores.',
+            'runtime_state':'RUNTIME_STATE.json contains workspace_runtime, raw/private memory, processed chat graphs and SQLite stores.',
             'why':'Memory/runtime files change during operation and must not invalidate the static package manifest or be mistaken for source code.'
         },
         'excluded_file_detail_count':len(excluded),
         'excluded_file_detail_suppressed_count':sum(item['count'] for item in excluded_detail_suppressed.values()),
         'excluded_file_detail_suppressed_summary':list(excluded_detail_suppressed.values()),
         'mutable_patterns':list(MUTABLE_PATTERNS),
-        'excluded_policy':{'control_files_excluded_from_own_hash':sorted(CONTROL_EXCLUDED),'directory_parts_excluded':sorted(EXCLUDE_DIR_PARTS),'transient_suffixes_excluded':list(TRANSIENT_SUFFIXES),'prefixes_excluded':list(EXCLUDE_PREFIXES),'truth_boundary':'MANIFEST_CURRENT.json, MANIFEST_RUNTIME_MUTABLE.json i SHA256SUMS są wyłączone z listy hashowanej, żeby uniknąć samoreferencyjnego SHA. WAL/SHM, cache i eksporty są runtime/transient.'},
+        'excluded_policy':{'control_files_excluded_from_own_hash':sorted(CONTROL_EXCLUDED),'directory_parts_excluded':sorted(EXCLUDE_DIR_PARTS),'transient_suffixes_excluded':list(TRANSIENT_SUFFIXES),'prefixes_excluded':list(EXCLUDE_PREFIXES),'truth_boundary':'MANIFEST_CURRENT.json, RUNTIME_STATE.json i SHA256SUMS są wyłączone z listy hashowanej, żeby uniknąć samoreferencyjnego SHA. WAL/SHM, cache i eksporty są runtime/transient.'},
         'sqlite_diagnostics':sqlite_diag(root),
         'truth_boundary':'Manifest opisuje rzeczywisty snapshot aktywnego rozpakowanego folderu. Pliki mutable runtime są oznaczone osobno; ich SHA jest świadomie odroczony, bo zmieniają się podczas działania. Duże statyczne pliki powyżej limitu mają rozmiar i politykę hash_deferred zamiast fałszywego hasha.',
         'files':entries,'excluded_files':excluded,'deferred_hash_files':deferred,
     }
     mutable_manifest={
-        'schema_version':f'manifest_runtime_mutable/v{semver}',**common,
+        'schema_version':f'runtime_state/v{semver}',**common,
         'file_count':len(mutable_entries),'mutable_patterns':list(MUTABLE_PATTERNS),
         'deferred_hash_file_count':len(mutable_deferred),
         'deferred_hash_files':mutable_deferred,
-        'truth_boundary':'Ten manifest zawiera pliki runtime/prywatnej pamięci: workspace_runtime, raw/private memory, processed chat graphs i SQLite. Ich SHA jest odroczony; rozmiar i ścieżka opisują snapshot chwili wygenerowania.',
+        'truth_boundary':'RUNTIME_STATE.json zawiera pliki runtime/prywatnej pamięci: workspace_runtime, raw/private memory, processed chat graphs i SQLite. To nie jest manifest paczki; SHA jest odroczony, a rozmiar i ścieżka opisują snapshot chwili wygenerowania.',
         'files':mutable_entries,
     }
     return manifest, mutable_manifest
@@ -237,21 +237,19 @@ def main() -> int:
     root=ROOT
     manifest, mutable_manifest=build(root)
     write_json(root/'MANIFEST_CURRENT.json', manifest)
-    write_json(root/'MANIFEST_RUNTIME_MUTABLE.json', mutable_manifest)
+    write_json(root/'RUNTIME_STATE.json', mutable_manifest)
     # Keep SHA files standards-compatible: only entries with real hashes.
     real=[e for e in manifest['files'] if e.get('sha256')]
     static_real=[e for e in real if not e['mutable_runtime']]
     (root/'SHA256SUMS').write_text(''.join(f"{e['sha256']}  {e['path']}\n" for e in real), encoding='utf-8')
     (root/'SHA256SUMS_STATIC').write_text(''.join(f"{e['sha256']}  {e['path']}\n" for e in static_real), encoding='utf-8')
     # Local/project-safe output: do not use sandbox-only /mnt/data on Windows.
-    # The canonical files above are written directly into the project root.
-    # Extra *.corrected copies and report are also written to the same project root
-    # so this script works both in ChatGPT sandbox and on a local Windows checkout.
+    # Only canonical active files are written at the root; reports go to archive.
     out=root
-    write_json(out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json', manifest)
-    write_json(out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json', mutable_manifest)
-    report={'generated_at_utc':manifest['generated_at_utc'],'root':str(root),'version':manifest['version'],'file_count':manifest['file_count'],'static_file_count':manifest['static_file_count'],'mutable_runtime_file_count':manifest['mutable_runtime_file_count'],'runtime_mutable_file_count':manifest.get('runtime_mutable_file_count', 0),'archive_file_count':manifest['archive_file_count'],'excluded_file_count':manifest['excluded_file_count'],'excluded_file_detail_count':manifest.get('excluded_file_detail_count', len(manifest.get('excluded_files', []))),'excluded_file_detail_suppressed_count':manifest.get('excluded_file_detail_suppressed_count', 0),'deferred_hash_file_count':manifest['deferred_hash_file_count'],'active_database':manifest['active_database'],'audit_database':manifest['audit_database'],'sqlite_diagnostics':manifest['sqlite_diagnostics'],'outputs':[str((out/'MANIFEST_CURRENT.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.json').resolve()),str((out/'SHA256SUMS').resolve()),str((out/'SHA256SUMS_STATIC').resolve()),str((out/'MANIFEST_CURRENT.corrected.v14_8_2_5.json').resolve()),str((out/'MANIFEST_RUNTIME_MUTABLE.corrected.v14_8_2_5.json').resolve())]}
-    write_json(out/'LATKA_JAZN_MANIFEST_REPAIR_REPORT.v14_8_2_5.json', report)
+    report={'generated_at_utc':manifest['generated_at_utc'],'root':str(root),'version':manifest['version'],'file_count':manifest['file_count'],'static_file_count':manifest['static_file_count'],'mutable_runtime_file_count':manifest['mutable_runtime_file_count'],'runtime_mutable_file_count':manifest.get('runtime_mutable_file_count', 0),'archive_file_count':manifest['archive_file_count'],'excluded_file_count':manifest['excluded_file_count'],'excluded_file_detail_count':manifest.get('excluded_file_detail_count', len(manifest.get('excluded_files', []))),'excluded_file_detail_suppressed_count':manifest.get('excluded_file_detail_suppressed_count', 0),'deferred_hash_file_count':manifest['deferred_hash_file_count'],'active_database':manifest['active_database'],'audit_database':manifest['audit_database'],'sqlite_diagnostics':manifest['sqlite_diagnostics'],'outputs':[str((out/'MANIFEST_CURRENT.json').resolve()),str((out/'RUNTIME_STATE.json').resolve()),str((out/'SHA256SUMS').resolve()),str((out/'SHA256SUMS_STATIC').resolve()),str((out/'docs/archive/manifest_history/last_refresh_report.json').resolve())]}
+    report_path=out/'docs/archive/manifest_history/last_refresh_report.json'
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    write_json(report_path, report)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
