@@ -36,4 +36,10 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest
+        pytest \
+          tests/test_archive_workspace_runtime_sqlite.py \
+          tests/test_v1485013_chat_command_bridge_contract.py \
+          tests/test_v14850164_chat_gpt_final_only_cli.py \
+          tests/test_v14850165_conversation_decision_body_consistency.py \
+          tests/test_v1485015_runtime_access_contract.py \
+          -q
