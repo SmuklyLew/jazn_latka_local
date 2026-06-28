@@ -90,6 +90,50 @@ from latka_jazn.core.untrusted_source_guard import UntrustedSourceGuard
 from latka_jazn.memory.memory_recall_contract import MemoryRecallContractBuilder
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
 from latka_jazn.model_adapters.factory import build_model_adapter
+
+
+def _sync_conversation_decision_body(
+    decision_dict: dict[str, Any],
+    *,
+    final_body: str,
+    sync_stage: str,
+) -> dict[str, Any]:
+    """Keep the public conversation_decision body aligned with final runtime text.
+
+    The initial ConversationResponder draft can be replaced by a dedicated
+    handler, validator repair, or runtime synthesizer. JSONL diagnostics must
+    not keep that stale draft under conversation_decision.body once the final
+    handler-backed body is known.
+    """
+    synced = dict(decision_dict or {})
+    final_body = str(final_body or "").strip()
+    previous_body = str(synced.get("body") or "").strip()
+    if previous_body and previous_body != final_body:
+        synced.setdefault("pre_final_body", previous_body)
+    synced["body"] = final_body
+
+    handler_result = synced.get("handler_result") if isinstance(synced.get("handler_result"), dict) else {}
+    handler_body = str(handler_result.get("body") or "").strip()
+    preserve_handler_body = bool(synced.get("preserve_handler_body"))
+    if preserve_handler_body and handler_body and handler_body == final_body:
+        status = "synchronized_to_preserved_handler_body"
+    elif preserve_handler_body and handler_body and handler_body != final_body:
+        status = "final_body_differs_from_preserved_handler_body"
+    elif previous_body == final_body:
+        status = "already_synchronized"
+    else:
+        status = "synchronized_to_final_body"
+
+    synced["body_sync"] = {
+        "schema_version": "conversation_decision_body_sync/v14.8.5.016.5",
+        "status": status,
+        "sync_stage": sync_stage,
+        "conversation_body_matches_final_body": synced.get("body") == final_body,
+        "handler_body_matches_final_body": (handler_body == final_body) if handler_body else None,
+        "preserve_handler_body": preserve_handler_body,
+        "truth_boundary": "conversation_decision.body is diagnostic JSONL metadata and must reflect the final runtime body, not a stale pre-handler draft.",
+    }
+    return synced
 from latka_jazn.audit.audit_context_store import AuditContextStore
 from latka_jazn.bootstrap.contract_loader import BootstrapContractRepository
 
@@ -1793,7 +1837,12 @@ class JaznEngine:
             "runtime_text_hash": runtime_provenance.get("runtime_text_hash"),
             "runtime_provenance": runtime_provenance,
         })
-        envelope.cognitive_frame["conversation_decision"] = decision_dict
+        decision_dict = _sync_conversation_decision_body(
+            decision_dict,
+            final_body=body,
+            sync_stage="pre_final_response_contract",
+        )
+        envelope.attach_conversation_decision(decision_dict)
         envelope.cognitive_frame["continuity_badge_policy"] = continuity_badge_report
         envelope.cognitive_frame["runtime_answer_validation"] = answer_validation.to_dict()
         envelope.cognitive_frame["template_origin"] = template_origin
@@ -1827,7 +1876,12 @@ class JaznEngine:
         ).with_visible_text(candidate_contract.final_visible_text).to_dict()
         decision_dict["visible_answer_hash"] = runtime_provenance_visible.get("visible_answer_hash")
         decision_dict["runtime_provenance"] = runtime_provenance_visible
-        envelope.cognitive_frame["conversation_decision"] = decision_dict
+        decision_dict = _sync_conversation_decision_body(
+            decision_dict,
+            final_body=body,
+            sync_stage="post_visible_provenance",
+        )
+        envelope.attach_conversation_decision(decision_dict)
         envelope.cognitive_frame["runtime_response_provenance"] = runtime_provenance_visible
         contract = FinalResponseContract.build(
             turn_id=envelope.trace.turn_id, trace_id=envelope.trace.trace_id, runtime_version=self.config.version, timestamp_header=envelope.trace.timestamp_header, timezone=envelope.trace.timezone, state_emoticon=affect_mix.get("state_emoticon") or self.affect.marker(), body=body, conversation_decision=decision_dict, continuity_badge_policy=continuity_badge_report,
@@ -1839,7 +1893,12 @@ class JaznEngine:
             ).with_visible_text(contract.final_visible_text).to_dict()
             decision_dict["visible_answer_hash"] = runtime_provenance_visible.get("visible_answer_hash")
             decision_dict["runtime_provenance"] = runtime_provenance_visible
-            envelope.cognitive_frame["conversation_decision"] = decision_dict
+            decision_dict = _sync_conversation_decision_body(
+                decision_dict,
+                final_body=body,
+                sync_stage="post_visible_provenance_rebuild",
+            )
+            envelope.attach_conversation_decision(decision_dict)
             envelope.cognitive_frame["runtime_response_provenance"] = runtime_provenance_visible
             contract = FinalResponseContract.build(
                 turn_id=envelope.trace.turn_id, trace_id=envelope.trace.trace_id, runtime_version=self.config.version, timestamp_header=envelope.trace.timestamp_header, timezone=envelope.trace.timezone, state_emoticon=affect_mix.get("state_emoticon") or self.affect.marker(), body=body, conversation_decision=decision_dict, continuity_badge_policy=continuity_badge_report,
