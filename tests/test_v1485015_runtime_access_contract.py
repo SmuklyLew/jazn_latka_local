@@ -11,9 +11,9 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CO
 
 
 def test_runtime_version_is_current_model_adapter_contracts() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.019"
+    assert PACKAGE_VERSION == "v14.8.5.020"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "daemon-chatgpt-trusted-time-health-bridge"
+    assert PACKAGE_RELEASE_NAME == "test-suite-green"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:

@@ -1,7 +1,7 @@
 {
   "schema_version": "jazn_update_history_index/v14.6.10",
-  "generated_at_utc": "2026-06-28T23:35:38.502823+00:00",
-  "active_version": "v14.8.5.019",
+  "generated_at_utc": "2026-06-29T00:02:27.581772+00:00",
+  "active_version": "v14.8.5.020",
   "entries": [],
   "entry_count": 0,
   "truth_boundary": "Indeks porządkuje historyczne manifesty. Nie oznacza, że wszystkie stare deklaracje muszą być aktywną funkcją runtime."

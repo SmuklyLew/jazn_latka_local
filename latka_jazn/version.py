@@ -1,7 +1,7 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.019"
-PACKAGE_RELEASE_NAME = "daemon-chatgpt-trusted-time-health-bridge"
+PACKAGE_VERSION = "v14.8.5.020"
+PACKAGE_RELEASE_NAME = "test-suite-green"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL

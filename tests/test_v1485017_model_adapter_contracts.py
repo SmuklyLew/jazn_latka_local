@@ -126,6 +126,6 @@ def test_model_adapter_status_cli_does_not_require_openai_key(monkeypatch, capsy
     assert main.main(["--model-adapter-status"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["runtime_version"] == "v14.8.5.019"
+    assert payload["runtime_version"] == "v14.8.5.020"
     assert payload["model_adapter_status"]["provider"] == "none"
     assert payload["model_adapter_status"]["normal_runtime_requires_openai_api_key"] is False
