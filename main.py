@@ -63,8 +63,9 @@ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegist
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
-from latka_jazn.core.chat_command_contract import apply_chatgpt_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge
+from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge
 from latka_jazn.core.bridge_discovery import discover_runtime_bridges
+from latka_jazn.core.turn_timeout import RuntimeSessionWorker, runtime_turn_timeout_seconds
 from latka_jazn.core.runtime_daemon import (
     DEFAULT_DAEMON_CHAT_TIMEOUT_SECONDS,
     DEFAULT_DAEMON_HOST,
@@ -693,6 +694,8 @@ def main(argv: list[str] | None = None) -> int:
         cfg = config or JaznConfig()
         if ns.chat_gpt or ns.chat_gpt_final_only:
             cfg = apply_chatgpt_cli_settings(cfg)
+        elif ns.chat_loop:
+            cfg = apply_chat_cli_settings(cfg)
         elif ns.chat_open_ai:
             cfg = apply_openai_cli_settings(
                 cfg,
@@ -922,7 +925,16 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if ns.chat_loop:
-        session = JaznRuntimeSession(config, session_id=ns.session_id, no_carryover=ns.no_carryover, source_client="chat")
+        cfg = apply_chat_cli_settings(config or JaznConfig())
+        session = RuntimeSessionWorker(
+            session_factory=JaznRuntimeSession,
+            config=cfg,
+            session_id=ns.session_id,
+            no_carryover=ns.no_carryover,
+            source_client="chat",
+            command="--chat",
+            timeout_seconds=runtime_turn_timeout_seconds(cfg),
+        )
         try:
             run_persistent_chat(session, session_id=ns.session_id, no_carryover=ns.no_carryover)
         finally:

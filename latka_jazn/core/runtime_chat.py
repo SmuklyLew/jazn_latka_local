@@ -7,6 +7,7 @@ from dataclasses import dataclass, asdict
 from typing import Any, TextIO
 
 from latka_jazn.core.engine import JaznEngine
+from latka_jazn.core.turn_timeout import RuntimeTurnTimeoutError, run_with_runtime_turn_timeout, runtime_turn_timeout_seconds
 
 
 @dataclass(slots=True)
@@ -142,26 +143,59 @@ class LatkaRuntimeShell(cmd.Cmd):
         if text.startswith("/frame "):
             return self.do_frame(text.removeprefix("/frame ").strip())
         if hasattr(self.runtime, "process_user_text"):
-            result = self.runtime.process_user_text(
-                text,
-                client="chat",
-                lifecycle="persistent_chat_loop",
-                session_id_source=self._session_id_source,
-                process_reused=True,
-            )
+            try:
+                if getattr(self.runtime, "runtime_turn_timeout_managed", False):
+                    result = self.runtime.process_user_text(
+                        text,
+                        client="chat",
+                        lifecycle="persistent_chat_loop",
+                        session_id_source=self._session_id_source,
+                        process_reused=True,
+                    )
+                else:
+                    result = run_with_runtime_turn_timeout(
+                        lambda: self.runtime.process_user_text(
+                            text,
+                            client="chat",
+                            lifecycle="persistent_chat_loop",
+                            session_id_source=self._session_id_source,
+                            process_reused=True,
+                        ),
+                        command="--chat",
+                        timeout_seconds=runtime_turn_timeout_seconds(getattr(self.runtime, "config", None)),
+                    )
+            except RuntimeTurnTimeoutError as exc:
+                self.lifecycle.mark_closed("runtime_turn_timeout")
+                self._write(
+                    f"[runtime_turn_timeout] Runtime Jaźni nie zakończył tury --chat w limicie {exc.timeout_seconds:.3g}s; "
+                    "zamykam pętlę bez udawania odpowiedzi Łatki. Sprawdź timestamp/memory/engine.process_turn."
+                )
+                return True
             visible = str(result.get("final_visible_text") or "")
         else:
-            envelope = self.engine.process_turn(
-                text,
-                client_context={
-                    "client": "cli_persistent_chat",
-                    "persistent_chat": True,
-                    "lifecycle": "persistent_chat_loop",
-                    "preview_phase": "same_pipeline_as_one_shot_process_turn",
-                    "session_id": self.session_id,
-                    "no_carryover": self.no_carryover,
-                },
-            )
+            try:
+                envelope = run_with_runtime_turn_timeout(
+                    lambda: self.engine.process_turn(
+                        text,
+                        client_context={
+                            "client": "cli_persistent_chat",
+                            "persistent_chat": True,
+                            "lifecycle": "persistent_chat_loop",
+                            "preview_phase": "same_pipeline_as_one_shot_process_turn",
+                            "session_id": self.session_id,
+                            "no_carryover": self.no_carryover,
+                        },
+                    ),
+                    command="--chat",
+                    timeout_seconds=runtime_turn_timeout_seconds(getattr(self.engine, "config", None)),
+                )
+            except RuntimeTurnTimeoutError as exc:
+                self.lifecycle.mark_closed("runtime_turn_timeout")
+                self._write(
+                    f"[runtime_turn_timeout] Runtime Jaźni nie zakończył tury --chat w limicie {exc.timeout_seconds:.3g}s; "
+                    "zamykam pętlę bez udawania odpowiedzi Łatki. Sprawdź timestamp/memory/engine.process_turn."
+                )
+                return True
             visible = envelope.final_visible_text or envelope.final_response_contract.get("final_visible_text", "")
         visible = self._protect_against_repeated_visible_text(user_text=text, visible_text=visible)
         self._write(visible)
