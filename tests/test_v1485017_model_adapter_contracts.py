@@ -88,7 +88,7 @@ def test_backend_skeletons_do_not_claim_llama_cpp_implementation(monkeypatch) ->
     assert skeletons["openai"]["normal_runtime_requires_credential"] is False
     assert skeletons["ollama"]["implemented"] is True
     assert skeletons["llama_cpp"]["implemented"] is False
-    assert skeletons["lmstudio"]["implemented"] is False
+    assert skeletons["lmstudio"]["implemented"] is True
     assert skeletons["lmstudio"]["credential_env"] is None
     assert skeletons["codex"]["kind"] == "development_tooling_status"
 
@@ -123,24 +123,32 @@ def test_llama_cpp_selection_is_contract_only_and_never_calls_endpoint(monkeypat
     assert response.text == ""
 
 
-def test_lmstudio_selection_is_contract_only_and_never_uses_ollama(monkeypatch) -> None:
+def test_lmstudio_selection_uses_runtime_adapter_and_never_uses_ollama(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setenv("JAZN_MODEL_ADAPTER", "lmstudio")
     monkeypatch.setenv("JAZN_LM_STUDIO_MODEL", "local-lmstudio-test")
 
     adapter = build_model_adapter(JaznConfig())
+    endpoints: list[str] = []
+
+    def fake_post(endpoint: str, payload: dict) -> dict:
+        endpoints.append(endpoint)
+        return {"output_text": "Lokalna odpowiedź."}
+
+    monkeypatch.setattr(adapter, "_post_json", fake_post)
     status = adapter.describe()
     response = adapter.generate(ModelAdapterRequest(prompt="test"))
 
     assert status["adapter_id"] == "lmstudio_runtime_adapter"
     assert status["provider"] == "lmstudio"
-    assert status["status"] == "contract_only_not_implemented"
-    assert status["available"] is False
-    assert status["can_generate_model_guided_speech"] is False
+    assert status["status"] == "configured"
+    assert status["available"] is True
+    assert status["can_generate_model_guided_speech"] is True
     assert status["requires_api_key"] is False
-    assert status["failure_reason"] == "lmstudio_adapter_not_implemented"
-    assert response.status == "lmstudio_adapter_not_implemented"
-    assert response.text == ""
+    assert status["failure_reason"] is None
+    assert response.status == "completed"
+    assert response.text == "Lokalna odpowiedź."
+    assert endpoints == ["/responses"]
 
 
 def test_codex_development_adapter_is_not_speech_adapter(monkeypatch) -> None:

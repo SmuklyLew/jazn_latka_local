@@ -27,8 +27,8 @@ from latka_jazn.model_adapters.factory import build_model_adapter
 ROOT = Path(__file__).resolve().parents[1]
 LMSTUDIO_TRUTH_BOUNDARY = (
     "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
-    "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
-    "a ten etap nie implementuje jeszcze generowania final_visible_text."
+    "Nie wymaga OPENAI_API_KEY i nie jest źródłem tożsamości, pamięci, stanu ani prawdy runtime Jaźni. "
+    "Widoczna odpowiedź przechodzi przez istniejący runtime, walidację i truthful fallback."
 )
 
 

@@ -12,8 +12,8 @@ from latka_jazn.version import schema_version
 
 LMSTUDIO_TRUTH_BOUNDARY = (
     "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
-    "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
-    "a ten etap nie implementuje jeszcze generowania final_visible_text."
+    "Nie wymaga OPENAI_API_KEY i nie jest źródłem tożsamości, pamięci, stanu ani prawdy runtime Jaźni. "
+    "Widoczna odpowiedź przechodzi przez istniejący runtime, walidację i truthful fallback."
 )
 
 
@@ -61,7 +61,7 @@ def discover_runtime_bridges(
             "command": "python main.py --chat-lm-studio --session-id <id>",
             "requires_api_key": False,
             "env": None,
-            "meaning": "ten sam runtime Jaźni + lokalny backend LM Studio przez OpenAI-compatible API; contract/status only",
+            "meaning": "ten sam runtime Jaźni + lokalny backend LM Studio przez OpenAI-compatible Responses API z fallbackiem Chat Completions",
             "truth_boundary": LMSTUDIO_TRUTH_BOUNDARY,
         },
         "daemon": {

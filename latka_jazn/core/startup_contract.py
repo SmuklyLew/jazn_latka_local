@@ -264,13 +264,8 @@ def build_startup_status(
     sqlite_health_mode = "deep" if mode == "deep" else "metadata"
     root = Path(cfg.root).resolve()
     start_file = detect_start_file(root)
-    try:
-        if not (root / 'workspace_runtime' / 'project_startup_index_v14_6_10.json').exists():
-            build_project_startup_index(root, write=True)
-    except Exception:
-        # Startup-status nie może ukryć błędu startu, ale nie powinien też blokować
-        # minimalnego raportu, jeżeli indeks projektu nie zbudował się z powodu pliku systemowego.
-        pass
+    # Status paths are observational. A missing project index is reported below;
+    # creating it belongs to the explicit project-index command.
     cache_status = build_active_runtime_status(root, source_zip=source_zip)
     loader = _read_optional(root, MINIMAL_LOADER_RESOURCE).strip()
     split = default_responsibility_split().to_dict()
@@ -300,7 +295,7 @@ def build_startup_status(
         active_root=str(root),
         start_file=start_file,
         active_database=str(cache_status.get("active_database") or cfg.conversation_archive_manifest_name),
-        active_runtime_write_database=_display_path(root, cfg.memory_db_path) or cfg.memory_db_name,
+        active_runtime_write_database=_display_path(root, cfg.memory_db_path_readonly) or cfg.memory_db_name,
         active_conversation_archive=str(cache_status.get("active_conversation_archive") or cfg.conversation_archive_manifest_name),
         active_conversation_fts=str(cache_status.get("active_conversation_fts") or "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3"),
         active_staging_database=str(cache_status.get("active_staging_database") or "memory/sqlite/staging_v1/staging_memory_0001.sqlite3"),

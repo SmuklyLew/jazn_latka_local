@@ -87,8 +87,8 @@ def chat_lm_studio_contract() -> ChatCommandContract:
         engine_reused_between_turns=True,
         truth_boundary=(
             "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
-            "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
-            "a ten etap nie implementuje jeszcze generowania final_visible_text."
+            "Nie wymaga OPENAI_API_KEY i nie jest źródłem tożsamości, pamięci, stanu ani prawdy runtime Jaźni. "
+            "Widoczna odpowiedź przechodzi przez istniejący runtime, walidację i truthful fallback."
         ),
     )
 

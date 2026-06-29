@@ -299,8 +299,9 @@ def _sha256_file(path: Path) -> str | None:
     return h.hexdigest()
 
 
-def _connect_readonly(path: Path) -> sqlite3.Connection:
-    uri = f"file:{path.resolve().as_posix()}?mode=ro"
+def _connect_readonly(path: Path, *, immutable: bool = False) -> sqlite3.Connection:
+    options = "mode=ro&immutable=1" if immutable else "mode=ro"
+    uri = f"file:{path.resolve().as_posix()}?{options}"
     con = sqlite3.connect(uri, uri=True)
     con.row_factory = sqlite3.Row
     return con
@@ -416,13 +417,13 @@ class MemoryNormalizationSidecar:
             con.commit()
 
     def status(self) -> MemoryNormalizationStatus:
-        source_counts = self._source_counts()
+        source_counts = self._source_counts(immutable=True)
         sidecar_counts: dict[str, int] = {}
         schema_present = False
         last_run = None
         if self.sidecar_db_path.exists():
             try:
-                with _connect_readonly(self.sidecar_db_path) as con:
+                with _connect_readonly(self.sidecar_db_path, immutable=True) as con:
                     required = {"normalization_runs", "actors", "normalized_memory_items", "wake_state_snapshots"}
                     optional = {"layered_dedupe_runs", "layered_dedupe_groups", "layered_dedupe_members"}
                     present = {
@@ -575,7 +576,7 @@ class MemoryNormalizationSidecar:
                 status="sidecar_missing",
             )
         try:
-            with _connect_readonly(self.sidecar_db_path) as con:
+            with _connect_readonly(self.sidecar_db_path, immutable=True) as con:
                 schema_present = _table_exists(con, "wake_state_snapshots")
                 active = None
                 if schema_present:
@@ -1069,12 +1070,12 @@ class MemoryNormalizationSidecar:
             }
         return counts
 
-    def _source_counts(self) -> dict[str, int]:
+    def _source_counts(self, *, immutable: bool = False) -> dict[str, int]:
         if not self.source_db_path.exists():
             return {}
         counts: dict[str, int] = {}
         try:
-            with _connect_readonly(self.source_db_path) as con:
+            with _connect_readonly(self.source_db_path, immutable=immutable) as con:
                 for table in (
                     "messages",
                     "messages_user_assistant",
@@ -1520,8 +1521,8 @@ def build_memory_normalization_status(config: JaznConfig | None = None) -> Memor
     cfg = config or JaznConfig()
     return MemoryNormalizationSidecar(
         cfg.root,
-        source_db_path=cfg.root / cfg.memory_db_name,
-        sidecar_db_path=cfg.root / cfg.audit_db_name,
+        source_db_path=cfg.memory_db_path_readonly,
+        sidecar_db_path=cfg.audit_db_path_readonly,
         runtime_version=cfg.version,
     ).status()
 
@@ -1530,7 +1531,7 @@ def build_wake_state_status(config: JaznConfig | None = None) -> WakeStateStatus
     cfg = config or JaznConfig()
     return MemoryNormalizationSidecar(
         cfg.root,
-        source_db_path=cfg.root / cfg.memory_db_name,
-        sidecar_db_path=cfg.root / cfg.audit_db_name,
+        source_db_path=cfg.memory_db_path_readonly,
+        sidecar_db_path=cfg.audit_db_path_readonly,
         runtime_version=cfg.version,
     ).wake_state_status()
