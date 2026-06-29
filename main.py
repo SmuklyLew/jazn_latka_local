@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.020-test-suite-green
+# Current package version: v14.8.5.021a-release-metadata-manifest-hygiene
 from __future__ import annotations
 
 import argparse

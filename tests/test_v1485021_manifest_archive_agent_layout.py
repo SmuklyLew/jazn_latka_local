@@ -71,6 +71,7 @@ def test_active_tree_has_no_legacy_manifest_files_outside_archive() -> None:
             continue
         if rel in {
             "MANIFEST_CURRENT.json",
+            "docs/update_history/changelogs/CHANGELOG_v14_8_5_021A_RELEASE_METADATA_MANIFEST_HYGIENE.md",
             "latka_jazn/resources/package_manifest_profiles.json",
             "latka_jazn/resources/update_manifest_schema.json",
             "latka_jazn/core/birth_manifest.py",
