@@ -80,8 +80,8 @@ def backend_config_skeletons(config: Any) -> list[dict[str, Any]]:
         {
             "adapter_id": "lmstudio_runtime_adapter",
             "provider": "lmstudio",
-            "kind": "openai_compatible_local_api_skeleton",
-            "implemented": False,
+            "kind": "openai_compatible_local_api",
+            "implemented": True,
             "selection": "JAZN_MODEL_ADAPTER=lmstudio",
             "model_env": "JAZN_LM_STUDIO_MODEL",
             "endpoint_env": "JAZN_LM_STUDIO_API_BASE",

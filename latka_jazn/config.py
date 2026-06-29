@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
+import json
 import os
 
 from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
@@ -31,6 +32,28 @@ def _env_float(name: str, default: float) -> float:
 def _env_int(name: str, default: int) -> int:
     try:
         return int(os.environ.get(name, ""))
+    except Exception:
+        return default
+
+
+def _env_first(*names: str, default: str = "") -> str:
+    for name in names:
+        value = os.environ.get(name)
+        if value is not None:
+            return value
+    return default
+
+
+def _env_float_first(*names: str, default: float) -> float:
+    try:
+        return float(_env_first(*names))
+    except Exception:
+        return default
+
+
+def _env_int_first(*names: str, default: int) -> int:
+    try:
+        return int(_env_first(*names))
     except Exception:
         return default
 
@@ -101,10 +124,10 @@ class JaznConfig:
     terminal_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_TERMINAL_MODEL_NAME", "terminal_visible_layer").strip())
     local_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LOCAL_MODEL_NAME", "").strip())
     local_model_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_LOCAL_MODEL_API_BASE", "http://127.0.0.1:11434").strip().rstrip("/"))
-    lm_studio_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LM_STUDIO_MODEL", "").strip())
-    lm_studio_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_LM_STUDIO_API_BASE", "http://127.0.0.1:1234/v1").strip().rstrip("/"))
-    lm_studio_timeout_seconds: float = field(default_factory=lambda: _env_float("JAZN_LM_STUDIO_TIMEOUT", 45.0))
-    lm_studio_max_output_tokens: int = field(default_factory=lambda: _env_int("JAZN_LM_STUDIO_MAX_OUTPUT_TOKENS", 800))
+    lm_studio_model_name: str = field(default_factory=lambda: _env_first("JAZN_LM_STUDIO_MODEL", "JAZN_LMSTUDIO_MODEL").strip())
+    lm_studio_api_base: str = field(default_factory=lambda: _env_first("JAZN_LM_STUDIO_API_BASE", "JAZN_LMSTUDIO_API_BASE", default="http://127.0.0.1:1234/v1").strip().rstrip("/"))
+    lm_studio_timeout_seconds: float = field(default_factory=lambda: _env_float_first("JAZN_LM_STUDIO_TIMEOUT", "JAZN_LMSTUDIO_TIMEOUT_SECONDS", default=45.0))
+    lm_studio_max_output_tokens: int = field(default_factory=lambda: _env_int_first("JAZN_LM_STUDIO_MAX_OUTPUT_TOKENS", "JAZN_LMSTUDIO_MAX_OUTPUT_TOKENS", default=800))
     llama_cpp_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LLAMA_CPP_MODEL_NAME", "").strip())
     llama_cpp_model_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_LLAMA_CPP_API_BASE", "http://127.0.0.1:8080/v1").strip().rstrip("/"))
 
@@ -142,6 +165,19 @@ class JaznConfig:
         except Exception:
             return self.root / default_db_name
 
+    def _active_shard_path_readonly(self, manifest_name: str, default_db_name: str) -> Path:
+        """Resolve an active shard without creating, refreshing, or rotating it."""
+        manifest_path = self.root / manifest_name
+        try:
+            data = json.loads(manifest_path.read_text(encoding="utf-8"))
+            active_shard = str(data.get("active_write_shard") or "")
+            for shard in data.get("shards") or []:
+                if str(shard.get("shard_id") or "") == active_shard and shard.get("path"):
+                    return self.root / str(shard["path"])
+        except Exception:
+            pass
+        return self.root / default_db_name
+
     @property
     def memory_db_path(self) -> Path:
         return self._active_shard_path(
@@ -152,11 +188,25 @@ class JaznConfig:
         )
 
     @property
+    def memory_db_path_readonly(self) -> Path:
+        return self._active_shard_path_readonly(
+            self.conversation_shard_manifest_name,
+            self.memory_db_name,
+        )
+
+    @property
     def audit_db_path(self) -> Path:
         return self._active_shard_path(
             self.audit_shard_manifest_name,
             "chat_context_audit",
             "canonical_realtime_audit",
+            self.audit_db_name,
+        )
+
+    @property
+    def audit_db_path_readonly(self) -> Path:
+        return self._active_shard_path_readonly(
+            self.audit_shard_manifest_name,
             self.audit_db_name,
         )
 

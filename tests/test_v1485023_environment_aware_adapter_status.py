@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import sqlite3
+from pathlib import Path
 
 import main
 import pytest
@@ -10,8 +13,8 @@ from latka_jazn.model_adapters.factory import build_model_adapter_status
 
 LMSTUDIO_TRUTH_BOUNDARY = (
     "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
-    "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
-    "a ten etap nie implementuje jeszcze generowania final_visible_text."
+    "Nie wymaga OPENAI_API_KEY i nie jest źródłem tożsamości, pamięci, stanu ani prawdy runtime Jaźni. "
+    "Widoczna odpowiedź przechodzi przez istniejący runtime, walidację i truthful fallback."
 )
 
 
@@ -149,7 +152,7 @@ def test_chat_openai_alias_reports_same_effective_adapter_as_chat_open_ai(monkey
     assert alias_status["runtime_environment"]["explicit_command"] == canonical_status["runtime_environment"]["explicit_command"] == "--chat-open-ai"
 
 
-def test_chat_lm_studio_model_adapter_status_is_contract_only_local_backend(monkeypatch, capsys) -> None:
+def test_chat_lm_studio_model_adapter_status_is_truthful_local_backend(monkeypatch, capsys) -> None:
     _clear_host_env(monkeypatch)
 
     assert main.main(["--chat-lm-studio", "--model-adapter-status"]) == 0
@@ -161,7 +164,8 @@ def test_chat_lm_studio_model_adapter_status_is_contract_only_local_backend(monk
     assert status["effective_runtime_adapter"] == "lmstudio_runtime_adapter"
     assert status["runtime_environment"]["uses_openai_api"] is False
     assert status["runtime_environment"]["requires_openai_api_key"] is False
-    assert status["failure_reason"] == "lmstudio_adapter_not_implemented"
+    assert status["status"] == "not_configured"
+    assert status["failure_reason"] == "lmstudio_model_name_missing"
     assert status["truth_boundary"] == LMSTUDIO_TRUTH_BOUNDARY
 
 
@@ -177,3 +181,86 @@ def test_chat_lm_studio_startup_status_reports_explicit_command(monkeypatch, cap
     assert payload["cli_capabilities"]["--chat-open-ai"] is True
     assert payload["cli_capabilities"]["--chat-openai"] is True
     assert payload["cli_capabilities"]["--chat-lm-studio"] is True
+
+
+def _protected_fingerprint(root: Path) -> dict[str, tuple[int, int, str]]:
+    result: dict[str, tuple[int, int, str]] = {}
+    for name in ("memory", "workspace_runtime", "exports", "reports", "patchs"):
+        base = root / name
+        if not base.exists():
+            continue
+        for path in sorted(item for item in base.rglob("*") if item.is_file()):
+            raw = path.read_bytes()
+            result[path.relative_to(root).as_posix()] = (
+                len(raw),
+                path.stat().st_mtime_ns,
+                hashlib.sha256(raw).hexdigest(),
+            )
+    return result
+
+
+def test_lmstudio_and_adapter_status_paths_do_not_write_protected_directories(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    _clear_host_env(monkeypatch)
+    (tmp_path / "main.py").write_text("# status fixture\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text("v14.8.5.026b\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+
+    runtime_dir = tmp_path / "memory" / "sqlite" / "runtime_write_v1"
+    runtime_dir.mkdir(parents=True)
+    memory_db = runtime_dir / "runtime_memory.sqlite3"
+    audit_db = runtime_dir / "runtime_audit.sqlite3"
+    for path in (memory_db, audit_db):
+        with sqlite3.connect(path) as con:
+            con.execute("CREATE TABLE marker(value TEXT)")
+            con.execute("INSERT INTO marker(value) VALUES('unchanged')")
+            con.commit()
+
+    (runtime_dir / "runtime_memory_shards.json").write_text(
+        json.dumps(
+            {
+                "active_write_shard": "0001",
+                "shards": [
+                    {
+                        "shard_id": "0001",
+                        "path": "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3",
+                    }
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    (runtime_dir / "runtime_audit_shards.json").write_text(
+        json.dumps(
+            {
+                "active_write_shard": "0001",
+                "shards": [
+                    {
+                        "shard_id": "0001",
+                        "path": "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3",
+                    }
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    before = _protected_fingerprint(tmp_path)
+
+    commands = [
+        ["--root", str(tmp_path), "--model-adapter-status"],
+        ["--root", str(tmp_path), "--chat-lm-studio", "--model-adapter-status"],
+        ["--root", str(tmp_path), "--chat-lm-studio", "--startup-status-fast"],
+    ]
+    for args in commands:
+        assert main.main(args) == 0
+        json.loads(capsys.readouterr().out)
+        assert _protected_fingerprint(tmp_path) == before
+
+    assert not (tmp_path / "workspace_runtime" / "project_startup_index_v14_6_10.json").exists()
+    assert not list(runtime_dir.glob("*.sqlite3-shm"))
+    assert not list(runtime_dir.glob("*.sqlite3-wal"))

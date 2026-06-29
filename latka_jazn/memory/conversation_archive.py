@@ -22,8 +22,9 @@ def _mib(value: int) -> float:
     return round(value / 1024 / 1024, 2)
 
 
-def _connect_ro(path: Path) -> sqlite3.Connection:
-    uri = f"file:{path.resolve().as_posix()}?mode=ro"
+def _connect_ro(path: Path, *, immutable: bool = False) -> sqlite3.Connection:
+    options = "mode=ro&immutable=1" if immutable else "mode=ro"
+    uri = f"file:{path.resolve().as_posix()}?{options}"
     con = sqlite3.connect(uri, uri=True, timeout=10.0)
     con.row_factory = sqlite3.Row
     return con
@@ -213,7 +214,7 @@ class ConversationArchiveStore:
             issues.append("manifest_foreign_key_errors")
 
         try:
-            with closing(_connect_ro(self.manifest_path)) as con:
+            with closing(_connect_ro(self.manifest_path, immutable=True)) as con:
                 meta = {row["key"]: row["value"] for row in con.execute("SELECT key,value FROM manifest_meta")}
                 hard_limit_bytes = int(meta.get("hard_limit_bytes") or hard_limit_bytes)
                 counts = {
@@ -364,7 +365,7 @@ class ConversationArchiveStore:
         error: str | None = None
         if health_mode in {"quick", "deep"}:
             try:
-                with closing(_connect_ro(path)) as con:
+                with closing(_connect_ro(path, immutable=True)) as con:
                     con.execute("PRAGMA busy_timeout=1000")
                     if health_mode == "quick":
                         integrity = str(con.execute("PRAGMA quick_check").fetchone()[0])

@@ -8,6 +8,7 @@ from .chatgpt_runtime_adapter import ChatgptRuntimeAdapter
 from .terminal_runtime_adapter import TerminalRuntimeAdapter
 from .openai_responses_adapter import OpenaiResponsesAdapter
 from .local_llm_adapter import LocalLlmAdapter
+from .lmstudio_runtime_adapter import LmStudioRuntimeAdapter
 from .adapter_contract import ContractOnlyModelAdapter, backend_config_skeletons
 from latka_jazn.core.runtime_environment import CODEX_ADAPTER, LMSTUDIO_ADAPTER, apply_effective_runtime_adapter, detect_runtime_environment
 
@@ -47,18 +48,12 @@ def build_model_adapter(config: Any):
             endpoint=str(getattr(config, "llama_cpp_model_api_base", "http://127.0.0.1:8080/v1")),
         )
     if name in {"lmstudio", "lm_studio", "lmstudio_runtime", LMSTUDIO_ADAPTER}:
-        return ContractOnlyModelAdapter(
-            provider="lmstudio",
+        return LmStudioRuntimeAdapter(
             model=str(getattr(config, "lm_studio_model_name", "")),
-            endpoint=str(getattr(config, "lm_studio_api_base", "http://127.0.0.1:1234/v1")),
-            adapter_id=LMSTUDIO_ADAPTER,
-            failure_reason="lmstudio_adapter_not_implemented",
-            response_status="lmstudio_adapter_not_implemented",
-            truth_boundary=(
-                "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
-                "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
-                "a ten etap nie implementuje jeszcze generowania final_visible_text."
-            ),
+            api_base=str(getattr(config, "lm_studio_api_base", "http://127.0.0.1:1234/v1")),
+            timeout_seconds=float(getattr(config, "lm_studio_timeout_seconds", 45.0)),
+            max_output_tokens=int(getattr(config, "lm_studio_max_output_tokens", 800)),
+            root=getattr(config, "root", None),
         )
     if name in {"codex", "codex_development", CODEX_ADAPTER}:
         return ContractOnlyModelAdapter(
