@@ -373,7 +373,7 @@ def main(argv: list[str] | None = None) -> int:
     if ns.startup_status or ns.startup_status_fast or ns.startup_status_deep:
         cfg = config or JaznConfig()
         mode = "deep" if ns.startup_status_deep else "fast"
-        print(json.dumps(build_startup_status(cfg, source_zip=ns.source_zip, mode=mode).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        print(json.dumps(build_startup_status(cfg, source_zip=ns.source_zip, mode=mode, infer_host_environment=True).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
     if ns.status_json:
@@ -692,11 +692,15 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.model_adapter_status:
         cfg = config or JaznConfig()
-        if ns.chat_gpt or ns.chat_gpt_final_only:
-            cfg = apply_chatgpt_cli_settings(cfg)
+        adapter_command = None
+        if ns.chat_gpt_final_only:
+            adapter_command = "--chat-gpt-final-only"
+        elif ns.chat_gpt:
+            adapter_command = "--chat-gpt"
         elif ns.chat_loop:
-            cfg = apply_chat_cli_settings(cfg)
+            adapter_command = "--chat"
         elif ns.chat_open_ai:
+            adapter_command = "--chat-open-ai"
             cfg = apply_openai_cli_settings(
                 cfg,
                 model=ns.openai_model,
@@ -704,7 +708,14 @@ def main(argv: list[str] | None = None) -> int:
                 timeout_seconds=ns.openai_timeout,
                 max_output_tokens=ns.openai_max_output_tokens,
             )
-        payload = {"runtime_version": cfg.version, "model_adapter_status": build_model_adapter_status(cfg)}
+        payload = {
+            "runtime_version": cfg.version,
+            "model_adapter_status": build_model_adapter_status(
+                cfg,
+                command=adapter_command,
+                infer_host_environment=True,
+            ),
+        }
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
