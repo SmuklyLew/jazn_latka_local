@@ -1,9 +1,10 @@
-# Current package version: v14.8.5.017-model-adapter-contracts
+# Current package version: v14.8.5.021a-release-metadata-manifest-hygiene
 from __future__ import annotations
 
 import argparse
 import io
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -62,13 +63,18 @@ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegist
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
-from latka_jazn.core.chat_command_contract import apply_chatgpt_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge
+from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge
 from latka_jazn.core.bridge_discovery import discover_runtime_bridges
+from latka_jazn.core.turn_timeout import RuntimeSessionWorker, runtime_turn_timeout_seconds
 from latka_jazn.core.runtime_daemon import (
+    DEFAULT_DAEMON_CHAT_TIMEOUT_SECONDS,
     DEFAULT_DAEMON_HOST,
     DEFAULT_DAEMON_PORT,
     DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
     DEFAULT_START_TIMEOUT_SECONDS,
+    apply_daemon_trusted_time_env,
+    chat_daemon,
+    refresh_daemon_time,
     run_daemon,
     start_daemon,
     status_daemon,
@@ -113,6 +119,13 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--daemon-heartbeat-interval", type=float, default=DEFAULT_HEARTBEAT_INTERVAL_SECONDS, help="Co ile sekund daemon odĹ›wieĹĽa marker aktywnego runtime.")
     parser.add_argument("--daemon-start-timeout", type=float, default=DEFAULT_START_TIMEOUT_SECONDS, help="Ile sekund --daemon-start czeka na odpowiedĹş /status.")
     parser.add_argument("--daemon-marker-output", type=Path, default=None, help="Opcjonalna Ĺ›cieĹĽka markera JAZN_ACTIVE_RUNTIME.json dla daemonu.")
+    parser.add_argument("--daemon-refresh-time", action="store_true", dest="daemon_refresh_time", help="Poproś daemon o odświeżenie trusted/degraded timestamp cache i zwróć status.")
+    parser.add_argument("--daemon-send", action="store_true", dest="daemon_send", help="Wyślij jedną wiadomość przez działający daemon HTTP; jeśli daemon nie działa, spróbuj go uruchomić.")
+    parser.add_argument("--daemon-final-only", action="store_true", dest="daemon_final_only", help="Z --daemon-send wypisz tylko final_visible_text, gdy runtime zwróci finalną odpowiedź.")
+    parser.add_argument("--daemon-chat-timeout", type=float, default=DEFAULT_DAEMON_CHAT_TIMEOUT_SECONDS, help="Timeout sekund dla jednej tury POST /chat przez daemon.")
+    parser.add_argument("--trusted-time-iso", default=None, help="Zaufany timestamp ISO wstrzyknięty przez host/loader ChatGPT; aktywuje trusted time bez sieci w sandboxie.")
+    parser.add_argument("--trusted-time-source", default="chatgpt_loader", help="Opis źródła dla --trusted-time-iso / JAZN_TRUSTED_TIME_ISO.")
+    parser.add_argument("--trusted-time-max-age-seconds", type=int, default=None, help="Maksymalny wiek wstrzykniętego trusted timestampu; domyślnie polityka czasu runtime.")
     parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.")
     parser.add_argument("--no-carryover", action="store_true", dest="no_carryover", help="Zablokuj uĹĽycie poprzedniej tury nawet jeĹ›li istnieje runtime_state.json.")
     parser.add_argument("--github-plan", action="store_true", dest="github_plan", help="Zapisz i pokaĹĽ plan repozytoriĂłw Latka.Jazn oraz Latka.Jazn.Memory bez wykonywania pushu.")
@@ -243,6 +256,13 @@ def main(argv: list[str] | None = None) -> int:
         ns.runtime_preview_output = Path(ns.message[idx + 1])
         ns.message = ns.message[:idx] + ns.message[idx + 2:]
     root = ns.root.resolve() if ns.root else None
+    trusted_time_env = None
+    if ns.trusted_time_iso or os.environ.get("JAZN_TRUSTED_TIME_ISO"):
+        trusted_time_env = apply_daemon_trusted_time_env(
+            trusted_time_iso=ns.trusted_time_iso,
+            source=ns.trusted_time_source,
+            max_age_seconds=ns.trusted_time_max_age_seconds,
+        )
 
     if ns.status_readonly:
         print(_render_readonly_status(root))
@@ -274,14 +294,25 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.daemon_start:
         cfg = config or JaznConfig()
-        print(json.dumps(start_daemon(
+        payload = start_daemon(
             cfg,
             host=ns.daemon_host,
             port=ns.daemon_port,
             marker_output=ns.daemon_marker_output,
             heartbeat_interval=ns.daemon_heartbeat_interval,
             startup_timeout=ns.daemon_start_timeout,
-        ), ensure_ascii=False, indent=2, sort_keys=True))
+        )
+        if trusted_time_env is not None:
+            payload["trusted_time_env"] = trusted_time_env
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.daemon_refresh_time:
+        cfg = config or JaznConfig()
+        payload = refresh_daemon_time(cfg, host=ns.daemon_host, port=ns.daemon_port)
+        if trusted_time_env is not None:
+            payload["trusted_time_env"] = trusted_time_env
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
     if ns.daemon_status:
@@ -303,6 +334,41 @@ def main(argv: list[str] | None = None) -> int:
             marker_output=ns.daemon_marker_output,
         ), ensure_ascii=False, indent=2, sort_keys=True))
         return 0
+
+    if ns.daemon_send or ns.daemon_final_only:
+        cfg = config or JaznConfig()
+        text = _message_from_remainder(ns.message)
+        status = status_daemon(cfg, host=ns.daemon_host, port=ns.daemon_port, marker_output=ns.daemon_marker_output)
+        startup = None
+        if status.get("active_state") not in {"active_trusted", "active_degraded"}:
+            startup = start_daemon(
+                cfg,
+                host=ns.daemon_host,
+                port=ns.daemon_port,
+                marker_output=ns.daemon_marker_output,
+                heartbeat_interval=ns.daemon_heartbeat_interval,
+                startup_timeout=ns.daemon_start_timeout,
+            )
+        payload = chat_daemon(
+            cfg,
+            text,
+            host=ns.daemon_host,
+            port=ns.daemon_port,
+            session_id=ns.session_id,
+            no_carryover=ns.no_carryover,
+            timeout=ns.daemon_chat_timeout,
+        )
+        if startup is not None:
+            payload.setdefault("daemon_startup", startup)
+        if trusted_time_env is not None:
+            payload.setdefault("trusted_time_env", trusted_time_env)
+        if ns.daemon_final_only and isinstance(payload, dict):
+            final_text = payload.get("final_visible_text") or (payload.get("runtime") or {}).get("final_visible_text")
+            if final_text:
+                print(str(final_text))
+                return 0
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0 if payload.get("ok") else 1
 
     if ns.startup_status or ns.startup_status_fast or ns.startup_status_deep:
         cfg = config or JaznConfig()
@@ -628,6 +694,8 @@ def main(argv: list[str] | None = None) -> int:
         cfg = config or JaznConfig()
         if ns.chat_gpt or ns.chat_gpt_final_only:
             cfg = apply_chatgpt_cli_settings(cfg)
+        elif ns.chat_loop:
+            cfg = apply_chat_cli_settings(cfg)
         elif ns.chat_open_ai:
             cfg = apply_openai_cli_settings(
                 cfg,
@@ -857,7 +925,16 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if ns.chat_loop:
-        session = JaznRuntimeSession(config, session_id=ns.session_id, no_carryover=ns.no_carryover, source_client="chat")
+        cfg = apply_chat_cli_settings(config or JaznConfig())
+        session = RuntimeSessionWorker(
+            session_factory=JaznRuntimeSession,
+            config=cfg,
+            session_id=ns.session_id,
+            no_carryover=ns.no_carryover,
+            source_client="chat",
+            command="--chat",
+            timeout_seconds=runtime_turn_timeout_seconds(cfg),
+        )
         try:
             run_persistent_chat(session, session_id=ns.session_id, no_carryover=ns.no_carryover)
         finally:

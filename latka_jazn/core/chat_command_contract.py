@@ -8,6 +8,7 @@ from typing import Any, Literal, TextIO
 
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.runtime_session import JaznRuntimeSession
+from latka_jazn.core.turn_timeout import RuntimeSessionWorker, RuntimeTurnTimeoutError, runtime_turn_timeout_seconds
 from latka_jazn.version import schema_version
 
 ACCEPTED_CHATGPT_INPUT_FIELDS = ("message", "text", "user_text", "content", "prompt")
@@ -130,6 +131,15 @@ def apply_chatgpt_cli_settings(config: JaznConfig) -> JaznConfig:
         config.model_name = os.environ.get("JAZN_CHATGPT_MODEL_NAME", "chatgpt_host_model").strip() or "chatgpt_host_model"
     return config
 
+
+def apply_chat_cli_settings(config: JaznConfig) -> JaznConfig:
+    """Select the truthful local terminal adapter for the --chat loop."""
+    config.model_adapter = "terminal_runtime_adapter"
+    if not os.environ.get("JAZN_TERMINAL_MODEL_NAME"):
+        config.terminal_model_name = "terminal_visible_layer"
+    return config
+
+
 def apply_openai_cli_settings(
     config: JaznConfig,
     *,
@@ -213,8 +223,8 @@ def run_jsonl_chat_bridge(
         stdout.flush()
         return 3
 
-    sessions: dict[str, JaznRuntimeSession] = {}
-    generated_session: JaznRuntimeSession | None = None
+    sessions: dict[str, RuntimeSessionWorker] = {}
+    generated_session: RuntimeSessionWorker | None = None
 
     def bridge_meta(
         *,
@@ -262,18 +272,18 @@ def run_jsonl_chat_bridge(
             "error": error,
         }
 
-    def get_session(payload_session_id: str | None, *, client: str) -> tuple[JaznRuntimeSession, str]:
+    def get_session(payload_session_id: str | None, *, client: str) -> tuple[RuntimeSessionWorker, str]:
         nonlocal generated_session
         if payload_session_id:
             if payload_session_id not in sessions:
-                sessions[payload_session_id] = JaznRuntimeSession(config, session_id=payload_session_id, no_carryover=no_carryover, source_client=client)
+                sessions[payload_session_id] = RuntimeSessionWorker(session_factory=JaznRuntimeSession, config=config, session_id=payload_session_id, no_carryover=no_carryover, source_client=client, command=command, timeout_seconds=runtime_turn_timeout_seconds(config))
             return sessions[payload_session_id], "payload"
         if session_id:
             if session_id not in sessions:
-                sessions[session_id] = JaznRuntimeSession(config, session_id=session_id, no_carryover=no_carryover, source_client=client)
+                sessions[session_id] = RuntimeSessionWorker(session_factory=JaznRuntimeSession, config=config, session_id=session_id, no_carryover=no_carryover, source_client=client, command=command, timeout_seconds=runtime_turn_timeout_seconds(config))
             return sessions[session_id], "cli_arg"
         if generated_session is None:
-            generated_session = JaznRuntimeSession(config, session_id=None, no_carryover=no_carryover, source_client=client)
+            generated_session = RuntimeSessionWorker(session_factory=JaznRuntimeSession, config=config, session_id=None, no_carryover=no_carryover, source_client=client, command=command, timeout_seconds=runtime_turn_timeout_seconds(config))
             sessions[generated_session.state.session_id] = generated_session
         return generated_session, "generated"
 
@@ -294,57 +304,72 @@ def run_jsonl_chat_bridge(
                 payload = json.loads(line)
             except json.JSONDecodeError as exc:
                 if line[:1] in {"{", "["}:
-                    stdout.write(json.dumps(error_payload(
+                    write_chat_bridge_payload(stdout, error_payload(
                         error_code="malformed_json",
                         error=f"Niepoprawna linia JSONL: {exc.msg}",
                         input_kind="malformed_json",
                         input_field="<parse_error>",
                         line_index=line_index,
-                    ), ensure_ascii=False, sort_keys=True) + "\n")
-                    stdout.flush()
+                    ), output_mode=output_mode)
                     continue
                 user_text = line
             else:
                 input_kind = "json"
                 if not isinstance(payload, dict):
-                    stdout.write(json.dumps(error_payload(
+                    write_chat_bridge_payload(stdout, error_payload(
                         error_code="invalid_jsonl_payload",
                         error="Każda linia mostu chat musi być obiektem JSON albo zwykłym tekstem.",
                         input_kind="json_non_object",
                         input_field="<non_object>",
                         line_index=line_index,
-                    ), ensure_ascii=False, sort_keys=True) + "\n")
-                    stdout.flush()
+                    ), output_mode=output_mode)
                     continue
                 client = str(payload.get("client") or default_client)
                 payload_session_id = str(payload.get("session_id") or "").strip() or None
                 user_text, input_kind, input_field = extract_user_text_from_payload(payload)
 
             if not user_text.strip():
-                stdout.write(json.dumps(error_payload(
+                write_chat_bridge_payload(stdout, error_payload(
                     error_code="empty_message",
                     error="Pusta wiadomość nie została przekazana do runtime Jaźni.",
                     client=client,
                     input_kind=input_kind,
                     input_field=input_field,
                     line_index=line_index,
-                ), ensure_ascii=False, sort_keys=True) + "\n")
-                stdout.flush()
+                ), output_mode=output_mode)
                 continue
 
             session, session_id_source = get_session(payload_session_id, client=client)
             try:
-                result = session.process_user_text(user_text, client=client, lifecycle=default_lifecycle, session_id_source=session_id_source, process_reused=True)
+                result = session.process_user_text(
+                    user_text,
+                    client=client,
+                    lifecycle=default_lifecycle,
+                    session_id_source=session_id_source,
+                    process_reused=True,
+                )
+            except RuntimeTurnTimeoutError as exc:
+                write_chat_bridge_payload(stdout, error_payload(
+                    error_code="runtime_turn_timeout",
+                    error=(
+                        f"Runtime Jaźni nie zakończył tury w limicie {exc.timeout_seconds:.3g}s. "
+                        "Zwracam kontrolowany błąd zamiast wiszącego mostu; sprawdź timestamp/memory/engine.process_turn."
+                    ),
+                    client=client,
+                    input_kind=input_kind,
+                    input_field=input_field,
+                    line_index=line_index,
+                ), output_mode=output_mode)
+                continue
             except Exception as exc:
-                stdout.write(json.dumps(error_payload(
+                write_chat_bridge_payload(stdout, error_payload(
                     error_code="runtime_turn_failed",
                     error=f"Runtime Jaźni przerwał turę: {type(exc).__name__}: {exc}",
                     client=client,
                     input_kind=input_kind,
                     input_field=input_field,
                     line_index=line_index,
-                ), ensure_ascii=False, sort_keys=True) + "\n")
-                stdout.flush()
+                ), output_mode=output_mode)
                 continue
             result["chat_bridge"] = bridge_meta(client=client, input_kind=input_kind, input_field=input_field, line_index=line_index)
             # Zachowujemy stary klucz dla zgodności z narzędziami, które już czytają --chat-gpt.

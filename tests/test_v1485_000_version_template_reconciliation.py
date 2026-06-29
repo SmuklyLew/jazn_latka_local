@@ -34,6 +34,8 @@ def test_legacy_literal_audit_has_no_active_runtime_blockers() -> None:
         [sys.executable, "tools/audit_legacy_literals_v1485.py", "--fail-on-active-runtime-blockers"],
         cwd=ROOT,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         capture_output=True,
         check=False,
     )

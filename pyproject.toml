@@ -1,6 +1,6 @@
 [project]
 name = "latka-jazn"
-version = "14.8.3.1"
+version = "14.8.5.21a0"
 description = "System Jaźni - Łatka"
 requires-python = ">=3.11"
 dependencies = [

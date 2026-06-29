@@ -65,7 +65,7 @@ def test_self_knowledge_status_cli_fast_and_deep(capsys) -> None:
 
 
 def test_cognitive_frame_contains_self_knowledge_summary() -> None:
-    engine = JaznEngine(JaznConfig(root=ROOT))
+    engine = JaznEngine(JaznConfig(root=ROOT, allow_network=False, network_time_first=False))
     frame = engine.build_cognitive_frame("Kim jesteś i co pamiętasz po aktualizacji?")
 
     assert frame["self_knowledge_summary"]["identity_name"] == "Łatka"

@@ -97,6 +97,8 @@ class JaznConfig:
     model_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_MODEL_API_BASE", "https://api.openai.com/v1").strip().rstrip("/"))
     model_timeout_seconds: float = field(default_factory=lambda: _env_float("JAZN_MODEL_TIMEOUT", 45.0))
     model_max_output_tokens: int = field(default_factory=lambda: _env_int("JAZN_MODEL_MAX_OUTPUT_TOKENS", 800))
+    runtime_turn_timeout_seconds: float = field(default_factory=lambda: _env_float("JAZN_RUNTIME_TURN_TIMEOUT_SECONDS", 45.0))
+    terminal_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_TERMINAL_MODEL_NAME", "terminal_visible_layer").strip())
     local_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LOCAL_MODEL_NAME", "").strip())
     local_model_api_base: str = field(default_factory=lambda: os.environ.get("JAZN_LOCAL_MODEL_API_BASE", "http://127.0.0.1:11434").strip().rstrip("/"))
     llama_cpp_model_name: str = field(default_factory=lambda: os.environ.get("JAZN_LLAMA_CPP_MODEL_NAME", "").strip())

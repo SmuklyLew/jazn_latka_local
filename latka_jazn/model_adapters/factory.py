@@ -4,6 +4,7 @@ from typing import Any
 
 from .null_model_adapter import NullModelAdapter
 from .chatgpt_runtime_adapter import ChatgptRuntimeAdapter
+from .terminal_runtime_adapter import TerminalRuntimeAdapter
 from .openai_responses_adapter import OpenaiResponsesAdapter
 from .local_llm_adapter import LocalLlmAdapter
 from .adapter_contract import ContractOnlyModelAdapter, backend_config_skeletons
@@ -14,6 +15,11 @@ def build_model_adapter(config: Any):
     if name in {"chatgpt", "chatgpt_runtime", "chatgpt_runtime_adapter", "chat_gpt", "chat-gpt"}:
         return ChatgptRuntimeAdapter(
             model=str(getattr(config, "model_name", "chatgpt_host_model") or "chatgpt_host_model"),
+            root=getattr(config, "root", None),
+        )
+    if name in {"chat", "terminal", "terminal_runtime", "terminal_runtime_adapter", "local_terminal", "chat_loop"}:
+        return TerminalRuntimeAdapter(
+            model=str(getattr(config, "terminal_model_name", "terminal_visible_layer") or "terminal_visible_layer"),
             root=getattr(config, "root", None),
         )
     if name in {"openai", "openai_responses", "openai_responses_adapter"} and bool(getattr(config, "allow_network", True)):

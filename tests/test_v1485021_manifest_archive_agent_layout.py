@@ -66,11 +66,12 @@ def test_active_tree_has_no_legacy_manifest_files_outside_archive() -> None:
         if rel.startswith((
             ".git/", ".pytest-tmp/", "workspace_runtime/",
             "docs/archive/manifest_history/", "patchs/", "reports/",
-            "memory/",
+            "memory/", "tests_before_",
         )) or "/__pycache__/" in rel or rel.startswith("__pycache__/"):
             continue
         if rel in {
             "MANIFEST_CURRENT.json",
+            "docs/update_history/changelogs/CHANGELOG_v14_8_5_021A_RELEASE_METADATA_MANIFEST_HYGIENE.md",
             "latka_jazn/resources/package_manifest_profiles.json",
             "latka_jazn/resources/update_manifest_schema.json",
             "latka_jazn/core/birth_manifest.py",

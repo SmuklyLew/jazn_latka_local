@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
+from datetime import datetime, timezone
 import sys
 from pathlib import Path
 
@@ -23,6 +25,12 @@ RENDER_ARTIFACTS = (
 
 def _run_chat_gpt(tmp_path: Path, messages: list[str]) -> list[dict]:
     input_text = "".join(json.dumps({"message": message}, ensure_ascii=False) + "\n" for message in messages)
+    env = {
+        **os.environ,
+        "JAZN_TRUSTED_TIME_ISO": datetime.now(timezone.utc).isoformat(),
+        "JAZN_TRUSTED_TIME_SOURCE": "chatgpt_web_time_tool",
+        "JAZN_TRUSTED_TIME_MAX_AGE_SECONDS": "999999999",
+    }
     proc = subprocess.run(
         [sys.executable, "main.py", "--root", str(tmp_path), "--chat-gpt", "--no-carryover"],
         cwd=ROOT,
@@ -33,6 +41,7 @@ def _run_chat_gpt(tmp_path: Path, messages: list[str]) -> list[dict]:
         encoding="utf-8",
         timeout=30,
         check=True,
+        env=env,
     )
     assert proc.stderr == ""
     return [json.loads(line) for line in proc.stdout.splitlines() if line.strip()]

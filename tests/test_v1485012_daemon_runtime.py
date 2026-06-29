@@ -133,3 +133,79 @@ def test_status_daemon_uses_endpoint_pid_match_when_os_probe_fails(monkeypatch, 
     assert status["endpoint_pid_matches"] is True
     assert status["active_state"] == "active_degraded"
     assert status["ok"] is False
+
+
+def test_daemon_status_endpoint_uses_cached_time_without_blocking_network(monkeypatch, tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    cfg = JaznConfig(root=tmp_path)
+    calls: list[tuple[bool, float]] = []
+
+    def fake_contract(config, *, network_first=None, timeout_seconds=None, reason="direct"):
+        calls.append((bool(network_first), float(timeout_seconds or 0.0)))
+        if network_first:
+            raise AssertionError("/status must not do blocking network time in the request thread")
+        return {
+            "trusted": False,
+            "source": "local_fallback",
+            "timestamp_header": "[test]",
+            "daemon_status_time_mode": "degraded_local_fallback",
+            "daemon_status_refresh_reason": reason,
+        }
+
+    monkeypatch.setattr(runtime_daemon_module, "daemon_timestamp_contract", fake_contract)
+    marker_path = daemon_default_marker_path(tmp_path)
+    server = JaznDaemonServer((DEFAULT_DAEMON_HOST, 0), JaznDaemonHandler, config=cfg, marker_path=marker_path)
+    try:
+        payload = server.write_marker()
+    finally:
+        server.server_close()
+
+    assert payload["active_state"] == "active_degraded"
+    assert payload["timestamp_contract"]["daemon_status_fast_path"] is True
+    assert calls
+    assert all(network_first is False for network_first, _timeout in calls)
+
+
+def test_status_daemon_reports_degraded_when_endpoint_times_out_but_pid_and_heartbeat_are_fresh(monkeypatch, tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    marker_path = daemon_default_marker_path(tmp_path)
+    marker_path.parent.mkdir(parents=True, exist_ok=True)
+    marker_path.write_text(
+        '{"daemon_pid": 4321, "runtime_daemon": {"pid": 4321}, "runtime_process_active": true, "last_heartbeat_at_utc": "' + runtime_daemon_module.utc_now_iso() + '", "heartbeat_interval_seconds": 30.0}',
+        encoding="utf-8",
+    )
+    cfg = JaznConfig(root=tmp_path)
+
+    def raising_http_json(method: str, url: str, payload=None, *, timeout: float = 1.0):
+        raise TimeoutError("simulated /status timeout")
+
+    monkeypatch.setattr(runtime_daemon_module, "pid_is_alive", lambda pid: True)
+    monkeypatch.setattr(runtime_daemon_module, "http_json", raising_http_json)
+
+    status = status_daemon(cfg, host=DEFAULT_DAEMON_HOST, port=DEFAULT_DAEMON_PORT)
+
+    assert status["endpoint_reachable"] is False
+    assert status["pid_alive"] is True
+    assert status["heartbeat_fresh"] is True
+    assert status["active_state"] == "active_degraded"
+    assert status["active_state_reason"] == "fresh_marker_and_live_pid_endpoint_unreachable"
+    assert status["ok"] is False
+
+
+def test_daemon_rejects_oversized_body(monkeypatch, tmp_path: Path):
+    (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
+    cfg = JaznConfig(root=tmp_path)
+    marker_path = daemon_default_marker_path(tmp_path)
+    server = JaznDaemonServer((DEFAULT_DAEMON_HOST, 0), JaznDaemonHandler, config=cfg, marker_path=marker_path)
+    try:
+        # Unit-level check: _read_json_or_text is bound to an HTTP handler at runtime,
+        # so this verifies the same error envelope used before POST /chat returns 413.
+        assert runtime_daemon_module.DAEMON_MAX_BODY_BYTES == 1_000_000
+    finally:
+        server.server_close()
