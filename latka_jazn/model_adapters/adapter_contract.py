@@ -77,30 +77,71 @@ def backend_config_skeletons(config: Any) -> list[dict[str, Any]]:
             "endpoint": str(getattr(config, "llama_cpp_model_api_base", "") or "") or None,
             "normal_runtime_requires_credential": False,
         },
+        {
+            "adapter_id": "lmstudio_runtime_adapter",
+            "provider": "lmstudio",
+            "kind": "openai_compatible_local_api_skeleton",
+            "implemented": False,
+            "selection": "JAZN_MODEL_ADAPTER=lmstudio",
+            "model_env": "JAZN_LM_STUDIO_MODEL",
+            "endpoint_env": "JAZN_LM_STUDIO_API_BASE",
+            "credential_env": None,
+            "model_name": str(getattr(config, "lm_studio_model_name", "") or "") or None,
+            "endpoint": str(getattr(config, "lm_studio_api_base", "") or "") or None,
+            "normal_runtime_requires_credential": False,
+        },
+        {
+            "adapter_id": "codex_development_adapter",
+            "provider": "codex",
+            "kind": "development_tooling_status",
+            "implemented": False,
+            "selection": "JAZN_MODEL_ADAPTER=codex_development_adapter",
+            "model_env": None,
+            "endpoint_env": None,
+            "credential_env": None,
+            "model_name": None,
+            "endpoint": None,
+            "normal_runtime_requires_credential": False,
+        },
     ]
 
 
 class ContractOnlyModelAdapter:
-    def __init__(self, *, provider: str, model: str, endpoint: str) -> None:
+    def __init__(
+        self,
+        *,
+        provider: str,
+        model: str,
+        endpoint: str,
+        adapter_id: str | None = None,
+        kind: str = "openai_compatible_local_api_skeleton",
+        failure_reason: str = "backend_adapter_not_implemented",
+        response_status: str = "backend_contract_only_not_implemented",
+        truth_boundary: str | None = None,
+    ) -> None:
         self.provider = provider
         self.model = model
         self.endpoint = endpoint
-        self.name = f"{provider}_contract_only"
+        self.name = adapter_id or f"{provider}_contract_only"
+        self.kind = kind
+        self.failure_reason = failure_reason
+        self.response_status = response_status
+        self.truth_boundary = truth_boundary or (
+            "This is only a backend configuration skeleton. Runtime does not call this endpoint "
+            "and does not present the backend as Jazn identity or memory."
+        )
 
     def describe(self) -> dict[str, Any]:
         contract = AdapterContract(
             adapter_id=self.name,
             provider=self.provider,
-            kind="openai_compatible_local_api_skeleton",
+            kind=self.kind,
             available=False,
             model_name=self.model or None,
             endpoint=self.endpoint or None,
             can_generate_model_guided_speech=False,
-            failure_reason="backend_adapter_not_implemented",
-            truth_boundary=(
-                "To jest wyłącznie szkielet konfiguracji backendu. Runtime nie wykonuje żądań do tego endpointu "
-                "i nie przedstawia backendu jako tożsamości ani pamięci Jaźni."
-            ),
+            failure_reason=self.failure_reason,
+            truth_boundary=self.truth_boundary,
         )
         return describe_with_contract(
             contract=contract,
@@ -117,5 +158,5 @@ class ContractOnlyModelAdapter:
             text="",
             provider=self.provider,
             model=self.model or "not_configured",
-            status="backend_contract_only_not_implemented",
+            status=self.response_status,
         )

@@ -84,10 +84,13 @@ def test_backend_skeletons_do_not_claim_llama_cpp_implementation(monkeypatch) ->
     status = build_model_adapter_status(JaznConfig())
     skeletons = {item["provider"]: item for item in status["backend_config_skeletons"]}
 
-    assert set(skeletons) == {"openai", "ollama", "llama_cpp"}
+    assert set(skeletons) == {"openai", "ollama", "llama_cpp", "lmstudio", "codex"}
     assert skeletons["openai"]["normal_runtime_requires_credential"] is False
     assert skeletons["ollama"]["implemented"] is True
     assert skeletons["llama_cpp"]["implemented"] is False
+    assert skeletons["lmstudio"]["implemented"] is False
+    assert skeletons["lmstudio"]["credential_env"] is None
+    assert skeletons["codex"]["kind"] == "development_tooling_status"
 
 
 def test_ollama_status_uses_existing_local_adapter_without_live_probe(monkeypatch) -> None:
@@ -118,6 +121,38 @@ def test_llama_cpp_selection_is_contract_only_and_never_calls_endpoint(monkeypat
     assert status["failure_reason"] == "backend_adapter_not_implemented"
     assert response.status == "backend_contract_only_not_implemented"
     assert response.text == ""
+
+
+def test_lmstudio_selection_is_contract_only_and_never_uses_ollama(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("JAZN_MODEL_ADAPTER", "lmstudio")
+    monkeypatch.setenv("JAZN_LM_STUDIO_MODEL", "local-lmstudio-test")
+
+    adapter = build_model_adapter(JaznConfig())
+    status = adapter.describe()
+    response = adapter.generate(ModelAdapterRequest(prompt="test"))
+
+    assert status["adapter_id"] == "lmstudio_runtime_adapter"
+    assert status["provider"] == "lmstudio"
+    assert status["status"] == "contract_only_not_implemented"
+    assert status["available"] is False
+    assert status["can_generate_model_guided_speech"] is False
+    assert status["requires_api_key"] is False
+    assert status["failure_reason"] == "lmstudio_adapter_not_implemented"
+    assert response.status == "lmstudio_adapter_not_implemented"
+    assert response.text == ""
+
+
+def test_codex_development_adapter_is_not_speech_adapter(monkeypatch) -> None:
+    monkeypatch.setenv("JAZN_MODEL_ADAPTER", "codex_development_adapter")
+
+    status = build_model_adapter_status(JaznConfig())
+
+    assert status["adapter_id"] == "codex_development_adapter"
+    assert status["provider"] == "codex"
+    assert status["kind"] == "development_tooling_status"
+    assert status["can_generate_model_guided_speech"] is False
+    assert status["failure_reason"] == "codex_not_speech_adapter"
 
 
 def test_model_adapter_status_cli_does_not_require_openai_key(monkeypatch, capsys) -> None:

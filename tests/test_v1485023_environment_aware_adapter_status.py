@@ -8,6 +8,12 @@ from latka_jazn.config import JaznConfig
 from latka_jazn.core.runtime_environment import detect_runtime_environment
 from latka_jazn.model_adapters.factory import build_model_adapter_status
 
+LMSTUDIO_TRUTH_BOUNDARY = (
+    "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
+    "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
+    "a ten etap nie implementuje jeszcze generowania final_visible_text."
+)
+
 
 def _clear_host_env(monkeypatch) -> None:
     for key in list(__import__("os").environ):
@@ -19,6 +25,8 @@ def _clear_host_env(monkeypatch) -> None:
         "JAZN_HOST_RUNTIME",
         "JAZN_VISIBLE_CHANNEL",
         "JAZN_MODEL_ADAPTER",
+        "JAZN_LM_STUDIO_API_BASE",
+        "JAZN_LM_STUDIO_MODEL",
         "OPENAI_API_KEY",
     ]:
         monkeypatch.delenv(key, raising=False)
@@ -124,3 +132,48 @@ def test_startup_status_combined_cli_mode_reports_effective_adapter(
     assert runtime_environment["visible_channel_adapter"] == expected_adapter
     assert model_adapter_status["selected_backend_adapter"] == "null_model_adapter"
     assert model_adapter_status["effective_runtime_adapter"] == expected_adapter
+
+
+def test_chat_openai_alias_reports_same_effective_adapter_as_chat_open_ai(monkeypatch, capsys) -> None:
+    _clear_host_env(monkeypatch)
+
+    assert main.main(["--chat-openai", "--model-adapter-status"]) == 0
+    alias_payload = json.loads(capsys.readouterr().out)
+
+    assert main.main(["--chat-open-ai", "--model-adapter-status"]) == 0
+    canonical_payload = json.loads(capsys.readouterr().out)
+
+    alias_status = alias_payload["model_adapter_status"]
+    canonical_status = canonical_payload["model_adapter_status"]
+    assert alias_status["effective_runtime_adapter"] == canonical_status["effective_runtime_adapter"] == "openai_responses_adapter"
+    assert alias_status["runtime_environment"]["explicit_command"] == canonical_status["runtime_environment"]["explicit_command"] == "--chat-open-ai"
+
+
+def test_chat_lm_studio_model_adapter_status_is_contract_only_local_backend(monkeypatch, capsys) -> None:
+    _clear_host_env(monkeypatch)
+
+    assert main.main(["--chat-lm-studio", "--model-adapter-status"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    status = payload["model_adapter_status"]
+
+    assert status["adapter_id"] == "lmstudio_runtime_adapter"
+    assert status["provider"] == "lmstudio"
+    assert status["effective_runtime_adapter"] == "lmstudio_runtime_adapter"
+    assert status["runtime_environment"]["uses_openai_api"] is False
+    assert status["runtime_environment"]["requires_openai_api_key"] is False
+    assert status["failure_reason"] == "lmstudio_adapter_not_implemented"
+    assert status["truth_boundary"] == LMSTUDIO_TRUTH_BOUNDARY
+
+
+def test_chat_lm_studio_startup_status_reports_explicit_command(monkeypatch, capsys) -> None:
+    _clear_host_env(monkeypatch)
+
+    assert main.main(["--chat-lm-studio", "--startup-status-fast"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["runtime_environment"]["explicit_command"] == "--chat-lm-studio"
+    assert payload["runtime_environment"]["environment_host"] == "lmstudio_explicit_command"
+    assert payload["runtime_environment"]["detection_basis"] == ["explicit_command:--chat-lm-studio"]
+    assert payload["cli_capabilities"]["--chat-open-ai"] is True
+    assert payload["cli_capabilities"]["--chat-openai"] is True
+    assert payload["cli_capabilities"]["--chat-lm-studio"] is True

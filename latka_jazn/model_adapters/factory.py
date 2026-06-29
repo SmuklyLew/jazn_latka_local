@@ -9,7 +9,7 @@ from .terminal_runtime_adapter import TerminalRuntimeAdapter
 from .openai_responses_adapter import OpenaiResponsesAdapter
 from .local_llm_adapter import LocalLlmAdapter
 from .adapter_contract import ContractOnlyModelAdapter, backend_config_skeletons
-from latka_jazn.core.runtime_environment import apply_effective_runtime_adapter, detect_runtime_environment
+from latka_jazn.core.runtime_environment import CODEX_ADAPTER, LMSTUDIO_ADAPTER, apply_effective_runtime_adapter, detect_runtime_environment
 
 
 def build_model_adapter(config: Any):
@@ -46,6 +46,34 @@ def build_model_adapter(config: Any):
             model=str(getattr(config, "llama_cpp_model_name", "")),
             endpoint=str(getattr(config, "llama_cpp_model_api_base", "http://127.0.0.1:8080/v1")),
         )
+    if name in {"lmstudio", "lm_studio", "lmstudio_runtime", LMSTUDIO_ADAPTER}:
+        return ContractOnlyModelAdapter(
+            provider="lmstudio",
+            model=str(getattr(config, "lm_studio_model_name", "")),
+            endpoint=str(getattr(config, "lm_studio_api_base", "http://127.0.0.1:1234/v1")),
+            adapter_id=LMSTUDIO_ADAPTER,
+            failure_reason="lmstudio_adapter_not_implemented",
+            response_status="lmstudio_adapter_not_implemented",
+            truth_boundary=(
+                "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
+                "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
+                "a ten etap nie implementuje jeszcze generowania final_visible_text."
+            ),
+        )
+    if name in {"codex", "codex_development", CODEX_ADAPTER}:
+        return ContractOnlyModelAdapter(
+            provider="codex",
+            model="development_tooling",
+            endpoint="local_codex_workspace",
+            adapter_id=CODEX_ADAPTER,
+            kind="development_tooling_status",
+            failure_reason="codex_not_speech_adapter",
+            response_status="codex_not_speech_adapter",
+            truth_boundary=(
+                "Codex is for repository work, tests, patches, and PRs. "
+                "It is not Latka's voice and must not be used as a final_visible_text model adapter."
+            ),
+        )
     return NullModelAdapter()
 
 
@@ -63,6 +91,8 @@ def _environment_availability_basis(environment: Any) -> str | None:
         return "explicit_chat_terminal_command"
     if first == "explicit_command:--chat-open-ai":
         return "explicit_openai_api_bridge_command"
+    if first == "explicit_command:--chat-lm-studio":
+        return "explicit_lmstudio_local_bridge_command"
     if first == "detected_openai_chatgpt_tool_container":
         return "detected_openai_chatgpt_tool_container"
     if first.startswith("env:"):

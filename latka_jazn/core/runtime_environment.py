@@ -10,16 +10,19 @@ from latka_jazn.version import schema_version
 CHATGPT_ADAPTER = "chatgpt_runtime_adapter"
 TERMINAL_ADAPTER = "terminal_runtime_adapter"
 OPENAI_ADAPTER = "openai_responses_adapter"
+LMSTUDIO_ADAPTER = "lmstudio_runtime_adapter"
+CODEX_ADAPTER = "codex_development_adapter"
 NULL_ADAPTER = "null_model_adapter"
 
 _CHATGPT_COMMANDS = {"--chat-gpt", "--chat-gpt-final-only"}
 _TERMINAL_COMMANDS = {"--chat", "--loop"}
 _OPENAI_COMMANDS = {"--chat-open-ai"}
+_LMSTUDIO_COMMANDS = {"--chat-lm-studio"}
 
 
 def _adapter_name(config: Any) -> str:
     raw = str(getattr(config, "model_adapter", "null") or "null").strip().lower()
-    if raw in {"", "null", "none", "null_model_adapter"}:
+    if raw in {"", "null", "none", "null_model_adapter", "auto"}:
         return NULL_ADAPTER
     if raw in {"chatgpt", "chatgpt_runtime", "chatgpt_runtime_adapter", "chat_gpt", "chat-gpt"}:
         return CHATGPT_ADAPTER
@@ -27,6 +30,10 @@ def _adapter_name(config: Any) -> str:
         return TERMINAL_ADAPTER
     if raw in {"openai", "openai_responses", "openai_responses_adapter"}:
         return OPENAI_ADAPTER
+    if raw in {"lmstudio", "lm_studio", "lmstudio_runtime", "lmstudio_runtime_adapter"}:
+        return LMSTUDIO_ADAPTER
+    if raw in {"codex", "codex_development", "codex_development_adapter"}:
+        return CODEX_ADAPTER
     return raw
 
 
@@ -129,6 +136,10 @@ def detect_runtime_environment(
         basis.append(f"explicit_command:{explicit}")
         uses_openai = True
         requires_key = True
+    elif explicit in _LMSTUDIO_COMMANDS:
+        visible = LMSTUDIO_ADAPTER
+        host = "lmstudio_explicit_command"
+        basis.append(f"explicit_command:{explicit}")
 
     if visible is None:
         channel = _normalize_channel(env_map.get("JAZN_VISIBLE_CHANNEL") or env_map.get("JAZN_HOST_RUNTIME"))
@@ -151,7 +162,7 @@ def detect_runtime_environment(
             host = "null_env_marker"
             basis.append("env:JAZN_VISIBLE_CHANNEL/JAZN_HOST_RUNTIME")
 
-    if visible is None and selected in {CHATGPT_ADAPTER, TERMINAL_ADAPTER, OPENAI_ADAPTER}:
+    if visible is None and selected in {CHATGPT_ADAPTER, TERMINAL_ADAPTER, OPENAI_ADAPTER, LMSTUDIO_ADAPTER}:
         visible = selected
         host = f"configured_{selected}"
         basis.append("config.model_adapter")
