@@ -4,10 +4,17 @@ from pathlib import Path
 from typing import Any
 import json
 
+from latka_jazn.bridge_secure_gateway import SecureGatewayPolicy
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.runtime_daemon import DEFAULT_DAEMON_HOST, DEFAULT_DAEMON_PORT, status_daemon
 from latka_jazn.version import schema_version
-from latka_jazn.bridge_secure_gateway import SecureGatewayPolicy
+
+
+LMSTUDIO_TRUTH_BOUNDARY = (
+    "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
+    "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
+    "a ten etap nie implementuje jeszcze generowania final_visible_text."
+)
 
 
 def _read_json(path: Path) -> dict[str, Any] | None:
@@ -45,9 +52,17 @@ def discover_runtime_bridges(
         },
         "openai_bridge": {
             "command": "python main.py --chat-open-ai --session-id <id>",
+            "aliases": ["--chat-openai"],
             "requires_api_key": True,
             "env": "OPENAI_API_KEY",
             "meaning": "ten sam runtime Jaźni + OpenAI Responses API jako model_adapter językowy",
+        },
+        "lmstudio_bridge": {
+            "command": "python main.py --chat-lm-studio --session-id <id>",
+            "requires_api_key": False,
+            "env": None,
+            "meaning": "ten sam runtime Jaźni + lokalny backend LM Studio przez OpenAI-compatible API; contract/status only",
+            "truth_boundary": LMSTUDIO_TRUTH_BOUNDARY,
         },
         "daemon": {
             "start": "python main.py --daemon-start",

@@ -10,12 +10,14 @@ from types import SimpleNamespace
 
 import pytest
 
+import main
 import latka_jazn.core.chat_command_contract as chat_command_module
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.chat_command_contract import (
     apply_chatgpt_cli_settings,
     apply_openai_cli_settings,
     chat_gpt_contract,
+    chat_lm_studio_contract,
     chat_open_ai_contract,
     extract_user_text_from_payload,
     run_jsonl_chat_bridge,
@@ -23,17 +25,29 @@ from latka_jazn.core.chat_command_contract import (
 from latka_jazn.model_adapters.factory import build_model_adapter
 
 ROOT = Path(__file__).resolve().parents[1]
+LMSTUDIO_TRUTH_BOUNDARY = (
+    "LM Studio jest lokalnym backendem językowym przez OpenAI-compatible API. "
+    "Nie wymaga OPENAI_API_KEY, nie jest źródłem tożsamości ani pamięci Jaźni, "
+    "a ten etap nie implementuje jeszcze generowania final_visible_text."
+)
 
 
 def test_chat_command_contracts_separate_chatgpt_and_openai() -> None:
     chatgpt = chat_gpt_contract().to_dict()
     openai = chat_open_ai_contract().to_dict()
+    lmstudio = chat_lm_studio_contract().to_dict()
     assert chatgpt["command"] == "--chat-gpt"
     assert chatgpt["requires_api_key"] is False
     assert chatgpt["uses_openai_api"] is False
     assert openai["command"] == "--chat-open-ai"
     assert openai["requires_api_key"] is True
     assert openai["uses_openai_api"] is True
+    assert lmstudio["command"] == "--chat-lm-studio"
+    assert lmstudio["requires_api_key"] is False
+    assert lmstudio["uses_openai_api"] is False
+    assert lmstudio["keeps_process_alive"] is True
+    assert lmstudio["engine_reused_between_turns"] is True
+    assert lmstudio["truth_boundary"] == LMSTUDIO_TRUTH_BOUNDARY
     assert "final_visible_text" in chatgpt["output_modes"]
     assert "--chat-gpt-final-only" in chatgpt["truth_boundary"]
     assert "--chat-gpt --final-only" in chatgpt["truth_boundary"]
@@ -76,6 +90,27 @@ def test_chat_open_ai_without_key_fails_truthfully(monkeypatch) -> None:
     assert payload["chat_command_contract"]["uses_openai_api"] is True
 
 
+@pytest.mark.parametrize("flag", ["--chat-open-ai", "--chat-openai"])
+def test_chat_openai_cli_flags_without_key_fail_truthfully(monkeypatch, capsys, flag: str) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    assert main.main([flag]) == 3
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["ok"] is False
+    assert payload["error_code"] == "missing_openai_api_key"
+    assert payload["chat_command_contract"]["requires_api_key"] is True
+
+
+def test_chat_gpt_contract_still_does_not_require_openai_api_key(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    contract = chat_gpt_contract().to_dict()
+
+    assert contract["requires_api_key"] is False
+    assert contract["uses_openai_api"] is False
+
+
 def test_apply_chatgpt_cli_settings_selects_chatgpt_host_adapter(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     cfg = JaznConfig(root=ROOT)
@@ -106,6 +141,7 @@ def test_chat_jsonl_removed_exit_code_and_message() -> None:
     proc = subprocess.run(
         [sys.executable, "main.py", "--chat-jsonl"],
         cwd=ROOT,
+        stdin=subprocess.DEVNULL,
         text=True,
         capture_output=True,
         timeout=15,
@@ -114,10 +150,11 @@ def test_chat_jsonl_removed_exit_code_and_message() -> None:
     assert "--chat-gpt" in proc.stderr
 
 
-def test_bridge_discovery_cli_lists_three_modes() -> None:
+def test_bridge_discovery_cli_lists_aliases_and_lmstudio_contract() -> None:
     proc = subprocess.run(
         [sys.executable, "main.py", "--bridge-discovery", "--root", str(ROOT)],
         cwd=ROOT,
+        stdin=subprocess.DEVNULL,
         text=True,
         capture_output=True,
         timeout=20,
@@ -127,6 +164,10 @@ def test_bridge_discovery_cli_lists_three_modes() -> None:
     assert payload["local_chat"]["command"].startswith("python main.py --chat")
     assert payload["chatgpt_bridge"]["requires_api_key"] is False
     assert payload["openai_bridge"]["requires_api_key"] is True
+    assert "--chat-openai" in payload["openai_bridge"]["aliases"]
+    assert payload["lmstudio_bridge"]["command"].startswith("python main.py --chat-lm-studio")
+    assert payload["lmstudio_bridge"]["requires_api_key"] is False
+    assert payload["lmstudio_bridge"]["truth_boundary"] == LMSTUDIO_TRUTH_BOUNDARY
 
 
 def _install_fake_runtime_session(monkeypatch, final_text: str = "[czas] Widoczna odpowiedź Łatki.") -> None:
