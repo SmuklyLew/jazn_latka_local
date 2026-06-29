@@ -49,6 +49,9 @@ __pycache__/
 /v14_*_PATCH_FIXED_BUNDLE.zip
 /v14_*_FULL_PATCH_AND_RECOVERY_BUNDLE.zip
 
+# Local packaging helper scripts
+/split_zip_sha.py
+
 # Codex/editor local state
 .codex/
 .vscode/
