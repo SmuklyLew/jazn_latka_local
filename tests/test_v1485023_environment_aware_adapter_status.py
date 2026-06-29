@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 import main
+import pytest
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.runtime_environment import detect_runtime_environment
 from latka_jazn.model_adapters.factory import build_model_adapter_status
@@ -94,3 +95,32 @@ def test_startup_status_exposes_runtime_environment(monkeypatch, capsys) -> None
     assert payload["runtime_environment"]["effective_runtime_adapter"] == "chatgpt_runtime_adapter"
     assert payload["model_adapter_status"]["selected_backend_adapter"] == "null_model_adapter"
     assert payload["model_adapter_status"]["adapter_id"] == "chatgpt_runtime_adapter"
+
+
+@pytest.mark.parametrize(
+    ("args", "expected_command", "expected_adapter"),
+    [
+        (["--chat-gpt", "--startup-status-fast"], "--chat-gpt", "chatgpt_runtime_adapter"),
+        (["--chat-gpt-final-only", "--startup-status-fast"], "--chat-gpt-final-only", "chatgpt_runtime_adapter"),
+        (["--chat", "--startup-status-fast"], "--chat", "terminal_runtime_adapter"),
+    ],
+)
+def test_startup_status_combined_cli_mode_reports_effective_adapter(
+    monkeypatch,
+    capsys,
+    args: list[str],
+    expected_command: str,
+    expected_adapter: str,
+) -> None:
+    _clear_host_env(monkeypatch)
+
+    assert main.main(args) == 0
+    payload = json.loads(capsys.readouterr().out)
+    runtime_environment = payload["runtime_environment"]
+    model_adapter_status = payload["model_adapter_status"]
+
+    assert runtime_environment["explicit_command"] == expected_command
+    assert runtime_environment["effective_runtime_adapter"] == expected_adapter
+    assert runtime_environment["visible_channel_adapter"] == expected_adapter
+    assert model_adapter_status["selected_backend_adapter"] == "null_model_adapter"
+    assert model_adapter_status["effective_runtime_adapter"] == expected_adapter
