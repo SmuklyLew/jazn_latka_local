@@ -215,6 +215,19 @@ def _message_from_remainder(parts: list[str]) -> str:
     return " ".join(parts).strip()
 
 
+def _runtime_command_from_cli_args(ns: argparse.Namespace) -> str | None:
+    """Return the explicit visible runtime command selected by combined CLI flags."""
+    if getattr(ns, "chat_gpt_final_only", False):
+        return "--chat-gpt-final-only"
+    if getattr(ns, "chat_gpt", False):
+        return "--chat-gpt"
+    if getattr(ns, "chat_loop", False):
+        return "--chat"
+    if getattr(ns, "chat_open_ai", False):
+        return "--chat-open-ai"
+    return None
+
+
 def _build_light_turn_trace(cfg: JaznConfig, text: str) -> dict:
     intent = DialogueIntentClassifier().classify(text)
     guard = TopicMismatchGuard().analyse(text, runtime_version=cfg.version).to_dict()
@@ -373,7 +386,22 @@ def main(argv: list[str] | None = None) -> int:
     if ns.startup_status or ns.startup_status_fast or ns.startup_status_deep:
         cfg = config or JaznConfig()
         mode = "deep" if ns.startup_status_deep else "fast"
-        print(json.dumps(build_startup_status(cfg, source_zip=ns.source_zip, mode=mode, infer_host_environment=True).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        runtime_command = _runtime_command_from_cli_args(ns)
+        if runtime_command == "--chat-open-ai":
+            cfg = apply_openai_cli_settings(
+                cfg,
+                model=ns.openai_model,
+                api_base=ns.openai_api_base,
+                timeout_seconds=ns.openai_timeout,
+                max_output_tokens=ns.openai_max_output_tokens,
+            )
+        print(json.dumps(build_startup_status(
+            cfg,
+            source_zip=ns.source_zip,
+            mode=mode,
+            runtime_command=runtime_command,
+            infer_host_environment=True,
+        ).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
     if ns.status_json:
@@ -692,15 +720,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.model_adapter_status:
         cfg = config or JaznConfig()
-        adapter_command = None
-        if ns.chat_gpt_final_only:
-            adapter_command = "--chat-gpt-final-only"
-        elif ns.chat_gpt:
-            adapter_command = "--chat-gpt"
-        elif ns.chat_loop:
-            adapter_command = "--chat"
-        elif ns.chat_open_ai:
-            adapter_command = "--chat-open-ai"
+        adapter_command = _runtime_command_from_cli_args(ns)
+        if adapter_command == "--chat-open-ai":
             cfg = apply_openai_cli_settings(
                 cfg,
                 model=ns.openai_model,
