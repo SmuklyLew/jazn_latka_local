@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 
 import main
 from latka_jazn.config import JaznConfig
@@ -122,10 +123,19 @@ def test_llama_cpp_selection_is_contract_only_and_never_calls_endpoint(monkeypat
 def test_model_adapter_status_cli_does_not_require_openai_key(monkeypatch, capsys) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("JAZN_MODEL_ADAPTER", raising=False)
+    monkeypatch.delenv("JAZN_VISIBLE_CHANNEL", raising=False)
+    monkeypatch.delenv("JAZN_HOST_RUNTIME", raising=False)
+    monkeypatch.delenv("JUPYTER_SERVER_OAI_PATH", raising=False)
+    monkeypatch.delenv("JAZN_ASSUME_CHATGPT_HOST", raising=False)
+    for key in list(os.environ):
+        if key.startswith("CUA_DD_"):
+            monkeypatch.delenv(key, raising=False)
 
     assert main.main(["--model-adapter-status"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
     assert payload["runtime_version"] == "v14.8.5.021a"
     assert payload["model_adapter_status"]["provider"] == "none"
+    assert payload["model_adapter_status"]["selected_backend_adapter"] == "null_model_adapter"
+    assert payload["model_adapter_status"]["effective_runtime_adapter"] == "null_model_adapter"
     assert payload["model_adapter_status"]["normal_runtime_requires_openai_api_key"] is False

@@ -17,7 +17,8 @@ from latka_jazn.core.voice_source_contract import VoiceSourceContract
 from latka_jazn.memory.conversation_archive import build_conversation_archive_status
 from latka_jazn.memory.normalization_sidecar import build_memory_normalization_status, build_wake_state_status
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
-from latka_jazn.model_adapters.factory import build_model_adapter
+from latka_jazn.model_adapters.factory import build_model_adapter_status
+from latka_jazn.core.runtime_environment import detect_runtime_environment
 from latka_jazn.core.self_knowledge_contract import build_self_knowledge_packet, build_self_knowledge_summary
 
 SCHEMA_VERSION = "self_owned_startup_contract/v14.6.10"
@@ -60,6 +61,7 @@ class StartupStatus:
     manifest_profile_status: dict[str, Any]
     voice_source_contract_status: dict[str, Any]
     model_adapter_status: dict[str, Any]
+    runtime_environment: dict[str, Any]
     self_knowledge_status: dict[str, Any]
     raw_chat_importer_status: dict[str, Any]
     cli_capabilities: dict[str, bool]
@@ -244,7 +246,14 @@ def manifest_profile_status(root: Path) -> dict[str, Any]:
         'truth_boundary': 'Profile odróżniają statyczny manifest paczki od dynamicznych plików runtime/pamięci.',
     }
 
-def build_startup_status(config: JaznConfig | None = None, *, source_zip: Path | None = None, mode: str = "fast") -> StartupStatus:
+def build_startup_status(
+    config: JaznConfig | None = None,
+    *,
+    source_zip: Path | None = None,
+    mode: str = "fast",
+    runtime_command: str | None = None,
+    infer_host_environment: bool = False,
+) -> StartupStatus:
     cfg = config or JaznConfig()
     mode = (mode or getattr(cfg, "startup_status_default_mode", "fast") or "fast").strip().lower()
     if mode not in {"metadata", "fast", "deep"}:
@@ -272,6 +281,16 @@ def build_startup_status(config: JaznConfig | None = None, *, source_zip: Path |
     if not (root / 'MANIFEST_CURRENT.json').exists():
         missing.append('MANIFEST_CURRENT.json_missing')
     status_quality = 'ready' if not missing else 'startup_blocked:' + ','.join(missing)
+    runtime_environment = detect_runtime_environment(
+        cfg,
+        command=runtime_command,
+        infer_host_environment=infer_host_environment,
+    )
+    model_adapter_status = build_model_adapter_status(
+        cfg,
+        command=runtime_command,
+        infer_host_environment=infer_host_environment,
+    )
     return StartupStatus(
         schema_version=SCHEMA_VERSION,
         runtime_version=cfg.version,
@@ -294,7 +313,8 @@ def build_startup_status(config: JaznConfig | None = None, *, source_zip: Path |
         dictionary_provider_status=dictionary_provider_status(cfg),
         manifest_profile_status=manifest_profile_status(root),
         voice_source_contract_status=VoiceSourceContract.build(runtime_active=True, runtime_mode="one_shot").to_dict(),
-        model_adapter_status=build_model_adapter(cfg).describe(),
+        model_adapter_status=model_adapter_status,
+        runtime_environment=runtime_environment.to_dict(),
         self_knowledge_status=build_self_knowledge_packet(cfg, deep=(mode == "deep")).to_dict(),
         raw_chat_importer_status=RawChatImporter(root).inspect().to_dict(),
         cli_capabilities=cli_capabilities(start_file),
