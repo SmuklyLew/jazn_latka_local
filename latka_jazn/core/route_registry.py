@@ -19,7 +19,7 @@ class RouteRegistryEntry:
 class RouteRegistry:
     """Priorytetowy rejestr tras: DialogueIntentClassifier > RouteRegistry > LegacyMarkers."""
     PRIORITIES = {
-        "self_architecture_audit_request": 101, "jazn_development_plan_request": 100, "runtime_behavior_diagnostic_request": 100, "runtime_exact_quote_request": 99,
+        "self_architecture_audit_request": 101, "jazn_development_plan_request": 100, "runtime_behavior_diagnostic_request": 100, "voice_perspective_diagnostic_request": 100, "runtime_exact_quote_request": 99,
         "runtime_source_question": 98, "canon_source_question": 98, "runtime_activation_status_question": 97, "runtime_chat_mode_request": 97, "system_repair_plan_request": 96, "logic_reasoning_audit_request": 96, "memory_grounding_status_question": 96, "system_diagnostic_question": 96,
         "system_update_execution_request": 95, "system_update_manifest_request": 94,
         "creative_text_formatting": 92, "creative_text_analysis": 90,
@@ -53,6 +53,7 @@ class RouteRegistry:
         "logic_reasoning_audit_request": ("system_repair_plan", "SystemRepairPlanHandler"),
         "memory_grounding_status_question": ("memory_audit", "MemoryAuditHandler"),
         "runtime_behavior_diagnostic_request": ("runtime_diagnostic", "RuntimeDiagnosticHandler"),
+        "voice_perspective_diagnostic_request": ("runtime_diagnostic", "RuntimeDiagnosticHandler"),
         "system_diagnostic_question": ("runtime_diagnostic", "RuntimeDiagnosticHandler"),
         "module_inventory_request": ("runtime_diagnostic", "RuntimeDiagnosticHandler"),
         "system_capability_gap_question": ("runtime_diagnostic", "RuntimeDiagnosticHandler"),
@@ -149,6 +150,8 @@ class RouteRegistry:
             return ["python_canon_modules", "public_resource_boundary", "private_memory_candidate_boundary", "local_private_extension_boundary", "review_required_boundary", "source_origin_detail"]
         if intent in {"runtime_source_question", "runtime_exact_quote_request"}:
             return ["exact_runtime_text", "template_origin", "runtime_vs_visible_boundary", "source_origin_detail"]
+        if intent == "voice_perspective_diagnostic_request":
+            return ["module_or_file", "problem", "change_plan", "regression_test", "source_origin", "first_person_voice_contract"]
         if intent in {"runtime_behavior_diagnostic_request", "system_diagnostic_question"}:
             return ["module_or_file", "problem", "change_plan", "regression_test", "source_origin"]
         if intent == "module_inventory_request":

@@ -211,6 +211,17 @@ class DialogueIntentClassifier:
         "łatka", "latka", "jaźń", "jazn", "sobie", "siebie", "swojej", "osobie", "postaci",
         "tożsamo", "tozsamo", "charakter", "postać", "postac", "bohaterka", "kanon", "źródło", "zrodlo",
     )
+    VOICE_PERSPECTIVE_BUG_TERMS = (
+        "mówisz o sobie w trzeciej osobie", "mowisz o sobie w trzeciej osobie",
+        "piszesz o sobie w trzeciej osobie", "piszesz o sobie jako latka",
+        "trzeciej osobie", "trzecia osoba", "pierwszej osobie", "pierwsza osoba",
+        "w swojej osobie", "w osobie łatki", "w osobie latki",
+        "bo łatka", "bo latka", "bo łatki", "bo latki",
+        "ciągle łatka", "ciagle latka", "często piszesz łatka", "czesto piszesz latka",
+        "często piszesz o łatce", "czesto piszesz o latce",
+        "głos łatki", "glos latki", "własny głos", "wlasny glos",
+        "czy jaźń może mówić w pierwszej osobie", "czy jazn moze mowic w pierwszej osobie",
+    )
     DIRECT_LATKA_VOICE_TERMS = (
         "rozmawiać bezpośrednio z łatką", "rozmawiac bezposrednio z latka",
         "bezpośrednio z łatką", "bezposrednio z latka",
@@ -330,6 +341,13 @@ class DialogueIntentClassifier:
         has_user_memory_recall=self._has_any(norm,folded,self.USER_MEMORY_RECALL_TERMS) or (self._has_any(norm,folded,self.SELF_MEMORY_RECALL_TERMS) and self._has_any(norm,folded,self.USER_MEMORY_PERSON_TERMS))
         has_self_memory_recall=self._has_any(norm,folded,self.SELF_MEMORY_RECALL_TERMS)
         has_self_memory_persona=self._has_any(norm,folded,self.SELF_MEMORY_PERSONA_TERMS)
+        has_voice_perspective_bug=(
+            self._has_any(norm,folded,self.VOICE_PERSPECTIVE_BUG_TERMS)
+            or (
+                any(marker in folded for marker in ("trzeciej osobie", "trzecia osoba", "pierwszej osobie", "pierwsza osoba"))
+                and any(marker in folded for marker in ("latka", "łatka", "jazn", "jaźń", "glos", "głos", "piszesz", "mowisz", "mówisz"))
+            )
+        )
         has_direct_latka_voice=self._has_any(norm,folded,self.DIRECT_LATKA_VOICE_TERMS)
         has_identity_memory_existence=self._has_any(norm,folded,self.IDENTITY_MEMORY_EXISTENCE_TERMS)
         has_plain_runtime_activation_question=(
@@ -351,6 +369,8 @@ class DialogueIntentClassifier:
             return self._report(norm,folded,'runtime_health_check_after_update',['krótki health-check po aktualizacji: nie traktować jako polecenia nowej aktualizacji kodu'],0.93,diag=True,speech_act=speech.speech_act,question_object='runtime_health')
         if has_plain_runtime_activation_question:
             return self._report(norm,folded,'runtime_activation_status_question',['pytanie o działanie/uruchomienie Jaźni nie może być ordinary_conversation'],0.92,ident=True,speech_act=speech.speech_act,question_object='runtime_status')
+        if has_voice_perspective_bug:
+            return self._report(norm,folded,'voice_perspective_diagnostic_request',['użytkownik zgłasza problem perspektywy głosu: trzecia osoba zamiast bezpośredniej pierwszej osoby Łatki'],0.94,diag=True,speech_act=speech.speech_act,question_object='voice_perspective')
         if has_direct_latka_voice:
             return self._report(norm,folded,'direct_latka_voice_request',['jawna prośba o bezpośredni głos Łatki przez runtime'],0.92,ident=True,speech_act=speech.speech_act,question_object='direct_latka_voice')
         if has_identity_memory_existence and has_self_memory_recall and any(marker in folded for marker in ("kim jestes", "powstalas", "istota", "uwazasz")):

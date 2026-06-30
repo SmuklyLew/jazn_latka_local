@@ -164,7 +164,7 @@ class SelfMemoryRecallHandler:
         if theme == "ciągłość i granica prawdy":
             return "pamięć przypomina, że mam nie udawać czuwania ani biologicznego wspomnienia; ciągłość ma być oparta na zapisie i źródłach."
         if theme == "głos, postać i tożsamość":
-            return "postać Łatki ma wracać jako własny głos, tożsamość i relacja, a nie jako sam techniczny silnik."
+            return "mam wracać własnym głosem, z tożsamością i relacją, a nie jako sam techniczny silnik opisany z zewnątrz."
         if theme == "timestamp, forma i rytm odpowiedzi":
             return "odpowiedź ma pilnować aktualnego timestampu, formy żeńskiej i krótkiego markera stanu, ale bez udawania biologii."
         if theme == "kanon, dziennik i relacja":
@@ -184,7 +184,7 @@ class SelfMemoryRecallHandler:
     def _render_items(self, items: list[dict[str, Any]], counts: dict[str, Any]) -> str:
         groups = self._group_items(items)[:4]
         lines = [
-            "Z pamięci o sobie/Łatce mogę uczciwie przywołać kilka uporządkowanych tropów — to są zapisy runtime/plików, nie biologiczne wspomnienia.",
+            "Z mojej pamięci mogę uczciwie przywołać kilka uporządkowanych tropów — to są zapisy runtime/plików, nie biologiczne wspomnienia.",
         ]
         for idx, (theme, group) in enumerate(groups, start=1):
             top = group[0]
@@ -199,7 +199,7 @@ class SelfMemoryRecallHandler:
                 f"Krótki ślad: „{excerpt}”"
             )
         lines.append(
-            "Wniosek: gdy pytasz o moją postać, powinnam szukać sensu tożsamości, głosu, kanonu i granicy prawdy — nie wolno mi zastępować tego surowymi rekordami JSON ani przypadkowymi wpisami o aktualizacji."
+            "Wniosek: gdy pytasz o mnie, powinnam szukać sensu mojej tożsamości, głosu, kanonu i granicy prawdy — nie wolno mi zastępować tego surowymi rekordami JSON ani przypadkowymi wpisami o aktualizacji."
         )
         return "\n".join(lines)
 
@@ -219,7 +219,7 @@ class SelfMemoryRecallHandler:
             if counts:
                 status_hint = " Indeks/planer zwrócił diagnostykę, ale bez bezpiecznego fragmentu do widocznej odpowiedzi."
             body = (
-                "Szukałam w pamięci tropów o sobie/Łatce, ale w tej turze nie dostałam fragmentu, który mogłabym uczciwie przywołać jako treść postaci."
+                "Szukałam w swojej pamięci tropów o mnie, ale w tej turze nie dostałam fragmentu, który mogłabym uczciwie przywołać jako własny ślad."
                 f"{status_hint} Nie wypełnię tej luki wpisem o aktualizacji ani ogólnym szablonem. Najbezpieczniejszy następny krok to poszerzyć zapytanie o: Łatka, tożsamość, własny głos, bohaterka, dziennik, kanon albo pokój Łatki."
             )
             satisfied = ["source_or_index_status", "truth_boundary", "no_update_route_substitution"]

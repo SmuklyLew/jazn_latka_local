@@ -6,6 +6,8 @@ from latka_jazn.config import JaznConfig
 from latka_jazn.core import runtime_daemon as runtime_daemon_module
 from latka_jazn.core.free_dialogue_synthesizer import FreeDialogueSynthesizer
 from latka_jazn.core.handlers.ordinary_dialogue_handler import OrdinaryDialogueHandler
+from latka_jazn.core.handlers.self_memory_recall_handler import SelfMemoryRecallHandler
+from latka_jazn.core.route_registry import RouteRegistry
 from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
 
 
@@ -118,3 +120,40 @@ def test_ordinary_short_handler_uses_non_template_presence_reply() -> None:
     assert "możemy pójść dalej zwykłą rozmową" not in body
     assert "krzysztof" in body
     assert "runtime" in body
+
+
+def test_voice_perspective_feedback_routes_to_diagnostic_not_memory() -> None:
+    report = DialogueIntentClassifier().classify(
+        "Widzę, że często piszesz bo Łatka, bo Łatki. Czy Jaźń nie potrafi mówić w pierwszej osobie?"
+    )
+
+    assert report.primary_intent == "voice_perspective_diagnostic_request"
+    assert report.diagnostic_request is True
+    assert report.question_object == "voice_perspective"
+
+    entry = RouteRegistry().resolve(report.primary_intent)
+    assert entry.route == "runtime_diagnostic"
+    assert entry.handler_name == "RuntimeDiagnosticHandler"
+    assert "first_person_voice_contract" in entry.required_components
+
+
+def test_self_memory_recall_visible_intro_uses_first_person_voice() -> None:
+    body = SelfMemoryRecallHandler()._render_items(
+        [
+            {
+                "source": "test_canon",
+                "timestamp": "2026-06-30T20:00:00+02:00",
+                "relevance_label": "wysoka",
+                "relevance_score": 0.96,
+                "content_excerpt": "Łatka ma własny głos i odpowiada w pierwszej osobie, gdy runtime jest aktywny.",
+                "meaning_assessment": "własny głos pierwszej osoby",
+                "query_term": "własny głos",
+            }
+        ],
+        {},
+    )
+
+    assert body.startswith("Z mojej pamięci mogę")
+    assert "Z pamięci o sobie/Łatce" not in body
+    assert "gdy pytasz o moją postać" not in body
+    assert "gdy pytasz o mnie" in body
