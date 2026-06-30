@@ -13,7 +13,7 @@ from latka_jazn.core.runtime_daemon import (
     status_daemon,
 )
 from latka_jazn.tools.active_extraction_cache import write_active_runtime_marker
-from latka_jazn.version import PACKAGE_VERSION
+from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL
 
 
 def test_daemon_extracts_plain_and_json_message():
@@ -53,7 +53,7 @@ def test_daemon_status_without_running_process_is_truthful(tmp_path: Path):
     assert status["truth_boundary"]
 
 
-def test_daemon_marker_payload_uses_clean_package_version(tmp_path: Path):
+def test_daemon_marker_payload_uses_full_release_version(tmp_path: Path):
     (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
     (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
     (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
@@ -66,8 +66,8 @@ def test_daemon_marker_payload_uses_clean_package_version(tmp_path: Path):
     finally:
         server.server_close()
 
-    assert payload["version"] == PACKAGE_VERSION
-    assert payload["version"] == (tmp_path / "VERSION.txt").read_text(encoding="utf-8").strip()
+    assert payload["version"] == PACKAGE_VERSION_FULL
+    assert payload["version"] != PACKAGE_VERSION
     assert payload["cache_miss_reasons"] == []
     assert payload["marker_refresh_required"] is False
 

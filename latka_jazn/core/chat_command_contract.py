@@ -244,6 +244,10 @@ def run_jsonl_chat_bridge(
         raise ValueError(f"unsupported chat bridge output_mode: {output_mode}")
     if command == "--chat-gpt":
         apply_chatgpt_cli_settings(config)
+    elif command == "--chat-lm-studio":
+        apply_lm_studio_cli_settings(config)
+    elif command == "--chat-open-ai":
+        apply_openai_cli_settings(config)
     contract = command_contract(command)
     protocol_version = CHATGPT_BRIDGE_PROTOCOL
     default_client = "chatgpt_bridge"
@@ -265,8 +269,7 @@ def run_jsonl_chat_bridge(
             "error": "--chat-open-ai wymaga zmiennej środowiskowej OPENAI_API_KEY. Nie uruchamiam modelu i nie udaję połączenia z OpenAI API.",
             "chat_command_contract": contract,
         }
-        stdout.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
-        stdout.flush()
+        write_chat_bridge_payload(stdout, payload, output_mode=output_mode)
         return 3
 
     sessions: dict[str, RuntimeSessionWorker] = {}

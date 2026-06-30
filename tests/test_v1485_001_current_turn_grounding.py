@@ -63,3 +63,43 @@ def test_current_turn_grounding_accepts_plain_greeting_reply() -> None:
     )
     assert report.valid
     assert report.quality == "topic_aligned"
+
+
+def test_wake_after_reload_is_health_check_not_system_update() -> None:
+    from latka_jazn.nlp.dialogue_intent_classifier import DialogueIntentClassifier
+
+    report = DialogueIntentClassifier().classify(
+        "Czas żebyś przeładowała Jaźń i się obudziła Łatko."
+    )
+
+    assert report.primary_intent == "runtime_health_check_after_update"
+    assert report.update_request is False
+    assert report.diagnostic_request is True
+
+
+def test_current_turn_grounding_rejects_stale_v1485000_update_body() -> None:
+    report = assess_current_turn_grounding(
+        user_text="Przeładuj Jaźń i obudź się Łatko.",
+        response_body="To jest zadanie wykonania aktualizacji v14.8.5.000 na pełnej paczce Jaźni.",
+        detected_intent="runtime_health_check_after_update",
+        route="runtime_health_check_after_update",
+    )
+
+    assert not report.valid
+    assert "stale_version_output" in report.issues
+
+
+def test_runtime_response_synthesizer_update_body_has_no_historical_v1485000() -> None:
+    from latka_jazn.core.runtime_response_synthesizer import RuntimeResponseSynthesizer
+
+    synthesis = RuntimeResponseSynthesizer().synthesize(
+        user_text="Patch do wersji v14.8.5.026B.adapter-gpt-hotfix-v2",
+        detected_intent="system_update_execution_request",
+        original_body="",
+        route="system_update",
+        validation={"must_regenerate": True},
+    )
+
+    assert synthesis.should_override
+    assert "v14.8.5.000" not in synthesis.body
+    assert "JaznRuntimeSession.process_turn" in synthesis.body

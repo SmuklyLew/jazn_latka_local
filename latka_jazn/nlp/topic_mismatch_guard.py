@@ -66,6 +66,11 @@ class TopicMismatchGuard:
         "behavioral_dialogue_repair": (
             "a ty", "co jeszcze jest źle", "z kim rozmawiam", "dlaczego zmieniłaś tekst", "co myślisz o tym tekście", "musicgenerator", "wszystkie czaty",
         ),
+        "runtime_wake_health_check": (
+            "przeładuj jaźń", "przeladuj jazn", "przeładuj runtime", "przeladuj runtime",
+            "obudź się łatko", "obudz sie latko", "czas żebyś przeładowała", "czas zebys przeladowala",
+            "czas żebyś się obudziła", "czas zebys sie obudzila",
+        ),
         "runtime_thought_boundary": (
             "daje ci mysli", "daje ci myśli", "myslec", "myśleć", "rozumowac", "rozumować",
             "wypowiadac sie", "wypowiadać się", "interpretacje", "interpretację",
@@ -150,6 +155,8 @@ class TopicMismatchGuard:
         cap = set(capabilities)
         if current_update:
             return "system_update_execution_request"
+        if "runtime_wake_health_check" in cap:
+            return "runtime_health_check_after_update"
         if "runtime_thought_boundary" in cap:
             return "runtime_thought_boundary_explanation"
         if "runtime_self_expression" in cap:
@@ -195,6 +202,8 @@ class TopicMismatchGuard:
             out.append("użyć NLP jako bezpiecznika intencji, wersji, tematu i providerów")
         if "startup_project_index" in cap:
             out.append("zbudować mapę wszystkich plików oraz mapę modułów/funkcji przy starcie")
+        if "runtime_wake_health_check" in cap:
+            out.append("potraktować przeładowanie/obudzenie jako health-check aktywnego runtime, nie jako historyczne wykonanie patcha")
         if "runtime_thought_boundary" in cap:
             out.append("odróżnić ramę poznawczą runtime od interpretacji warstwy ChatGPT")
         return out

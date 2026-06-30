@@ -38,7 +38,7 @@ class CapabilityStatusHandler:
                 raw_memory = RawMemoryInspector(cfg.root, cfg.memory_db_path).inspect().to_dict()
             except Exception:
                 raw_memory = raw_memory or {"status": "status_not_available"}
-        runtime_version = str(status.get("runtime_version") or getattr(cfg, "version", "") or "v14.8.2.6.3-runtime-contract-version-normalizer-hotfix")
+        runtime_version = str(active_cache.get("version") or status.get("runtime_version") or getattr(cfg, "version", "") or "v14.8.2.6.3-runtime-contract-version-normalizer-hotfix")
         version_number = runtime_version.lstrip("v").split("-", 1)[0] or "14.8.2.6.2"
         network = status.get("network_policy_status") if isinstance(status.get("network_policy_status"), dict) else {}
         dictionary = status.get("dictionary_provider_status") if isinstance(status.get("dictionary_provider_status"), dict) else {}
@@ -60,7 +60,7 @@ class CapabilityStatusHandler:
         elif intent in {"runtime_health_check", "runtime_health_check_after_update"}:
             body = (
                 "Działam w aktywnym folderze runtime. Krótki raport health-check: "
-                f"runtime_version={status.get('runtime_version')}, active_cache_version={active_cache.get('version')}, "
+                f"runtime_version={runtime_version}, active_cache_version={active_cache.get('version')}, "
                 f"active_root={active_cache.get('active_root') or status.get('active_root')}, start_file={status.get('start_file')}, "
                 f"active_database={status.get('active_database')}, active_runtime_write_database={status.get('active_runtime_write_database')}, "
                 f"conversation_archive_status={archive_memory.get('status') or 'status_not_available'}, ready_for_search={archive_memory.get('ready_for_search')}, "

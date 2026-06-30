@@ -20,6 +20,7 @@ LEGACY_OUTPUT_MARKERS = (
     _dotted("14", "6", "10"),
     _dotted("14", "8", "2", "4"),
     _dotted("14", "8", "3", "4", "093"),
+    _dotted("14", "8", "5", "000"),
     _route("v14", "6", "2", "1", "stale_nlp_route_hotfix"),
     _route("v14", "6", "10", "behavioral_runtime_dialogue_intent_source_integrity_update"),
 )
@@ -38,6 +39,7 @@ ORDINARY_META_LEAK_MARKERS = (
 
 STALE_UPDATE_MARKERS = (
     "ta aktualizacja ma trzy rdzenie", "dużej aktualizacji", "duzej aktualizacji",
+    "zadanie wykonania aktualizacji v14.8.5.000",
     "pełny zip", "pelny zip", "manifest i eksport",
 )
 

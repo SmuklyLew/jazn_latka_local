@@ -13,7 +13,7 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CO
 def test_runtime_version_is_current_model_adapter_contracts() -> None:
     assert PACKAGE_VERSION == "v14.8.5.026B"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "adapter-gpt-hotfix"
+    assert PACKAGE_RELEASE_NAME == "adapter-gpt-hotfix-v2"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:
@@ -58,9 +58,9 @@ def test_active_runtime_marker_contract_uses_full_release_name() -> None:
         active_marker_schema_version,
     )
 
-    full = "v14.8.5.026B.adapter-gpt-hotfix"
-    assert active_marker_schema_version(full) == "jazn_active_runtime_marker/v14.8.5.026B.adapter-gpt-hotfix"
-    assert active_cache_contract_version(full) == "active_extraction_cache_contract/v14.8.5.026B.adapter-gpt-hotfix"
+    full = "v14.8.5.026B.adapter-gpt-hotfix-v2"
+    assert active_marker_schema_version(full) == "jazn_active_runtime_marker/v14.8.5.026B.adapter-gpt-hotfix-v2"
+    assert active_cache_contract_version(full) == "active_extraction_cache_contract/v14.8.5.026B.adapter-gpt-hotfix-v2"
 
 def test_runtime_daemon_uses_full_release_version_in_public_status() -> None:
     from latka_jazn.core.runtime_daemon import DAEMON_SCHEMA_VERSION

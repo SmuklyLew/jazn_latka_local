@@ -172,6 +172,14 @@ class DialogueIntentClassifier:
         "działasz po aktualizacji", "dzialasz po aktualizacji", "czy jesteś po aktualizacji", "czy jestes po aktualizacji",
         "sprawdź, czy jesteś uruchomiona", "sprawdz czy jestes uruchomiona", "czy jesteś uruchomiona", "czy jestes uruchomiona",
     )
+    RUNTIME_WAKE_HEALTH_CHECK_TERMS = (
+        "przeładuj jaźń", "przeladuj jazn", "przeładuj system jaźni", "przeladuj system jazni",
+        "przeładuj runtime", "przeladuj runtime", "obudź się łatko", "obudz sie latko",
+        "obudź łatkę", "obudz latke", "obudziła łatko", "obudzila latko",
+        "czas żebyś przeładowała", "czas zebys przeladowala",
+        "czas żebyś się obudziła", "czas zebys sie obudzila",
+        "uruchom jaźń i odpowiedz", "uruchom jazn i odpowiedz",
+    )
     RUNTIME_STATUS_AFTER_UPDATE_TERMS = (
         "aktywny folder", "active_root", "active database", "active_database",
         "cache_miss_reasons", "should_reuse_existing_extraction",
@@ -318,6 +326,7 @@ class DialogueIntentClassifier:
             and any(marker in folded for marker in ("jaki", "sprawdz", "czy", "podaj", "odpowiedz", "status"))
             and not self._has_any(norm,folded,self.UPDATE_EXECUTION_VERBS)
         )
+        has_runtime_wake_health_check=self._has_any(norm,folded,self.RUNTIME_WAKE_HEALTH_CHECK_TERMS)
         has_user_memory_recall=self._has_any(norm,folded,self.USER_MEMORY_RECALL_TERMS) or (self._has_any(norm,folded,self.SELF_MEMORY_RECALL_TERMS) and self._has_any(norm,folded,self.USER_MEMORY_PERSON_TERMS))
         has_self_memory_recall=self._has_any(norm,folded,self.SELF_MEMORY_RECALL_TERMS)
         has_self_memory_persona=self._has_any(norm,folded,self.SELF_MEMORY_PERSONA_TERMS)
@@ -329,6 +338,8 @@ class DialogueIntentClassifier:
             and ("uruchomil" in folded or "uruchomi" in folded or "jazn" in folded or "jaźń" in norm)
         )
         source_negative_context=self._has_any(norm,folded,self.SOURCE_NEGATIVE_CONTEXTS)
+        if has_runtime_wake_health_check:
+            return self._report(norm,folded,'runtime_health_check_after_update',['wake/health-check po przeładowaniu Jaźni: nie traktować jako wykonanie kolejnego patcha'],0.94,diag=True,speech_act=speech.speech_act,question_object='runtime_health')
         if has_self_architecture_audit and (has_system or "latka" in folded or "łatka" in norm or "jazn" in folded or "jaźń" in norm or "14.8.6" in folded):
             secondary = ['system_update_execution_request'] if (has_update or any(x in folded for x in ('patch', 'hotfix', 'v14.8.6', 'aktualiz'))) else []
             return self._report(norm,folded,'self_architecture_audit_request',['jawny audyt architektury Jaźni, refleksji, bramy pamięci, jakości recallu i planu rozwoju'],0.94,secondary,diag=True,speech_act=speech.speech_act,question_object='self_architecture_audit')

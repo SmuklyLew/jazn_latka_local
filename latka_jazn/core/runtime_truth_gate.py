@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-from latka_jazn.version import schema_version
+from latka_jazn.version import PACKAGE_VERSION_FULL, schema_version
 
-STRICT_RUNTIME_TRUTH_SCHEMA = schema_version("strict_runtime_truth_gate")
+STRICT_RUNTIME_TRUTH_SCHEMA = schema_version("strict_runtime_truth_gate", version=PACKAGE_VERSION_FULL)
 TIMESTAMP_DEGRADED_ERRORS = {
     "timestamp_untrusted",
     "timestamp_source_not_network",

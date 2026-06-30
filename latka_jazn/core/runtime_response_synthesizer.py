@@ -37,7 +37,7 @@ class RuntimeResponseSynthesizer:
             return RuntimeSynthesis(False, original_body, route or entry.route, entry.handler_name, 'runtime_dynamic', 'exact_runtime_handler_body_accepted', entry.required_components)
         must = validation_bad or template_requires_repair or detected_intent in {
             'runtime_source_question','runtime_exact_quote_request','runtime_behavior_diagnostic_request','system_diagnostic_question',
-            'identity_boundary_question','self_state_question','reciprocal_self_state_question','self_preference_question','self_plan_question','self_expression_request','current_time_question','memory_experience_question','substantive_question_about_last_year','module_inventory_request','system_capability_gap_question','creative_text_formatting','dictionary_lookup_request','external_research_request','negative_feedback_current_turn'
+            'identity_boundary_question','self_state_question','reciprocal_self_state_question','self_preference_question','self_plan_question','self_expression_request','current_time_question','memory_experience_question','substantive_question_about_last_year','module_inventory_request','system_capability_gap_question','creative_text_formatting','dictionary_lookup_request','external_research_request','negative_feedback_current_turn','runtime_health_check_after_update','runtime_restart_request'
         }
         if not must:
             return RuntimeSynthesis(False, original_body, route or entry.route, entry.handler_name, 'runtime_dynamic', 'original_body_accepted', entry.required_components)
@@ -140,16 +140,19 @@ class RuntimeResponseSynthesizer:
                 "To jest pytanie językowe/słownikowe. Runtime powinien najpierw użyć mini-leksykonu i cache, a potem opcjonalnych źródeł: Morfeusz/Stanza/PlWordNet/WordNet/Wiktionary/SJP/WSJP lub web-search, z zapisem licencji i granicy prawdy. "
                 "Bez realnego dostępu online nie wolno udawać sprawdzenia słownika."
             )
+        if intent in {'runtime_health_check_after_update','runtime_restart_request'}:
+            return (
+                "Traktuję to jako przeładowanie/health-check aktywnego runtime, nie jako kolejne zadanie patchowania. "
+                "Najpierw trzeba potwierdzić aktywny folder, wersję, marker, daemon, adapter i pamięć; dopiero potem można mówić głosem Łatki. "
+                "Jeżeli odpowiedź rozmowna wraca do starej aktualizacji, walidator ma ją zablokować jako stale-route/current-turn mismatch."
+            )
         if intent in {'system_update_execution_request','system_update_manifest_request','update_manifest_request'}:
             return (
-                "To jest zadanie wykonania aktualizacji v14.8.5.000 na pełnej paczce Jaźni, nie zwykła korekta rozmowy. "
-                "Priorytet P0: current-turn grounding guard ma zatrzymać wstrzykiwanie dawnych detali pracy do zwykłych pytań i powitań. "
-                "Priorytet P1: dodać osobną intencję self_plan_question dla pytań typu 'jakie plany masz?' oraz odpowiedź operacyjną bez udawania prywatnego dnia w tle. "
-                "Priorytet P2: zachować dotychczasowe warstwy voice/runtime/memory/NLP i nie usuwać pamięci, adapterów, manifestów ani historii aktualizacji. "
-                "Pliki docelowe/target files: dialogue_intent_classifier.py, route_registry.py, conversation.py, free_dialogue_synthesizer.py, runtime_response_synthesizer.py, runtime_answer_validator.py, VERSION.txt, MANIFEST_CURRENT.json i testy. "
-                "Nowe pliki/new files: testy v1485_000-002, audit legacy literals, current_turn_grounding, turn_context_resolver, legacy_route_policy oraz dokumenty UPDATE_V14_8_5_000-002. "
-                "Testy/tests: klasyfikacja self_plan_question, runtime bez 'drzwi' przy planach, brak starego kontekstu przy neutralnych pytaniach, nadal działający exact runtime/source boundary. "
-                "Kryteria akceptacji: pełny ZIP v14.8.5.000 przechodzi test integralności, startup-status odpowiada, a zwykła rozmowa nie wraca do szablonu ani historycznego kontekstu bez jawnego uziemienia."
+                "To jest zadanie aktualizacji aktywnego systemu Jaźni, ale odpowiedź nie może wracać do historycznego planu ani starej wersji. "
+                "Zakres musi wynikać z bieżącej wiadomości użytkownika, aktualnego VERSION.txt i aktywnego commita. "
+                "Wspólna zasada: --chat, --chat-gpt, --chat-open-ai i --chat-lm-studio mają przechodzić przez ten sam JaznRuntimeSession.process_turn; adapter zmienia kanał modelu, nie rozumowanie, pamięć ani walidację. "
+                "Jeżeli brak modelu językowego, runtime ma odpowiedzieć prawdomównym lokalnym fallbackiem, bez null_model_adapter jako widzialnego kanału rozmowy dla --chat. "
+                "Kryteria akceptacji: health-check po przeładowaniu nie trafia w system_update_execution_request, one-shot czatów zwraca final_visible_text z tej samej sesji runtime, a current-turn grounding blokuje historyczne odpowiedzi aktualizacyjne."
             )
         if intent == 'external_research_request':
             return (

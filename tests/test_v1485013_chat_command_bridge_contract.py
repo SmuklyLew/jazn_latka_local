@@ -228,7 +228,7 @@ def test_chat_gpt_cli_one_shot_uses_canonical_flag_and_final_text(monkeypatch, c
     assert not out.lstrip().startswith("{")
 
 
-def test_chat_gpt_one_shot_prefers_live_daemon_without_new_public_flag(monkeypatch, tmp_path, capsys) -> None:
+def test_chat_gpt_one_shot_uses_live_daemon_when_env_enabled(monkeypatch, tmp_path, capsys) -> None:
     marker_dir = tmp_path / "workspace_runtime"
     marker_dir.mkdir(parents=True)
     (marker_dir / "JAZN_ACTIVE_RUNTIME.json").write_text("{}\n", encoding="utf-8")
@@ -248,6 +248,7 @@ def test_chat_gpt_one_shot_prefers_live_daemon_without_new_public_flag(monkeypat
     monkeypatch.setattr(main, "status_daemon", fake_status_daemon)
     monkeypatch.setattr(main, "chat_daemon", fake_chat_daemon)
     monkeypatch.setattr(main, "run_jsonl_chat_bridge", fail_local_bridge)
+    monkeypatch.setenv("JAZN_CHATGPT_PREFER_DAEMON", "1")
 
     assert main.main(["--root", str(tmp_path), "--chat-gpt", "--", "hej"]) == 0
 
@@ -271,3 +272,56 @@ def test_chat_gpt_final_only_outputs_only_final_visible_text(monkeypatch) -> Non
     assert rc == 0
     assert stdout.getvalue() == "[czas] Widoczna odpowiedź Łatki.\n"
     assert not stdout.getvalue().lstrip().startswith("{")
+
+
+def test_chat_lm_studio_one_shot_uses_same_runtime_and_final_text(monkeypatch, capsys) -> None:
+    _install_fake_runtime_session(monkeypatch, final_text="[czas] Wspólna neurologia działa.")
+
+    assert main.main(["--chat-lm-studio", "--", "hej"]) == 0
+
+    out = capsys.readouterr().out
+    assert out == "[czas] Wspólna neurologia działa.\n"
+    assert not out.lstrip().startswith("{")
+
+
+def test_chat_terminal_one_shot_uses_same_runtime_and_final_text(monkeypatch, capsys) -> None:
+    class FakeWorker:
+        def __init__(self, **kwargs) -> None:
+            self.kwargs = kwargs
+        def process_user_text(self, user_text: str, **kwargs) -> dict:
+            assert self.kwargs["command"] == "--chat"
+            assert kwargs["client"] == "terminal_chat_one_shot"
+            return {
+                "ok": True,
+                "final_visible_text": "[czas] Terminal używa tej samej sesji.",
+                "final_response_contract": {"final_visible_text": "[czas] Terminal używa tej samej sesji."},
+            }
+        def close(self) -> None:
+            pass
+
+    monkeypatch.setattr(main, "RuntimeSessionWorker", FakeWorker)
+
+    assert main.main(["--chat", "--", "hej"]) == 0
+
+    out = capsys.readouterr().out
+    assert out == "[czas] Terminal używa tej samej sesji.\n"
+    assert not out.lstrip().startswith("{")
+
+def test_chat_gpt_one_shot_uses_local_bridge_by_default(monkeypatch, tmp_path) -> None:
+    calls: list[str] = []
+
+    def fail_status_daemon(*args, **kwargs):
+        raise AssertionError("daemon status should not run by default for local --chat-gpt one-shot")
+
+    def fake_run_jsonl_chat_bridge(**kwargs):
+        calls.append("local")
+        assert kwargs["command"] == "--chat-gpt"
+        assert kwargs["output_mode"] == "final_visible_text"
+        return 0
+
+    monkeypatch.delenv("JAZN_CHATGPT_PREFER_DAEMON", raising=False)
+    monkeypatch.setattr(main, "status_daemon", fail_status_daemon)
+    monkeypatch.setattr(main, "run_jsonl_chat_bridge", fake_run_jsonl_chat_bridge)
+
+    assert main.main(["--root", str(tmp_path), "--chat-gpt", "--", "hej"]) == 0
+    assert calls == ["local"]

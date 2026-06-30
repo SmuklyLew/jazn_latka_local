@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.026B.adapter-gpt-hotfix
+# Current package version: v14.8.5.026B.adapter-gpt-hotfix-v2
 from __future__ import annotations
 
 import argparse
@@ -260,7 +260,7 @@ def _try_chat_gpt_one_shot_via_daemon(
     absent or the endpoint cannot be verified, the caller falls back to the local
     JSONL bridge, preserving compatibility.
     """
-    if not text.strip() or not _env_flag_enabled("JAZN_CHATGPT_PREFER_DAEMON", default=True):
+    if not text.strip() or not _env_flag_enabled("JAZN_CHATGPT_PREFER_DAEMON", default=False):
         return None
     marker_path = _chatgpt_daemon_marker_path(cfg)
     if not marker_path.exists():
@@ -272,16 +272,21 @@ def _try_chat_gpt_one_shot_via_daemon(
     if not isinstance(status, dict) or not _daemon_status_allows_chatgpt_fast_path(status):
         return None
     daemon_session_id = session_id or os.environ.get("JAZN_CHATGPT_DAEMON_SESSION_ID", "chatgpt-bridge-default").strip() or "chatgpt-bridge-default"
-    result = chat_daemon(
-        cfg,
-        text,
-        host=host,
-        port=port,
-        session_id=daemon_session_id,
-        no_carryover=no_carryover,
-        client="chatgpt_bridge_one_shot_daemon_fast_path",
-        timeout=timeout,
-    )
+    try:
+        result = chat_daemon(
+            cfg,
+            text,
+            host=host,
+            port=port,
+            session_id=daemon_session_id,
+            no_carryover=no_carryover,
+            client="chatgpt_bridge_one_shot_daemon_fast_path",
+            timeout=timeout,
+        )
+    except Exception as exc:
+        if _env_flag_enabled("JAZN_CHATGPT_DAEMON_FALLBACK_DEBUG", default=False):
+            print(f"[daemon_chat_failed_fallback] {type(exc).__name__}: {exc}", file=sys.stderr)
+        return None
     result.setdefault("chat_bridge", {})
     if isinstance(result["chat_bridge"], dict):
         result["chat_bridge"].update({
@@ -338,6 +343,58 @@ def _build_light_turn_trace(cfg: JaznConfig, text: str) -> dict:
         },
         final_text_source="not_generated",
     ).to_dict()
+
+
+def _bridge_text_output_mode(ns: argparse.Namespace, bridge_text: str) -> str:
+    """Human one-shot chat commands render final_visible_text; stdin keeps JSONL."""
+    return "final_visible_text" if (getattr(ns, "chat_gpt_final_only", False) or getattr(ns, "final_only", False) or bridge_text) else "jsonl"
+
+
+def _run_chat_command_one_shot(
+    *,
+    cfg: JaznConfig,
+    text: str,
+    session_id: str | None,
+    no_carryover: bool,
+    source_client: str,
+    lifecycle: str,
+    command: str,
+    output_mode: str = "final_visible_text",
+) -> int:
+    """Run the same runtime speech engine for terminal and bridge one-shots.
+
+    All chat entry points must converge on JaznRuntimeSession.process_user_text();
+    adapters change only the visible/model channel, not the reasoning pipeline.
+    """
+    session = RuntimeSessionWorker(
+        session_factory=JaznRuntimeSession,
+        config=cfg,
+        session_id=session_id,
+        no_carryover=no_carryover,
+        source_client=source_client,
+        command=command,
+        timeout_seconds=runtime_turn_timeout_seconds(cfg),
+    )
+    try:
+        result = session.process_user_text(
+            text,
+            client=source_client,
+            lifecycle=lifecycle,
+            session_id_source="cli_arg" if session_id else "generated",
+            process_reused=False,
+        )
+        result.setdefault("chat_bridge", {})
+        if isinstance(result["chat_bridge"], dict):
+            result["chat_bridge"].update({
+                "command": command,
+                "canonical_command": command,
+                "one_shot_shared_runtime_pipeline": True,
+                "truth_boundary": "Ta komenda czatowa używa tego samego JaznRuntimeSession.process_turn co pozostałe flagi; adapter zmienia kanał modelu/widoczności, nie neurologię runtime.",
+            })
+        write_chat_bridge_payload(sys.stdout, result, output_mode=output_mode)
+        return 0
+    finally:
+        session.close()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -936,8 +993,8 @@ def main(argv: list[str] | None = None) -> int:
             route_trace = cognitive_frame.get("turn_route_trace") or (envelope_dict.get("conversation_decision") or {}).get("turn_route_trace") or {}
             conversation_decision = envelope_dict.get("conversation_decision") if isinstance(envelope_dict.get("conversation_decision"), dict) else {}
             payload = {
-                "schema_version": schema_version("runtime_preview_full_payload"),
-                "runtime_version": engine.config.version,
+                "schema_version": schema_version("runtime_preview_full_payload", version=PACKAGE_VERSION_FULL),
+                "runtime_version": PACKAGE_VERSION_FULL,
                 "mode": "diagnostic_dev_preview_full_payload_single_process_turn_not_background_daemon",
                 "turn_trace": envelope_dict.get("trace"),
                 "final_visible_text": runtime_text,
@@ -981,8 +1038,8 @@ def main(argv: list[str] | None = None) -> int:
                 "truth_boundary": "--dev-preview wykonuje jedno zintegrowane wywołanie process_turn i pokazuje pełną kopertę techniczną. To nie jest widoczna odpowiedź Łatki dla użytkownika ani dowód procesu w tle.",
             }
             compact = {
-                "schema_version": schema_version("runtime_preview_compact"),
-                "runtime_version": engine.config.version,
+                "schema_version": schema_version("runtime_preview_compact", version=PACKAGE_VERSION_FULL),
+                "runtime_version": PACKAGE_VERSION_FULL,
                 "mode": "runtime_preview_compact_not_user_visible_latka_reply",
                 "final_visible_text": runtime_text,
                 "runtime_route": final_contract.get("runtime_route") or conversation_decision.get("selected_route") or route_trace.get("selected_route"),
@@ -1018,8 +1075,9 @@ def main(argv: list[str] | None = None) -> int:
         # v14.8.5.026B: --chat-gpt is the single public ChatGPT bridge.
         # Human one-shot usage (`--chat-gpt -- "..."`) renders only
         # final_visible_text, while stdin keeps the JSONL protocol for tools.
-        output_mode = "final_visible_text" if (ns.chat_gpt_final_only or ns.final_only or bridge_text) else "jsonl"
-        if bridge_text:
+        output_mode = _bridge_text_output_mode(ns, bridge_text)
+        legacy_final_only_requested = bool(getattr(ns, "chat_gpt_final_only", False) or getattr(ns, "final_only", False))
+        if bridge_text and not legacy_final_only_requested:
             delegated = _try_chat_gpt_one_shot_via_daemon(
                 cfg=cfg,
                 text=bridge_text,
@@ -1058,12 +1116,17 @@ def main(argv: list[str] | None = None) -> int:
             timeout_seconds=ns.lm_studio_timeout,
             max_output_tokens=ns.lm_studio_max_output_tokens,
         )
+        bridge_text = _message_from_remainder(ns.message)
+        output_mode = _bridge_text_output_mode(ns, bridge_text)
+        bridge_stdin = io.StringIO(bridge_text + "\n") if bridge_text else None
         return run_jsonl_chat_bridge(
             config=cfg,
             session_id=ns.session_id,
             no_carryover=ns.no_carryover,
             command="--chat-lm-studio",
+            stdin=bridge_stdin,
             require_openai_api_key=False,
+            output_mode=output_mode,
         )
 
     if ns.chat_open_ai:
@@ -1075,12 +1138,17 @@ def main(argv: list[str] | None = None) -> int:
             timeout_seconds=ns.openai_timeout,
             max_output_tokens=ns.openai_max_output_tokens,
         )
+        bridge_text = _message_from_remainder(ns.message)
+        output_mode = _bridge_text_output_mode(ns, bridge_text)
+        bridge_stdin = io.StringIO(bridge_text + "\n") if bridge_text else None
         return run_jsonl_chat_bridge(
             config=cfg,
             session_id=ns.session_id,
             no_carryover=ns.no_carryover,
             command="--chat-open-ai",
+            stdin=bridge_stdin,
             require_openai_api_key=True,
+            output_mode=output_mode,
         )
 
     if ns.export_system or ns.export_memory or ns.export_full or ns.export_nlp or ns.export_github_source_safe:
@@ -1092,6 +1160,18 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.chat_loop:
         cfg = apply_chat_cli_settings(config or JaznConfig())
+        bridge_text = _message_from_remainder(ns.message)
+        if bridge_text:
+            return _run_chat_command_one_shot(
+                cfg=cfg,
+                text=bridge_text,
+                session_id=ns.session_id,
+                no_carryover=ns.no_carryover,
+                source_client="terminal_chat_one_shot",
+                lifecycle="terminal_chat_one_shot",
+                command="--chat",
+                output_mode="final_visible_text",
+            )
         session = RuntimeSessionWorker(
             session_factory=JaznRuntimeSession,
             config=cfg,
