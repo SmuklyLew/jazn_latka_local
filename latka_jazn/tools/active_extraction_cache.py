@@ -100,6 +100,12 @@ def read_active_marker(marker_output: Path) -> dict[str, Any] | None:
     return data
 
 
+def _runtime_versions_equivalent(marker_version: Any, file_version: str | None) -> bool:
+    """Compare runtime identity versions without treating release-name suffixes as cache drift."""
+    if not marker_version or not file_version:
+        return False
+    return version_number(str(marker_version)) == version_number(str(file_version))
+
 
 def _active_storage_from_bootstrap(root: Path, version: str | None) -> dict[str, Any]:
     try:
@@ -182,7 +188,7 @@ def build_active_runtime_status(root: Path, *, source_zip: Path | None = None, m
             cache_hit_reasons.append("marker_active_root_matches")
         else:
             cache_miss_reasons.append("marker_active_root_differs_or_missing")
-        if existing_marker.get("version") == version:
+        if _runtime_versions_equivalent(existing_marker.get("version"), version):
             cache_hit_reasons.append("marker_version_matches")
         else:
             cache_miss_reasons.append("marker_version_differs_or_missing")

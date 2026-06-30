@@ -4,7 +4,7 @@ from pathlib import Path
 import json
 import os
 
-from latka_jazn.version import PACKAGE_VERSION, USER_AGENT_VERSION
+from latka_jazn.version import PACKAGE_VERSION, version_number
 from latka_jazn.core.timestamp_policy import (
     TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
     TIMESTAMP_NETWORK_FIRST_DEFAULT,
@@ -92,7 +92,7 @@ class JaznConfig:
     network_default_timeout_connect_seconds: float = field(default_factory=lambda: _env_float("JAZN_NETWORK_TIMEOUT_CONNECT", 3.0))
     network_default_timeout_read_seconds: float = field(default_factory=lambda: _env_float("JAZN_NETWORK_TIMEOUT_READ", 6.0))
     network_max_retries: int = field(default_factory=lambda: _env_int("JAZN_NETWORK_MAX_RETRIES", 1))
-    network_user_agent: str = f"LatkaJazn/{USER_AGENT_VERSION}"
+    network_user_agent: str = f"LatkaJazn/{version_number(PACKAGE_VERSION)}"
     network_cache_required: bool = True
     network_cache_ttl_seconds: int = 604800
     network_respect_robots_and_terms: bool = True

@@ -1,11 +1,10 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.026C"
-PACKAGE_RELEASE_NAME = "voice-perspective-first-person-contract"
+PACKAGE_VERSION = "v14.8.5.027"
+PACKAGE_RELEASE_NAME = "daemon-marker-version-and-user-agent-cleanup"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
-USER_AGENT_VERSION = "14.8.5"
 
 
 def schema_version(component: str, *, version: str = PACKAGE_VERSION) -> str:

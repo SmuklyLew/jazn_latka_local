@@ -407,6 +407,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
         self.state.status = status or self.state.status
         active = build_active_runtime_status(self.config.root, marker_output=self.marker_path)
         timestamp_contract = timestamp_contract or self.cached_timestamp_contract()
+        runtime_version = str(active.get("version") or PACKAGE_VERSION)
         active_state = "active_trusted" if timestamp_contract.get("trusted") is True else "active_degraded"
         payload = {
             **active,
@@ -424,8 +425,10 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "last_heartbeat_at_utc": self.state.last_heartbeat_at_utc,
             "heartbeat_interval_seconds": self.heartbeat_interval,
             "runtime_process_active": True,
+            "runtime_version": runtime_version,
+            "runtime_version_full": PACKAGE_VERSION_FULL,
             "start_file": "main.py",
-            "version": PACKAGE_VERSION_FULL,
+            "version": runtime_version,
             "truth_boundary": "Ten marker oznacza działający lokalny proces daemonu tylko wtedy, gdy PID żyje, heartbeat jest świeży, /status odpowiada z localhost i active_state nie ukrywa trybu degraded. /status musi być szybkie i używa cache czasu; sieć odświeża osobny wątek.",
         }
         fresh, age, threshold = _heartbeat_fresh(payload)
