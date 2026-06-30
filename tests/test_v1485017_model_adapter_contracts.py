@@ -133,7 +133,7 @@ def test_lmstudio_selection_uses_runtime_adapter_and_never_uses_ollama(monkeypat
 
     def fake_post(endpoint: str, payload: dict) -> dict:
         endpoints.append(endpoint)
-        return {"output_text": "Lokalna odpowiedź."}
+        return {"output_text": "Lokalna odpowiedĹş."}
 
     monkeypatch.setattr(adapter, "_post_json", fake_post)
     status = adapter.describe()
@@ -147,7 +147,7 @@ def test_lmstudio_selection_uses_runtime_adapter_and_never_uses_ollama(monkeypat
     assert status["requires_api_key"] is False
     assert status["failure_reason"] is None
     assert response.status == "completed"
-    assert response.text == "Lokalna odpowiedź."
+    assert response.text == "Lokalna odpowiedĹş."
     assert endpoints == ["/responses"]
 
 
@@ -177,7 +177,7 @@ def test_model_adapter_status_cli_does_not_require_openai_key(monkeypatch, capsy
     assert main.main(["--model-adapter-status"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["runtime_version"] == "v14.8.5.021a"
+    assert payload["runtime_version"] == "v14.8.5.026B"
     assert payload["model_adapter_status"]["provider"] == "none"
     assert payload["model_adapter_status"]["selected_backend_adapter"] == "null_model_adapter"
     assert payload["model_adapter_status"]["effective_runtime_adapter"] == "null_model_adapter"

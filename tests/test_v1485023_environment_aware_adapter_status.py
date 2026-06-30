@@ -44,7 +44,7 @@ def test_environment_status_keeps_backend_and_effective_channel_separate(monkeyp
     assert status["visible_channel_adapter"] == "chatgpt_runtime_adapter"
     assert status["effective_runtime_adapter"] == "chatgpt_runtime_adapter"
     assert status["base_backend_adapter_status"]["adapter_id"] == "null_model_adapter"
-    assert status["runtime_environment"]["explicit_command"] == "--chat-gpt-final-only"
+    assert status["runtime_environment"]["explicit_command"] == "--chat-gpt"
     assert status["runtime_environment"]["is_chatgpt_host_bridge"] is True
     assert status["requires_api_key"] is False
 
@@ -112,7 +112,7 @@ def test_startup_status_exposes_runtime_environment(monkeypatch, capsys) -> None
     ("args", "expected_command", "expected_adapter"),
     [
         (["--chat-gpt", "--startup-status-fast"], "--chat-gpt", "chatgpt_runtime_adapter"),
-        (["--chat-gpt-final-only", "--startup-status-fast"], "--chat-gpt-final-only", "chatgpt_runtime_adapter"),
+        (["--chat-gpt-final-only", "--startup-status-fast"], "--chat-gpt", "chatgpt_runtime_adapter"),
         (["--chat", "--startup-status-fast"], "--chat", "terminal_runtime_adapter"),
     ],
 )

@@ -14,7 +14,7 @@ LMSTUDIO_ADAPTER = "lmstudio_runtime_adapter"
 CODEX_ADAPTER = "codex_development_adapter"
 NULL_ADAPTER = "null_model_adapter"
 
-_CHATGPT_COMMANDS = {"--chat-gpt", "--chat-gpt-final-only"}
+_CHATGPT_COMMANDS = {"--chat-gpt", "--chat-gpt-final-only"}  # legacy alias canonicalizes to --chat-gpt
 _TERMINAL_COMMANDS = {"--chat", "--loop"}
 _OPENAI_COMMANDS = {"--chat-open-ai"}
 _LMSTUDIO_COMMANDS = {"--chat-lm-studio"}
@@ -115,7 +115,8 @@ def detect_runtime_environment(
 ) -> RuntimeEnvironmentStatus:
     env_map: Mapping[str, str] = env if env is not None else os.environ
     selected = _adapter_name(config)
-    explicit = str(command or "").strip() or None
+    raw_explicit = str(command or "").strip() or None
+    explicit = "--chat-gpt" if raw_explicit in _CHATGPT_COMMANDS else raw_explicit
     visible: str | None = None
     host = "unknown"
     basis: list[str] = []
@@ -126,6 +127,8 @@ def detect_runtime_environment(
         visible = CHATGPT_ADAPTER
         host = "chatgpt_explicit_command"
         basis.append(f"explicit_command:{explicit}")
+        if raw_explicit and raw_explicit != explicit:
+            basis.append(f"legacy_alias:{raw_explicit}")
     elif explicit in _TERMINAL_COMMANDS:
         visible = TERMINAL_ADAPTER
         host = "terminal_explicit_command"

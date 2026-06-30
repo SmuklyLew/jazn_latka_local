@@ -77,6 +77,33 @@ def test_chatgpt_bridge_timeout_returns_controlled_jsonl_error(monkeypatch) -> N
     assert payload["chat_bridge"]["command"] == "--chat-gpt"
 
 
+
+def test_chatgpt_bridge_session_start_timeout_returns_controlled_error(monkeypatch) -> None:
+    monkeypatch.setenv("JAZN_RUNTIME_TURN_TIMEOUT_SECONDS", "0.01")
+
+    class HangingStartupRuntimeSession:
+        def __init__(self, config, session_id=None, no_carryover=False, source_client="test") -> None:
+            time.sleep(5)
+
+    monkeypatch.setattr(chat_command_module, "JaznRuntimeSession", HangingStartupRuntimeSession)
+    stdout = io.StringIO()
+
+    rc = run_jsonl_chat_bridge(
+        config=JaznConfig(),
+        session_id="startup-timeout-test",
+        no_carryover=True,
+        command="--chat-gpt",
+        stdin=io.StringIO("hej\n"),
+        stdout=stdout,
+    )
+
+    assert rc == 0
+    payload = json.loads(stdout.getvalue())
+    assert payload["ok"] is False
+    assert payload["error_code"] == "runtime_turn_timeout"
+    assert "session_startup" in payload["error"]
+
+
 def test_chat_loop_timeout_closes_without_fake_latka_reply(monkeypatch) -> None:
     monkeypatch.setenv("JAZN_RUNTIME_TURN_TIMEOUT_SECONDS", "0.01")
 

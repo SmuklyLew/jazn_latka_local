@@ -13,11 +13,12 @@ DEFAULT_RUNTIME_TURN_TIMEOUT_SECONDS = 45.0
 class RuntimeTurnTimeoutError(TimeoutError):
     """Raised when a chat-facing runtime turn does not finish in bounded time."""
 
-    def __init__(self, *, command: str, timeout_seconds: float) -> None:
+    def __init__(self, *, command: str, timeout_seconds: float, phase: str = "runtime_turn") -> None:
         self.command = command
         self.timeout_seconds = timeout_seconds
+        self.phase = phase
         super().__init__(
-            f"{command} runtime turn exceeded {timeout_seconds:.3g}s; returning a controlled timeout instead of hanging"
+            f"{command} {phase} exceeded {timeout_seconds:.3g}s; returning a controlled timeout instead of hanging"
         )
 
 
@@ -100,7 +101,11 @@ class RuntimeSessionWorker:
         self.config = config
         self._thread = threading.Thread(target=self._run, name=f"jazn-{command}-session-worker", daemon=True)
         self._thread.start()
-        status, payload = self._ready.get(timeout=min(max(self._timeout_seconds, 1.0), 10.0))
+        ready_timeout = min(max(self._timeout_seconds, 1.0), 10.0)
+        try:
+            status, payload = self._ready.get(timeout=ready_timeout)
+        except queue.Empty as exc:
+            raise RuntimeTurnTimeoutError(command=self._command, timeout_seconds=ready_timeout, phase="session_startup") from exc
         if status == "error":
             raise payload  # type: ignore[misc]
         self.state = payload

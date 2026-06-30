@@ -53,11 +53,10 @@ def chat_gpt_contract() -> ChatCommandContract:
         keeps_process_alive=True,
         engine_reused_between_turns=True,
         truth_boundary=(
-            "--chat-gpt jest mostem dla aplikacji ChatGPT/copy-paste/JSONL. "
+            "--chat-gpt jest jedyną kanoniczną flagą mostu dla aplikacji ChatGPT/copy-paste/JSONL. "
             "Nie wymaga OPENAI_API_KEY i nie wykonuje żądań do OpenAI API. "
-            "Domyślnie zwraca pełny pakiet JSONL. "
-            "Tryby czytelnego terminala to: `--chat-gpt-final-only` albo `--chat-gpt --final-only`. "
-            "Oba wypisują tylko final_visible_text bez zmiany routingu."
+            "Użycie z wiadomością po `--` wypisuje final_visible_text dla człowieka; stdin JSONL zachowuje pełny pakiet dla narzędzi. "
+            "Legacy aliasy `--chat-gpt-final-only` i `--chat-gpt --final-only` są tylko zgodnością wsteczną i nie zmieniają routingu."
         ),
     )
 
@@ -203,7 +202,7 @@ def extract_final_visible_text_from_result(payload: dict[str, Any]) -> str:
     """Return the visible Łatka reply from a chat bridge payload.
 
     The JSONL protocol remains the default source of truth. This helper is only
-    for the human-readable --chat-gpt-final-only rendering mode.
+    for the human-readable --chat-gpt rendering mode.
     """
     final: Any = payload.get("final_visible_text")
     final_contract = payload.get("final_response_contract")
@@ -291,6 +290,12 @@ def run_jsonl_chat_bridge(
             "command": command,
             "requires_api_key": contract["requires_api_key"],
             "uses_openai_api": contract["uses_openai_api"],
+            "canonical_command": "--chat-gpt" if command == "--chat-gpt" else command,
+            "legacy_aliases": ["--chat-gpt-final-only", "--chat-gpt --final-only"] if command == "--chat-gpt" else [],
+            "canonicalization_policy": (
+                "Use --chat-gpt as the single public ChatGPT bridge; aliases are backwards-compatible only."
+                if command == "--chat-gpt" else "canonical command"
+            ),
             "deprecated_flag_removed": "--chat-jsonl",
         }
         if input_kind is not None:
@@ -386,8 +391,8 @@ def run_jsonl_chat_bridge(
                 ), output_mode=output_mode)
                 continue
 
-            session, session_id_source = get_session(payload_session_id, client=client)
             try:
+                session, session_id_source = get_session(payload_session_id, client=client)
                 result = session.process_user_text(
                     user_text,
                     client=client,
@@ -399,8 +404,8 @@ def run_jsonl_chat_bridge(
                 write_chat_bridge_payload(stdout, error_payload(
                     error_code="runtime_turn_timeout",
                     error=(
-                        f"Runtime Jaźni nie zakończył tury w limicie {exc.timeout_seconds:.3g}s. "
-                        "Zwracam kontrolowany błąd zamiast wiszącego mostu; sprawdź timestamp/memory/engine.process_turn."
+                        f"Runtime Jaźni nie zakończył etapu {getattr(exc, 'phase', 'runtime_turn')} w limicie {exc.timeout_seconds:.3g}s. "
+                        "Zwracam kontrolowany błąd zamiast wiszącego mostu; sprawdź start sesji, timestamp/memory/engine.process_turn."
                     ),
                     client=client,
                     input_kind=input_kind,

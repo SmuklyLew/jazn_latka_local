@@ -49,8 +49,8 @@ def test_chat_command_contracts_separate_chatgpt_and_openai() -> None:
     assert lmstudio["engine_reused_between_turns"] is True
     assert lmstudio["truth_boundary"] == LMSTUDIO_TRUTH_BOUNDARY
     assert "final_visible_text" in chatgpt["output_modes"]
-    assert "--chat-gpt-final-only" in chatgpt["truth_boundary"]
-    assert "--chat-gpt --final-only" in chatgpt["truth_boundary"]
+    assert "jedyną kanoniczną flagą" in chatgpt["truth_boundary"]
+    assert "Legacy aliasy" in chatgpt["truth_boundary"]
     assert "--chat-gpt--final-only" not in chatgpt["truth_boundary"]
 
 
@@ -163,6 +163,11 @@ def test_bridge_discovery_cli_lists_aliases_and_lmstudio_contract() -> None:
     payload = json.loads(proc.stdout)
     assert payload["local_chat"]["command"].startswith("python main.py --chat")
     assert payload["chatgpt_bridge"]["requires_api_key"] is False
+    assert payload["chatgpt_bridge"]["canonical_command"] == "--chat-gpt"
+    assert payload["chatgpt_bridge"]["one_shot_command"].startswith("python main.py --chat-gpt --")
+    assert payload["chatgpt_bridge"]["one_shot_prefers_live_daemon"] is True
+    assert payload["chatgpt_bridge"]["daemon_fast_path_env"].startswith("JAZN_CHATGPT_PREFER_DAEMON=0")
+    assert "--chat-gpt-final-only" in payload["chatgpt_bridge"]["legacy_aliases"]
     assert payload["openai_bridge"]["requires_api_key"] is True
     assert "--chat-openai" in payload["openai_bridge"]["aliases"]
     assert payload["lmstudio_bridge"]["command"].startswith("python main.py --chat-lm-studio")
@@ -209,6 +214,45 @@ def test_chat_gpt_default_output_stays_jsonl(monkeypatch) -> None:
     assert payload["final_visible_text"] == "[czas] Widoczna odpowiedź Łatki."
     assert payload["chat_bridge"]["command"] == "--chat-gpt"
 
+
+
+
+def test_chat_gpt_cli_one_shot_uses_canonical_flag_and_final_text(monkeypatch, capsys) -> None:
+    monkeypatch.setenv("JAZN_CHATGPT_PREFER_DAEMON", "0")
+    _install_fake_runtime_session(monkeypatch, final_text="[czas] Jedna kanoniczna flaga działa.")
+
+    assert main.main(["--chat-gpt", "--", "hej"]) == 0
+
+    out = capsys.readouterr().out
+    assert out == "[czas] Jedna kanoniczna flaga działa.\n"
+    assert not out.lstrip().startswith("{")
+
+
+def test_chat_gpt_one_shot_prefers_live_daemon_without_new_public_flag(monkeypatch, tmp_path, capsys) -> None:
+    marker_dir = tmp_path / "workspace_runtime"
+    marker_dir.mkdir(parents=True)
+    (marker_dir / "JAZN_ACTIVE_RUNTIME.json").write_text("{}\n", encoding="utf-8")
+    calls: list[str] = []
+
+    def fake_status_daemon(cfg, *, host="127.0.0.1", port=8787, marker_output=None):
+        calls.append("status")
+        return {"active_state": "active_degraded", "endpoint_reachable": True, "pid_alive": True}
+
+    def fake_chat_daemon(cfg, user_text, **kwargs):
+        calls.append(f"chat:{user_text}")
+        return {"ok": True, "final_visible_text": "[czas] daemon fast path działa."}
+
+    def fail_local_bridge(*args, **kwargs):
+        raise AssertionError("local JSONL bridge should not run when daemon fast path is healthy")
+
+    monkeypatch.setattr(main, "status_daemon", fake_status_daemon)
+    monkeypatch.setattr(main, "chat_daemon", fake_chat_daemon)
+    monkeypatch.setattr(main, "run_jsonl_chat_bridge", fail_local_bridge)
+
+    assert main.main(["--root", str(tmp_path), "--chat-gpt", "--", "hej"]) == 0
+
+    assert calls == ["status", "chat:hej"]
+    assert capsys.readouterr().out == "[czas] daemon fast path działa.\n"
 
 def test_chat_gpt_final_only_outputs_only_final_visible_text(monkeypatch) -> None:
     _install_fake_runtime_session(monkeypatch)

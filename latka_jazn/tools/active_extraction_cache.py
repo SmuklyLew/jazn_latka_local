@@ -17,21 +17,19 @@ FALLBACK_PACKAGE_VERSION = PACKAGE_VERSION_FULL
 SCHEMA_PREFIX = "jazn_active_runtime_marker"
 CACHE_CONTRACT_PREFIX = "active_extraction_cache_contract"
 VISIBLE_PREVIEW_CONTRACT_PREFIX = "visible_runtime_preview_contract"
-SCHEMA_VERSION = f"{SCHEMA_PREFIX}/{PACKAGE_VERSION}"
-CACHE_CONTRACT_VERSION = f"{CACHE_CONTRACT_PREFIX}/{PACKAGE_VERSION}"
-VISIBLE_PREVIEW_CONTRACT_VERSION = f"{VISIBLE_PREVIEW_CONTRACT_PREFIX}/{PACKAGE_VERSION}"
+SCHEMA_VERSION = f"{SCHEMA_PREFIX}/{PACKAGE_VERSION_FULL}"
+CACHE_CONTRACT_VERSION = f"{CACHE_CONTRACT_PREFIX}/{PACKAGE_VERSION_FULL}"
+VISIBLE_PREVIEW_CONTRACT_VERSION = f"{VISIBLE_PREVIEW_CONTRACT_PREFIX}/{PACKAGE_VERSION_FULL}"
 DEFAULT_MARKER_NAME = "JAZN_ACTIVE_RUNTIME.json"
 START_FILE_ORDER = ("main.py", "run.py", "jazn.py")
 
 
 def _version_number(package_version: str | None = None) -> str:
-    value = str(package_version or FALLBACK_PACKAGE_VERSION or '').strip()
-    value = value.lstrip('\ufeff').strip()
-    value = value.split('-', 1)[0].strip()
-    value = value.lstrip('\ufeff').strip()
-    if value.startswith('v'):
+    value = str(package_version or FALLBACK_PACKAGE_VERSION or "").strip()
+    value = value.lstrip("\ufeff").strip()
+    if value.startswith("v"):
         value = value[1:]
-    return value or version_number(PACKAGE_VERSION)
+    return value or version_number(PACKAGE_VERSION_FULL)
 
 
 def active_marker_schema_version(package_version: str | None = None) -> str:

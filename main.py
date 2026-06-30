@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.021a-release-metadata-manifest-hygiene
+# Current package version: v14.8.5.026B.adapter-gpt-hotfix
 from __future__ import annotations
 
 import argparse
@@ -63,7 +63,7 @@ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegist
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
-from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_lm_studio_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge
+from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_lm_studio_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge, write_chat_bridge_payload
 from latka_jazn.core.bridge_discovery import discover_runtime_bridges
 from latka_jazn.core.turn_timeout import RuntimeSessionWorker, runtime_turn_timeout_seconds
 from latka_jazn.core.runtime_daemon import (
@@ -101,9 +101,9 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--cognitive-frame", "--chatgpt-frame", "--brain-frame", action="store_true", dest="cognitive_frame", help="ZwrĂłÄ‡ wewnÄ™trzny pakiet poznawczy JSON dla ChatGPT, nie gotowÄ… odpowiedĹş uĹĽytkownikowi.")
     parser.add_argument("--debug-direct", action="store_true", dest="debug_direct", help="PokaĹĽ technicznÄ… Ĺ›cieĹĽkÄ™ bezpoĹ›redniÄ… i fallback diagnostyczny zamiast rozmownej odpowiedzi.")
     parser.add_argument("--chat", "--loop", action="store_true", dest="chat_loop", help="Uruchom staĹ‚Ä… pÄ™tlÄ™ rozmowy: jeden JaznEngine dziaĹ‚a przez wiele tur aĹĽ do /exit lub EOF.")
-    parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Uruchom gĹ‚Ăłwny most ChatGPT w protokole JSONL: przyjmuje message/text/user_text/content/prompt, format messages[].content albo zwykĹ‚y tekst; zwraca jednÄ… liniÄ™ JSON na turÄ™.")
-    parser.add_argument("--chat-gpt-final-only", action="store_true", dest="chat_gpt_final_only", help="SkrĂłt: uruchom --chat-gpt i wypisz na stdout tylko final_visible_text dla kaĹĽdej tury; nie zmienia routingu ani stanu runtime.")
-    parser.add_argument("--final-only", action="store_true", dest="final_only", help="Z --chat-gpt wypisz na stdout tylko final_visible_text dla kaĹĽdej tury; alias czytelny dla czĹ‚owieka.")
+    parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Kanoniczny most ChatGPT. Z wiadomością po -- wypisuje tylko final_visible_text; ze stdin JSONL działa jako protokół maszynowy. Nie używa OPENAI_API_KEY.")
+    parser.add_argument("--chat-gpt-final-only", action="store_true", dest="chat_gpt_final_only", help=argparse.SUPPRESS)
+    parser.add_argument("--final-only", action="store_true", dest="final_only", help=argparse.SUPPRESS)
     parser.add_argument("--chat-open-ai", action="store_true", dest="chat_open_ai", help="Uruchom lokalny runtime JaĹşni z model_adapter przez OpenAI Responses API; wymaga OPENAI_API_KEY i nie udaje poĹ‚Ä…czenia bez klucza.")
     parser.add_argument("--openai-model", default=None, help="Model dla --chat-open-ai; domyĹ›lnie JAZN_MODEL_NAME albo konfiguracja runtime.")
     parser.add_argument("--openai-api-base", default=None, help="Bazowy URL API dla --chat-open-ai; domyĹ›lnie https://api.openai.com/v1.")
@@ -221,10 +221,88 @@ def _message_from_remainder(parts: list[str]) -> str:
     return " ".join(parts).strip()
 
 
+def _env_flag_enabled(name: str, *, default: bool = True) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() not in {"0", "false", "no", "nie", "off"}
+
+
+def _chatgpt_daemon_marker_path(cfg: JaznConfig) -> Path:
+    return Path(cfg.root).resolve() / "workspace_runtime" / "JAZN_ACTIVE_RUNTIME.json"
+
+
+def _daemon_status_allows_chatgpt_fast_path(status: dict[str, object]) -> bool:
+    active_state = str(status.get("active_state") or "")
+    if active_state in {"active_trusted", "active_degraded"}:
+        return bool(status.get("endpoint_reachable") or status.get("pid_alive"))
+    ping = status.get("ping")
+    if isinstance(ping, dict):
+        ping_state = str(ping.get("active_state") or "")
+        return ping_state in {"active_trusted", "active_degraded"}
+    return False
+
+
+def _try_chat_gpt_one_shot_via_daemon(
+    *,
+    cfg: JaznConfig,
+    text: str,
+    session_id: str | None,
+    no_carryover: bool,
+    host: str,
+    port: int,
+    timeout: float,
+    output_mode: str,
+) -> int | None:
+    """Prefer a live daemon for `--chat-gpt -- <text>` without exposing a second public flag.
+
+    The daemon already owns the initialized runtime session.  When its marker is
+    absent or the endpoint cannot be verified, the caller falls back to the local
+    JSONL bridge, preserving compatibility.
+    """
+    if not text.strip() or not _env_flag_enabled("JAZN_CHATGPT_PREFER_DAEMON", default=True):
+        return None
+    marker_path = _chatgpt_daemon_marker_path(cfg)
+    if not marker_path.exists():
+        return None
+    try:
+        status = status_daemon(cfg, host=host, port=port)
+    except Exception:
+        return None
+    if not isinstance(status, dict) or not _daemon_status_allows_chatgpt_fast_path(status):
+        return None
+    daemon_session_id = session_id or os.environ.get("JAZN_CHATGPT_DAEMON_SESSION_ID", "chatgpt-bridge-default").strip() or "chatgpt-bridge-default"
+    result = chat_daemon(
+        cfg,
+        text,
+        host=host,
+        port=port,
+        session_id=daemon_session_id,
+        no_carryover=no_carryover,
+        client="chatgpt_bridge_one_shot_daemon_fast_path",
+        timeout=timeout,
+    )
+    result.setdefault("chat_bridge", {})
+    if isinstance(result["chat_bridge"], dict):
+        result["chat_bridge"].update({
+            "command": "--chat-gpt",
+            "canonical_command": "--chat-gpt",
+            "daemon_fast_path": True,
+            "daemon_marker_path": str(marker_path),
+            "daemon_status_active_state": status.get("active_state"),
+            "daemon_session_id": daemon_session_id,
+            "fallback_if_unavailable": "local_jsonl_runtime_session",
+            "truth_boundary": "--chat-gpt używa daemon fast path tylko gdy marker i lokalny endpoint potwierdzają żywy runtime; inaczej wraca do lokalnego JSONL bridge.",
+        })
+    result["chatgpt_bridge"] = result.get("chat_bridge")
+    write_chat_bridge_payload(sys.stdout, result, output_mode=output_mode)
+    return 0
+
+
 def _runtime_command_from_cli_args(ns: argparse.Namespace) -> str | None:
-    """Return the explicit visible runtime command selected by combined CLI flags."""
+    """Return the canonical explicit visible runtime command selected by CLI flags."""
     if getattr(ns, "chat_gpt_final_only", False):
-        return "--chat-gpt-final-only"
+        return "--chat-gpt"
     if getattr(ns, "chat_gpt", False):
         return "--chat-gpt"
     if getattr(ns, "chat_loop", False):
@@ -296,7 +374,7 @@ def main(argv: list[str] | None = None) -> int:
     if ns.chat_gpt_final_only:
         ns.chat_gpt = True
     if ns.final_only and not ns.chat_gpt:
-        parser.error("--final-only wymaga --chat-gpt albo uĹĽyj samodzielnego --chat-gpt-final-only")
+        parser.error("--final-only jest legacy aliasem i wymaga kanonicznego --chat-gpt")
 
     if ns.bridge_discovery:
         cfg = config or JaznConfig()
@@ -936,13 +1014,29 @@ def main(argv: list[str] | None = None) -> int:
 
     if ns.chat_gpt:
         cfg = apply_chatgpt_cli_settings(config or JaznConfig())
-        output_mode = "final_visible_text" if (ns.chat_gpt_final_only or ns.final_only) else "jsonl"
         bridge_text = _message_from_remainder(ns.message)
+        # v14.8.5.026B: --chat-gpt is the single public ChatGPT bridge.
+        # Human one-shot usage (`--chat-gpt -- "..."`) renders only
+        # final_visible_text, while stdin keeps the JSONL protocol for tools.
+        output_mode = "final_visible_text" if (ns.chat_gpt_final_only or ns.final_only or bridge_text) else "jsonl"
+        if bridge_text:
+            delegated = _try_chat_gpt_one_shot_via_daemon(
+                cfg=cfg,
+                text=bridge_text,
+                session_id=ns.session_id,
+                no_carryover=ns.no_carryover,
+                host=ns.daemon_host,
+                port=ns.daemon_port,
+                timeout=ns.daemon_chat_timeout,
+                output_mode=output_mode,
+            )
+            if delegated is not None:
+                return delegated
         bridge_stdin = io.StringIO(bridge_text + "\n") if bridge_text else None
-        if bridge_stdin is None and output_mode == "final_visible_text" and sys.stdin.isatty():
+        if bridge_stdin is None and (ns.chat_gpt_final_only or ns.final_only) and sys.stdin.isatty():
             print(
-                "--chat-gpt-final-only wymaga wiadomości po fladze albo danych na stdin, np. "
-                "python -X utf8 main.py --chat-gpt-final-only -- \"Cześć Łatko\"",
+                "--chat-gpt przy trybie final_visible_text wymaga wiadomości po -- albo danych na stdin, np. "
+                "python -X utf8 main.py --chat-gpt -- \"Cześć Łatko\"",
                 file=sys.stderr,
             )
             return 2

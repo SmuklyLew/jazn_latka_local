@@ -80,8 +80,6 @@ def _environment_availability_basis(environment: Any) -> str | None:
     first = str(basis[0] if basis else "").strip()
     if first == "explicit_command:--chat-gpt":
         return "explicit_chat_gpt_bridge_command"
-    if first == "explicit_command:--chat-gpt-final-only":
-        return "explicit_chat_gpt_final_only_command"
     if first == "explicit_command:--chat":
         return "explicit_chat_terminal_command"
     if first == "explicit_command:--chat-open-ai":

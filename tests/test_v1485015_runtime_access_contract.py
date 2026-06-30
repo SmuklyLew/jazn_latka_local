@@ -11,9 +11,9 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CO
 
 
 def test_runtime_version_is_current_model_adapter_contracts() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.021a"
+    assert PACKAGE_VERSION == "v14.8.5.026B"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "release-metadata-manifest-hygiene"
+    assert PACKAGE_RELEASE_NAME == "adapter-gpt-hotfix"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:
@@ -51,3 +51,25 @@ def test_write_active_runtime_marker_clears_post_write_marker_flags(tmp_path: Pa
     assert marker["marker_refresh_required"] is False
     assert marker["marker_differs"] is False
     assert marker_path.exists()
+
+def test_active_runtime_marker_contract_uses_full_release_name() -> None:
+    from latka_jazn.tools.active_extraction_cache import (
+        active_cache_contract_version,
+        active_marker_schema_version,
+    )
+
+    full = "v14.8.5.026B.adapter-gpt-hotfix"
+    assert active_marker_schema_version(full) == "jazn_active_runtime_marker/v14.8.5.026B.adapter-gpt-hotfix"
+    assert active_cache_contract_version(full) == "active_extraction_cache_contract/v14.8.5.026B.adapter-gpt-hotfix"
+
+def test_runtime_daemon_uses_full_release_version_in_public_status() -> None:
+    from latka_jazn.core.runtime_daemon import DAEMON_SCHEMA_VERSION
+    from latka_jazn.version import PACKAGE_VERSION_FULL
+
+    assert DAEMON_SCHEMA_VERSION == f"persistent_daemon_runtime/{PACKAGE_VERSION_FULL}"
+
+def test_package_version_full_matches_version_txt() -> None:
+    from pathlib import Path
+    from latka_jazn.version import PACKAGE_VERSION_FULL
+
+    assert Path("VERSION.txt").read_text(encoding="utf-8-sig").strip() == PACKAGE_VERSION_FULL

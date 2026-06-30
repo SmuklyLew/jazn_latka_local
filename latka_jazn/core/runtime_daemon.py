@@ -26,7 +26,7 @@ from latka_jazn.tools.active_extraction_cache import (
     build_active_runtime_status,
     write_active_runtime_marker,
 )
-from latka_jazn.version import PACKAGE_VERSION, schema_version
+from latka_jazn.version import PACKAGE_VERSION, PACKAGE_VERSION_FULL, schema_version
 
 DEFAULT_DAEMON_HOST = "127.0.0.1"
 DEFAULT_DAEMON_PORT = 8787
@@ -41,7 +41,7 @@ DEFAULT_HEARTBEAT_FRESH_MULTIPLIER = 3.0
 DEFAULT_TIMESTAMP_BACKGROUND_REFRESH_MIN_SECONDS = 20.0
 DEFAULT_TIMESTAMP_BACKGROUND_REFRESH_TIMEOUT_SECONDS = 0.35
 DAEMON_MAX_BODY_BYTES = 1_000_000
-DAEMON_SCHEMA_VERSION = schema_version("persistent_daemon_runtime")
+DAEMON_SCHEMA_VERSION = schema_version("persistent_daemon_runtime", version=PACKAGE_VERSION_FULL)
 DAEMON_MARKER_STATUS_ACTIVE = "active_daemon_runtime"
 DAEMON_MARKER_STATUS_STOPPED = "stopped_daemon_runtime"
 LOOPBACK_CLIENTS = {"127.0.0.1", "::1", "localhost"}
@@ -425,7 +425,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "heartbeat_interval_seconds": self.heartbeat_interval,
             "runtime_process_active": True,
             "start_file": "main.py",
-            "version": PACKAGE_VERSION,
+            "version": PACKAGE_VERSION_FULL,
             "truth_boundary": "Ten marker oznacza działający lokalny proces daemonu tylko wtedy, gdy PID żyje, heartbeat jest świeży, /status odpowiada z localhost i active_state nie ukrywa trybu degraded. /status musi być szybkie i używa cache czasu; sieć odświeża osobny wątek.",
         }
         fresh, age, threshold = _heartbeat_fresh(payload)
@@ -454,7 +454,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "daemon_host": self.state.host,
             "daemon_port": self.state.port,
             "runtime_process_active": True,
-            "runtime_version": self.config.version,
+            "runtime_version": PACKAGE_VERSION_FULL,
             "active_root": str(self.config.root),
             "marker_path": str(self.marker_path),
             "marker_found": self.marker_path.exists(),
@@ -823,7 +823,7 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
         "ok": active_state == "active_trusted",
         "active_state": active_state,
         "degraded": active_state == "active_degraded",
-        "runtime_version": config.version,
+        "runtime_version": PACKAGE_VERSION_FULL,
         "active_root": str(config.root),
         "marker_path": str(marker_path),
         "marker_found": marker is not None,

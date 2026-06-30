@@ -47,8 +47,13 @@ def discover_runtime_bridges(
         },
         "chatgpt_bridge": {
             "command": "python main.py --chat-gpt --session-id <id>",
+            "one_shot_command": 'python main.py --chat-gpt -- "Cześć Łatko"',
+            "canonical_command": "--chat-gpt",
+            "legacy_aliases": ["--chat-gpt-final-only", "--chat-gpt --final-only"],
+            "one_shot_prefers_live_daemon": True,
+            "daemon_fast_path_env": "JAZN_CHATGPT_PREFER_DAEMON=0 wyłącza preferencję daemonu",
             "requires_api_key": False,
-            "meaning": "most JSONL/copy-paste dla tej aplikacji ChatGPT; nie wykonuje żądania OpenAI API",
+            "meaning": "jedyny kanoniczny most dla tej aplikacji ChatGPT; one-shot wypisuje final_visible_text i preferuje żywy daemon, stdin JSONL zostaje dla narzędzi; nie wykonuje żądania OpenAI API",
         },
         "openai_bridge": {
             "command": "python main.py --chat-open-ai --session-id <id>",
