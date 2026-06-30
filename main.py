@@ -130,7 +130,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--daemon-final-only", action="store_true", dest="daemon_final_only", help="Z --daemon-send wypisz tylko final_visible_text, gdy runtime zwróci finalną odpowiedź.")
     parser.add_argument("--daemon-chat-timeout", type=float, default=DEFAULT_DAEMON_CHAT_TIMEOUT_SECONDS, help="Timeout sekund dla jednej tury POST /chat przez daemon.")
     parser.add_argument("--trusted-time-iso", default=None, help="Zaufany timestamp ISO wstrzyknięty przez host/loader ChatGPT; aktywuje trusted time bez sieci w sandboxie.")
-    parser.add_argument("--trusted-time-source", default="chatgpt_loader", help="Opis źródła dla --trusted-time-iso / JAZN_TRUSTED_TIME_ISO.")
+    parser.add_argument("--trusted-time-source", default=None, help="Opis źródła dla --trusted-time-iso / JAZN_TRUSTED_TIME_ISO.")
     parser.add_argument("--trusted-time-max-age-seconds", type=int, default=None, help="Maksymalny wiek wstrzykniętego trusted timestampu; domyślnie polityka czasu runtime.")
     parser.add_argument("--session-id", default=None, help="Jawny identyfikator sesji dla kontrolowanego carryover w --chat/--chat-gpt.")
     parser.add_argument("--no-carryover", action="store_true", dest="no_carryover", help="Zablokuj uĹĽycie poprzedniej tury nawet jeĹ›li istnieje runtime_state.json.")
