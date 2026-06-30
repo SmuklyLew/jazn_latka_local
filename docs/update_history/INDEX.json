@@ -1,8 +1,16 @@
 {
   "schema_version": "jazn_update_history_index/v14.6.10",
-  "generated_at_utc": "2026-06-29T02:18:04.379102+00:00",
-  "active_version": "v14.8.5.021a",
-  "entries": [],
-  "entry_count": 0,
+  "generated_at_utc": "2026-06-30T20:41:11.013147+00:00",
+  "active_version": "v14.8.5.026C",
+  "entries": [
+    {
+      "version": "v14.8.5.026C",
+      "release_name": "voice-perspective-first-person-contract",
+      "path": "docs/update_history/changelogs/CHANGELOG_v14_8_5_026C_VOICE_PERSPECTIVE_FIRST_PERSON_CONTRACT.md",
+      "type": "hotfix",
+      "summary": "Normalizes voice-perspective release metadata and keeps memory exports out of MANIFEST_CURRENT."
+    }
+  ],
+  "entry_count": 1,
   "truth_boundary": "Indeks porządkuje historyczne manifesty. Nie oznacza, że wszystkie stare deklaracje muszą być aktywną funkcją runtime."
 }

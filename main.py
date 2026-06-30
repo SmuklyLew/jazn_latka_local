@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.026B.adapter-gpt-hotfix-v2
+# Current package version: v14.8.5.026C-voice-perspective-first-person-contract
 from __future__ import annotations
 
 import argparse

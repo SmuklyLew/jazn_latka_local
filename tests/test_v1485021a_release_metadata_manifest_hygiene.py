@@ -9,9 +9,9 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, PACKAGE_VE
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_VERSION = "v14.8.5.021a"
-RELEASE_NAME = "release-metadata-manifest-hygiene"
-PROJECT_VERSION = "14.8.5.21a0"
+RUNTIME_VERSION = "v14.8.5.026C"
+RELEASE_NAME = "voice-perspective-first-person-contract"
+PROJECT_VERSION = "14.8.5.26c0"
 
 
 def _checksum_entries(name: str) -> dict[str, str]:
@@ -44,7 +44,7 @@ def test_active_manifest_and_update_index_use_current_version() -> None:
     manifest = json.loads((ROOT / "MANIFEST_CURRENT.json").read_text(encoding="utf-8"))
     index = json.loads((ROOT / "docs" / "update_history" / "INDEX.json").read_text(encoding="utf-8"))
 
-    assert manifest["schema_version"] == "manifest_current/v14.8.5.021a"
+    assert manifest["schema_version"] == f"manifest_current/{RUNTIME_VERSION}"
     for key in ("version", "runtime_version", "package_version"):
         assert manifest[key] == RUNTIME_VERSION
         assert "v14.8.5.017" not in manifest[key]

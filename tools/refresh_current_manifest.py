@@ -72,6 +72,8 @@ EXCLUDED_DETAIL_SUPPRESSED_REASONS = {'generated_cache_directory'}
 MUTABLE_PATTERNS = (
     # Everything under workspace_runtime is local runtime/cache/session state.
     'workspace_runtime/**',
+    # All memory exports/imports/SQLite-adjacent files are runtime/private memory, not static package files.
+    'memory/**',
     # Private/raw memory and imported conversation graphs are memory state, not static code.
     'memory/raw/**',
     'memory/raw_chats/**',
@@ -110,6 +112,7 @@ def exclusion_reason(rel: str) -> str | None:
     if p.name in CONTROL_EXCLUDED: return 'self_or_checksum_control_file'
     if any(part in EXCLUDE_DIR_PARTS for part in p.parts): return 'generated_cache_directory'
     if any(rel.startswith(prefix) for prefix in EXCLUDE_PREFIXES): return 'export_output_directory'
+    if rel.lower().endswith('.zip'): return 'zip_archive_not_static_manifest'
     if rel.endswith(TRANSIENT_SUFFIXES): return 'transient_runtime_sidecar'
     return None
 
