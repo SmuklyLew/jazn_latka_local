@@ -8,11 +8,19 @@ from pathlib import Path
 from latka_jazn.tools.chatgpt_host_bridge_helper import (
     build_chatgpt_host_visible_reply_payload,
     load_chatgpt_host_request_from_text,
+    load_chatgpt_host_request,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 TIMESTAMP = "[🕒 2026-07-01 21:16:24 GMT+2, środa, Europe/Warsaw]"
 
+def test_load_chatgpt_host_request_accepts_windows_powershell_utf16_redirect(tmp_path: Path) -> None:
+    runtime_path = tmp_path / "phase1.windows-powershell.jsonl"
+    runtime_path.write_bytes((json.dumps(_phase1_packet(), ensure_ascii=False) + "\n").encode("utf-16"))
+
+    selected = load_chatgpt_host_request(runtime_path)
+
+    assert selected["chatgpt_host_bridge"]["phase"] == "host_visible_generation_requested"
 
 def _phase1_packet() -> dict:
     return {

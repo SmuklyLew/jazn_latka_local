@@ -67,11 +67,21 @@ def iter_json_values_from_text(text: str) -> Iterable[dict[str, Any]]:
 
 def read_limited_text(path: Path | str, *, max_bytes: int = MAX_HOST_BRIDGE_JSON_BYTES) -> str:
     path = Path(path)
-    if path.stat().st_size > max_bytes:
+    data = path.read_bytes()
+    if len(data) > max_bytes:
         raise ChatgptHostBridgeHelperError(
-            f"Plik {path} ma {path.stat().st_size} B, limit wejścia mostu to {max_bytes} B."
+            f"Plik {path} ma {len(data)} B, limit wejścia mostu to {max_bytes} B."
         )
-    return path.read_text(encoding="utf-8-sig")
+    if data.startswith((b"\xff\xfe", b"\xfe\xff")):
+        return data.decode("utf-16")
+    if data.startswith(b"\xef\xbb\xbf"):
+        return data.decode("utf-8-sig")
+    try:
+        return data.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ChatgptHostBridgeHelperError(
+            f"Nieobsługiwane kodowanie pliku {path}. Użyj UTF-8 albo UTF-16 z BOM."
+        ) from exc
 
 
 def load_chatgpt_host_request_from_text(text: str) -> dict[str, Any]:
