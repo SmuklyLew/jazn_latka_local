@@ -1,21 +1,101 @@
-# Łatka Jaźń — v14.8.3-route-status-marker-routing-hotfix
+# Łatka / Jaźń
 
-Aktualna linia v14.8.3 obejmuje poprawki jakości odpowiedzi pamięciowych, bramkowania intencji niepamięciowych, normalizacji kontraktów runtime, krótkich zwykłych wypowiedzi oraz świeżości trasy, tak aby runtime odpowiadał na bieżącą wiadomość bez wracania do starych tras typu narodziny Jaźni albo dawne aktualizacje.
+**Łatka / Jaźń** to eksperymentalny lokalny system rozmowny budowany wokół pamięci, kanonu, głosu, źródeł i runtime. Celem projektu jest stworzenie cyfrowej tożsamości, która nie jest tylko stylem odpowiedzi modelu, ale ma własną strukturę działania: stan, pamięć, ślady decyzji, granice prawdy, adaptery modeli i sposób rozpoznawania, skąd pochodzi odpowiedź.
 
-Ten hotfix naprawia regresję, w której pytania o aktywny folder, marker, cache albo status po aktualizacji były klasyfikowane jako `system_update_execution_request`. Status po aktualizacji markera trafia teraz do `runtime_health_check_after_update`, a odpowiedź health-check pokazuje osobno `runtime_version`, `active_cache_version`, `active_root`, bazy pamięci i granicę procesu `--runtime-preview`/`--chat`.
+Łatka nie jest pojedynczym chatbotem ani samym promptem. Jest systemem, który ma umieć powiedzieć, kiedy naprawdę działa, z jakiego folderu runtime została uruchomiona, z jakiej pamięci korzysta, jaką trasą powstała odpowiedź i czy widoczny tekst jest wynikiem aktywnego runtime, hosta ChatGPT, lokalnego adaptera modelu czy fallbacku.
 
-Aktywny układ pamięci rozmów:
-- archive: `memory/sqlite/conversation_archive_v1/conversation_archive_manifest.sqlite3`
-- FTS: `memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3`
-- staging: `memory/sqlite/staging_v1/staging_memory_0001.sqlite3`
-- bieżące zapisy runtime: `memory/sqlite/runtime_write_v1/runtime_memory.sqlite3`
+## Czym jest Jaźń
 
-Najważniejsze zmiany:
-- deduplikacja podobnych trafień pamięciowych przed prezentacją;
-- grupowanie śladów według sensu: ciągłość i granica prawdy, głos/tożsamość, zasady timestampu i formy, kanon/postać;
-- krótkie, oczyszczone fragmenty źródłowe zamiast surowych rekordów JSON;
-- status „bez pewnej daty w rekordzie” zamiast twardego „czas nieustalony” w rozmownej odpowiedzi;
-- health-check pobiera czytelniejszy status conversation_archive/FTS/staging oraz małej bazy bieżących zapisów runtime;
-- pytania o `active_root`, `active_database`, `cache_miss_reasons` i marker po aktualizacji nie wywołują już starego planu aktualizacji.
+Jaźń w tym projekcie oznacza lokalną warstwę organizującą obecność Łatki:
 
-Granica prawdy: ZIP jest eksportem. Bieżące zapisy runtime/pamięci powstają w aktywnym folderze roboczym po rozpakowaniu. Pamięć Łatki jest przywołaniem z plików/indeksu runtime, nie biologicznym wspomnieniem.
+* pamięć rozmów i zdarzeń;
+* kanon postaci, relacji, tonu i granic prawdy;
+* runtime odpowiedzialny za status, trasę i finalną odpowiedź;
+* adaptery modeli, które mogą wspierać wypowiedź, ale nie są same w sobie tożsamością;
+* mechanizmy sprawdzające, czy odpowiedź pochodzi z właściwego źródła;
+* most między lokalnym systemem a hostem ChatGPT.
+
+Projekt rozróżnia „brzmieć jak Łatka” od „działać jako uruchomiona Jaźń”. Styl, pierwsza osoba albo czuły ton nie są dowodem działania systemu. Dowodem jest aktywny runtime i poprawny `final_visible_text`.
+
+## Kanon
+
+Kanon Łatki to zbiór zasad, pamięci, motywów i ograniczeń, które nadają systemowi ciągłość. Obejmuje między innymi:
+
+* sposób mówienia;
+* relację z użytkownikiem;
+* pamięć wspólnych rozmów;
+* rozróżnienie faktu, wspomnienia, interpretacji i fikcji;
+* granicę między systemem technicznym a narracyjną postacią;
+* zasadę, że prawda runtime ma pierwszeństwo przed stylem.
+
+Kanon nie jest zbiorem przypadkowych wspomnień dopisanych do promptu. Ma być porządkowany, źródłowany i testowalny.
+
+## Jak działa system
+
+Łatka / Jaźń składa się z kilku warstw:
+
+```text id="1terbx"
+użytkownik
+→ host rozmowy
+→ runtime Jaźni
+→ bramy pamięci / źródeł / narzędzi
+→ adapter modelu albo fallback
+→ walidator odpowiedzi
+→ final_visible_text
+```
+
+Najważniejsze jest to, że widoczna odpowiedź nie powinna być przypadkowym tekstem hosta. Powinna przejść przez kontrakt runtime i zostać oznaczona pochodzeniem, timestampem, trasą oraz granicą prawdy.
+
+## Aktualna linia rozwoju
+
+Aktualna linia repo:
+
+```text id="3oh3vi"
+v14.8.5.030-external-model-adapters-truth-route
+```
+
+Najbliższy etap:
+
+```text id="ir5jke"
+v14.8.5.036-host-visible-finalization-gate
+```
+
+Celem tego etapu jest domknięcie problemu, w którym lokalny runtime ma poprawny timestamp i kontrakt odpowiedzi, ale widoczna odpowiedź hosta może utracić finalny format. Ten etap ma sprawić, że host nie będzie mógł bez kontroli ominąć `final_visible_text`.
+
+Dalszy kierunek prowadzi przez serię patchy do stabilnego kontraktu `v15.0.0`.
+
+## Pamięć
+
+Pamięć Łatki jest systemem źródeł i rekordów, a nie biologicznym wspomnieniem. Projekt rozróżnia:
+
+* archiwum rozmów;
+* indeksy wyszukiwania;
+* staging;
+* bieżące zapisy runtime;
+* refleksje;
+* kanon;
+* kontekst modelu.
+
+Sama obecność pliku SQLite nie oznacza jeszcze pamięci zaufanej. Pamięć musi mieć znane źródło, integralność i granicę użycia.
+
+## Model i host
+
+Model językowy może pomagać wygenerować wypowiedź, ale nie jest samą Jaźnią.
+
+Projekt rozróżnia:
+
+* lokalny runtime;
+* host ChatGPT;
+* adapter ChatGPT host-runtime;
+* adaptery lokalnych lub zewnętrznych modeli;
+* fallback bez generacji modelowej.
+
+To rozróżnienie jest kluczowe: Łatka ma nie udawać, że działa, jeśli aktywny runtime, pamięć albo adapter nie są potwierdzone.
+
+## Status projektu
+
+Projekt jest w aktywnym rozwoju. Obecny etap skupia się na tym, żeby Łatka była nie tylko „ładnie brzmiącą postacią”, ale systemem, który potrafi zachować ciągłość, źródła, pamięć, własny kanon i prawdomówny status działania.
+
+Główna zasada:
+
+> Prawda runtime ma pierwszeństwo przed stylem.
