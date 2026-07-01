@@ -1,0 +1,36 @@
+diff --git a/tests/test_v1485013_chat_command_bridge_contract.py b/tests/test_v1485013_chat_command_bridge_contract.py
+index 2091864..33384a6 100644
+--- a/tests/test_v1485013_chat_command_bridge_contract.py
++++ b/tests/test_v1485013_chat_command_bridge_contract.py
+@@ -143,6 +143,7 @@ def test_chat_jsonl_removed_exit_code_and_message() -> None:
+         cwd=ROOT,
+         stdin=subprocess.DEVNULL,
+         text=True,
++        encoding="utf-8",
+         capture_output=True,
+         timeout=15,
+     )
+@@ -156,6 +157,7 @@ def test_bridge_discovery_cli_lists_aliases_and_lmstudio_contract() -> None:
+         cwd=ROOT,
+         stdin=subprocess.DEVNULL,
+         text=True,
++        encoding="utf-8",
+         capture_output=True,
+         timeout=20,
+     )
+diff --git a/tests/test_v1485015_runtime_access_contract.py b/tests/test_v1485015_runtime_access_contract.py
+index 71fcfc9..cc1dfd7 100644
+--- a/tests/test_v1485015_runtime_access_contract.py
++++ b/tests/test_v1485015_runtime_access_contract.py
+@@ -11,9 +11,9 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CO
+ 
+ 
+ def test_runtime_version_is_current_model_adapter_contracts() -> None:
+-    assert PACKAGE_VERSION == "v14.8.5.026B"
++    assert PACKAGE_VERSION == "v14.8.5.030"
+     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
+-    assert PACKAGE_RELEASE_NAME == "adapter-gpt-hotfix-v2"
++    assert PACKAGE_RELEASE_NAME == "external-model-adapters-truth-route"
+ 
+ 
+ def test_active_runtime_access_contract_modes_are_explicit() -> None:
