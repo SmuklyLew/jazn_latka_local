@@ -14,7 +14,7 @@ Ten plik jest wejściowym routerem dla narzędzi i agentów pracujących w repoz
 
 - ChatGPT/openai.com: użyj `AGENTS.chatgpt.md`.
 - Codex / agent kodujący: użyj `AGENTS.codex.md`.
-- LM Studio / lokalne testy LLM: użyj `AGENTS.lmstudio.md`.
+- LM Studio / lokalne testy LLM i rozmowy: użyj `AGENTS.lmstudio.md`.
 
 ## Zasada prawdy
 
