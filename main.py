@@ -57,6 +57,7 @@ from latka_jazn.nlp.language_resource_registry import LanguageResourceRegistry
 from latka_jazn.core.voice_source_contract import VoiceSourceContract
 from latka_jazn.core.runtime_rendering_modes import RuntimeRenderingModeSelector
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
+from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
 from latka_jazn.model_adapters.factory import build_model_adapter_status
 from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnostics, build_polish_reasoning_diagnostics
 from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
@@ -74,6 +75,8 @@ from latka_jazn.core.runtime_daemon import (
     DEFAULT_START_TIMEOUT_SECONDS,
     apply_daemon_trusted_time_env,
     chat_daemon,
+    inject_daemon_trusted_time,
+    init_runtime_write_v1_daemon,
     refresh_daemon_time,
     run_daemon,
     start_daemon,
@@ -126,6 +129,8 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--daemon-start-timeout", type=float, default=DEFAULT_START_TIMEOUT_SECONDS, help="Ile sekund --daemon-start czeka na odpowiedĹş /status.")
     parser.add_argument("--daemon-marker-output", type=Path, default=None, help="Opcjonalna Ĺ›cieĹĽka markera JAZN_ACTIVE_RUNTIME.json dla daemonu.")
     parser.add_argument("--daemon-refresh-time", action="store_true", dest="daemon_refresh_time", help="Poproś daemon o odświeżenie trusted/degraded timestamp cache i zwróć status.")
+    parser.add_argument("--runtime-write-status", action="store_true", dest="runtime_write_status", help="Pokaż kontrakt dostępu do memory/sqlite/runtime_write_v1 bez zapisu.")
+    parser.add_argument("--runtime-write-init", action="store_true", dest="runtime_write_init", help="Utwórz czysty memory/sqlite/runtime_write_v1 i shard manifesty, jeśli ich brakuje.")
     parser.add_argument("--daemon-send", action="store_true", dest="daemon_send", help="Wyślij jedną wiadomość przez działający daemon HTTP; jeśli daemon nie działa, spróbuj go uruchomić.")
     parser.add_argument("--daemon-final-only", action="store_true", dest="daemon_final_only", help="Z --daemon-send wypisz tylko final_visible_text, gdy runtime zwróci finalną odpowiedź.")
     parser.add_argument("--daemon-chat-timeout", type=float, default=DEFAULT_DAEMON_CHAT_TIMEOUT_SECONDS, help="Timeout sekund dla jednej tury POST /chat przez daemon.")
@@ -460,14 +465,47 @@ def main(argv: list[str] | None = None) -> int:
         )
         if trusted_time_env is not None:
             payload["trusted_time_env"] = trusted_time_env
+            injected = inject_daemon_trusted_time(
+                cfg,
+                trusted_time_iso=ns.trusted_time_iso or os.environ.get("JAZN_TRUSTED_TIME_ISO", ""),
+                source=ns.trusted_time_source or os.environ.get("JAZN_TRUSTED_TIME_SOURCE", "chatgpt_loader_time"),
+                max_age_seconds=ns.trusted_time_max_age_seconds,
+                host=ns.daemon_host,
+                port=ns.daemon_port,
+            )
+            payload["trusted_time_injection"] = injected
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 
     if ns.daemon_refresh_time:
         cfg = config or JaznConfig()
-        payload = refresh_daemon_time(cfg, host=ns.daemon_host, port=ns.daemon_port)
         if trusted_time_env is not None:
+            payload = inject_daemon_trusted_time(
+                cfg,
+                trusted_time_iso=ns.trusted_time_iso or os.environ.get("JAZN_TRUSTED_TIME_ISO", ""),
+                source=ns.trusted_time_source or os.environ.get("JAZN_TRUSTED_TIME_SOURCE", "chatgpt_loader_time"),
+                max_age_seconds=ns.trusted_time_max_age_seconds,
+                host=ns.daemon_host,
+                port=ns.daemon_port,
+            )
             payload["trusted_time_env"] = trusted_time_env
+        else:
+            payload = refresh_daemon_time(cfg, host=ns.daemon_host, port=ns.daemon_port)
+        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.runtime_write_status:
+        cfg = config or JaznConfig()
+        print(json.dumps(build_runtime_write_access_status(cfg, initialize=False).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    if ns.runtime_write_init:
+        cfg = config or JaznConfig()
+        status = status_daemon(cfg, host=ns.daemon_host, port=ns.daemon_port, marker_output=ns.daemon_marker_output)
+        if status.get("active_state") in {"active_trusted", "active_degraded"}:
+            payload = init_runtime_write_v1_daemon(cfg, host=ns.daemon_host, port=ns.daemon_port)
+        else:
+            payload = {"ok": True, "runtime_write_access_status": build_runtime_write_access_status(cfg, initialize=True, writes_enabled=True).to_dict(), "daemon_status": status}
         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
 

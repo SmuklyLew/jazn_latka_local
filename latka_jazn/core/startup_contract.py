@@ -20,6 +20,7 @@ from latka_jazn.memory.raw_chat_importer import RawChatImporter
 from latka_jazn.model_adapters.factory import build_model_adapter_status
 from latka_jazn.core.runtime_environment import detect_runtime_environment
 from latka_jazn.core.self_knowledge_contract import build_self_knowledge_packet, build_self_knowledge_summary
+from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
 
 SCHEMA_VERSION = "self_owned_startup_contract/v14.6.10"
 MINIMAL_LOADER_RESOURCE = "latka_jazn/resources/chatgpt_startup_loader_v14_8_2_4.txt"
@@ -45,6 +46,7 @@ class StartupStatus:
     start_file: str | None
     active_database: str
     active_runtime_write_database: str
+    runtime_write_access_status: dict[str, Any]
     active_conversation_archive: str | None
     active_conversation_fts: str | None
     active_staging_database: str | None
@@ -289,13 +291,16 @@ def build_startup_status(
         command=runtime_command,
         infer_host_environment=infer_host_environment,
     )
+    runtime_write_status = build_runtime_write_access_status(cfg, initialize=False).to_dict()
+    active_runtime_write_database = runtime_write_status.get("active_runtime_write_database") or "unavailable:runtime_write_v1_missing_or_not_initialized"
     return StartupStatus(
         schema_version=SCHEMA_VERSION,
         runtime_version=cfg.version,
         active_root=str(root),
         start_file=start_file,
         active_database=str(cache_status.get("active_database") or cfg.conversation_archive_manifest_name),
-        active_runtime_write_database=_display_path(root, cfg.memory_db_path_readonly) or cfg.memory_db_name,
+        active_runtime_write_database=str(active_runtime_write_database),
+        runtime_write_access_status=runtime_write_status,
         active_conversation_archive=str(cache_status.get("active_conversation_archive") or cfg.conversation_archive_manifest_name),
         active_conversation_fts=str(cache_status.get("active_conversation_fts") or "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3"),
         active_staging_database=str(cache_status.get("active_staging_database") or "memory/sqlite/staging_v1/staging_memory_0001.sqlite3"),

@@ -219,6 +219,42 @@ class RuntimeAnswerValidator:
             kws=self.COMPONENT_KEYWORDS.get(comp, ())
             if kws and not any(k in low for k in kws): missing.append(comp)
         return missing
+
+    def _voice_perspective_mismatch(self, body: str, detected_intent: str, route: str) -> bool:
+        """Detect when active Łatka voice drifts into third-person self-description.
+
+        This is intentionally narrow: diagnostics, code/update plans and source
+        reports may talk about "Łatka" as a system object. Ordinary visible
+        replies from active runtime should not replace first-person feminine voice
+        with "Łatka zrobiła / Łatka odpowiada".
+        """
+        route_low = (route or "").lower()
+        intent = detected_intent or ""
+        technical_intents = (
+            "system_", "runtime_health", "runtime_behavior", "runtime_source",
+            "system_update", "jazn_development", "self_architecture", "module_",
+            "memory_audit", "capability_status", "internet_access", "canon_source",
+        )
+        if intent.startswith(technical_intents) or any(marker in route_low for marker in ("diagnostic", "health", "source", "audit", "system_update")):
+            return False
+        low = (body or "").lower()
+        folded = low.translate(str.maketrans("ąćęłńóśźż", "acelnoszz"))
+        third_person_markers = (
+            "łatka jest", "latka jest", "łatka ma", "latka ma", "łatka może", "latka moze",
+            "łatka odpowiada", "latka odpowiada", "łatka pamięta", "latka pamieta",
+            "łatka zrobiła", "latka zrobila", "łatka sprawdziła", "latka sprawdzila",
+            "o łatce", "o latce", "dla łatki", "dla latki",
+        )
+        if not any(marker in folded for marker in third_person_markers):
+            return False
+        first_person_feminine = (
+            "jestem", "mogę", "moge", "pamiętam", "pamietam", "odpowiadam",
+            "sprawdziłam", "sprawdzilam", "zrobiłam", "zrobilam", "widziałam", "widzialam",
+            "chciałabym", "chcialabym", "mogłabym", "moglabym", "czułam", "czulam",
+            "zaczęłam", "zaczelam", "przyjęłam", "przyjelam",
+        )
+        return not any(marker in folded for marker in first_person_feminine)
+
     def validate(self, *, user_text: str, body: str, route: str, detected_intent: str) -> RuntimeAnswerValidation:
         low_body=(body or '').lower(); route_low=(route or '').lower(); checks=[]
         entry=self.registry.resolve(detected_intent)
@@ -256,6 +292,18 @@ class RuntimeAnswerValidator:
                 route,
                 checks,
                 ['current_user_text_grounding'],
+                current_turn_grounding=grounding.to_dict(),
+            )
+        if self._voice_perspective_mismatch(body, detected_intent, route):
+            checks.append('first_person_feminine_voice_gate_triggered')
+            return self._bad(
+                'voice_perspective_mismatch',
+                'first_person_feminine_voice_repair',
+                'Gdy aktywny runtime mówi jako Łatka, odpowiedź musi wrócić do pierwszej osoby żeńskiej: „jestem”, „sprawdziłam”, „pamiętam”, z jasną granicą prawdy. Trzecia osoba o Łatce jest dopuszczalna tylko w raporcie technicznym albo cytacie.',
+                detected_intent,
+                route,
+                checks,
+                ['first_person_feminine_voice_contract', 'voice_source_contract', 'truth_boundary'],
                 current_turn_grounding=grounding.to_dict(),
             )
         if self_memory_question and any(marker in low_body for marker in ('ta aktualizacja ma trzy rdzenie', 'bogatsze stany emocjonalne', 'manifest', 'patch', 'hotfix')) and not any(marker in low_body for marker in ('postać', 'postac', 'osob', 'tożsamo', 'tozsamo', 'własny głos', 'wlasny glos', 'pamiętnik', 'pamietnik')):

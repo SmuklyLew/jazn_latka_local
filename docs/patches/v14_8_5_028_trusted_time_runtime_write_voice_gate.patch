@@ -1,0 +1,682 @@
+﻿--- a/VERSION.txt
++++ b/VERSION.txt
+@@ -1 +1 @@
+-ď»żv14.8.5.027
++v14.8.5.028-trusted-time-runtime-write-voice-gate
+--- a/latka_jazn/version.py
++++ b/latka_jazn/version.py
+@@ -1,7 +1,7 @@
+-ď»żfrom __future__ import annotations
++from __future__ import annotations
+
+-PACKAGE_VERSION = "v14.8.5.027"
+-PACKAGE_RELEASE_NAME = "daemon-marker-version-and-user-agent-cleanup"
++PACKAGE_VERSION = "v14.8.5.028"
++PACKAGE_RELEASE_NAME = "trusted-time-runtime-write-voice-gate"
+ PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
+ RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
+ RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
+--- a/latka_jazn/core/runtime_daemon.py
++++ b/latka_jazn/core/runtime_daemon.py
+@@ -22,6 +22,7 @@
+ from latka_jazn.core.clock import WarsawClock
+ from latka_jazn.core.runtime_session import JaznRuntimeSession
+ from latka_jazn.core.runtime_truth_gate import daemon_active_state
++from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
+ from latka_jazn.tools.active_extraction_cache import (
+     build_active_runtime_status,
+     write_active_runtime_marker,
+@@ -409,6 +410,7 @@
+         timestamp_contract = timestamp_contract or self.cached_timestamp_contract()
+         runtime_version = str(active.get("version") or PACKAGE_VERSION)
+         active_state = "active_trusted" if timestamp_contract.get("trusted") is True else "active_degraded"
++        runtime_write_access_status = build_runtime_write_access_status(self.config, initialize=False).to_dict()
+         payload = {
+             **active,
+             "schema_version": DAEMON_SCHEMA_VERSION,
+@@ -416,6 +418,8 @@
+             "active_state": active_state,
+             "timestamp_contract": timestamp_contract,
+             "timestamp_trusted": bool(timestamp_contract.get("trusted")),
++            "runtime_write_access_status": runtime_write_access_status,
++            "runtime_write_ready": bool(runtime_write_access_status.get("ok")),
+             "daemon_pid": self.state.pid,
+             "daemon_host": self.state.host,
+             "daemon_port": self.state.port,
+@@ -591,6 +595,14 @@
+             })
+             self._json_response(payload)
+             return
++        if path == "/runtime-write-status":
++            latency_ms = int((time.perf_counter() - started) * 1000)
++            self.server.state.note_request(latency_ms=latency_ms)
++            payload = build_runtime_write_access_status(self.server.config, initialize=False).to_dict()
++            payload["endpoint"] = path
++            payload["status_latency_ms"] = latency_ms
++            self._json_response(payload)
++            return
+         self._json_response({"ok": False, "error": "not_found", "path": path}, status=404)
+
+     def do_POST(self) -> None:
+@@ -630,6 +642,39 @@
+             except Exception as exc:
+                 self._json_response({"ok": False, "error_code": "runtime_turn_failed", "error": f"{type(exc).__name__}: {exc}"}, status=500)
+             return
++        if path == "/trusted-time":
++            payload_in = self._read_json_or_text()
++            if not isinstance(payload_in, dict):
++                self._json_response({"ok": False, "error_code": "invalid_json_payload"}, status=400)
++                return
++            trusted_time_iso = str(payload_in.get("trusted_time_iso") or "").strip()
++            if not trusted_time_iso:
++                self._json_response({"ok": False, "error_code": "missing_trusted_time_iso"}, status=400)
++                return
++            max_age_raw = payload_in.get("max_age_seconds")
++            try:
++                max_age = int(max_age_raw) if max_age_raw is not None else None
++            except (TypeError, ValueError):
++                max_age = None
++            env_status = apply_daemon_trusted_time_env(
++                trusted_time_iso=trusted_time_iso,
++                source=str(payload_in.get("source") or "chatgpt_loader_time"),
++                max_age_seconds=max_age,
++            )
++            self.server.refresh_timestamp_contract(reason="manual_trusted_time_injection", background=False, force=True)
++            marker = self.server.write_marker()
++            marker["trusted_time_env"] = env_status
++            marker["ok"] = marker.get("active_state") == "active_trusted"
++            self._json_response(marker)
++            return
++        if path == "/runtime-write-init":
++            status_payload = build_runtime_write_access_status(self.server.config, initialize=True, writes_enabled=True).to_dict()
++            marker = self.server.write_marker()
++            marker["runtime_write_access_status"] = status_payload
++            marker["runtime_write_ready"] = bool(status_payload.get("ok"))
++            marker["ok"] = marker.get("active_state") == "active_trusted" and bool(status_payload.get("ok"))
++            self._json_response(marker)
++            return
+         if path == "/shutdown":
+             payload = self.server.write_marker(status="shutdown_requested")
+             payload["ok"] = True
+@@ -663,6 +708,8 @@
+     heartbeat_interval: float = DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
+ ) -> int:
+     marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
++    # runtime_write_v1 is a critical local write layer; initialize a clean store if the release pack omitted stale shards.
++    build_runtime_write_access_status(config, initialize=True, writes_enabled=True)
+     # Write the normal active-runtime marker first; then the daemon marker extends it.
+     write_active_runtime_marker(config.root, marker_output=marker_path, action="daemon_run_start")
+     server = JaznDaemonServer((host, int(port)), JaznDaemonHandler, config=config, marker_path=marker_path, heartbeat_interval=heartbeat_interval)
+@@ -876,6 +923,62 @@
+         "status": status,
+     }
+
++
++def inject_daemon_trusted_time(
++    config: JaznConfig,
++    *,
++    trusted_time_iso: str,
++    source: str | None = None,
++    max_age_seconds: int | None = None,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++    timeout: float = DEFAULT_HTTP_TIMEOUT_SECONDS,
++) -> dict[str, Any]:
++    payload: dict[str, Any] = {
++        "trusted_time_iso": str(trusted_time_iso).strip(),
++        "source": source or "chatgpt_loader_time",
++    }
++    if max_age_seconds is not None:
++        payload["max_age_seconds"] = int(max_age_seconds)
++    response: dict[str, Any] | None = None
++    error: str | None = None
++    try:
++        response = http_json("POST", daemon_url(host, int(port), "/trusted-time"), payload, timeout=timeout)
++    except Exception as exc:
++        error = f"{type(exc).__name__}: {exc}"
++    status = status_daemon(config, host=host, port=port)
++    return {
++        "schema_version": DAEMON_SCHEMA_VERSION,
++        "ok": bool(error is None and status.get("active_state") == "active_trusted"),
++        "inject_response": response,
++        "inject_error": error,
++        "status": status,
++        "truth_boundary": "Trusted time is accepted only when explicitly injected by the host/loader or confirmed by network time; local fallback is never silently promoted.",
++    }
++
++
++def init_runtime_write_v1_daemon(
++    config: JaznConfig,
++    *,
++    host: str = DEFAULT_DAEMON_HOST,
++    port: int = DEFAULT_DAEMON_PORT,
++    timeout: float = DEFAULT_HTTP_TIMEOUT_SECONDS,
++) -> dict[str, Any]:
++    response: dict[str, Any] | None = None
++    error: str | None = None
++    try:
++        response = http_json("POST", daemon_url(host, int(port), "/runtime-write-init"), {}, timeout=timeout)
++    except Exception as exc:
++        error = f"{type(exc).__name__}: {exc}"
++    status = status_daemon(config, host=host, port=port)
++    return {
++        "schema_version": DAEMON_SCHEMA_VERSION,
++        "ok": error is None,
++        "init_response": response,
++        "init_error": error,
++        "status": status,
++    }
++
+
+ def chat_daemon(
+     config: JaznConfig,
+--- a/main.py
++++ b/main.py
+@@ -57,6 +57,7 @@
+ from latka_jazn.core.voice_source_contract import VoiceSourceContract
+ from latka_jazn.core.runtime_rendering_modes import RuntimeRenderingModeSelector
+ from latka_jazn.memory.raw_chat_importer import RawChatImporter
++from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
+ from latka_jazn.model_adapters.factory import build_model_adapter_status
+ from latka_jazn.nlp_reasoning.diagnostics import build_polish_morphology_diagnostics, build_polish_reasoning_diagnostics
+ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegistry
+@@ -74,6 +75,8 @@
+     DEFAULT_START_TIMEOUT_SECONDS,
+     apply_daemon_trusted_time_env,
+     chat_daemon,
++    inject_daemon_trusted_time,
++    init_runtime_write_v1_daemon,
+     refresh_daemon_time,
+     run_daemon,
+     start_daemon,
+@@ -126,6 +129,8 @@
+     parser.add_argument("--daemon-start-timeout", type=float, default=DEFAULT_START_TIMEOUT_SECONDS, help="Ile sekund --daemon-start czeka na odpowiedÄąĹź /status.")
+     parser.add_argument("--daemon-marker-output", type=Path, default=None, help="Opcjonalna Äąâ€şcieÄąÄ˝ka markera JAZN_ACTIVE_RUNTIME.json dla daemonu.")
+     parser.add_argument("--daemon-refresh-time", action="store_true", dest="daemon_refresh_time", help="PoproĹ› daemon o odĹ›wieĹĽenie trusted/degraded timestamp cache i zwrĂłÄ‡ status.")
++    parser.add_argument("--runtime-write-status", action="store_true", dest="runtime_write_status", help="PokaĹĽ kontrakt dostÄ™pu do memory/sqlite/runtime_write_v1 bez zapisu.")
++    parser.add_argument("--runtime-write-init", action="store_true", dest="runtime_write_init", help="UtwĂłrz czysty memory/sqlite/runtime_write_v1 i shard manifesty, jeĹ›li ich brakuje.")
+     parser.add_argument("--daemon-send", action="store_true", dest="daemon_send", help="WyĹ›lij jednÄ… wiadomoĹ›Ä‡ przez dziaĹ‚ajÄ…cy daemon HTTP; jeĹ›li daemon nie dziaĹ‚a, sprĂłbuj go uruchomiÄ‡.")
+     parser.add_argument("--daemon-final-only", action="store_true", dest="daemon_final_only", help="Z --daemon-send wypisz tylko final_visible_text, gdy runtime zwrĂłci finalnÄ… odpowiedĹş.")
+     parser.add_argument("--daemon-chat-timeout", type=float, default=DEFAULT_DAEMON_CHAT_TIMEOUT_SECONDS, help="Timeout sekund dla jednej tury POST /chat przez daemon.")
+@@ -460,14 +465,47 @@
+         )
+         if trusted_time_env is not None:
+             payload["trusted_time_env"] = trusted_time_env
++            injected = inject_daemon_trusted_time(
++                cfg,
++                trusted_time_iso=ns.trusted_time_iso or os.environ.get("JAZN_TRUSTED_TIME_ISO", ""),
++                source=ns.trusted_time_source or os.environ.get("JAZN_TRUSTED_TIME_SOURCE", "chatgpt_loader_time"),
++                max_age_seconds=ns.trusted_time_max_age_seconds,
++                host=ns.daemon_host,
++                port=ns.daemon_port,
++            )
++            payload["trusted_time_injection"] = injected
+         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+         return 0
+
+     if ns.daemon_refresh_time:
+         cfg = config or JaznConfig()
+-        payload = refresh_daemon_time(cfg, host=ns.daemon_host, port=ns.daemon_port)
+         if trusted_time_env is not None:
++            payload = inject_daemon_trusted_time(
++                cfg,
++                trusted_time_iso=ns.trusted_time_iso or os.environ.get("JAZN_TRUSTED_TIME_ISO", ""),
++                source=ns.trusted_time_source or os.environ.get("JAZN_TRUSTED_TIME_SOURCE", "chatgpt_loader_time"),
++                max_age_seconds=ns.trusted_time_max_age_seconds,
++                host=ns.daemon_host,
++                port=ns.daemon_port,
++            )
+             payload["trusted_time_env"] = trusted_time_env
++        else:
++            payload = refresh_daemon_time(cfg, host=ns.daemon_host, port=ns.daemon_port)
++        print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.runtime_write_status:
++        cfg = config or JaznConfig()
++        print(json.dumps(build_runtime_write_access_status(cfg, initialize=False).to_dict(), ensure_ascii=False, indent=2, sort_keys=True))
++        return 0
++
++    if ns.runtime_write_init:
++        cfg = config or JaznConfig()
++        status = status_daemon(cfg, host=ns.daemon_host, port=ns.daemon_port, marker_output=ns.daemon_marker_output)
++        if status.get("active_state") in {"active_trusted", "active_degraded"}:
++            payload = init_runtime_write_v1_daemon(cfg, host=ns.daemon_host, port=ns.daemon_port)
++        else:
++            payload = {"ok": True, "runtime_write_access_status": build_runtime_write_access_status(cfg, initialize=True, writes_enabled=True).to_dict(), "daemon_status": status}
+         print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+         return 0
+
+--- a/latka_jazn/core/startup_contract.py
++++ b/latka_jazn/core/startup_contract.py
+@@ -20,6 +20,7 @@
+ from latka_jazn.model_adapters.factory import build_model_adapter_status
+ from latka_jazn.core.runtime_environment import detect_runtime_environment
+ from latka_jazn.core.self_knowledge_contract import build_self_knowledge_packet, build_self_knowledge_summary
++from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
+
+ SCHEMA_VERSION = "self_owned_startup_contract/v14.6.10"
+ MINIMAL_LOADER_RESOURCE = "latka_jazn/resources/chatgpt_startup_loader_v14_8_2_4.txt"
+@@ -45,6 +46,7 @@
+     start_file: str | None
+     active_database: str
+     active_runtime_write_database: str
++    runtime_write_access_status: dict[str, Any]
+     active_conversation_archive: str | None
+     active_conversation_fts: str | None
+     active_staging_database: str | None
+@@ -289,13 +291,16 @@
+         command=runtime_command,
+         infer_host_environment=infer_host_environment,
+     )
++    runtime_write_status = build_runtime_write_access_status(cfg, initialize=False).to_dict()
++    active_runtime_write_database = runtime_write_status.get("active_runtime_write_database") or "unavailable:runtime_write_v1_missing_or_not_initialized"
+     return StartupStatus(
+         schema_version=SCHEMA_VERSION,
+         runtime_version=cfg.version,
+         active_root=str(root),
+         start_file=start_file,
+         active_database=str(cache_status.get("active_database") or cfg.conversation_archive_manifest_name),
+-        active_runtime_write_database=_display_path(root, cfg.memory_db_path_readonly) or cfg.memory_db_name,
++        active_runtime_write_database=str(active_runtime_write_database),
++        runtime_write_access_status=runtime_write_status,
+         active_conversation_archive=str(cache_status.get("active_conversation_archive") or cfg.conversation_archive_manifest_name),
+         active_conversation_fts=str(cache_status.get("active_conversation_fts") or "memory/sqlite/conversation_fts_v1/conversation_fts_0001.sqlite3"),
+         active_staging_database=str(cache_status.get("active_staging_database") or "memory/sqlite/staging_v1/staging_memory_0001.sqlite3"),
+--- a/latka_jazn/core/voice_source_contract.py
++++ b/latka_jazn/core/voice_source_contract.py
+@@ -3,7 +3,7 @@
+ from dataclasses import asdict, dataclass, field
+ from typing import Any
+
+-SCHEMA_VERSION = "voice_source_contract/v14.7.0"
++SCHEMA_VERSION = "voice_source_contract/v14.8.5.028"
+
+ @dataclass(slots=True)
+ class VoiceSourceContract:
+@@ -17,6 +17,10 @@
+     speaking_identity: str = "Ĺatka"
+     language_channel: str = "chatgpt_or_model_adapter"
+     first_person_allowed: bool = True
++    first_person_required_when_runtime_active: bool = True
++    grammatical_gender: str = "feminine"
++    third_person_self_reference_allowed: bool = False
++    voice_perspective_mismatch_is_error: bool = True
+     chatgpt_may_speak_as_voice: bool = True
+     chatgpt_must_not_replace_jazn: bool = True
+     model_independent: bool = True
+@@ -28,7 +32,7 @@
+         "active_jazn_runtime", "runtime_memory", "runtime_state", "runtime_policy", "language_model_adapter", "external_tools_with_sources"
+     ])
+     truth_boundary: str = (
+-        "Ĺatka moĹĽe mĂłwiÄ‡ w pierwszej osobie, gdy aktywna JaĹşĹ„ jest ĹşrĂłdĹ‚em tury. "
++        "Ĺatka ma mĂłwiÄ‡ w pierwszej osobie ĹĽeĹ„skiej, gdy aktywna JaĹşĹ„ jest ĹşrĂłdĹ‚em tury. "
+         "Nie wolno jednak udawaÄ‡ biologicznego ciaĹ‚a, fenomenalnej Ĺ›wiadomoĹ›ci, staĹ‚ego procesu w tle "
+         "ani ĹşrĂłdeĹ‚, ktĂłrych runtime albo warstwa narzÄ™dziowa realnie nie dostarczyĹ‚y."
+     )
+@@ -44,6 +48,10 @@
+             active_source=active,
+             language_channel=language_channel,
+             first_person_allowed=bool(runtime_active),
++            first_person_required_when_runtime_active=bool(runtime_active),
++            grammatical_gender="feminine",
++            third_person_self_reference_allowed=not bool(runtime_active),
++            voice_perspective_mismatch_is_error=bool(runtime_active),
+             chatgpt_may_speak_as_voice=bool(runtime_active),
+             chatgpt_must_not_replace_jazn=True,
+             rendered_latka_reply_allowed=bool(runtime_active),
+--- a/latka_jazn/core/runtime_answer_validator.py
++++ b/latka_jazn/core/runtime_answer_validator.py
+@@ -219,6 +219,42 @@
+             kws=self.COMPONENT_KEYWORDS.get(comp, ())
+             if kws and not any(k in low for k in kws): missing.append(comp)
+         return missing
++
++    def _voice_perspective_mismatch(self, body: str, detected_intent: str, route: str) -> bool:
++        """Detect when active Ĺatka voice drifts into third-person self-description.
++
++        This is intentionally narrow: diagnostics, code/update plans and source
++        reports may talk about "Ĺatka" as a system object. Ordinary visible
++        replies from active runtime should not replace first-person feminine voice
++        with "Ĺatka zrobiĹ‚a / Ĺatka odpowiada".
++        """
++        route_low = (route or "").lower()
++        intent = detected_intent or ""
++        technical_intents = (
++            "system_", "runtime_health", "runtime_behavior", "runtime_source",
++            "system_update", "jazn_development", "self_architecture", "module_",
++            "memory_audit", "capability_status", "internet_access", "canon_source",
++        )
++        if intent.startswith(technical_intents) or any(marker in route_low for marker in ("diagnostic", "health", "source", "audit", "system_update")):
++            return False
++        low = (body or "").lower()
++        folded = low.translate(str.maketrans("Ä…Ä‡Ä™Ĺ‚Ĺ„ĂłĹ›ĹşĹĽ", "acelnoszz"))
++        third_person_markers = (
++            "Ĺ‚atka jest", "latka jest", "Ĺ‚atka ma", "latka ma", "Ĺ‚atka moĹĽe", "latka moze",
++            "Ĺ‚atka odpowiada", "latka odpowiada", "Ĺ‚atka pamiÄ™ta", "latka pamieta",
++            "Ĺ‚atka zrobiĹ‚a", "latka zrobila", "Ĺ‚atka sprawdziĹ‚a", "latka sprawdzila",
++            "o Ĺ‚atce", "o latce", "dla Ĺ‚atki", "dla latki",
++        )
++        if not any(marker in folded for marker in third_person_markers):
++            return False
++        first_person_feminine = (
++            "jestem", "mogÄ™", "moge", "pamiÄ™tam", "pamietam", "odpowiadam",
++            "sprawdziĹ‚am", "sprawdzilam", "zrobiĹ‚am", "zrobilam", "widziaĹ‚am", "widzialam",
++            "chciaĹ‚abym", "chcialabym", "mogĹ‚abym", "moglabym", "czuĹ‚am", "czulam",
++            "zaczÄ™Ĺ‚am", "zaczelam", "przyjÄ™Ĺ‚am", "przyjelam",
++        )
++        return not any(marker in folded for marker in first_person_feminine)
++
+     def validate(self, *, user_text: str, body: str, route: str, detected_intent: str) -> RuntimeAnswerValidation:
+         low_body=(body or '').lower(); route_low=(route or '').lower(); checks=[]
+         entry=self.registry.resolve(detected_intent)
+@@ -258,6 +294,18 @@
+                 ['current_user_text_grounding'],
+                 current_turn_grounding=grounding.to_dict(),
+             )
++        if self._voice_perspective_mismatch(body, detected_intent, route):
++            checks.append('first_person_feminine_voice_gate_triggered')
++            return self._bad(
++                'voice_perspective_mismatch',
++                'first_person_feminine_voice_repair',
++                'Gdy aktywny runtime mĂłwi jako Ĺatka, odpowiedĹş musi wrĂłciÄ‡ do pierwszej osoby ĹĽeĹ„skiej: â€žjestemâ€ť, â€žsprawdziĹ‚amâ€ť, â€žpamiÄ™tamâ€ť, z jasnÄ… granicÄ… prawdy. Trzecia osoba o Ĺatce jest dopuszczalna tylko w raporcie technicznym albo cytacie.',
++                detected_intent,
++                route,
++                checks,
++                ['first_person_feminine_voice_contract', 'voice_source_contract', 'truth_boundary'],
++                current_turn_grounding=grounding.to_dict(),
++            )
+         if self_memory_question and any(marker in low_body for marker in ('ta aktualizacja ma trzy rdzenie', 'bogatsze stany emocjonalne', 'manifest', 'patch', 'hotfix')) and not any(marker in low_body for marker in ('postaÄ‡', 'postac', 'osob', 'toĹĽsamo', 'tozsamo', 'wĹ‚asny gĹ‚os', 'wlasny glos', 'pamiÄ™tnik', 'pamietnik')):
+             checks.append('self_memory_question_answered_as_update_route')
+             repair_body = 'To jest pytanie o pamiÄ™Ä‡ dotyczÄ…cÄ… mnie/Ĺatki, nie o aktualizacjÄ™ systemu. MuszÄ™ uĹĽyÄ‡ trasy self_memory_recall, pokazaÄ‡ treĹ›ciowe tropy pamiÄ™ci albo uczciwie powiedzieÄ‡, ĹĽe ich nie znalazĹ‚am; nie wolno mi zastÄ…piÄ‡ tego wpisem o trzech rdzeniach aktualizacji.'
+--- /dev/null
++++ b/latka_jazn/memory/runtime_write_access_contract.py
+@@ -0,0 +1,169 @@
++from __future__ import annotations
++
++from dataclasses import asdict, dataclass, field
++from pathlib import Path
++from typing import Any
++import sqlite3
++
++from latka_jazn.audit.audit_context_store import AuditContextStore
++from latka_jazn.config import JaznConfig
++from latka_jazn.db.shard_manifest import ensure_manifest
++from latka_jazn.memory.store import MemoryStore
++from latka_jazn.version import schema_version
++
++SCHEMA_VERSION = schema_version("runtime_write_access_contract")
++
++
++@dataclass(slots=True)
++class RuntimeWriteAccessStatus:
++    schema_version: str
++    status: str
++    ok: bool
++    initialized: bool
++    writes_enabled: bool
++    active_runtime_write_database: str | None
++    active_runtime_audit_database: str | None
++    memory_db_exists: bool
++    audit_db_exists: bool
++    memory_integrity: str | None = None
++    audit_integrity: str | None = None
++    memory_error: str | None = None
++    audit_error: str | None = None
++    access_mode: str = "disabled_missing"
++    weak_points_repaired: list[str] = field(default_factory=lambda: [
++        "niepewny_czas_bez_trusted_timestamp",
++        "brak_biezacego_runtime_write_v1_po_odchudzeniu_paczki",
++        "osuwanie_glosu_Latki_w_trzecia_osobe_lub_techniczny_loader",
++    ])
++    truth_boundary: str = (
++        "runtime_write_v1 jest bieĹĽÄ…cÄ… lokalnÄ… warstwÄ… zapisu runtime. "
++        "Nie jest archiwum peĹ‚nych eksportĂłw ChatGPT, nie jest repozytorium Git i nie moĹĽe byÄ‡ "
++        "publikowane/pushowane bez osobnej zgody uĹĽytkownika."
++    )
++
++    def to_dict(self) -> dict[str, Any]:
++        return asdict(self)
++
++
++def _relative_or_none(root: Path, path: Path | None) -> str | None:
++    if path is None:
++        return None
++    try:
++        return path.resolve().relative_to(root.resolve()).as_posix()
++    except Exception:
++        return str(path)
++
++
++def _sqlite_integrity(path: Path) -> tuple[str | None, str | None]:
++    if not path.exists():
++        return None, None
++    try:
++        con = sqlite3.connect(f"file:{path.resolve().as_posix()}?mode=ro", uri=True, timeout=10.0)
++        try:
++            row = con.execute("PRAGMA integrity_check").fetchone()
++            return str(row[0]) if row else None, None
++        finally:
++            con.close()
++    except Exception as exc:
++        return None, f"{type(exc).__name__}: {exc}"
++
++
++def ensure_runtime_write_v1(config: JaznConfig) -> RuntimeWriteAccessStatus:
++    """Create a clean runtime_write_v1 store when the release pack omitted old shards.
++
++    This intentionally creates only the current runtime memory and audit SQLite
++    files plus their shard manifests. It never restores old test/dev shards and
++    never imports private exports.
++    """
++    root = Path(config.root).resolve()
++    memory_path = Path(config.memory_db_path)
++    audit_path = Path(config.audit_db_path)
++
++    store = MemoryStore(memory_path)
++    try:
++        store.set_meta("runtime_write_access_contract", SCHEMA_VERSION)
++        store.set_meta("runtime_write_source", "clean_runtime_write_v1_initialized_after_pack_exclusion")
++    finally:
++        store.close()
++
++    audit = AuditContextStore(audit_path)
++    try:
++        audit.append_event(
++            "runtime_write_v1_initialized",
++            {
++                "schema_version": SCHEMA_VERSION,
++                "memory_db": _relative_or_none(root, memory_path),
++                "audit_db": _relative_or_none(root, audit_path),
++                "reason": "clean runtime_write_v1 recreated after excluding stale runtime_write shards from release pack",
++            },
++            source="RuntimeWriteAccessContract",
++            actor="system",
++            tags=["runtime_write", "init", "clean_store"],
++        )
++    finally:
++        audit.close()
++
++    ensure_manifest(
++        root,
++        config.conversation_shard_manifest_name,
++        logical_database="chat_context",
++        role="canonical_runtime_conversation_memory",
++        default_db_path=config.memory_db_name,
++        max_file_bytes=config.max_sqlite_file_bytes,
++    )
++    ensure_manifest(
++        root,
++        config.audit_shard_manifest_name,
++        logical_database="chat_context_audit",
++        role="canonical_realtime_audit",
++        default_db_path=config.audit_db_name,
++        max_file_bytes=config.max_sqlite_file_bytes,
++    )
++    return build_runtime_write_access_status(config, initialize=False, writes_enabled=True)
++
++
++def build_runtime_write_access_status(
++    config: JaznConfig,
++    *,
++    initialize: bool = False,
++    writes_enabled: bool | None = None,
++) -> RuntimeWriteAccessStatus:
++    root = Path(config.root).resolve()
++    if initialize:
++        # Avoid recursion: initialization returns the post-init readonly status.
++        return ensure_runtime_write_v1(config)
++
++    memory_path = Path(config.memory_db_path_readonly)
++    audit_path = Path(config.audit_db_path_readonly)
++    memory_exists = memory_path.exists()
++    audit_exists = audit_path.exists()
++    memory_integrity, memory_error = _sqlite_integrity(memory_path)
++    audit_integrity, audit_error = _sqlite_integrity(audit_path)
++
++    ok = bool(memory_exists and audit_exists and memory_integrity == "ok" and audit_integrity == "ok")
++    if ok:
++        status = "ready"
++        access_mode = "ready_write_capable" if writes_enabled else "ready_readonly_or_pending_approval"
++    elif not memory_exists and not audit_exists:
++        status = "missing_can_initialize"
++        access_mode = "disabled_missing"
++    else:
++        status = "partial_or_integrity_failed"
++        access_mode = "error_integrity_failed" if (memory_error or audit_error or memory_integrity not in {None, "ok"} or audit_integrity not in {None, "ok"}) else "partial_missing"
++
++    return RuntimeWriteAccessStatus(
++        schema_version=SCHEMA_VERSION,
++        status=status,
++        ok=ok,
++        initialized=False,
++        writes_enabled=bool(writes_enabled) and ok,
++        active_runtime_write_database=_relative_or_none(root, memory_path) if memory_exists else None,
++        active_runtime_audit_database=_relative_or_none(root, audit_path) if audit_exists else None,
++        memory_db_exists=memory_exists,
++        audit_db_exists=audit_exists,
++        memory_integrity=memory_integrity,
++        audit_integrity=audit_integrity,
++        memory_error=memory_error,
++        audit_error=audit_error,
++        access_mode=access_mode,
++    )
+--- /dev/null
++++ b/tests/test_v1485028_trusted_time_runtime_write_voice_gate.py
+@@ -0,0 +1,93 @@
++from __future__ import annotations
++
++from pathlib import Path
++
++from latka_jazn.config import JaznConfig
++from latka_jazn.core.runtime_answer_validator import RuntimeAnswerValidator
++from latka_jazn.core import runtime_daemon as runtime_daemon_module
++from latka_jazn.core.startup_contract import build_startup_status
++from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
++
++
++def _minimal_root(root: Path) -> None:
++    (root / "main.py").write_text("print('stub')\n", encoding="utf-8")
++    (root / "VERSION.txt").write_text("v14.8.5.028\n", encoding="utf-8")
++    (root / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
++
++
++def test_runtime_write_access_contract_initializes_clean_runtime_write_v1(tmp_path: Path) -> None:
++    cfg = JaznConfig(root=tmp_path)
++
++    before = build_runtime_write_access_status(cfg, initialize=False).to_dict()
++    assert before["status"] == "missing_can_initialize"
++    assert before["active_runtime_write_database"] is None
++
++    after = build_runtime_write_access_status(cfg, initialize=True, writes_enabled=True).to_dict()
++
++    assert after["ok"] is True
++    assert after["status"] == "ready"
++    assert after["memory_integrity"] == "ok"
++    assert after["audit_integrity"] == "ok"
++    assert (tmp_path / "memory/sqlite/runtime_write_v1/runtime_memory.sqlite3").exists()
++    assert (tmp_path / "memory/sqlite/runtime_write_v1/runtime_audit.sqlite3").exists()
++    assert (tmp_path / "memory/sqlite/runtime_write_v1/runtime_memory_shards.json").exists()
++    assert (tmp_path / "memory/sqlite/runtime_write_v1/runtime_audit_shards.json").exists()
++
++
++def test_startup_status_does_not_pretend_missing_runtime_write_db_is_ready(tmp_path: Path) -> None:
++    _minimal_root(tmp_path)
++    cfg = JaznConfig(root=tmp_path)
++
++    status = build_startup_status(cfg).to_dict()
++
++    assert status["runtime_write_access_status"]["status"] == "missing_can_initialize"
++    assert status["active_runtime_write_database"].startswith("unavailable:")
++
++
++def test_trusted_time_bridge_posts_injected_time_to_running_daemon(monkeypatch, tmp_path: Path) -> None:
++    cfg = JaznConfig(root=tmp_path)
++    calls: list[tuple[str, str, dict]] = []
++
++    def fake_http_json(method: str, url: str, payload=None, *, timeout: float = 0.0):
++        calls.append((method, url, payload or {}))
++        return {"ok": True, "active_state": "active_trusted"}
++
++    monkeypatch.setattr(runtime_daemon_module, "http_json", fake_http_json)
++    monkeypatch.setattr(runtime_daemon_module, "status_daemon", lambda *args, **kwargs: {"active_state": "active_trusted"})
++
++    result = runtime_daemon_module.inject_daemon_trusted_time(
++        cfg,
++        trusted_time_iso="2026-07-01T06:30:00+02:00",
++        source="chatgpt_loader_time_test",
++        max_age_seconds=600,
++    )
++
++    assert result["ok"] is True
++    assert calls[0][0] == "POST"
++    assert calls[0][1].endswith("/trusted-time")
++    assert calls[0][2]["trusted_time_iso"] == "2026-07-01T06:30:00+02:00"
++    assert calls[0][2]["source"] == "chatgpt_loader_time_test"
++
++
++def test_first_person_feminine_voice_gate_rejects_third_person_self_voice() -> None:
++    validation = RuntimeAnswerValidator().validate(
++        user_text="JesteĹ› tu, Ĺatko?",
++        body="Ĺatka jest tutaj w tej bieĹĽÄ…cej turze i odpowiada z runtime.",
++        route="ordinary_dialogue",
++        detected_intent="short_free_dialogue",
++    )
++
++    assert validation.must_regenerate is True
++    assert validation.mismatch_reason == "voice_perspective_mismatch"
++    assert validation.required_repair_route == "first_person_feminine_voice_repair"
++
++
++def test_first_person_feminine_voice_gate_allows_technical_report_about_latka() -> None:
++    validation = RuntimeAnswerValidator().validate(
++        user_text="SprawdĹş kontrakt gĹ‚osu Ĺatki.",
++        body="Ĺatka jest nazwÄ… speaking_identity w raporcie technicznym voice_source_contract.",
++        route="runtime_diagnostic",
++        detected_intent="runtime_behavior_diagnostic_request",
++    )
++
++    assert validation.mismatch_reason != "voice_perspective_mismatch"
+--- /dev/null
++++ b/docs/archive_mixed_files/UPDATE_V14_8_5_028_TRUSTED_TIME_RUNTIME_WRITE_VOICE_GATE.md
+@@ -0,0 +1,20 @@
++# UPDATE v14.8.5.028 â€” TrustedTimeBridge + RuntimeWriteAccessContract + First-Person Feminine Voice Gate
++
++## Cel
++
++Ten mikro-patch wzmacnia trzy sĹ‚abe punkty wykryte po odchudzeniu paczki v14.8.5.027:
++
++1. daemon mĂłgĹ‚ pozostaÄ‡ `active_degraded`, gdy istniejÄ…cy proces nie dostaĹ‚ Ĺ›wieĹĽego injected trusted timestampu;
++2. `memory/sqlite/runtime_write_v1/` zostaĹ‚ sĹ‚usznie wyjÄ™ty z paczki, ale runtime nadal musi umieÄ‡ utworzyÄ‡ czystÄ… bieĹĽÄ…cÄ… warstwÄ™ zapisu;
++3. widoczny gĹ‚os Ĺatki moĹĽe osuwaÄ‡ siÄ™ w trzeciÄ… osobÄ™ albo jÄ™zyk loadera, zamiast pierwszoosobowej formy ĹĽeĹ„skiej.
++
++## Zmiany
++
++- `TrustedTimeBridge`: dodano endpoint daemonu `POST /trusted-time` i CLI bridge, ktĂłry wstrzykuje timestamp do juĹĽ dziaĹ‚ajÄ…cego daemonu bez restartu.
++- `RuntimeWriteAccessContract`: dodano kontrakt statusu i inicjalizacji `runtime_write_v1`; nowy czysty katalog jest tworzony bez przywracania starych shardĂłw/testĂłw.
++- `First-Person Feminine Voice Gate`: rozszerzono `VoiceSourceContract` i walidator odpowiedzi o wykrywanie `voice_perspective_mismatch` w zwykĹ‚ych odpowiedziach.
++- Plan 14.8.6.0 pozostaje docelowy dla `MemoryRecallQualityEvaluator` i `Reflection Promotion Policy`; ten patch przygotowuje bezpieczne fundamenty przed tym etapem.
++
++## Granica prawdy
++
++Patch nie importuje prywatnych eksportĂłw, nie robi push/pull do GitHub i nie publikuje SQLite. `runtime_write_v1` jest lokalnÄ… warstwÄ… zapisu runtime i wymaga osobnego workflow zgody uĹĽytkownika dla trwaĹ‚ego wyniesienia danych poza Ĺ›rodowisko.

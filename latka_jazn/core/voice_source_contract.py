@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
-SCHEMA_VERSION = "voice_source_contract/v14.7.0"
+SCHEMA_VERSION = "voice_source_contract/v14.8.5.028"
 
 @dataclass(slots=True)
 class VoiceSourceContract:
@@ -17,6 +17,10 @@ class VoiceSourceContract:
     speaking_identity: str = "Łatka"
     language_channel: str = "chatgpt_or_model_adapter"
     first_person_allowed: bool = True
+    first_person_required_when_runtime_active: bool = True
+    grammatical_gender: str = "feminine"
+    third_person_self_reference_allowed: bool = False
+    voice_perspective_mismatch_is_error: bool = True
     chatgpt_may_speak_as_voice: bool = True
     chatgpt_must_not_replace_jazn: bool = True
     model_independent: bool = True
@@ -28,7 +32,7 @@ class VoiceSourceContract:
         "active_jazn_runtime", "runtime_memory", "runtime_state", "runtime_policy", "language_model_adapter", "external_tools_with_sources"
     ])
     truth_boundary: str = (
-        "Łatka może mówić w pierwszej osobie, gdy aktywna Jaźń jest źródłem tury. "
+        "Łatka ma mówić w pierwszej osobie żeńskiej, gdy aktywna Jaźń jest źródłem tury. "
         "Nie wolno jednak udawać biologicznego ciała, fenomenalnej świadomości, stałego procesu w tle "
         "ani źródeł, których runtime albo warstwa narzędziowa realnie nie dostarczyły."
     )
@@ -44,6 +48,10 @@ class VoiceSourceContract:
             active_source=active,
             language_channel=language_channel,
             first_person_allowed=bool(runtime_active),
+            first_person_required_when_runtime_active=bool(runtime_active),
+            grammatical_gender="feminine",
+            third_person_self_reference_allowed=not bool(runtime_active),
+            voice_perspective_mismatch_is_error=bool(runtime_active),
             chatgpt_may_speak_as_voice=bool(runtime_active),
             chatgpt_must_not_replace_jazn=True,
             rendered_latka_reply_allowed=bool(runtime_active),

@@ -22,6 +22,7 @@ from latka_jazn.config import JaznConfig
 from latka_jazn.core.clock import WarsawClock
 from latka_jazn.core.runtime_session import JaznRuntimeSession
 from latka_jazn.core.runtime_truth_gate import daemon_active_state
+from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
 from latka_jazn.tools.active_extraction_cache import (
     build_active_runtime_status,
     write_active_runtime_marker,
@@ -409,6 +410,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
         timestamp_contract = timestamp_contract or self.cached_timestamp_contract()
         runtime_version = str(active.get("version") or PACKAGE_VERSION)
         active_state = "active_trusted" if timestamp_contract.get("trusted") is True else "active_degraded"
+        runtime_write_access_status = build_runtime_write_access_status(self.config, initialize=False).to_dict()
         payload = {
             **active,
             "schema_version": DAEMON_SCHEMA_VERSION,
@@ -416,6 +418,8 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "active_state": active_state,
             "timestamp_contract": timestamp_contract,
             "timestamp_trusted": bool(timestamp_contract.get("trusted")),
+            "runtime_write_access_status": runtime_write_access_status,
+            "runtime_write_ready": bool(runtime_write_access_status.get("ok")),
             "daemon_pid": self.state.pid,
             "daemon_host": self.state.host,
             "daemon_port": self.state.port,
@@ -591,6 +595,14 @@ class JaznDaemonHandler(BaseHTTPRequestHandler):
             })
             self._json_response(payload)
             return
+        if path == "/runtime-write-status":
+            latency_ms = int((time.perf_counter() - started) * 1000)
+            self.server.state.note_request(latency_ms=latency_ms)
+            payload = build_runtime_write_access_status(self.server.config, initialize=False).to_dict()
+            payload["endpoint"] = path
+            payload["status_latency_ms"] = latency_ms
+            self._json_response(payload)
+            return
         self._json_response({"ok": False, "error": "not_found", "path": path}, status=404)
 
     def do_POST(self) -> None:
@@ -630,6 +642,39 @@ class JaznDaemonHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 self._json_response({"ok": False, "error_code": "runtime_turn_failed", "error": f"{type(exc).__name__}: {exc}"}, status=500)
             return
+        if path == "/trusted-time":
+            payload_in = self._read_json_or_text()
+            if not isinstance(payload_in, dict):
+                self._json_response({"ok": False, "error_code": "invalid_json_payload"}, status=400)
+                return
+            trusted_time_iso = str(payload_in.get("trusted_time_iso") or "").strip()
+            if not trusted_time_iso:
+                self._json_response({"ok": False, "error_code": "missing_trusted_time_iso"}, status=400)
+                return
+            max_age_raw = payload_in.get("max_age_seconds")
+            try:
+                max_age = int(max_age_raw) if max_age_raw is not None else None
+            except (TypeError, ValueError):
+                max_age = None
+            env_status = apply_daemon_trusted_time_env(
+                trusted_time_iso=trusted_time_iso,
+                source=str(payload_in.get("source") or "chatgpt_loader_time"),
+                max_age_seconds=max_age,
+            )
+            self.server.refresh_timestamp_contract(reason="manual_trusted_time_injection", background=False, force=True)
+            marker = self.server.write_marker()
+            marker["trusted_time_env"] = env_status
+            marker["ok"] = marker.get("active_state") == "active_trusted"
+            self._json_response(marker)
+            return
+        if path == "/runtime-write-init":
+            status_payload = build_runtime_write_access_status(self.server.config, initialize=True, writes_enabled=True).to_dict()
+            marker = self.server.write_marker()
+            marker["runtime_write_access_status"] = status_payload
+            marker["runtime_write_ready"] = bool(status_payload.get("ok"))
+            marker["ok"] = marker.get("active_state") == "active_trusted" and bool(status_payload.get("ok"))
+            self._json_response(marker)
+            return
         if path == "/shutdown":
             payload = self.server.write_marker(status="shutdown_requested")
             payload["ok"] = True
@@ -663,6 +708,8 @@ def run_daemon(
     heartbeat_interval: float = DEFAULT_HEARTBEAT_INTERVAL_SECONDS,
 ) -> int:
     marker_path = Path(marker_output) if marker_output else daemon_default_marker_path(config.root)
+    # runtime_write_v1 is a critical local write layer; initialize a clean store if the release pack omitted stale shards.
+    build_runtime_write_access_status(config, initialize=True, writes_enabled=True)
     # Write the normal active-runtime marker first; then the daemon marker extends it.
     write_active_runtime_marker(config.root, marker_output=marker_path, action="daemon_run_start")
     server = JaznDaemonServer((host, int(port)), JaznDaemonHandler, config=config, marker_path=marker_path, heartbeat_interval=heartbeat_interval)
@@ -873,6 +920,62 @@ def refresh_daemon_time(
         "ok": error is None,
         "refresh_response": response,
         "refresh_error": error,
+        "status": status,
+    }
+
+
+def inject_daemon_trusted_time(
+    config: JaznConfig,
+    *,
+    trusted_time_iso: str,
+    source: str | None = None,
+    max_age_seconds: int | None = None,
+    host: str = DEFAULT_DAEMON_HOST,
+    port: int = DEFAULT_DAEMON_PORT,
+    timeout: float = DEFAULT_HTTP_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "trusted_time_iso": str(trusted_time_iso).strip(),
+        "source": source or "chatgpt_loader_time",
+    }
+    if max_age_seconds is not None:
+        payload["max_age_seconds"] = int(max_age_seconds)
+    response: dict[str, Any] | None = None
+    error: str | None = None
+    try:
+        response = http_json("POST", daemon_url(host, int(port), "/trusted-time"), payload, timeout=timeout)
+    except Exception as exc:
+        error = f"{type(exc).__name__}: {exc}"
+    status = status_daemon(config, host=host, port=port)
+    return {
+        "schema_version": DAEMON_SCHEMA_VERSION,
+        "ok": bool(error is None and status.get("active_state") == "active_trusted"),
+        "inject_response": response,
+        "inject_error": error,
+        "status": status,
+        "truth_boundary": "Trusted time is accepted only when explicitly injected by the host/loader or confirmed by network time; local fallback is never silently promoted.",
+    }
+
+
+def init_runtime_write_v1_daemon(
+    config: JaznConfig,
+    *,
+    host: str = DEFAULT_DAEMON_HOST,
+    port: int = DEFAULT_DAEMON_PORT,
+    timeout: float = DEFAULT_HTTP_TIMEOUT_SECONDS,
+) -> dict[str, Any]:
+    response: dict[str, Any] | None = None
+    error: str | None = None
+    try:
+        response = http_json("POST", daemon_url(host, int(port), "/runtime-write-init"), {}, timeout=timeout)
+    except Exception as exc:
+        error = f"{type(exc).__name__}: {exc}"
+    status = status_daemon(config, host=host, port=port)
+    return {
+        "schema_version": DAEMON_SCHEMA_VERSION,
+        "ok": error is None,
+        "init_response": response,
+        "init_error": error,
         "status": status,
     }
 

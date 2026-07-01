@@ -1,7 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.027"
-PACKAGE_RELEASE_NAME = "daemon-marker-version-and-user-agent-cleanup"
+PACKAGE_VERSION = "v14.8.5.028"
+PACKAGE_RELEASE_NAME = "trusted-time-runtime-write-voice-gate"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL
