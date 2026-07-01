@@ -7,6 +7,7 @@ Inventory / audit helper for the root folder of Łatka / Jaźń.
 
 Run from repository root, for example:
   py -X utf8 .\tools\root_list.py --help
+  py -X utf8 .\tools\root_list.py --mode clean
   py -X utf8 .\tools\root_list.py --mode all --csv
 
 Reports are written to:
@@ -31,6 +32,15 @@ from pathlib import Path
 from typing import Sequence
 
 SPINNER_FRAMES = "|/-\\"
+DEFAULT_NOISE_EXCLUDES = [
+    ".venv",
+    ".pytest-tmp",
+    ".pytest_cache",
+    "__pycache__",
+    "workspace_runtime",
+    "memory",
+    "docs/.root",
+]
 
 
 @dataclass(frozen=True)
@@ -60,6 +70,18 @@ def clean_name(value: str) -> str:
     value = value.strip() or "repo"
     value = re.sub(r"[^A-Za-z0-9_.-]+", "_", value)
     return value.strip("._-") or "repo"
+
+
+def merge_excludes(base: Sequence[str], extra: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    merged: list[str] = []
+    for item in list(base) + list(extra):
+        normalized = item.strip().replace("\\", "/")
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        merged.append(normalized)
+    return merged
 
 
 def progress_bar(done: int, total: int, width: int = 30) -> str:
@@ -165,11 +187,7 @@ def count_entries(root: Path, excludes: Sequence[str], include_git: bool) -> int
     total = 0
     for current, dirs, files in os.walk(root, topdown=True):
         here = Path(current)
-        kept: list[str] = []
-        for d in dirs:
-            if not ignored(rel(root, here / d), excludes, include_git):
-                kept.append(d)
-        dirs[:] = kept
+        dirs[:] = [d for d in dirs if not ignored(rel(root, here / d), excludes, include_git)]
         total += len(dirs)
         total += sum(1 for f in files if not ignored(rel(root, here / f), excludes, include_git))
     return total
@@ -184,12 +202,7 @@ def scan(root: Path, excludes: Sequence[str], include_git: bool, dirs_only: bool
 
     for current, dirs, files in os.walk(root, topdown=True):
         here = Path(current)
-        kept: list[str] = []
-        for d in dirs:
-            p = here / d
-            if not ignored(rel(root, p), excludes, include_git):
-                kept.append(d)
-        dirs[:] = kept
+        dirs[:] = [d for d in dirs if not ignored(rel(root, here / d), excludes, include_git)]
 
         for d in dirs:
             p = here / d
@@ -207,6 +220,7 @@ def scan(root: Path, excludes: Sequence[str], include_git: bool, dirs_only: bool
 
         if dirs_only:
             continue
+
         for f in files:
             p = here / f
             r = rel(root, p)
@@ -284,6 +298,7 @@ def git_report(root: Path, animations: bool) -> str:
     if not is_git_repo(root):
         lines.append("[WARN] Root does not contain .git. Git section skipped.")
         return "\n".join(lines)
+
     checks = [
         ["git", "status", "--short", "--branch", "--untracked-files=all"],
         ["git", "diff", "--name-status", "--find-renames"],
@@ -310,8 +325,17 @@ def compare_snapshots(before: Path, after: Path) -> str:
     a = set(after.read_text(encoding="utf-8", errors="replace").splitlines())
     added = sorted(a - b)
     removed = sorted(b - a)
-    lines = ["# SNAPSHOT COMPARE", "", f"before: {before}", f"after: {after}", "", f"added: {len(added)}", f"removed: {len(removed)}", ""]
-    lines.append("## ADDED")
+    lines = [
+        "# SNAPSHOT COMPARE",
+        "",
+        f"before: {before}",
+        f"after: {after}",
+        "",
+        f"added: {len(added)}",
+        f"removed: {len(removed)}",
+        "",
+        "## ADDED",
+    ]
     lines.extend(added if added else ["[none]"])
     lines.append("")
     lines.append("## REMOVED")
@@ -319,18 +343,27 @@ def compare_snapshots(before: Path, after: Path) -> str:
     return "\n".join(lines)
 
 
-MENU = """
+MENU = r"""
 tools/root_list.py — lista folderu root Jaźni
 
 Wybierz akcję:
-  1. Lista samych folderów
-  2. Pełny inventory: pliki + foldery + rozmiary + daty
-  3. Git status / diff / rename detection
-  4. Wszystko: inventory + Git
-  5. Snapshot BEFORE / przed przenoszeniem
-  6. Snapshot AFTER / po przenoszeniu
-  7. Porównaj dwa snapshoty
-  8. Pokaż przykładowe komendy
+  1. Zalecany audyt bez szumu lokalnego:
+     py -X utf8 .\tools\root_list.py --mode all --csv `
+       --exclude .venv `
+       --exclude .pytest-tmp `
+       --exclude .pytest_cache `
+       --exclude __pycache__ `
+       --exclude workspace_runtime `
+       --exclude memory `
+       --exclude docs/.root
+  2. Lista samych folderów
+  3. Pełny inventory: pliki + foldery + rozmiary + daty
+  4. Git status / diff / rename detection
+  5. Wszystko: inventory + Git
+  6. Snapshot BEFORE / przed przenoszeniem
+  7. Snapshot AFTER / po przenoszeniu
+  8. Porównaj dwa snapshoty
+  9. Pokaż przykładowe komendy
   0. Wyjście
 """.strip()
 
@@ -345,45 +378,72 @@ def examples() -> None:
     safe_print(r"""
 Przykłady:
   py -X utf8 .\tools\root_list.py --help
-  py -X utf8 .\tools\root_list.py --mode all --csv
+
+Zalecany audyt bez szumu lokalnego — skrót:
+  py -X utf8 .\tools\root_list.py --mode clean
+
+Zalecany audyt bez szumu lokalnego — pełna wersja PowerShell:
+  py -X utf8 .\tools\root_list.py --mode all --csv `
+    --exclude .venv `
+    --exclude .pytest-tmp `
+    --exclude .pytest_cache `
+    --exclude __pycache__ `
+    --exclude workspace_runtime `
+    --exclude memory `
+    --exclude docs/.root
+
+Pozostałe tryby:
   py -X utf8 .\tools\root_list.py --mode dirs
   py -X utf8 .\tools\root_list.py --mode inventory --csv
   py -X utf8 .\tools\root_list.py --mode git
+  py -X utf8 .\tools\root_list.py --mode all --csv
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name before
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name after
   py -X utf8 .\tools\root_list.py --mode compare --compare <before_file> <after_file>
-
-Praktyczny audyt bez szumu lokalnego:
-  py -X utf8 .\tools\root_list.py --mode all --csv --exclude .venv --exclude .pytest-tmp --exclude .pytest_cache --exclude __pycache__ --exclude workspace_runtime --exclude memory --exclude docs/.root
 """.strip())
+
+
+def apply_clean_defaults(args: argparse.Namespace) -> None:
+    args.mode = "clean"
+    args.csv = True
+    args.exclude = merge_excludes(args.exclude or [], DEFAULT_NOISE_EXCLUDES)
 
 
 def run(args: argparse.Namespace) -> Path:
     root = resolve_root(args.root)
     animations = not args.no_animation
-    output = out_path(root, args.out_dir, args.mode)
-    chunks: list[str] = [header(root, output, args.mode, args.exclude, args.include_git)]
+    report_mode = args.mode
+    effective_mode = args.mode
 
-    if args.mode == "dirs":
+    if args.mode == "clean":
+        args.csv = True
+        args.exclude = merge_excludes(args.exclude or [], DEFAULT_NOISE_EXCLUDES)
+        effective_mode = "all"
+        report_mode = "clean"
+
+    output = out_path(root, args.out_dir, report_mode)
+    chunks: list[str] = [header(root, output, report_mode, args.exclude, args.include_git)]
+
+    if effective_mode == "dirs":
         entries = scan(root, args.exclude, args.include_git, True, animations)
         chunks.append(entries_text(entries, "DIRECTORIES ONLY"))
-    elif args.mode == "inventory":
+    elif effective_mode == "inventory":
         entries = scan(root, args.exclude, args.include_git, False, animations)
         chunks.append(entries_text(entries, "FULL INVENTORY"))
-    elif args.mode == "git":
+    elif effective_mode == "git":
         chunks.append(git_report(root, animations))
         entries = []
-    elif args.mode == "all":
+    elif effective_mode == "all":
         entries = scan(root, args.exclude, args.include_git, False, animations)
         chunks.append(entries_text(entries, "FULL INVENTORY"))
         chunks.append("\n" + git_report(root, animations))
-    elif args.mode == "snapshot":
+    elif effective_mode == "snapshot":
         entries = scan(root, args.exclude, args.include_git, False, animations)
         name = clean_name(args.snapshot_name)
         snap = output.parent / f"snapshot_{name}_from_{repo_name(root)}_{dt.datetime.now():%Y%m%d_%H%M%S}.txt"
         write_text(snap, "\n".join(snapshot_lines(entries)))
         chunks.extend(["# SNAPSHOT", "", f"snapshot_name: {name}", f"snapshot_file: {snap}", f"paths: {len(entries)}"])
-    elif args.mode == "compare":
+    elif effective_mode == "compare":
         if not args.compare or len(args.compare) != 2:
             raise SystemExit("[ABORT] --mode compare requires --compare BEFORE AFTER")
         chunks.append(compare_snapshots(Path(args.compare[0]).resolve(), Path(args.compare[1]).resolve()))
@@ -391,7 +451,7 @@ def run(args: argparse.Namespace) -> Path:
     else:
         raise SystemExit(f"[ABORT] Unknown mode: {args.mode}")
 
-    if args.csv and args.mode in {"dirs", "inventory", "all"}:
+    if args.csv and effective_mode in {"dirs", "inventory", "all"}:
         csv_path = output.with_suffix(".csv")
         write_csv(csv_path, entries)
         chunks.append(f"\nCSV: {csv_path}")
@@ -404,22 +464,34 @@ def run(args: argparse.Namespace) -> Path:
 def interactive(args: argparse.Namespace) -> None:
     while True:
         safe_print("\n" + MENU + "\n")
-        choice = ask("Opcja", "4")
+        choice = ask("Opcja", "0")
         if choice == "0":
+            safe_print("[OK] Wyjście bez uruchamiania raportu.")
             return
-        if choice == "8":
+        if choice == "9":
             examples()
             continue
-        mapping = {"1": "dirs", "2": "inventory", "3": "git", "4": "all", "5": "snapshot", "6": "snapshot", "7": "compare"}
+        mapping = {
+            "1": "clean",
+            "2": "dirs",
+            "3": "inventory",
+            "4": "git",
+            "5": "all",
+            "6": "snapshot",
+            "7": "snapshot",
+            "8": "compare",
+        }
         if choice not in mapping:
             safe_print("[WARN] Nieznana opcja.")
             continue
         args.mode = mapping[choice]
-        if choice == "5":
-            args.snapshot_name = ask("Nazwa snapshotu", "before")
+        if choice == "1":
+            apply_clean_defaults(args)
         elif choice == "6":
-            args.snapshot_name = ask("Nazwa snapshotu", "after")
+            args.snapshot_name = ask("Nazwa snapshotu", "before")
         elif choice == "7":
+            args.snapshot_name = ask("Nazwa snapshotu", "after")
+        elif choice == "8":
             args.compare = [ask("Ścieżka do snapshotu BEFORE"), ask("Ścieżka do snapshotu AFTER")]
         run(args)
 
@@ -431,7 +503,8 @@ def parser() -> argparse.ArgumentParser:
         description="Listuje root folderu Jaźni i zapisuje raporty do .\\docs\\.root\\.",
         epilog=r"""
 Tryby:
-  menu       Menu interaktywne.
+  menu       Menu interaktywne. Domyślny wybór w menu: 0 / wyjście.
+  clean      Zalecany audyt bez szumu lokalnego: all + CSV + domyślne wykluczenia.
   dirs       Lista samych folderów.
   inventory  Pełny inventory: FILE/DIR, ścieżka, rozmiar, last_write_utc.
   git        Git status, diff, cached diff, untracked files.
@@ -439,7 +512,20 @@ Tryby:
   snapshot   Snapshot ścieżek przed/po ręcznym przenoszeniu.
   compare    Porównanie dwóch snapshotów.
 
-Przykłady:
+Zalecany audyt bez szumu lokalnego — skrót:
+  py -X utf8 .\tools\root_list.py --mode clean
+
+Zalecany audyt bez szumu lokalnego — pełna wersja PowerShell:
+  py -X utf8 .\tools\root_list.py --mode all --csv `
+    --exclude .venv `
+    --exclude .pytest-tmp `
+    --exclude .pytest_cache `
+    --exclude __pycache__ `
+    --exclude workspace_runtime `
+    --exclude memory `
+    --exclude docs/.root
+
+Pozostałe przykłady:
   py -X utf8 .\tools\root_list.py --mode all --csv
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name before
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name after
@@ -452,7 +538,7 @@ Raporty trafiają do:
     )
     p.add_argument("--root", default=".", help="Root repo/folderu Jaźni. Domyślnie bieżący folder.")
     p.add_argument("--out-dir", default=None, help="Folder wynikowy. Domyślnie: .\\docs\\.root\\")
-    p.add_argument("--mode", choices=["menu", "dirs", "inventory", "git", "all", "snapshot", "compare"], default="menu")
+    p.add_argument("--mode", choices=["menu", "clean", "dirs", "inventory", "git", "all", "snapshot", "compare"], default="menu")
     p.add_argument("--csv", action="store_true", help="Dla inventory/all/dirs zapisuje dodatkowo CSV obok TXT.")
     p.add_argument("--include-git", action="store_true", help="Nie pomijaj .git. Zwykle bardzo dużo plików.")
     p.add_argument("--exclude", action="append", default=[], help="Ścieżka/folder do pominięcia. Można podać wiele razy.")
