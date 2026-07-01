@@ -1,0 +1,32 @@
+diff --git a/tests/test_archive_workspace_runtime_sqlite.py b/tests/test_archive_workspace_runtime_sqlite.py
+--- a/tests/test_archive_workspace_runtime_sqlite.py
++++ b/tests/test_archive_workspace_runtime_sqlite.py
+@@ -1,11 +1,27 @@
+ from __future__ import annotations
+ 
+ import hashlib
++import importlib.util
+ import sqlite3
++import sys
+ from contextlib import closing
+ from pathlib import Path
+ 
+-from archive_workspace_runtime_sqlite import apply_archive, preflight
++_SCRIPT_PATH = (
++    Path(__file__).resolve().parents[1]
++    / "docs"
++    / "history"
++    / "archive_workspace_runtime_sqlite.py"
++)
++_MODULE_NAME = "archive_workspace_runtime_sqlite_under_test"
++_SPEC = importlib.util.spec_from_file_location(_MODULE_NAME, _SCRIPT_PATH)
++assert _SPEC is not None
++assert _SPEC.loader is not None
++archive_workspace_runtime_sqlite = importlib.util.module_from_spec(_SPEC)
++sys.modules[_MODULE_NAME] = archive_workspace_runtime_sqlite
++_SPEC.loader.exec_module(archive_workspace_runtime_sqlite)
++apply_archive = archive_workspace_runtime_sqlite.apply_archive
++preflight = archive_workspace_runtime_sqlite.preflight
+ 
+ 
+ def file_sha256(path: Path) -> str:

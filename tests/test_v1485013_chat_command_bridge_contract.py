@@ -143,6 +143,7 @@ def test_chat_jsonl_removed_exit_code_and_message() -> None:
         cwd=ROOT,
         stdin=subprocess.DEVNULL,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         timeout=15,
     )
@@ -156,6 +157,7 @@ def test_bridge_discovery_cli_lists_aliases_and_lmstudio_contract() -> None:
         cwd=ROOT,
         stdin=subprocess.DEVNULL,
         text=True,
+        encoding="utf-8",
         capture_output=True,
         timeout=20,
     )
