@@ -74,3 +74,8 @@ latka_jazn/core/canon/local_private_canon_extension.py
 # Heavy local documentation artifacts / generated reports
 *.bundle
 *_stdout.txt
+
+# Local planning / generated artifacts
+/docs/plans/
+/docs/reports_history/
+/generate_Jazn_pack.py
