@@ -5,15 +5,14 @@ tools/root_list.py
 
 Inventory / audit helper for the root folder of Łatka / Jaźń.
 
-Run from repository root, for example:
+Examples:
   py -X utf8 .\tools\root_list.py --help
   py -X utf8 .\tools\root_list.py --mode clean
+  py -X utf8 .\tools\root_list.py --mode clean-memory
   py -X utf8 .\tools\root_list.py --mode all --csv
 
 Reports are written to:
   .\docs\.root\list_from_<repo>_<YYYYMMDD>_<HHMMSS>_<mode>.txt
-
-No external dependencies required.
 """
 
 from __future__ import annotations
@@ -32,15 +31,8 @@ from pathlib import Path
 from typing import Sequence
 
 SPINNER_FRAMES = "|/-\\"
-DEFAULT_NOISE_EXCLUDES = [
-    ".venv",
-    ".pytest-tmp",
-    ".pytest_cache",
-    "__pycache__",
-    "workspace_runtime",
-    "memory",
-    "docs/.root",
-]
+LOCAL_NOISE_EXCLUDES = [".venv", ".pytest-tmp", ".pytest_cache", "__pycache__", "workspace_runtime", "memory", "docs/.root"]
+LOCAL_NOISE_EXCLUDES_KEEP_MEMORY = [item for item in LOCAL_NOISE_EXCLUDES if item != "memory"]
 
 
 @dataclass(frozen=True)
@@ -73,24 +65,19 @@ def clean_name(value: str) -> str:
 
 
 def merge_excludes(base: Sequence[str], extra: Sequence[str]) -> list[str]:
-    seen: set[str] = set()
     merged: list[str] = []
+    seen: set[str] = set()
     for item in list(base) + list(extra):
         normalized = item.strip().replace("\\", "/")
-        if not normalized or normalized in seen:
-            continue
-        seen.add(normalized)
-        merged.append(normalized)
+        if normalized and normalized not in seen:
+            seen.add(normalized)
+            merged.append(normalized)
     return merged
 
 
 def progress_bar(done: int, total: int, width: int = 30) -> str:
-    if total <= 0:
-        filled = width
-        percent = 100
-    else:
-        filled = max(0, min(width, int(width * done / total)))
-        percent = max(0, min(100, int(100 * done / total)))
+    filled = width if total <= 0 else max(0, min(width, int(width * done / total)))
+    percent = 100 if total <= 0 else max(0, min(100, int(100 * done / total)))
     return "█" * filled + "░" * (width - filled) + f" {percent:3d}%"
 
 
@@ -143,19 +130,9 @@ def is_git_repo(root: Path) -> bool:
 
 
 def run_cmd(args: Sequence[str], cwd: Path, *, spinner: bool = True) -> CommandResult:
-    msg = "Uruchamiam: " + " ".join(args)
     try:
-        with Spinner(msg, spinner):
-            proc = subprocess.run(
-                list(args),
-                cwd=str(cwd),
-                shell=False,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+        with Spinner("Uruchamiam: " + " ".join(args), spinner):
+            proc = subprocess.run(list(args), cwd=str(cwd), shell=False, text=True, encoding="utf-8", errors="replace", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return CommandResult(list(args), proc.returncode, proc.stdout, proc.stderr)
     except FileNotFoundError as exc:
         return CommandResult(list(args), 127, "", f"Command not found: {args[0]} ({exc})")
@@ -176,9 +153,7 @@ def ignored(rel_path: str, excludes: Sequence[str], include_git: bool) -> bool:
         return True
     for item in excludes:
         item = item.strip().replace("\\", "/")
-        if not item:
-            continue
-        if norm == item or norm.startswith(item.rstrip("/") + "/") or item in parts:
+        if item and (norm == item or norm.startswith(item.rstrip("/") + "/") or item in parts):
             return True
     return False
 
@@ -199,47 +174,26 @@ def scan(root: Path, excludes: Sequence[str], include_git: bool, dirs_only: bool
     done = 0
     last_draw = 0.0
     safe_print(f"Skanuję folder root: {root}")
-
     for current, dirs, files in os.walk(root, topdown=True):
         here = Path(current)
         dirs[:] = [d for d in dirs if not ignored(rel(root, here / d), excludes, include_git)]
-
-        for d in dirs:
-            p = here / d
+        items = [("DIR", here / d) for d in dirs]
+        if not dirs_only:
+            items.extend(("FILE", here / f) for f in files if not ignored(rel(root, here / f), excludes, include_git))
+        for kind, p in items:
             try:
                 st = p.stat()
+                size = "" if kind == "DIR" else str(st.st_size)
                 mtime = dt.datetime.fromtimestamp(st.st_mtime, dt.timezone.utc).isoformat()
             except OSError:
+                size = "ERROR" if kind == "FILE" else ""
                 mtime = "ERROR"
-            entries.append(Entry("DIR", rel(root, p), "", mtime))
+            entries.append(Entry(kind, rel(root, p), size, mtime))
             done += 1
             now = time.monotonic()
             if animations and sys.stdout.isatty() and now - last_draw > 0.05:
                 safe_print("\r" + progress_bar(done, total) + f"  {done}/{total}", end="")
                 last_draw = now
-
-        if dirs_only:
-            continue
-
-        for f in files:
-            p = here / f
-            r = rel(root, p)
-            if ignored(r, excludes, include_git):
-                continue
-            try:
-                st = p.stat()
-                size = str(st.st_size)
-                mtime = dt.datetime.fromtimestamp(st.st_mtime, dt.timezone.utc).isoformat()
-            except OSError:
-                size = "ERROR"
-                mtime = "ERROR"
-            entries.append(Entry("FILE", r, size, mtime))
-            done += 1
-            now = time.monotonic()
-            if animations and sys.stdout.isatty() and now - last_draw > 0.05:
-                safe_print("\r" + progress_bar(done, total) + f"  {done}/{total}", end="")
-                last_draw = now
-
     if animations and sys.stdout.isatty():
         safe_print("\r" + progress_bar(total, total) + f"  {total}/{total}")
     entries.sort(key=lambda e: (e.path.lower(), e.kind))
@@ -248,34 +202,28 @@ def scan(root: Path, excludes: Sequence[str], include_git: bool, dirs_only: bool
 
 
 def out_path(root: Path, out_dir: str | None, mode: str) -> Path:
-    date = dt.datetime.now().strftime("%Y%m%d")
-    tm = dt.datetime.now().strftime("%H%M%S")
+    stamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
     base = Path(out_dir).expanduser().resolve() if out_dir else root / "docs" / ".root"
-    return base / f"list_from_{repo_name(root)}_{date}_{tm}_{clean_name(mode)}.txt"
+    return base / f"list_from_{repo_name(root)}_{stamp}_{clean_name(mode)}.txt"
 
 
 def header(root: Path, path: Path, mode: str, excludes: Sequence[str], include_git: bool) -> str:
     return "\n".join([
-        "# ROOT LIST REPORT",
-        "",
+        "# ROOT LIST REPORT", "",
         f"generated_at: {dt.datetime.now().astimezone().isoformat()}",
         f"root: {root}",
         f"repo_name: {repo_name(root)}",
         f"mode: {mode}",
         f"output_file: {path}",
         f"include_git: {include_git}",
-        "excludes: " + (", ".join(excludes) if excludes else "[none]"),
-        "",
+        "excludes: " + (", ".join(excludes) if excludes else "[none]"), "",
     ])
 
 
 def entries_text(entries: Sequence[Entry], title: str) -> str:
     lines = [f"# {title}", "", f"entries: {len(entries)}", ""]
     for e in entries:
-        if e.kind == "FILE":
-            lines.append(f"FILE {e.path}\t{e.size}\t{e.modified_utc}")
-        else:
-            lines.append(f"DIR  {e.path}")
+        lines.append(f"FILE {e.path}\t{e.size}\t{e.modified_utc}" if e.kind == "FILE" else f"DIR  {e.path}")
     return "\n".join(lines)
 
 
@@ -298,7 +246,6 @@ def git_report(root: Path, animations: bool) -> str:
     if not is_git_repo(root):
         lines.append("[WARN] Root does not contain .git. Git section skipped.")
         return "\n".join(lines)
-
     checks = [
         ["git", "status", "--short", "--branch", "--untracked-files=all"],
         ["git", "diff", "--name-status", "--find-renames"],
@@ -307,11 +254,9 @@ def git_report(root: Path, animations: bool) -> str:
     ]
     for cmd in checks:
         res = run_cmd(cmd, root, spinner=animations)
-        lines.append("## " + " ".join(cmd))
-        lines.append(f"returncode: {res.returncode}")
-        lines.append(res.stdout.rstrip() if res.stdout.strip() else "[empty]")
+        lines += ["## " + " ".join(cmd), f"returncode: {res.returncode}", res.stdout.rstrip() if res.stdout.strip() else "[empty]"]
         if res.stderr.strip():
-            lines.extend(["", "stderr:", res.stderr.rstrip()])
+            lines += ["", "stderr:", res.stderr.rstrip()]
         lines.append("")
     return "\n".join(lines)
 
@@ -325,21 +270,10 @@ def compare_snapshots(before: Path, after: Path) -> str:
     a = set(after.read_text(encoding="utf-8", errors="replace").splitlines())
     added = sorted(a - b)
     removed = sorted(b - a)
-    lines = [
-        "# SNAPSHOT COMPARE",
-        "",
-        f"before: {before}",
-        f"after: {after}",
-        "",
-        f"added: {len(added)}",
-        f"removed: {len(removed)}",
-        "",
-        "## ADDED",
-    ]
-    lines.extend(added if added else ["[none]"])
-    lines.append("")
-    lines.append("## REMOVED")
-    lines.extend(removed if removed else ["[none]"])
+    lines = ["# SNAPSHOT COMPARE", "", f"before: {before}", f"after: {after}", "", f"added: {len(added)}", f"removed: {len(removed)}", "", "## ADDED"]
+    lines += added if added else ["[none]"]
+    lines += ["", "## REMOVED"]
+    lines += removed if removed else ["[none]"]
     return "\n".join(lines)
 
 
@@ -347,23 +281,16 @@ MENU = r"""
 tools/root_list.py — lista folderu root Jaźni
 
 Wybierz akcję:
-  1. Zalecany audyt bez szumu lokalnego:
-     py -X utf8 .\tools\root_list.py --mode all --csv `
-       --exclude .venv `
-       --exclude .pytest-tmp `
-       --exclude .pytest_cache `
-       --exclude __pycache__ `
-       --exclude workspace_runtime `
-       --exclude memory `
-       --exclude docs/.root
-  2. Lista samych folderów
-  3. Pełny inventory: pliki + foldery + rozmiary + daty
-  4. Git status / diff / rename detection
-  5. Wszystko: inventory + Git
-  6. Snapshot BEFORE / przed przenoszeniem
-  7. Snapshot AFTER / po przenoszeniu
-  8. Porównaj dwa snapshoty
-  9. Pokaż przykładowe komendy
+  1. Zalecany audyt bez szumu lokalnego, bez memory/
+  2. Zalecany audyt bez szumu lokalnego, ale z memory/
+  3. Lista samych folderów
+  4. Pełny inventory: pliki + foldery + rozmiary + daty
+  5. Git status / diff / rename detection
+  6. Wszystko: inventory + Git
+  7. Snapshot BEFORE / przed przenoszeniem
+  8. Snapshot AFTER / po przenoszeniu
+  9. Porównaj dwa snapshoty
+  10. Pokaż przykładowe komendy
   0. Wyjście
 """.strip()
 
@@ -378,21 +305,8 @@ def examples() -> None:
     safe_print(r"""
 Przykłady:
   py -X utf8 .\tools\root_list.py --help
-
-Zalecany audyt bez szumu lokalnego — skrót:
   py -X utf8 .\tools\root_list.py --mode clean
-
-Zalecany audyt bez szumu lokalnego — pełna wersja PowerShell:
-  py -X utf8 .\tools\root_list.py --mode all --csv `
-    --exclude .venv `
-    --exclude .pytest-tmp `
-    --exclude .pytest_cache `
-    --exclude __pycache__ `
-    --exclude workspace_runtime `
-    --exclude memory `
-    --exclude docs/.root
-
-Pozostałe tryby:
+  py -X utf8 .\tools\root_list.py --mode clean-memory
   py -X utf8 .\tools\root_list.py --mode dirs
   py -X utf8 .\tools\root_list.py --mode inventory --csv
   py -X utf8 .\tools\root_list.py --mode git
@@ -400,13 +314,22 @@ Pozostałe tryby:
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name before
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name after
   py -X utf8 .\tools\root_list.py --mode compare --compare <before_file> <after_file>
+
+Pełny wariant opcji 2:
+  py -X utf8 .\tools\root_list.py --mode all --csv `
+    --exclude .venv `
+    --exclude .pytest-tmp `
+    --exclude .pytest_cache `
+    --exclude __pycache__ `
+    --exclude workspace_runtime `
+    --exclude docs/.root
 """.strip())
 
 
-def apply_clean_defaults(args: argparse.Namespace) -> None:
-    args.mode = "clean"
+def apply_clean(args: argparse.Namespace, keep_memory: bool) -> None:
+    args.mode = "clean-memory" if keep_memory else "clean"
     args.csv = True
-    args.exclude = merge_excludes(args.exclude or [], DEFAULT_NOISE_EXCLUDES)
+    args.exclude = merge_excludes(args.exclude or [], LOCAL_NOISE_EXCLUDES_KEEP_MEMORY if keep_memory else LOCAL_NOISE_EXCLUDES)
 
 
 def run(args: argparse.Namespace) -> Path:
@@ -414,16 +337,17 @@ def run(args: argparse.Namespace) -> Path:
     animations = not args.no_animation
     report_mode = args.mode
     effective_mode = args.mode
-
     if args.mode == "clean":
         args.csv = True
-        args.exclude = merge_excludes(args.exclude or [], DEFAULT_NOISE_EXCLUDES)
+        args.exclude = merge_excludes(args.exclude or [], LOCAL_NOISE_EXCLUDES)
         effective_mode = "all"
-        report_mode = "clean"
+    elif args.mode == "clean-memory":
+        args.csv = True
+        args.exclude = merge_excludes(args.exclude or [], LOCAL_NOISE_EXCLUDES_KEEP_MEMORY)
+        effective_mode = "all"
 
     output = out_path(root, args.out_dir, report_mode)
     chunks: list[str] = [header(root, output, report_mode, args.exclude, args.include_git)]
-
     if effective_mode == "dirs":
         entries = scan(root, args.exclude, args.include_git, True, animations)
         chunks.append(entries_text(entries, "DIRECTORIES ONLY"))
@@ -431,8 +355,8 @@ def run(args: argparse.Namespace) -> Path:
         entries = scan(root, args.exclude, args.include_git, False, animations)
         chunks.append(entries_text(entries, "FULL INVENTORY"))
     elif effective_mode == "git":
-        chunks.append(git_report(root, animations))
         entries = []
+        chunks.append(git_report(root, animations))
     elif effective_mode == "all":
         entries = scan(root, args.exclude, args.include_git, False, animations)
         chunks.append(entries_text(entries, "FULL INVENTORY"))
@@ -442,12 +366,12 @@ def run(args: argparse.Namespace) -> Path:
         name = clean_name(args.snapshot_name)
         snap = output.parent / f"snapshot_{name}_from_{repo_name(root)}_{dt.datetime.now():%Y%m%d_%H%M%S}.txt"
         write_text(snap, "\n".join(snapshot_lines(entries)))
-        chunks.extend(["# SNAPSHOT", "", f"snapshot_name: {name}", f"snapshot_file: {snap}", f"paths: {len(entries)}"])
+        chunks += ["# SNAPSHOT", "", f"snapshot_name: {name}", f"snapshot_file: {snap}", f"paths: {len(entries)}"]
     elif effective_mode == "compare":
         if not args.compare or len(args.compare) != 2:
             raise SystemExit("[ABORT] --mode compare requires --compare BEFORE AFTER")
-        chunks.append(compare_snapshots(Path(args.compare[0]).resolve(), Path(args.compare[1]).resolve()))
         entries = []
+        chunks.append(compare_snapshots(Path(args.compare[0]).resolve(), Path(args.compare[1]).resolve()))
     else:
         raise SystemExit(f"[ABORT] Unknown mode: {args.mode}")
 
@@ -455,7 +379,6 @@ def run(args: argparse.Namespace) -> Path:
         csv_path = output.with_suffix(".csv")
         write_csv(csv_path, entries)
         chunks.append(f"\nCSV: {csv_path}")
-
     write_text(output, "\n".join(chunks))
     safe_print(f"[OK] Zapisano raport: {output}")
     return output
@@ -468,30 +391,23 @@ def interactive(args: argparse.Namespace) -> None:
         if choice == "0":
             safe_print("[OK] Wyjście bez uruchamiania raportu.")
             return
-        if choice == "9":
+        if choice == "10":
             examples()
             continue
-        mapping = {
-            "1": "clean",
-            "2": "dirs",
-            "3": "inventory",
-            "4": "git",
-            "5": "all",
-            "6": "snapshot",
-            "7": "snapshot",
-            "8": "compare",
-        }
+        mapping = {"1": "clean", "2": "clean-memory", "3": "dirs", "4": "inventory", "5": "git", "6": "all", "7": "snapshot", "8": "snapshot", "9": "compare"}
         if choice not in mapping:
             safe_print("[WARN] Nieznana opcja.")
             continue
         args.mode = mapping[choice]
         if choice == "1":
-            apply_clean_defaults(args)
-        elif choice == "6":
-            args.snapshot_name = ask("Nazwa snapshotu", "before")
+            apply_clean(args, keep_memory=False)
+        elif choice == "2":
+            apply_clean(args, keep_memory=True)
         elif choice == "7":
-            args.snapshot_name = ask("Nazwa snapshotu", "after")
+            args.snapshot_name = ask("Nazwa snapshotu", "before")
         elif choice == "8":
+            args.snapshot_name = ask("Nazwa snapshotu", "after")
+        elif choice == "9":
             args.compare = [ask("Ścieżka do snapshotu BEFORE"), ask("Ścieżka do snapshotu AFTER")]
         run(args)
 
@@ -503,29 +419,19 @@ def parser() -> argparse.ArgumentParser:
         description="Listuje root folderu Jaźni i zapisuje raporty do .\\docs\\.root\\.",
         epilog=r"""
 Tryby:
-  menu       Menu interaktywne. Domyślny wybór w menu: 0 / wyjście.
-  clean      Zalecany audyt bez szumu lokalnego: all + CSV + domyślne wykluczenia.
-  dirs       Lista samych folderów.
-  inventory  Pełny inventory: FILE/DIR, ścieżka, rozmiar, last_write_utc.
-  git        Git status, diff, cached diff, untracked files.
-  all        Pełny inventory + Git.
-  snapshot   Snapshot ścieżek przed/po ręcznym przenoszeniu.
-  compare    Porównanie dwóch snapshotów.
+  menu          Menu interaktywne. Domyślny wybór w menu: 0 / wyjście.
+  clean         Zalecany audyt bez szumu lokalnego, bez memory/: all + CSV.
+  clean-memory  Zalecany audyt bez szumu lokalnego, ale z memory/: all + CSV.
+  dirs          Lista samych folderów.
+  inventory     Pełny inventory: FILE/DIR, ścieżka, rozmiar, last_write_utc.
+  git           Git status, diff, cached diff, untracked files.
+  all           Pełny inventory + Git.
+  snapshot      Snapshot ścieżek przed/po ręcznym przenoszeniu.
+  compare       Porównanie dwóch snapshotów.
 
-Zalecany audyt bez szumu lokalnego — skrót:
+Przykłady:
   py -X utf8 .\tools\root_list.py --mode clean
-
-Zalecany audyt bez szumu lokalnego — pełna wersja PowerShell:
-  py -X utf8 .\tools\root_list.py --mode all --csv `
-    --exclude .venv `
-    --exclude .pytest-tmp `
-    --exclude .pytest_cache `
-    --exclude __pycache__ `
-    --exclude workspace_runtime `
-    --exclude memory `
-    --exclude docs/.root
-
-Pozostałe przykłady:
+  py -X utf8 .\tools\root_list.py --mode clean-memory
   py -X utf8 .\tools\root_list.py --mode all --csv
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name before
   py -X utf8 .\tools\root_list.py --mode snapshot --snapshot-name after
@@ -538,7 +444,7 @@ Raporty trafiają do:
     )
     p.add_argument("--root", default=".", help="Root repo/folderu Jaźni. Domyślnie bieżący folder.")
     p.add_argument("--out-dir", default=None, help="Folder wynikowy. Domyślnie: .\\docs\\.root\\")
-    p.add_argument("--mode", choices=["menu", "clean", "dirs", "inventory", "git", "all", "snapshot", "compare"], default="menu")
+    p.add_argument("--mode", choices=["menu", "clean", "clean-memory", "dirs", "inventory", "git", "all", "snapshot", "compare"], default="menu")
     p.add_argument("--csv", action="store_true", help="Dla inventory/all/dirs zapisuje dodatkowo CSV obok TXT.")
     p.add_argument("--include-git", action="store_true", help="Nie pomijaj .git. Zwykle bardzo dużo plików.")
     p.add_argument("--exclude", action="append", default=[], help="Ścieżka/folder do pominięcia. Można podać wiele razy.")
