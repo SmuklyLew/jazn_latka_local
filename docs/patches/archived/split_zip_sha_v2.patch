@@ -1,0 +1,286 @@
+﻿--- split_zip_sha.py
++++ split_zip_sha.py
+@@ -1,8 +1,9 @@
+ #!/usr/bin/env python3
+ # -*- coding: utf-8 -*-
+-"""
+-split_zip_sha.py
+-
++r"""
++split_zip_sha_v2.py
++
++Wersja v2: numer wersji jest czytany z version.py i dopisywany do nazw wyjĹ›ciowych.
+ Tworzy archiwum ZIP bez zapisywania peĹ‚nego ZIP-a na dysku: strumieĹ„ ZIP jest
+ od razu zapisywany do kolejnych czÄ™Ĺ›ci, np.:
+
+@@ -28,11 +29,16 @@
+
+ PrzykĹ‚ady:
+
+-    py split_zip_sha.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --name jazn_latka_v14.8.5.027 --part-size-mb 480 --force
+-
+-    py .\split_zip_sha.py "D:\.AI\jazn_latka_local" `
++    py split_zip_sha_v2.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --part-size-mb 480 --force
++
++    JeĹ›li .\latka_jazn\version.py ma PACKAGE_VERSION = "14.8.9", wynikiem bÄ™dzie m.in.:
++
++        jazn_latka_v14.8.9.zip.001
++        jazn_latka_v14.8.9.zip.parts.sha256
++        jazn_latka_v14.8.9.zip.manifest.json
++
++    py .\split_zip_sha_v2.py "D:\.AI\jazn_latka_local" `
+   --out "D:\Desktop\pakiet" `
+-  --name "jazn_latka_version" `
+   --part-size-mb 450 `
+   --compresslevel 6 `
+   --force `
+@@ -57,20 +63,18 @@
+
+ from __future__ import annotations
+ import argparse
++import ast
++import re
+ import datetime as _dt
+ import fnmatch
+ import hashlib
+ import json
+ import os
+ from pathlib import Path, PurePosixPath
+-import shutil
+-import stat
+ import sys
+ import time
+ import zipfile
+ from typing import BinaryIO, Iterable
+-from latka_jazn.version import PACKAGE_VERSION
+-version: str = PACKAGE_VERSION
+
+ # =============================================================================
+ # USTAWIENIA DOMYĹšLNE - moĹĽesz zmieniÄ‡ tutaj i uruchamiaÄ‡ skrypt bez argumentĂłw
+@@ -78,11 +82,14 @@
+
+ SOURCE_FOLDER = r""          # np. r"D:\.AI\latka_jazn_v14_8_2_work"
+ OUTPUT_DIR = r""             # puste = folder nadrzÄ™dny SOURCE_FOLDER
+-ARCHIVE_BASENAME = r""       # puste = nazwa folderu ĹşrĂłdĹ‚owego; wynik: <nazwa>.zip.001
++ARCHIVE_BASENAME = r"jazn_latka"  # domyĹ›lnie bez --name: jazn_latka_v<WERSJA>.zip.001
+ PART_SIZE_MB = 500            # rozmiar jednej czÄ™Ĺ›ci w MiB
+ COMPRESSION_LEVEL = 6         # 0-9 dla ZIP_DEFLATED; 0 szybciej/sĹ‚abiej, 9 wolniej/mocniej
+ FORCE_OVERWRITE = False       # True = nadpisuje wczeĹ›niejsze czÄ™Ĺ›ci/manifesty
+ INCLUDE_EMPTY_DIRS = True      # zapisuje teĹĽ puste katalogi
++APPEND_VERSION_TO_NAME = True  # True = dopisuje _v<PACKAGE_VERSION> przed .zip
++VERSION_FILE = r""            # puste = auto, najpierw .\latka_jazn\version.py
++VERSION_VARIABLES = ("PACKAGE_VERSION", "__version__", "VERSION")
+ EXCLUDE_PATTERNS: list[str] = [
+     # PrzykĹ‚ady, domyĹ›lnie wyĹ‚Ä…czone. Odkomentuj, jeĹ›li chcesz pomijaÄ‡:
+     # ".git/*",
+@@ -107,6 +114,134 @@
+
+ def now_iso() -> str:
+     return _dt.datetime.now().astimezone().isoformat(timespec="seconds")
++
++
++def _literal_string_from_assignment(node: ast.AST) -> str | None:
++    """Zwraca tekst tylko dla prostych przypisaĹ„ staĹ‚ych, bez wykonywania version.py."""
++    if isinstance(node, ast.Constant) and isinstance(node.value, str):
++        return node.value
++    if isinstance(node, ast.Str):  # zgodnoĹ›Ä‡ ze starszym AST
++        return node.s
++    return None
++
++
++def read_version_from_py(version_file: Path, variable_names: Iterable[str] = VERSION_VARIABLES) -> str:
++    """
++    Czyta wersjÄ™ z pliku version.py przez AST, bez importowania i bez uruchamiania kodu.
++
++    ObsĹ‚ugiwane zmienne domyĹ›lnie:
++      - PACKAGE_VERSION = "14.8.9"
++      - __version__ = "14.8.9"
++      - VERSION = "14.8.9"
++    """
++    version_file = version_file.resolve()
++    if not version_file.exists() or not version_file.is_file():
++        raise FileNotFoundError(f"Nie znaleziono pliku wersji: {version_file}")
++
++    text = version_file.read_text(encoding="utf-8")
++    tree = ast.parse(text, filename=str(version_file))
++    wanted = set(variable_names)
++
++    for node in tree.body:
++        if isinstance(node, ast.Assign):
++            value = _literal_string_from_assignment(node.value)
++            if value is None:
++                continue
++            for target in node.targets:
++                if isinstance(target, ast.Name) and target.id in wanted:
++                    return normalize_version(value)
++        elif isinstance(node, ast.AnnAssign):
++            value = _literal_string_from_assignment(node.value) if node.value is not None else None
++            if value is None:
++                continue
++            target = node.target
++            if isinstance(target, ast.Name) and target.id in wanted:
++                return normalize_version(value)
++
++    raise ValueError(
++        f"Nie znaleziono zmiennej wersji {sorted(wanted)} w pliku: {version_file}"
++    )
++
++
++def find_version_file(source_folder: Path, explicit_version_file: str | Path | None = None) -> Path:
++    """Znajduje version.py dla pakowanego projektu.
++
++    DomyĹ›lnie pierwszeĹ„stwo ma Ĺ›cieĹĽka wzglÄ™dna wobec aktualnego katalogu pracy:
++      .\\latka_jazn\\version.py
++
++    DziÄ™ki temu zwykĹ‚e uruchomienie z katalogu projektu nie wymaga ani importu
++    pakietu, ani podawania --version-file.
++    """
++    if explicit_version_file:
++        return Path(explicit_version_file).expanduser().resolve()
++
++    cwd = Path.cwd().resolve()
++    script_dir = Path(__file__).resolve().parent
++    candidates = [
++        cwd / "latka_jazn" / "version.py",
++        source_folder / "latka_jazn" / "version.py",
++        script_dir / "latka_jazn" / "version.py",
++        cwd / "version.py",
++        source_folder / "version.py",
++        script_dir / "version.py",
++    ]
++
++    seen: set[Path] = set()
++    unique_candidates: list[Path] = []
++    for candidate in candidates:
++        resolved = candidate.resolve()
++        if resolved in seen:
++            continue
++        seen.add(resolved)
++        unique_candidates.append(resolved)
++
++    for candidate in unique_candidates:
++        if candidate.exists() and candidate.is_file():
++            return candidate
++
++    pretty = "\n".join(f"  - {p}" for p in unique_candidates)
++    raise FileNotFoundError(
++        "Nie znaleziono version.py. Podaj --version-file albo umieĹ›Ä‡ plik w jednej z lokalizacji:\n" + pretty
++    )
++
++
++def normalize_version(value: str) -> str:
++    """Normalizuje wersjÄ™ do postaci bez wiodÄ…cego v, np. v14.8.9 -> 14.8.9."""
++    version = str(value).strip().strip('"\'')
++    version = re.sub(r"^v", "", version, flags=re.IGNORECASE)
++    if not version:
++        raise ValueError("Wersja z version.py jest pusta")
++    if any(ch in version for ch in '\\/?:*"<>|'):
++        raise ValueError(f"Wersja zawiera znaki niedozwolone w nazwie pliku: {version!r}")
++    return version
++
++
++def apply_version_to_archive_name(archive_basename: str, package_version: str, *, enabled: bool = True) -> str:
++    """
++    Zwraca finalnÄ… nazwÄ™ ZIP-a z wersjÄ… przed .zip.
++
++    PrzykĹ‚ady:
++      jazn_latka + 14.8.9       -> jazn_latka_v14.8.9.zip
++      jazn_latka.zip + 14.8.9   -> jazn_latka_v14.8.9.zip
++      jazn_latka_{version}.zip  -> jazn_latka_14.8.9.zip
++      jazn_latka_v{version}.zip -> jazn_latka_v14.8.9.zip
++    """
++    raw = archive_basename.strip()
++    if not raw:
++        raise ValueError("archive_basename nie moĹĽe byÄ‡ pusty")
++
++    has_zip = raw.lower().endswith(".zip")
++    stem = raw[:-4] if has_zip else raw
++    version = normalize_version(package_version)
++
++    if "{version}" in stem:
++        stem = stem.replace("{version}", version)
++    elif enabled:
++        suffix = f"_v{version}"
++        if not stem.lower().endswith(suffix.lower()):
++            stem = f"{stem}{suffix}"
++
++    return f"{stem}.zip"
+
+
+ def safe_zip_datetime(path: Path) -> tuple[int, int, int, int, int, int]:
+@@ -380,6 +515,8 @@
+     force: bool,
+     include_empty_dirs: bool,
+     exclude_patterns: list[str],
++    append_version_to_name: bool = APPEND_VERSION_TO_NAME,
++    version_file: str | Path | None = None,
+ ) -> dict[str, object]:
+     source_folder = source_folder.resolve()
+     out_dir = out_dir.resolve()
+@@ -393,10 +530,13 @@
+             "bo archiwum mogĹ‚oby zaczÄ…Ä‡ pakowaÄ‡ wĹ‚asne czÄ™Ĺ›ci. Ustaw --out poza folderem ĹşrĂłdĹ‚owym."
+         )
+
+-    if archive_basename.lower().endswith(".zip"):
+-        base_zip_name = archive_basename
+-    else:
+-        base_zip_name = f"{archive_basename}.zip"
++    resolved_version_file = find_version_file(source_folder, version_file)
++    package_version = read_version_from_py(resolved_version_file)
++    base_zip_name = apply_version_to_archive_name(
++        archive_basename,
++        package_version,
++        enabled=append_version_to_name,
++    )
+
+     part_size = part_size_mb * 1024 * 1024
+     files, dirs, source_total_size = discover_entries(source_folder, include_empty_dirs, exclude_patterns)
+@@ -409,6 +549,7 @@
+
+     print(f"ĹąrĂłdĹ‚o: {source_folder}")
+     print(f"WyjĹ›cie: {out_dir}")
++    print(f"Wersja z version.py: {package_version} ({resolved_version_file})")
+     print(f"Nazwa: {base_zip_name}.001 ...")
+     print(f"Rozmiar czÄ™Ĺ›ci: {part_size_mb} MiB")
+     print(f"PlikĂłw: {len(files)}; katalogĂłw: {len(dirs)}; rozmiar ĹşrĂłdĹ‚a: {human_size(source_total_size)}")
+@@ -472,6 +613,11 @@
+     manifest = {
+         "created_at": now_iso(),
+         "script": Path(__file__).name,
++        "script_version": "v2.1",
++        "package_version": package_version,
++        "version_file": str(resolved_version_file),
++        "archive_basename_requested": archive_basename,
++        "append_version_to_name": append_version_to_name,
+         "source_folder": str(source_folder),
+         "output_dir": str(out_dir),
+         "archive_name_after_join": base_zip_name,
+@@ -519,7 +665,9 @@
+     )
+     parser.add_argument("source", nargs="?", help="Folder do spakowania")
+     parser.add_argument("--out", help="Folder wyjĹ›ciowy; domyĹ›lnie folder nadrzÄ™dny ĹşrĂłdĹ‚a")
+-    parser.add_argument("--name", help="Nazwa bazowa archiwum, np. latka_jazn_v14_8_2_6_0 albo latka.zip")
++    parser.add_argument("--name", help="Opcjonalna nazwa bazowa archiwum bez wersji, np. jazn_latka; jeĹ›li pominiesz, uĹĽyte bÄ™dzie jazn_latka_vX.Y.Z.zip")
++    parser.add_argument("--version-file", default=VERSION_FILE or None, help="ĹšcieĹĽka do version.py; domyĹ›lnie auto, najpierw .\\latka_jazn\\version.py")
++    parser.add_argument("--no-version-suffix", action="store_true", help="Nie dopisuj automatycznie _v<wersja> do nazwy ZIP-a")
+     parser.add_argument("--part-size-mb", type=int, default=PART_SIZE_MB, help="Rozmiar czÄ™Ĺ›ci w MiB")
+     parser.add_argument("--compresslevel", type=int, default=COMPRESSION_LEVEL, choices=range(0, 10), metavar="0-9", help="Poziom kompresji ZIP_DEFLATED")
+     parser.add_argument("--force", action="store_true", default=FORCE_OVERWRITE, help="Nadpisz istniejÄ…ce pliki wyjĹ›ciowe")
+@@ -541,7 +689,7 @@
+         return 2
+
+     out_dir = Path(args.out or OUTPUT_DIR or source_folder.resolve().parent)
+-    archive_basename = args.name or ARCHIVE_BASENAME or source_folder.resolve().name
++    archive_basename = args.name or ARCHIVE_BASENAME or "jazn_latka"
+     exclude_patterns = list(EXCLUDE_PATTERNS) + list(args.exclude or [])
+
+     try:
+@@ -554,6 +702,8 @@
+             force=bool(args.force),
+             include_empty_dirs=not args.no_empty_dirs,
+             exclude_patterns=exclude_patterns,
++            append_version_to_name=not args.no_version_suffix,
++            version_file=args.version_file,
+         )
+         return 0
+     except KeyboardInterrupt:
