@@ -42,7 +42,7 @@ __pycache__/
 /*.patch
 /*.rej
 /*.orig
-/* .BAD.patch
+/*.BAD.patch
 /*_PATCH_REPORT.md
 /LATKA_*_COMMANDS.ps1
 
