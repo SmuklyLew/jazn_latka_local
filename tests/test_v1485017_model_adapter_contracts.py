@@ -79,7 +79,7 @@ def test_openai_status_separates_configuration_from_runtime_identity(monkeypatch
     assert status["backend_only"] is True
 
 
-def test_backend_skeletons_do_not_claim_llama_cpp_implementation(monkeypatch) -> None:
+def test_backend_skeletons_report_llama_cpp_openai_compatible_implementation(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     status = build_model_adapter_status(JaznConfig())
     skeletons = {item["provider"]: item for item in status["backend_config_skeletons"]}
@@ -87,7 +87,7 @@ def test_backend_skeletons_do_not_claim_llama_cpp_implementation(monkeypatch) ->
     assert set(skeletons) == {"openai", "ollama", "llama_cpp", "lmstudio", "codex"}
     assert skeletons["openai"]["normal_runtime_requires_credential"] is False
     assert skeletons["ollama"]["implemented"] is True
-    assert skeletons["llama_cpp"]["implemented"] is False
+    assert skeletons["llama_cpp"]["implemented"] is True
     assert skeletons["lmstudio"]["implemented"] is True
     assert skeletons["lmstudio"]["credential_env"] is None
     assert skeletons["codex"]["kind"] == "development_tooling_status"
@@ -102,25 +102,23 @@ def test_ollama_status_uses_existing_local_adapter_without_live_probe(monkeypatc
     assert status["provider"] == "ollama"
     assert status["kind"] == "local_generate_api"
     assert status["available"] is True
-    assert status["can_generate_model_guided_speech"] is True
+    assert status["can_attempt_model_guided_speech"] is True
+    assert status["can_generate_model_guided_speech"] is False
     assert status["availability_basis"] == "configuration_only_no_live_probe"
 
 
-def test_llama_cpp_selection_is_contract_only_and_never_calls_endpoint(monkeypatch) -> None:
+def test_llama_cpp_selection_uses_truthful_openai_compatible_adapter(monkeypatch) -> None:
     monkeypatch.setenv("JAZN_MODEL_ADAPTER", "llama_cpp")
     monkeypatch.setenv("JAZN_LLAMA_CPP_MODEL_NAME", "local-test-model")
 
     adapter = build_model_adapter(JaznConfig())
     status = adapter.describe()
-    response = adapter.generate(ModelAdapterRequest(prompt="test"))
-
     assert status["provider"] == "llama_cpp"
-    assert status["status"] == "contract_only_not_implemented"
-    assert status["available"] is False
+    assert status["status"] == "configured"
+    assert status["available"] is True
+    assert status["can_attempt_model_guided_speech"] is True
     assert status["can_generate_model_guided_speech"] is False
-    assert status["failure_reason"] == "backend_adapter_not_implemented"
-    assert response.status == "backend_contract_only_not_implemented"
-    assert response.text == ""
+    assert status["preferred_endpoint"] == "/chat/completions"
 
 
 def test_lmstudio_selection_uses_runtime_adapter_and_never_uses_ollama(monkeypatch) -> None:
@@ -143,10 +141,12 @@ def test_lmstudio_selection_uses_runtime_adapter_and_never_uses_ollama(monkeypat
     assert status["provider"] == "lmstudio"
     assert status["status"] == "configured"
     assert status["available"] is True
-    assert status["can_generate_model_guided_speech"] is True
+    assert status["can_attempt_model_guided_speech"] is True
+    assert status["can_generate_model_guided_speech"] is False
     assert status["requires_api_key"] is False
     assert status["failure_reason"] is None
     assert response.status == "completed"
+    assert adapter.describe()["can_generate_model_guided_speech"] is True
     assert response.text == "Lokalna odpowiedĹş."
     assert endpoints == ["/responses"]
 

@@ -20,6 +20,10 @@ class ModelGuidedSynthesis:
     model: str
     reason: str
     sources: list[dict[str, Any]]
+    source_origin: str = "runtime_fallback"
+    endpoint_used: str | None = None
+    adapter_response: dict[str, Any] | None = None
+    candidate_validation: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -82,6 +86,10 @@ class ModelGuidedResponseSynthesizer:
             for candidate in candidates
         ]
         selected = select_best_candidate(candidates, evaluations)
+        selected_evaluation = next(
+            (evaluation for evaluation in evaluations if evaluation.candidate_id == selected.candidate_id),
+            None,
+        )
         if selected.source != "model_adapter":
             return ModelGuidedSynthesis(
                 False,
@@ -97,7 +105,19 @@ class ModelGuidedResponseSynthesizer:
             return ModelGuidedSynthesis(False, draft_body, selected.status, selected.provider, selected.model, "selected_candidate_empty_after_clean", [])
         sources = self._sources_for_candidate(selected, context)
         reason = "generated_from_grounded_memory_context" if sources else "generated_from_jazn_cognitive_context"
-        return ModelGuidedSynthesis(True, body, selected.status, selected.provider, selected.model, reason, sources)
+        return ModelGuidedSynthesis(
+            True,
+            body,
+            selected.status,
+            selected.provider,
+            selected.model,
+            reason,
+            sources,
+            source_origin=selected.source_origin,
+            endpoint_used=selected.endpoint_used,
+            adapter_response=selected.adapter_response or None,
+            candidate_validation=selected_evaluation.to_dict() if selected_evaluation else None,
+        )
 
     @staticmethod
     def _sources_for_candidate(candidate: Any, context: dict[str, Any]) -> list[dict[str, Any]]:

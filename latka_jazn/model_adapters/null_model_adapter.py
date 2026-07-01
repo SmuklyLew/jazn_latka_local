@@ -24,6 +24,10 @@ class NullModelAdapter:
             model_name=None,
             endpoint=None,
             can_generate_model_guided_speech=False,
+            configured=False,
+            endpoint_reachable=None,
+            probe_state="not_configured",
+            can_attempt_model_guided_speech=False,
             failure_reason="external_model_not_configured",
             availability_basis="built_in_truthful_fallback",
             truth_boundary=(

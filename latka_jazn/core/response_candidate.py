@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import re
 from typing import Any
 
@@ -18,6 +18,9 @@ class ResponseCandidate:
     status: str
     used_memory_item_ids: list[str]
     generation_reason: str
+    source_origin: str = "runtime_fallback"
+    endpoint_used: str | None = None
+    adapter_response: dict[str, Any] = field(default_factory=dict)
     schema_version: str = SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -30,6 +33,7 @@ class ResponseCandidate:
         self.status = _clean_identifier(self.status, fallback="unknown")
         self.used_memory_item_ids = [_clean_identifier(item, fallback="memory_item") for item in self.used_memory_item_ids or []]
         self.generation_reason = _clean_text(self.generation_reason, fallback="unspecified")
+        self.source_origin = _clean_identifier(self.source_origin, fallback=self.source)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

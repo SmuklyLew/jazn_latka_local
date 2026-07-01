@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from .base import ModelAdapterRequest, ModelAdapterResponse
+from .base import AdapterStatusSnapshot, ModelAdapterRequest, ModelAdapterResponse
 from .adapter_contract import AdapterContract, describe_with_contract
 from .openai_state_tracker import OpenAIStateTracker
 
@@ -20,6 +20,8 @@ class OpenaiResponsesAdapter:
         self.timeout_seconds = timeout_seconds
         self.max_output_tokens = max_output_tokens
         self.state_tracker = OpenAIStateTracker(Path(root)) if root is not None else None
+        self._last_generation_succeeded = False
+        self._last_probe_error: str | None = None
 
     def describe(self) -> dict:
         configured = bool(self.api_key and self.model)
@@ -35,7 +37,12 @@ class OpenaiResponsesAdapter:
             available=configured,
             model_name=self.model or None,
             endpoint=self.api_base,
-            can_generate_model_guided_speech=configured,
+            can_generate_model_guided_speech=bool(configured and self._last_generation_succeeded),
+            configured=configured,
+            endpoint_reachable=True if self._last_generation_succeeded else None,
+            probe_state="probed_ok" if self._last_generation_succeeded else "not_probed",
+            last_probe_error=self._last_probe_error,
+            can_attempt_model_guided_speech=configured,
             failure_reason=failure_reason,
             requires_api_key=True,
             truth_boundary=(
@@ -85,19 +92,39 @@ class OpenaiResponsesAdapter:
             state_payload = None
             if self.state_tracker and session_id and data.get("id"):
                 state_payload = self.state_tracker.update_from_response(session_id=session_id, response=data, store_policy=False).to_dict()
+            self._last_generation_succeeded = bool(text)
             return ModelAdapterResponse(
                 text=text,
                 provider=self.name,
                 model=str(data.get("model") or self.model),
                 status="completed" if text else str(data.get("status") or "empty_output"),
                 sources=[{"response_id": data.get("id"), "status": data.get("status"), "openai_state": state_payload}],
+                adapter_id=self.name,
+                endpoint_used="/responses",
+                status_snapshot=self._status_snapshot(),
             )
         except HTTPError as exc:
+            self._last_probe_error = f"http_error_{exc.code}"
             return ModelAdapterResponse(text='', provider=self.name, model=self.model, status=f'http_error_{exc.code}')
         except OSError as exc:
+            self._last_probe_error = self._status_from_error(str(exc))
             return ModelAdapterResponse(text='', provider=self.name, model=self.model, status=self._status_from_error(str(exc)))
         except (URLError, TimeoutError, ValueError):
+            self._last_probe_error = "adapter_error"
             return ModelAdapterResponse(text='', provider=self.name, model=self.model, status='adapter_error')
+
+    def _status_snapshot(self) -> AdapterStatusSnapshot:
+        configured = bool(self.api_key and self.model)
+        return AdapterStatusSnapshot(
+            adapter_id=self.name,
+            provider="openai",
+            configured=configured,
+            endpoint_reachable=True if self._last_generation_succeeded else None,
+            probe_state="probed_ok" if self._last_generation_succeeded else ("not_probed" if configured else "not_configured"),
+            last_probe_error=self._last_probe_error,
+            can_attempt_model_guided_speech=configured,
+            can_generate_model_guided_speech=bool(configured and self._last_generation_succeeded),
+        )
 
     def _load_state_for_request(self, request: ModelAdapterRequest):
         context = request.system_context or {}

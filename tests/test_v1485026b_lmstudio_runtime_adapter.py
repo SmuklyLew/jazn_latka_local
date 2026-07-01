@@ -39,7 +39,8 @@ def test_describe_with_model_is_configured_without_openai_key(monkeypatch) -> No
     assert status["status"] == "configured"
     assert status["provider"] == "lmstudio"
     assert status["kind"] == "openai_compatible_local_api"
-    assert status["can_generate_model_guided_speech"] is True
+    assert status["can_attempt_model_guided_speech"] is True
+    assert status["can_generate_model_guided_speech"] is False
     assert status["requires_api_key"] is False
 
 

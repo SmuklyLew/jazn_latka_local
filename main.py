@@ -64,7 +64,7 @@ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegist
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
-from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_lm_studio_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge, write_chat_bridge_payload
+from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_lm_studio_cli_settings, apply_local_llm_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge, write_chat_bridge_payload
 from latka_jazn.core.bridge_discovery import discover_runtime_bridges
 from latka_jazn.core.turn_timeout import RuntimeSessionWorker, runtime_turn_timeout_seconds
 from latka_jazn.core.runtime_daemon import (
@@ -107,7 +107,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--chat-gpt", action="store_true", dest="chat_gpt", help="Kanoniczny most ChatGPT. Z wiadomością po -- wypisuje tylko final_visible_text; ze stdin JSONL działa jako protokół maszynowy. Nie używa OPENAI_API_KEY.")
     parser.add_argument("--chat-gpt-final-only", action="store_true", dest="chat_gpt_final_only", help=argparse.SUPPRESS)
     parser.add_argument("--final-only", action="store_true", dest="final_only", help=argparse.SUPPRESS)
-    parser.add_argument("--chat-open-ai", action="store_true", dest="chat_open_ai", help="Uruchom lokalny runtime JaĹşni z model_adapter przez OpenAI Responses API; wymaga OPENAI_API_KEY i nie udaje poĹ‚Ä…czenia bez klucza.")
+    parser.add_argument("--chat-open-ai", "--openai-api", action="store_true", dest="chat_open_ai", help="Uruchom lokalny runtime JaĹşni z model_adapter przez OpenAI Responses API; wymaga OPENAI_API_KEY i nie udaje poĹ‚Ä…czenia bez klucza.")
     parser.add_argument("--openai-model", default=None, help="Model dla --chat-open-ai; domyĹ›lnie JAZN_MODEL_NAME albo konfiguracja runtime.")
     parser.add_argument("--openai-api-base", default=None, help="Bazowy URL API dla --chat-open-ai; domyĹ›lnie https://api.openai.com/v1.")
     parser.add_argument("--openai-timeout", type=float, default=None, help="Timeout sekund dla adaptera OpenAI w --chat-open-ai.")
@@ -118,6 +118,10 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--lm-studio-model", default=None, help="Model LM Studio dla --chat-lm-studio.")
     parser.add_argument("--lm-studio-timeout", type=float, default=None, help="Timeout sekund dla adaptera LM Studio.")
     parser.add_argument("--lm-studio-max-output-tokens", type=int, default=None, help="Limit output tokens dla adaptera LM Studio.")
+    parser.add_argument("--local-llm", action="store_true", dest="local_llm", help="Uruchom runtime z lokalnym lub zewnętrznym backendem OpenAI-compatible jako generatorem kandydata.")
+    parser.add_argument("--local-llm-api-base", default=None, help="Bazowy URL OpenAI-compatible dla --local-llm.")
+    parser.add_argument("--local-llm-model", default=None, help="Nazwa modelu dla --local-llm.")
+    parser.add_argument("--local-llm-provider", default=None, choices=("openai_compatible", "ollama", "llama_cpp"), help="Wskazówka provider-specific dla kolejności endpointów.")
     parser.add_argument("--bridge-discovery", action="store_true", dest="bridge_discovery", help="PokaĹĽ wykryte mosty runtime: --chat, --chat-gpt, --chat-open-ai i daemon.")
     parser.add_argument("--daemon-run", action="store_true", dest="daemon_run", help="Uruchom foreground daemon staĹ‚ej aktywnej JaĹşni: lokalny HTTP loopback + PID + heartbeat + marker JAZN_ACTIVE_RUNTIME.json.")
     parser.add_argument("--daemon-start", action="store_true", dest="daemon_start", help="Uruchom daemon JaĹşni w tle i zwrĂłÄ‡ status startu.")
@@ -321,6 +325,8 @@ def _runtime_command_from_cli_args(ns: argparse.Namespace) -> str | None:
         return "--chat-open-ai"
     if getattr(ns, "chat_lm_studio", False):
         return "--chat-lm-studio"
+    if getattr(ns, "local_llm", False):
+        return "--local-llm"
     return None
 
 
@@ -926,6 +932,13 @@ def main(argv: list[str] | None = None) -> int:
                 timeout_seconds=ns.lm_studio_timeout,
                 max_output_tokens=ns.lm_studio_max_output_tokens,
             )
+        elif adapter_command == "--local-llm":
+            cfg = apply_local_llm_cli_settings(
+                cfg,
+                model=ns.local_llm_model,
+                api_base=ns.local_llm_api_base,
+                provider=ns.local_llm_provider,
+            )
         payload = {
             "runtime_version": cfg.version,
             "model_adapter_status": build_model_adapter_status(
@@ -1141,6 +1154,26 @@ def main(argv: list[str] | None = None) -> int:
             session_id=ns.session_id,
             no_carryover=ns.no_carryover,
             command="--chat-gpt",
+            stdin=bridge_stdin,
+            require_openai_api_key=False,
+            output_mode=output_mode,
+        )
+
+    if ns.local_llm:
+        cfg = apply_local_llm_cli_settings(
+            config or JaznConfig(),
+            model=ns.local_llm_model,
+            api_base=ns.local_llm_api_base,
+            provider=ns.local_llm_provider,
+        )
+        bridge_text = _message_from_remainder(ns.message)
+        output_mode = _bridge_text_output_mode(ns, bridge_text)
+        bridge_stdin = io.StringIO(bridge_text + "\n") if bridge_text else None
+        return run_jsonl_chat_bridge(
+            config=cfg,
+            session_id=ns.session_id,
+            no_carryover=ns.no_carryover,
+            command="--local-llm",
             stdin=bridge_stdin,
             require_openai_api_key=False,
             output_mode=output_mode,

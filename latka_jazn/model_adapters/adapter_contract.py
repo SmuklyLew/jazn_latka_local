@@ -18,6 +18,12 @@ class AdapterContract:
     endpoint: str | None
     can_generate_model_guided_speech: bool
     truth_boundary: str
+    configured: bool | None = None
+    endpoint_reachable: bool | None = None
+    probe_state: str = "not_probed"
+    last_probe_error: str | None = None
+    can_attempt_model_guided_speech: bool | None = None
+    validated: bool = False
     failure_reason: str | None = None
     requires_api_key: bool = False
     availability_basis: str = "configuration_only_no_live_probe"
@@ -25,7 +31,19 @@ class AdapterContract:
     schema_version: str = schema_version("model_adapter_contract")
 
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        payload = asdict(self)
+        configured = self.available if self.configured is None else bool(self.configured)
+        payload["configured"] = configured
+        payload["can_attempt_model_guided_speech"] = (
+            configured
+            if self.can_attempt_model_guided_speech is None
+            else bool(self.can_attempt_model_guided_speech)
+        )
+        if not configured:
+            payload["probe_state"] = "not_configured"
+        elif self.probe_state in {"not_configured", "configured"}:
+            payload["probe_state"] = "not_probed"
+        return payload
 
 
 def describe_with_contract(*, contract: AdapterContract, legacy: dict[str, Any]) -> dict[str, Any]:
@@ -33,6 +51,15 @@ def describe_with_contract(*, contract: AdapterContract, legacy: dict[str, Any])
     contract_payload = contract.to_dict()
     payload.update(contract_payload)
     payload["adapter_contract"] = contract_payload
+    payload.setdefault("endpoint_reachable", contract_payload["endpoint_reachable"])
+    payload.setdefault("probe_state", contract_payload["probe_state"])
+    payload.setdefault("last_probe_error", contract_payload["last_probe_error"])
+    payload.setdefault("configured", contract_payload["configured"])
+    payload.setdefault(
+        "can_attempt_model_guided_speech",
+        contract_payload["can_attempt_model_guided_speech"],
+    )
+    payload.setdefault("validated", contract_payload["validated"])
     return payload
 
 
@@ -65,10 +92,10 @@ def backend_config_skeletons(config: Any) -> list[dict[str, Any]]:
             "normal_runtime_requires_credential": False,
         },
         {
-            "adapter_id": "llama_cpp_contract_only",
+            "adapter_id": "llama_cpp_openai_compatible_adapter",
             "provider": "llama_cpp",
             "kind": "openai_compatible_local_api_skeleton",
-            "implemented": False,
+            "implemented": True,
             "selection": "JAZN_MODEL_ADAPTER=llama_cpp",
             "model_env": "JAZN_LLAMA_CPP_MODEL_NAME",
             "endpoint_env": "JAZN_LLAMA_CPP_API_BASE",

@@ -5,7 +5,7 @@ import re
 from typing import Any
 
 from latka_jazn.core.response_candidate import ResponseCandidate
-from latka_jazn.model_adapters.base import ModelAdapterRequest
+from latka_jazn.core.runtime_turn_contract import RuntimeTurnContract
 
 
 def generate_response_candidates(
@@ -50,7 +50,19 @@ def generate_response_candidates(
     system_context.setdefault("nlg_plan", plan)
     system_context.setdefault("detected_intent", plan.get("detected_intent"))
     system_context.setdefault("route", plan.get("route"))
-    response = adapter.generate(ModelAdapterRequest(prompt=prompt, system_context=system_context))
+    turn_contract = RuntimeTurnContract.for_model_request(
+        user_text=str(context.get("user_message") or prompt),
+        detected_intent=str(plan.get("detected_intent") or context.get("detected_intent") or "unknown"),
+        route=str(plan.get("route") or context.get("route") or "unknown"),
+        runtime_exact_text=fallback_body,
+        system_context=system_context,
+    )
+    request = turn_contract.to_model_adapter_request(
+        user_text=str(context.get("user_message") or prompt),
+        system_context=system_context,
+    )
+    request.metadata["candidate_prompt"] = prompt
+    response = adapter.generate(request)
     text = _clean_model_text(getattr(response, "text", ""))
     if getattr(response, "status", "") == "completed" and text:
         candidates.append(
@@ -63,6 +75,9 @@ def generate_response_candidates(
                 status=str(getattr(response, "status", "completed")),
                 used_memory_item_ids=_memory_item_ids(context),
                 generation_reason="adapter_completed",
+                source_origin=str(getattr(response, "source_origin", "model_adapter")),
+                endpoint_used=getattr(response, "endpoint_used", None),
+                adapter_response=(response.to_dict() if hasattr(response, "to_dict") else {}),
             )
         )
     return candidates[:limit]

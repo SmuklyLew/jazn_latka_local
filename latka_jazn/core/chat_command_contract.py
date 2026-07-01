@@ -15,6 +15,7 @@ ACCEPTED_CHATGPT_INPUT_FIELDS = ("message", "text", "user_text", "content", "pro
 CHATGPT_BRIDGE_PROTOCOL = schema_version("chatgpt_bridge_jsonl")
 CHAT_OPENAI_PROTOCOL = schema_version("chat_open_ai_jsonl")
 CHAT_LMSTUDIO_PROTOCOL = schema_version("chat_lm_studio_jsonl")
+LOCAL_LLM_PROTOCOL = schema_version("local_llm_jsonl")
 CHAT_BRIDGE_OUTPUT_MODES = ("jsonl", "final_visible_text")
 BridgeOutputMode = Literal["jsonl", "final_visible_text"]
 
@@ -92,11 +93,28 @@ def chat_lm_studio_contract() -> ChatCommandContract:
     )
 
 
+def local_llm_contract() -> ChatCommandContract:
+    return ChatCommandContract(
+        command="--local-llm",
+        mode="openai_compatible_local_or_external_backend",
+        requires_api_key=False,
+        uses_openai_api=False,
+        keeps_process_alive=True,
+        engine_reused_between_turns=True,
+        truth_boundary=(
+            "--local-llm wybiera backend OpenAI-compatible wyłącznie jako generator kandydata. "
+            "Runtime zachowuje walidację, provenance, ledger i final_visible_text."
+        ),
+    )
+
+
 def command_contract(command: str) -> dict[str, Any]:
     if command == "--chat-open-ai":
         return chat_open_ai_contract().to_dict()
     if command == "--chat-lm-studio":
         return chat_lm_studio_contract().to_dict()
+    if command == "--local-llm":
+        return local_llm_contract().to_dict()
     if command == "--chat-gpt":
         return chat_gpt_contract().to_dict()
     raise ValueError(f"unknown chat command contract: {command}")
@@ -198,6 +216,25 @@ def apply_lm_studio_cli_settings(
     return config
 
 
+def apply_local_llm_cli_settings(
+    config: JaznConfig,
+    *,
+    model: str | None = None,
+    api_base: str | None = None,
+    provider: str | None = None,
+) -> JaznConfig:
+    config.model_adapter = "local_llm"
+    if model:
+        config.local_model_name = model
+        os.environ["JAZN_LOCAL_LLM_MODEL"] = model
+    if api_base:
+        config.local_model_api_base = api_base.rstrip("/")
+        os.environ["JAZN_LOCAL_LLM_API_BASE"] = api_base.rstrip("/")
+    if provider:
+        os.environ["JAZN_LOCAL_LLM_PROVIDER"] = provider
+    return config
+
+
 def extract_final_visible_text_from_result(payload: dict[str, Any]) -> str:
     """Return the visible Łatka reply from a chat bridge payload.
 
@@ -248,6 +285,8 @@ def run_jsonl_chat_bridge(
         apply_lm_studio_cli_settings(config)
     elif command == "--chat-open-ai":
         apply_openai_cli_settings(config)
+    elif command == "--local-llm":
+        apply_local_llm_cli_settings(config)
     contract = command_contract(command)
     protocol_version = CHATGPT_BRIDGE_PROTOCOL
     default_client = "chatgpt_bridge"
@@ -260,6 +299,10 @@ def run_jsonl_chat_bridge(
         protocol_version = CHAT_LMSTUDIO_PROTOCOL
         default_client = "lmstudio_local_bridge"
         default_lifecycle = "lmstudio_jsonl_contract"
+    elif command == "--local-llm":
+        protocol_version = LOCAL_LLM_PROTOCOL
+        default_client = "openai_compatible_local_bridge"
+        default_lifecycle = "local_llm_jsonl_contract"
 
     if require_openai_api_key and not os.environ.get("OPENAI_API_KEY"):
         payload = {

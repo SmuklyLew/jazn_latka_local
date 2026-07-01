@@ -73,6 +73,22 @@ class FinalResponseContract:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
+    @staticmethod
+    def accepted_model_candidate_text(response: Any, validation: Any) -> str:
+        """Return adapter text only after explicit runtime acceptance."""
+        response_payload = response if isinstance(response, dict) else (
+            response.to_dict() if hasattr(response, "to_dict") else {}
+        )
+        validation_payload = validation if isinstance(validation, dict) else (
+            validation.to_dict() if hasattr(validation, "to_dict") else {}
+        )
+        text = str(response_payload.get("text") or "").strip()
+        if response_payload.get("status") != "completed" or not text:
+            return ""
+        if validation_payload.get("accepted") is not True:
+            return ""
+        return text
+
     @classmethod
     def build(
         cls,
