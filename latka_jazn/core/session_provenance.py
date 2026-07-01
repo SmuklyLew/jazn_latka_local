@@ -128,6 +128,8 @@ def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
     visible_answer_text = str(runtime_provenance.get("visible_answer_text") or "")
     handler_result = decision.get("handler_result") or {}
     handler_body = str(handler_result.get("body") or "")
+    contract = result.get("final_response_contract") if isinstance(result.get("final_response_contract"), dict) else {}
+    contract_integrity = contract.get("final_visible_integrity") if isinstance(contract.get("final_visible_integrity"), dict) else {}
 
     errors: list[str] = []
     if timestamp_header and not TIMESTAMP_HEADER_RE.match(timestamp_header):
@@ -145,12 +147,18 @@ def validate_final_visible_integrity(result: dict[str, Any]) -> dict[str, Any]:
     if "\ufffd" in final_visible_text or "\ufffd" in exact_runtime_text:
         errors.append("unicode_replacement_character_detected")
 
+    origin_truth_valid = bool(contract_integrity.get("origin_truth_valid", True))
+    validation_passed = bool(contract_integrity.get("validation_passed", True))
     payload = {
         "schema_version": schema_version("final_visible_integrity"),
-        "valid": not errors,
+        "valid": bool(not errors and origin_truth_valid and validation_passed),
         "errors": errors,
         "timestamp_header": timestamp_header,
         "checked_artifact_count": len(RENDER_ARTIFACTS),
+        "origin_truth_valid": origin_truth_valid,
+        "validation_passed": validation_passed,
+        "fallback_classification": contract.get("fallback_classification"),
+        "requires_host_model": bool(contract.get("requires_host_model")),
     }
     if errors:
         raise ValueError("final_visible_integrity_failed: " + ",".join(errors))

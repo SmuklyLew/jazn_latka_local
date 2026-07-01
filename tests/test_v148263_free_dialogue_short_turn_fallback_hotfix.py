@@ -54,7 +54,7 @@ def test_validator_rejects_generic_short_turn_fallback_for_free_dialogue():
         assert validation.mismatch_reason in {"ordinary_dialogue_meta_report_or_template", "generic_template_on_specific_request"}
 
 
-def test_process_turn_short_chat_cases_are_natural_and_not_fallback():
+def test_process_turn_short_chat_cases_disclose_missing_model_guided_speech():
     root = Path(__file__).resolve().parents[1]
     cfg = JaznConfig(root=root, network_time_first=False, memory_db_name="workspace_runtime/test_v148263_short_turn.sqlite3")
     engine = JaznEngine(cfg)
@@ -62,8 +62,13 @@ def test_process_turn_short_chat_cases_are_natural_and_not_fallback():
         for user_text in ("Siemka.", "Kiepska odpowiedź.", "Ojoj!"):
             envelope = engine.process_turn(user_text, client_context={"client": "pytest", "lifecycle": "one_shot"}).to_dict()
             final_text = envelope["final_visible_text"] or ""
-            assert envelope["final_response_contract"]["runtime_answer_quality"] == "topic_aligned"
-            assert envelope["final_response_contract"]["fallback_classification"] == "not_fallback"
+            contract = envelope["final_response_contract"]
+            assert contract["runtime_answer_quality"] == "fallback_or_debug"
+            assert contract["fallback_classification"] == "cannot_answer_directly"
+            assert contract["requires_host_model"] is True
+            assert contract["can_generate_model_guided_speech"] is False
+            assert contract["final_visible_integrity"]["valid"] is False
+            assert "wymaga generacji przez host/model" in final_text
             assert_no_generic_short_fallback(final_text)
     finally:
         engine.shutdown()

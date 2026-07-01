@@ -76,6 +76,7 @@ from latka_jazn.core.turn_logic_auditor import TurnLogicAuditor
 from latka_jazn.core.reasoning_controller import ReasoningController
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.core.source_text_preservation_contract import SourceTextPreservationContract
+from latka_jazn.core.runtime_turn_contract import RuntimeTurnContract
 from latka_jazn.nlp.external_dictionary_adapter import ExternalDictionaryAdapter
 from latka_jazn.core.module_responsibility_map import ModuleResponsibilityMap
 from latka_jazn.memory.requirements_ledger import RequirementsLedger
@@ -91,6 +92,24 @@ from latka_jazn.memory.memory_recall_contract import MemoryRecallContractBuilder
 from latka_jazn.memory.raw_chat_importer import RawChatImporter
 from latka_jazn.model_adapters.factory import build_model_adapter
 from latka_jazn.core.self_knowledge_contract import build_self_knowledge_summary
+
+
+MODEL_GUIDED_SPEECH_INTENTS = {
+    "ordinary_conversation",
+    "standalone_greeting",
+    "casual_greeting",
+    "casual_feedback",
+    "expressive_reaction",
+    "short_free_dialogue",
+    "negative_feedback_current_turn",
+    "positive_feedback_current_turn",
+    "ordinary_workday_report",
+    "sleep_closure_statement",
+    "self_state_question",
+    "reciprocal_self_state_question",
+    "self_preference_question",
+    "direct_latka_voice_request",
+}
 
 
 def _sync_conversation_decision_body(
@@ -1687,6 +1706,11 @@ class JaznEngine:
             decision_dict["direct_answer_required"] = True
         if handler_result.body and handler_result.generation_mode not in {"pass_through_empty"}:
             decision.body = handler_result.body
+        adapter_status = self.model_adapter.describe() if hasattr(self.model_adapter, "describe") else {}
+        can_generate_model_guided_speech = bool(adapter_status.get("can_generate_model_guided_speech"))
+        decision_dict["can_generate_model_guided_speech"] = can_generate_model_guided_speech
+        decision_dict["model_guided_retry_limit"] = 1
+        decision_dict["model_guided_retry_count"] = 0
         model_synthesis = self.model_guided_response_synthesizer.synthesize(
             adapter=self.model_adapter,
             user_text=text,
@@ -1709,47 +1733,111 @@ class JaznEngine:
         first_validation = self.runtime_answer_validator.validate(
             user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
         )
-        synthesis = self.runtime_response_synthesizer.synthesize(
-            user_text=text, detected_intent=str(detected_dialogue_intent), original_body=body, route=str(decision_dict.get("route") or ""),
-            template_origin=template_origin if template_origin.get("template_id") else None, validation=first_validation.to_dict(),
-        )
         repair_used = False
-        if synthesis.should_override and not preserve_handler_body:
-            body = self.guard.enforce(synthesis.body.strip())
-            decision_dict["route"] = synthesis.route
-            decision_dict["handler_name"] = synthesis.handler_name
-            decision_dict["runtime_answer_quality"] = "mismatch_repaired" if first_validation.must_regenerate else "route_registry_dynamic"
-            decision_dict["repair_synthesis"] = synthesis.to_dict()
-            repair_used = True
-        elif synthesis.should_override and preserve_handler_body:
-            decision_dict["repair_synthesis_suppressed"] = {
-                "reason": "dedicated_handler_body_satisfied_required_components",
-                "synthesis": synthesis.to_dict(),
-                "first_validation": first_validation.to_dict(),
-            }
-            decision_dict["runtime_answer_quality"] = "topic_aligned"
-        body, continuity_badge_report = self.continuity_badge_policy.apply(body, decision_dict)
-        answer_validation = self.runtime_answer_validator.validate(
-            user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
-        )
-        if answer_validation.must_regenerate and answer_validation.repair_body and not preserve_handler_body:
-            body = self.guard.enforce(answer_validation.repair_body.strip())
-            decision_dict["route"] = answer_validation.required_repair_route or decision_dict.get("route")
-            decision_dict["runtime_answer_quality"] = "mismatch_repaired"
+        speech_truth_gate_required = str(detected_dialogue_intent) in MODEL_GUIDED_SPEECH_INTENTS
+        if speech_truth_gate_required:
+            candidate_valid = bool(model_synthesis.used and first_validation.accepted and not template_origin.get("template_id"))
+            if not candidate_valid and can_generate_model_guided_speech:
+                retry_synthesis = self.model_guided_response_synthesizer.synthesize(
+                    adapter=self.model_adapter,
+                    user_text=text,
+                    draft_body=decision.body,
+                    detected_intent=str(detected_dialogue_intent),
+                    route=str(decision_dict.get("route") or route_entry.route),
+                    cognitive_frame=frame,
+                    response_policy=turn_response_policy.to_dict(),
+                )
+                decision_dict["model_guided_retry_count"] = 1
+                decision_dict["model_guided_retry_synthesis"] = retry_synthesis.to_dict()
+                if retry_synthesis.used:
+                    retry_body = self.guard.enforce(retry_synthesis.body.strip())
+                    retry_template = self.template_registry.classify_body(
+                        retry_body, detected_intent=str(detected_dialogue_intent)
+                    )
+                    retry_validation = self.runtime_answer_validator.validate(
+                        user_text=text,
+                        body=retry_body,
+                        route=str(decision_dict.get("route") or ""),
+                        detected_intent=str(detected_dialogue_intent),
+                    )
+                    if retry_validation.accepted and not retry_template.get("template_id"):
+                        body = retry_body
+                        template_origin = retry_template
+                        first_validation = retry_validation
+                        candidate_valid = True
+                        decision_dict["model_generated"] = True
+                        decision_dict["handler_name"] = "ModelGuidedResponseSynthesizer"
+                        decision_dict["handler_generation_mode"] = "runtime_model_guided"
+                        decision_dict["source_origin_detail"] = "runtime_model_guided_synthesis_retry"
+            if not candidate_valid:
+                body = (
+                    "Nie mam w tej turze aktywnego modelu zdolnego wygenerować własną wypowiedź model-guided. "
+                    "Nie przedstawię tekstu handlera ani szablonu jako dynamicznej wypowiedzi Łatki. "
+                    "Ta tura wymaga generacji przez host/model."
+                )
+                template_origin = self.template_registry.classify_body(
+                    body, detected_intent=str(detected_dialogue_intent)
+                )
+                decision_dict["handler_name"] = "RuntimeTurnTruthGate"
+                decision_dict["handler_generation_mode"] = "degraded_truth_disclosure"
+                decision_dict["source_origin_detail"] = "runtime_turn_truth_gate/model_guided_speech_unavailable"
+                decision_dict["fallback_classification"] = "cannot_answer_directly"
+                decision_dict["requires_host_model"] = True
+                decision_dict["runtime_answer_quality"] = "truthful_degraded_cannot_answer_directly"
+                decision_dict["model_generated"] = False
+                answer_validation = self.runtime_answer_validator.validate(
+                    user_text=text,
+                    body=body,
+                    route=str(decision_dict.get("route") or ""),
+                    detected_intent=str(detected_dialogue_intent),
+                )
+            else:
+                decision_dict["fallback_classification"] = "not_fallback"
+                decision_dict["requires_host_model"] = False
+                decision_dict["runtime_answer_quality"] = "topic_aligned"
+                answer_validation = first_validation
+            body, continuity_badge_report = self.continuity_badge_policy.apply(body, decision_dict)
+        else:
+            synthesis = self.runtime_response_synthesizer.synthesize(
+                user_text=text, detected_intent=str(detected_dialogue_intent), original_body=body, route=str(decision_dict.get("route") or ""),
+                template_origin=template_origin if template_origin.get("template_id") else None, validation=first_validation.to_dict(),
+            )
+            if synthesis.should_override and not preserve_handler_body:
+                body = self.guard.enforce(synthesis.body.strip())
+                decision_dict["route"] = synthesis.route
+                decision_dict["handler_name"] = synthesis.handler_name
+                decision_dict["runtime_answer_quality"] = "mismatch_repaired" if first_validation.must_regenerate else "route_registry_dynamic"
+                decision_dict["repair_synthesis"] = synthesis.to_dict()
+                repair_used = True
+            elif synthesis.should_override and preserve_handler_body:
+                decision_dict["repair_synthesis_suppressed"] = {
+                    "reason": "dedicated_handler_body_satisfied_required_components",
+                    "synthesis": synthesis.to_dict(),
+                    "first_validation": first_validation.to_dict(),
+                }
+                decision_dict["runtime_answer_quality"] = "topic_aligned"
             body, continuity_badge_report = self.continuity_badge_policy.apply(body, decision_dict)
             answer_validation = self.runtime_answer_validator.validate(
                 user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
             )
-            repair_used = True
-        elif answer_validation.must_regenerate and preserve_handler_body:
-            decision_dict["answer_validation_suppressed"] = {
-                "reason": "dedicated_handler_body_satisfied_required_components",
-                "validation": answer_validation.to_dict(),
-            }
-            answer_validation = self.runtime_answer_validator.validate(
-                user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
-            )
-            decision_dict["runtime_answer_quality"] = "topic_aligned"
+            if answer_validation.must_regenerate and answer_validation.repair_body and not preserve_handler_body:
+                body = self.guard.enforce(answer_validation.repair_body.strip())
+                decision_dict["route"] = answer_validation.required_repair_route or decision_dict.get("route")
+                decision_dict["runtime_answer_quality"] = "mismatch_repaired"
+                body, continuity_badge_report = self.continuity_badge_policy.apply(body, decision_dict)
+                answer_validation = self.runtime_answer_validator.validate(
+                    user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
+                )
+                repair_used = True
+            elif answer_validation.must_regenerate and preserve_handler_body:
+                decision_dict["answer_validation_suppressed"] = {
+                    "reason": "dedicated_handler_body_satisfied_required_components",
+                    "validation": answer_validation.to_dict(),
+                }
+                answer_validation = self.runtime_answer_validator.validate(
+                    user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
+                )
+                decision_dict["runtime_answer_quality"] = "topic_aligned"
         logic_audit = self.turn_logic_auditor.audit(
             user_text=text,
             response_text=body,
@@ -1796,7 +1884,7 @@ class JaznEngine:
         ).to_dict()
         decision_dict["turn_route_trace"] = turn_route_trace
         envelope.cognitive_frame["turn_route_trace"] = turn_route_trace
-        if reasoning_decision.decision == "regenerate" and not repair_used:
+        if reasoning_decision.decision == "regenerate" and not repair_used and not decision_dict.get("requires_host_model"):
             synthesis = self.runtime_response_synthesizer.synthesize(
                 user_text=text,
                 detected_intent=str(detected_dialogue_intent),
@@ -1822,11 +1910,36 @@ class JaznEngine:
             decision_dict["turn_route_trace"]["final_text_source"] = str(decision_dict.get("response_generation_mode") or decision_dict.get("handler_generation_mode") or "handler_or_synthesizer")
             envelope.cognitive_frame["turn_route_trace"] = decision_dict["turn_route_trace"]
         template_origin = self.template_registry.classify_body(body, detected_intent=str(detected_dialogue_intent))
+        if not decision_dict.get("fallback_classification"):
+            if repair_used:
+                decision_dict["fallback_classification"] = "repair_fallback"
+            elif template_origin.get("template_id"):
+                decision_dict["fallback_classification"] = "template_fallback"
+            elif decision_dict.get("model_generated"):
+                decision_dict["fallback_classification"] = "not_fallback"
+            else:
+                decision_dict["fallback_classification"] = "rule_handler_response"
+        decision_dict.setdefault("requires_host_model", False)
+        decision_dict["final_answer_validation"] = answer_validation.to_dict()
+        decision_dict["origin_truth_valid"] = bool(
+            decision_dict.get("fallback_classification") == "not_fallback"
+            and decision_dict.get("model_generated")
+            and answer_validation.accepted
+        )
+        if isinstance(decision_dict.get("turn_route_trace"), dict):
+            decision_dict["turn_route_trace"].update({
+                "fallback_classification": decision_dict.get("fallback_classification"),
+                "source_origin_detail": decision_dict.get("source_origin_detail"),
+                "can_generate_model_guided_speech": can_generate_model_guided_speech,
+                "requires_host_model": bool(decision_dict.get("requires_host_model")),
+                "retry_count": int(decision_dict.get("model_guided_retry_count") or 0),
+            })
+            envelope.cognitive_frame["turn_route_trace"] = decision_dict["turn_route_trace"]
         if str(detected_dialogue_intent).startswith("creative_text"):
             decision_dict["source_text_preservation_contract"] = SourceTextPreservationContract.build(text, intent=str(detected_dialogue_intent)).to_dict()
         runtime_provenance = build_runtime_provenance(
             body=body, route=str(decision_dict.get("route") or route_entry.route), detected_intent=str(detected_dialogue_intent),
-            handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), template_origin=template_origin if template_origin.get("template_id") else None, repair=repair_used, model_guided=bool(decision_dict.get("model_generated")) and not repair_used,
+            handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), template_origin=template_origin if template_origin.get("template_id") else None, repair=repair_used, model_guided=bool(decision_dict.get("model_generated")) and not repair_used, fallback_classification=str(decision_dict.get("fallback_classification") or "not_fallback"), source_origin_detail=str(decision_dict.get("source_origin_detail") or "runtime_process_turn"),
         ).to_dict()
         decision_dict.update({
             "response_generation_mode": runtime_provenance.get("response_generation_mode"),
@@ -1855,6 +1968,10 @@ class JaznEngine:
                 route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent),
                 handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), intent_confidence=float((dialogue_intent_report or {}).get("confidence") or 0.0),
                 provenance=runtime_provenance, template_origin=template_origin, validator_result=answer_validation.to_dict(),
+                fallback_classification=str(decision_dict.get("fallback_classification") or "unknown"),
+                can_generate_model_guided_speech=can_generate_model_guided_speech,
+                requires_host_model=bool(decision_dict.get("requires_host_model")),
+                final_visible_integrity_valid=bool(decision_dict.get("origin_truth_valid") and answer_validation.accepted),
             )
             self.source_origin_ledger.append(source_entry)
             envelope.cognitive_frame["source_origin_ledger_entry"] = source_entry.to_dict()
@@ -1874,7 +1991,7 @@ class JaznEngine:
         # Uzupełnienie provenance po zbudowaniu kandydującej widocznej odpowiedzi.
         runtime_provenance_visible = build_runtime_provenance(
             body=body, route=str(decision_dict.get("route") or route_entry.route), detected_intent=str(detected_dialogue_intent),
-            handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), template_origin=template_origin if template_origin.get("template_id") else None, repair=repair_used, model_guided=bool(decision_dict.get("model_generated")) and not repair_used,
+            handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), template_origin=template_origin if template_origin.get("template_id") else None, repair=repair_used, model_guided=bool(decision_dict.get("model_generated")) and not repair_used, fallback_classification=str(decision_dict.get("fallback_classification") or "not_fallback"), source_origin_detail=str(decision_dict.get("source_origin_detail") or "runtime_process_turn"),
         ).with_visible_text(candidate_contract.final_visible_text).to_dict()
         decision_dict["visible_answer_hash"] = runtime_provenance_visible.get("visible_answer_hash")
         decision_dict["runtime_provenance"] = runtime_provenance_visible
@@ -1891,7 +2008,7 @@ class JaznEngine:
         if runtime_provenance_visible.get("visible_answer_text") != contract.final_visible_text:
             runtime_provenance_visible = build_runtime_provenance(
                 body=body, route=str(decision_dict.get("route") or route_entry.route), detected_intent=str(detected_dialogue_intent),
-                handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), template_origin=template_origin if template_origin.get("template_id") else None, repair=repair_used, model_guided=bool(decision_dict.get("model_generated")) and not repair_used,
+                handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name), template_origin=template_origin if template_origin.get("template_id") else None, repair=repair_used, model_guided=bool(decision_dict.get("model_generated")) and not repair_used, fallback_classification=str(decision_dict.get("fallback_classification") or "not_fallback"), source_origin_detail=str(decision_dict.get("source_origin_detail") or "runtime_process_turn"),
             ).with_visible_text(contract.final_visible_text).to_dict()
             decision_dict["visible_answer_hash"] = runtime_provenance_visible.get("visible_answer_hash")
             decision_dict["runtime_provenance"] = runtime_provenance_visible
@@ -1905,6 +2022,27 @@ class JaznEngine:
             contract = FinalResponseContract.build(
                 turn_id=envelope.trace.turn_id, trace_id=envelope.trace.trace_id, runtime_version=self.config.version, timestamp_header=envelope.trace.timestamp_header, timezone=envelope.trace.timezone, state_emoticon=affect_mix.get("state_emoticon") or self.affect.marker(), body=body, conversation_decision=decision_dict, continuity_badge_policy=continuity_badge_report,
             )
+        runtime_turn_contract = RuntimeTurnContract(
+            turn_id=envelope.trace.turn_id,
+            trace_id=envelope.trace.trace_id,
+            detected_intent=str(detected_dialogue_intent),
+            route=str(decision_dict.get("route") or route_entry.route),
+            handler_name=str(decision_dict.get("handler_name") or route_entry.handler_name),
+            runtime_exact_text=body,
+            final_visible_text=contract.final_visible_text,
+            host_interpretation=decision_dict.get("host_interpretation"),
+            template_origin=dict(template_origin or {}),
+            source_origin_detail=str(decision_dict.get("source_origin_detail") or "unknown"),
+            fallback_classification=str(decision_dict.get("fallback_classification") or "unknown"),
+            final_visible_integrity=dict(contract.final_visible_integrity or {}),
+            can_generate_model_guided_speech=can_generate_model_guided_speech,
+            requires_host_model=bool(decision_dict.get("requires_host_model")),
+            response_generation_mode=str(decision_dict.get("response_generation_mode") or "unknown"),
+            validation=answer_validation.to_dict(),
+            retry_count=int(decision_dict.get("model_guided_retry_count") or 0),
+            retry_limit=int(decision_dict.get("model_guided_retry_limit") or 1),
+        )
+        envelope.attach_runtime_turn_contract(runtime_turn_contract.to_dict())
         envelope.attach_final_response_contract(contract.to_dict(), contract.final_visible_text)
         try:
             checkpoint = self.turn_checkpoint_writer.build_and_append(

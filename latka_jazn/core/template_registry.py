@@ -38,6 +38,12 @@ class TemplateRegistry:
         TemplateSignature("tpl_answer_conversationally", "odpowiem rozmownie", "conversational_repair_template", forbidden_intents=("runtime_source_question", "system_update_execution_request"), deprecated_if=("specific_task",)),
         TemplateSignature("tpl_also_glad", "też się cieszę", "positive_continuation_template", allowed_intents=("positive_feedback_current_turn",), forbidden_intents=("system_diagnostic_question", "runtime_source_question")),
         TemplateSignature("tpl_source_split", "tu trzeba rozdzielić źródła", "source_boundary_template", allowed_intents=("runtime_source_question", "runtime_exact_quote_request")),
+        TemplateSignature("tpl_soft_presence", "jestem przy tobie", "generic_presence_template", forbidden_intents=("ordinary_conversation", "standalone_greeting", "short_free_dialogue")),
+        TemplateSignature("tpl_soft_presence_turn", "jestem obok w tej turze", "generic_presence_template", forbidden_intents=("ordinary_conversation", "standalone_greeting", "short_free_dialogue")),
+        TemplateSignature("tpl_soft_continue", "możemy spokojnie", "generic_continuation_template", forbidden_intents=("ordinary_conversation", "standalone_greeting", "short_free_dialogue")),
+        TemplateSignature("tpl_current_message_presence", "zostaję przy tym, co piszesz", "generic_presence_template", forbidden_intents=("ordinary_conversation", "short_free_dialogue")),
+        TemplateSignature("tpl_current_message_origin", "odpowiadam z bieżącej wiadomości", "generic_origin_template", forbidden_intents=("ordinary_conversation", "short_free_dialogue")),
+        TemplateSignature("tpl_requires_model_guided_speech", "nie mam w tej turze aktywnego modelu", "truthful_degraded_disclosure"),
     )
 
     def __init__(self, root=None) -> None:

@@ -53,6 +53,8 @@ class RuntimeTruthGateResult:
     timestamp_freshness_seconds: int | None = None
     timestamp_max_age_seconds: int | None = None
     final_visible_integrity_valid: bool | None = None
+    final_visible_origin_valid: bool | None = None
+    truthful_degraded_disclosure: bool = False
     untrusted_timestamp_header: str | None = None
     truth_boundary: str = (
         "Brama prawdy runtime dopuszcza zwykłą odpowiedź Jaźni, gdy finalny widoczny tekst ma "
@@ -99,6 +101,18 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
     freshness_ok = bool(integrity.get("timestamp_freshness_ok", True))
     freshness_seconds = integrity.get("timestamp_freshness_seconds")
     max_age_seconds = integrity.get("timestamp_max_age_seconds")
+    origin_truth_valid = bool(integrity.get("origin_truth_valid", True))
+    validation_passed = bool(integrity.get("validation_passed", True))
+    fallback_classification = str(contract.get("fallback_classification") or "not_fallback")
+    requires_host_model = bool(contract.get("requires_host_model"))
+    truthful_degraded_disclosure = bool(
+        not origin_truth_valid and fallback_classification != "not_fallback"
+    )
+    disclosure_error = (
+        "model_guided_speech_required"
+        if requires_host_model and fallback_classification == "cannot_answer_directly"
+        else "classified_non_dynamic_response"
+    )
 
     if not present:
         errors.append("timestamp_missing")
@@ -108,8 +122,12 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
         errors.append("timestamp_source_not_network")
     if not freshness_ok:
         errors.append("timestamp_stale_or_missing_freshness")
-    if not valid and (not present or not freshness_ok):
+    if not valid and not truthful_degraded_disclosure and (
+        not present or not freshness_ok or not origin_truth_valid or not validation_passed
+    ):
         errors.append("final_visible_integrity_invalid")
+    if truthful_degraded_disclosure:
+        errors.append(disclosure_error)
 
     blocking_errors = [error for error in errors if error in TIMESTAMP_BLOCKING_ERRORS]
     degraded_errors = [error for error in errors if error in TIMESTAMP_DEGRADED_ERRORS]
@@ -117,9 +135,9 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
     degraded = bool(degraded_errors) and ok
     return RuntimeTruthGateResult(
         ok=ok,
-        normal_response_allowed=ok,
-        active_state="active_degraded" if degraded else ("active_trusted" if ok else "active_blocked"),
-        error_code="timestamp_degraded" if degraded else (None if ok else "runtime_truth_gate_blocked"),
+        normal_response_allowed=bool(ok and not truthful_degraded_disclosure),
+        active_state="active_degraded" if degraded or truthful_degraded_disclosure else ("active_trusted" if ok else "active_blocked"),
+        error_code=(disclosure_error if truthful_degraded_disclosure else ("timestamp_degraded" if degraded else (None if ok else "runtime_truth_gate_blocked"))),
         errors=errors,
         timestamp_source=str(source) if source is not None else None,
         timestamp_trusted=bool(trusted) if trusted is not None else None,
@@ -127,6 +145,8 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
         timestamp_freshness_seconds=int(freshness_seconds) if isinstance(freshness_seconds, int) else None,
         timestamp_max_age_seconds=int(max_age_seconds) if isinstance(max_age_seconds, int) else None,
         final_visible_integrity_valid=valid,
+        final_visible_origin_valid=origin_truth_valid,
+        truthful_degraded_disclosure=truthful_degraded_disclosure,
         untrusted_timestamp_header=contract.get("timestamp_header"),
     )
 
@@ -169,7 +189,17 @@ def apply_runtime_truth_gate(result: dict[str, Any]) -> tuple[dict[str, Any], di
     else:
         updated.setdefault("ok", True)
         updated["normal_response_blocked"] = False
-        if gate.active_state == "active_degraded":
+        if gate.truthful_degraded_disclosure:
+            updated["normal_response_blocked"] = True
+            updated["runtime_response_status"] = "truthful_degraded_cannot_answer_directly"
+            updated["requires_host_model"] = True
+            decision = updated.get("conversation_decision") if isinstance(updated.get("conversation_decision"), dict) else {}
+            decision = dict(decision)
+            decision["runtime_truth_gate"] = gate_payload
+            decision["normal_response_allowed"] = False
+            decision["requires_host_model"] = True
+            updated["conversation_decision"] = decision
+        elif gate.active_state == "active_degraded":
             updated["timestamp_degraded"] = True
             updated["runtime_response_status"] = "normal_response_allowed_degraded_timestamp"
             decision = updated.get("conversation_decision") if isinstance(updated.get("conversation_decision"), dict) else {}

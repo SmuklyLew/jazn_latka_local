@@ -59,6 +59,7 @@ class JaznRuntimeSession:
             "session_id_source": session_id_source or "generated",
             "trace": env.get("trace"),
             "conversation_decision": decision,
+            "runtime_turn_contract": env.get("runtime_turn_contract"),
             "final_response_contract": env.get("final_response_contract"),
             "final_visible_text": env.get("final_visible_text"),
             "runtime_provenance": runtime_provenance,
@@ -79,7 +80,8 @@ class JaznRuntimeSession:
             result["final_visible_integrity"]["repairs"] = integrity_repairs
         result, gate_payload = apply_runtime_truth_gate(result)
         if gate_payload.get("normal_response_allowed") is False:
-            result["final_visible_integrity"]["runtime_truth_gate_blocked"] = True
+            result["final_visible_integrity"]["runtime_truth_gate_blocked"] = not bool(gate_payload.get("ok"))
+            result["final_visible_integrity"]["truthful_degraded_disclosure"] = bool(gate_payload.get("truthful_degraded_disclosure"))
             result["final_visible_integrity"]["runtime_truth_gate_errors"] = list(gate_payload.get("errors") or [])
         return result
 

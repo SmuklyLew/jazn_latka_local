@@ -49,7 +49,7 @@ class DialogueIntentClassifier:
     UPDATE_TERMS = ("aktualizac", "aktualiz", "hotfix", "patch", "wersj", "wersję", "paczka", "zip", "do pobrania", "manifest", "pełną listę", "pelna liste", "dokładny plan", "dokladny plan")
     DIAGNOSTIC_TERMS = ("co jeszcze", "co jest", "źle", "zle", "nie działa", "nie dziala", "słabe", "slabe", "pominięte", "pominiete", "błąd", "blad", "sprawdź gdzie", "sprawdz gdzie", "jak to zmienić", "jak to zmienic")
     CREATIVE_TERMS = ("tekst piosenki", "lyrics", "zwrotka", "refren", "bridge", "chorus", "verse", "musicgenerator", "generatora muzyki", "prompt", "wiersz", "utwór", "utwor", "fragment książki", "fragment ksiazki", "post na x")
-    SOURCE_TERMS = ("dlaczego zmieni", "czemu zmieni", "przez jaźń", "przez jazn", "przez chatgpt", "skąd", "skad", "źródło", "zrodlo", "co runtime odpowiedział", "co runtime odpowiedzial", "co runtime dokładnie odpowiedział", "co runtime dokladnie odpowiedzial", "co dokładnie odpowiedział runtime", "co dokladnie odpowiedzial runtime", "cytat runtime", "tylko tyle jaźń", "tylko tyle jazn", "skąd bierzesz myśli", "skad bierzesz mysli")
+    SOURCE_TERMS = ("dlaczego zmieni", "czemu zmieni", "przez jaźń", "przez jazn", "przez chatgpt", "skąd", "skad", "źródło", "zrodlo", "source_origin", "source origin", "runtime czy szablon", "co runtime odpowiedział", "co runtime odpowiedzial", "co runtime dokładnie odpowiedział", "co runtime dokladnie odpowiedzial", "co dokładnie odpowiedział runtime", "co dokladnie odpowiedzial runtime", "cytat runtime", "tylko tyle jaźń", "tylko tyle jazn", "skąd bierzesz myśli", "skad bierzesz mysli")
     CANON_SOURCE_TERMS = (
         "skąd bierzesz kanon", "skad bierzesz kanon",
         "skąd jest kanon", "skad jest kanon",

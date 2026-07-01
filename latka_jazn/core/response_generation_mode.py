@@ -80,10 +80,16 @@ class RuntimeResponseProvenance:
         return asdict(self)
 
 
-def build_runtime_provenance(*, body: str, route: str, detected_intent: str, handler_name: str, template_origin: dict[str, Any] | None = None, repair: bool = False, model_guided: bool = False, memory_sources: list[dict[str, Any]] | None = None, file_sources: list[dict[str, Any]] | None = None, dictionary_sources: list[dict[str, Any]] | None = None, external_web_sources: list[dict[str, Any]] | None = None) -> RuntimeResponseProvenance:
+def build_runtime_provenance(*, body: str, route: str, detected_intent: str, handler_name: str, template_origin: dict[str, Any] | None = None, repair: bool = False, model_guided: bool = False, fallback_classification: str | None = None, source_origin_detail: str | None = None, memory_sources: list[dict[str, Any]] | None = None, file_sources: list[dict[str, Any]] | None = None, dictionary_sources: list[dict[str, Any]] | None = None, external_web_sources: list[dict[str, Any]] | None = None) -> RuntimeResponseProvenance:
     template = template_origin or {}
     has_template = bool(template.get('template_id'))
-    if model_guided:
+    if fallback_classification == ResponseGenerationMode.CANNOT_ANSWER_DIRECTLY.value:
+        mode = ResponseGenerationMode.CANNOT_ANSWER_DIRECTLY.value
+        support = 'truthful_degraded_disclosure_without_model_guided_speech'
+        distance = 'none'
+        expansion_allowed = True
+        boundary = 'Runtime ujawnia brak model-guided speech; host może wygenerować język dopiero po zachowaniu tego oznaczenia.'
+    elif model_guided:
         mode = ResponseGenerationMode.RUNTIME_MODEL_GUIDED.value
         support = 'model_language_generated_from_runtime_cognitive_context'
         distance = 'low'
@@ -135,7 +141,11 @@ def build_runtime_provenance(*, body: str, route: str, detected_intent: str, han
         response_generation_mode=mode,
         route_registry_id=str(route or 'unknown'),
         handler_name=handler_name or 'unknown_handler',
-        source_origin_detail='runtime_model_guided_synthesis' if model_guided else ('runtime_process_turn' if not has_template else 'runtime_process_turn_with_template_body'),
+        source_origin_detail=source_origin_detail or (
+            'runtime_turn_truth_gate_degraded_disclosure'
+            if fallback_classification == ResponseGenerationMode.CANNOT_ANSWER_DIRECTLY.value
+            else ('runtime_model_guided_synthesis' if model_guided else ('runtime_process_turn' if not has_template else 'runtime_process_turn_with_template_body'))
+        ),
         runtime_support_level=support,
         chatgpt_expansion_allowed=expansion_allowed,
         chatgpt_expansion_boundary=boundary,

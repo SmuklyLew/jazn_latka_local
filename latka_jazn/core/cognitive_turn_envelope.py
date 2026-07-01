@@ -55,6 +55,7 @@ class CognitiveTurnEnvelope:
     affect_mix: dict[str, Any] = field(default_factory=dict)
     dialogue_state: dict[str, Any] = field(default_factory=dict)
     conversation_decision: dict[str, Any] = field(default_factory=dict)
+    runtime_turn_contract: dict[str, Any] = field(default_factory=dict)
     final_response_contract: dict[str, Any] = field(default_factory=dict)
     final_visible_text: str | None = None
     schema_version: str = SCHEMA_VERSION
@@ -115,6 +116,10 @@ class CognitiveTurnEnvelope:
         self.cognitive_frame["final_response_contract"] = self.final_response_contract
         self.cognitive_frame["final_visible_reply_sha256"] = hashlib.sha256(final_visible_text.encode("utf-8")).hexdigest()
 
+    def attach_runtime_turn_contract(self, contract: dict[str, Any]) -> None:
+        self.runtime_turn_contract = dict(contract or {})
+        self.cognitive_frame["runtime_turn_contract"] = self.runtime_turn_contract
+
     def to_dict(self) -> dict[str, Any]:
         data = {
             "schema_version": self.schema_version,
@@ -125,6 +130,7 @@ class CognitiveTurnEnvelope:
             "affect_mix": self.affect_mix,
             "dialogue_state": self.dialogue_state,
             "conversation_decision": self.conversation_decision,
+            "runtime_turn_contract": self.runtime_turn_contract,
             "final_response_contract": self.final_response_contract,
             "final_visible_text": self.final_visible_text,
             "cognitive_frame": self.cognitive_frame,

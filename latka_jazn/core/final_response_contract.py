@@ -33,7 +33,9 @@ class FinalResponseContract:
     timezone: str
     state_emoticon: str
     body: str
+    runtime_exact_text: str
     final_visible_text: str
+    host_interpretation: str | None = None
     timestamp_required: bool = True
     timestamp_source: str = "cognitive_turn_envelope.trace.timestamp_header"
     timestamp_trusted: bool | None = None
@@ -52,6 +54,11 @@ class FinalResponseContract:
     response_generation_mode: str = "unknown"
     template_origin: dict[str, Any] | None = None
     source_origin_detail: str | None = None
+    can_generate_model_guided_speech: bool = False
+    requires_host_model: bool = False
+    validation: dict[str, Any] | None = None
+    retry_count: int = 0
+    retry_limit: int = 1
     chatgpt_interpretation_distance: str = "unknown"
     runtime_text_hash: str | None = None
     visible_answer_hash: str | None = None
@@ -87,12 +94,20 @@ class FinalResponseContract:
         marker = state_emoticon or "🌿"
         final_visible_text = cls.ensure_timestamp_prefix(timestamp_header, marker, body)
         timestamp_contract = dict(decision.get("timestamp_contract") or {})
+        declared_fallback = str(decision.get("fallback_classification") or "").strip()
+        fallback_classification = declared_fallback or cls.classify_fallback(
+            decision.get("route"), body, runtime_version=runtime_version
+        )
+        validation = dict(decision.get("final_answer_validation") or {})
+        validation_passed = bool(validation.get("accepted", not validation.get("must_regenerate", False)))
+        origin_truth_valid = bool(decision.get("origin_truth_valid", fallback_classification == "not_fallback"))
         final_visible_integrity = cls.validate_visible_text(
             timestamp_header,
             final_visible_text,
             timestamp_contract=timestamp_contract,
+            validation_passed=validation_passed,
+            origin_truth_valid=origin_truth_valid,
         )
-        fallback_classification = cls.classify_fallback(decision.get("route"), body, runtime_version=runtime_version)
         if fallback_classification != "not_fallback":
             runtime_answer_quality = "stale_route_mismatch" if fallback_classification == "stale_route_mismatch" else "fallback_or_debug"
         else:
@@ -114,7 +129,9 @@ class FinalResponseContract:
             timezone=timezone,
             state_emoticon=marker,
             body=body,
+            runtime_exact_text=body,
             final_visible_text=final_visible_text,
+            host_interpretation=decision.get("host_interpretation"),
             timestamp_source=str(timestamp_contract.get("source") or "cognitive_turn_envelope.trace.timestamp_header"),
             timestamp_trusted=(bool(timestamp_contract.get("trusted")) if "trusted" in timestamp_contract else None),
             timestamp_sample_iso=timestamp_contract.get("sample_iso"),
@@ -132,6 +149,11 @@ class FinalResponseContract:
             response_generation_mode=str(decision.get("response_generation_mode") or "unknown"),
             template_origin=decision.get("template_origin") or None,
             source_origin_detail=decision.get("source_origin_detail"),
+            can_generate_model_guided_speech=bool(decision.get("can_generate_model_guided_speech")),
+            requires_host_model=bool(decision.get("requires_host_model")),
+            validation=validation,
+            retry_count=int(decision.get("model_guided_retry_count") or 0),
+            retry_limit=int(decision.get("model_guided_retry_limit") or 1),
             chatgpt_interpretation_distance=str(decision.get("interpretation_distance") or "unknown"),
             runtime_text_hash=decision.get("runtime_text_hash"),
             visible_answer_hash=decision.get("visible_answer_hash"),
@@ -192,6 +214,8 @@ class FinalResponseContract:
         text: str,
         *,
         timestamp_contract: dict[str, Any] | None = None,
+        validation_passed: bool = True,
+        origin_truth_valid: bool = True,
     ) -> dict[str, Any]:
         """Waliduje widoczny timestamp: obecność, źródło, zaufanie i świeżość."""
         visible = (text or "").strip()
@@ -216,7 +240,8 @@ class FinalResponseContract:
         degraded_allowed = bool(contract.get("allow_degraded_local_visible", TIMESTAMP_ALLOW_DEGRADED_LOCAL_VISIBLE))
         trust_ok = True if trusted is None and not contract else bool(trusted) or not trust_required
         degraded_visible_ok = bool(degraded_allowed and has_timestamp and freshness_ok)
-        valid = bool(has_timestamp and freshness_ok and trust_ok)
+        timestamp_valid = bool(has_timestamp and freshness_ok and trust_ok)
+        valid = bool(timestamp_valid and validation_passed and origin_truth_valid)
         return {
             "schema_version": schema_version("final_response_contract_validation"),
             "timestamp_policy": timestamp_runtime_policy(),
@@ -231,6 +256,9 @@ class FinalResponseContract:
             "timestamp_trust_ok": trust_ok,
             "timestamp_degraded_allowed": degraded_allowed,
             "timestamp_degraded_visible_ok": degraded_visible_ok,
+            "timestamp_valid": timestamp_valid,
+            "validation_passed": bool(validation_passed),
+            "origin_truth_valid": bool(origin_truth_valid),
             "valid": valid,
             "text_sha256": hashlib.sha256(visible.encode("utf-8")).hexdigest(),
         }

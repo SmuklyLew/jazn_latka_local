@@ -24,6 +24,11 @@ class TurnRouteTrace:
     deep_audit_used: bool = False
     runtime_answer_validation: dict[str, Any] = field(default_factory=dict)
     final_text_source: str | None = None
+    fallback_classification: str | None = None
+    source_origin_detail: str | None = None
+    can_generate_model_guided_speech: bool = False
+    requires_host_model: bool = False
+    retry_count: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
