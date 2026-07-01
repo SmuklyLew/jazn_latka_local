@@ -1765,6 +1765,11 @@ class JaznEngine:
         )
         decision_dict["model_guided_synthesis"] = model_synthesis.to_dict()
         decision_dict["model_generated"] = model_synthesis.used
+        post_generation_status = self.model_adapter.describe() if hasattr(self.model_adapter, "describe") else adapter_status
+        if model_synthesis.used:
+            adapter_status = post_generation_status
+            can_generate_model_guided_speech = bool(adapter_status.get("can_generate_model_guided_speech"))
+            decision_dict["can_generate_model_guided_speech"] = can_generate_model_guided_speech
         if model_synthesis.used:
             decision.body = model_synthesis.body
             decision_dict["handler_name"] = "ModelGuidedResponseSynthesizer"
@@ -1773,9 +1778,18 @@ class JaznEngine:
         envelope.attach_conversation_decision(decision_dict)
         body = self.guard.enforce(decision.body.strip())
         template_origin = self.template_registry.classify_body(body, detected_intent=str(detected_dialogue_intent))
-        first_validation = self.runtime_answer_validator.validate(
-            user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
-        )
+        if model_synthesis.used and model_synthesis.adapter_response:
+            first_validation = self.runtime_answer_validator.validate_model_candidate(
+                user_text=text,
+                response=model_synthesis.adapter_response,
+                route=str(decision_dict.get("route") or ""),
+                detected_intent=str(detected_dialogue_intent),
+                template_origin=template_origin,
+            )
+        else:
+            first_validation = self.runtime_answer_validator.validate(
+                user_text=text, body=body, route=str(decision_dict.get("route") or ""), detected_intent=str(detected_dialogue_intent)
+            )
         repair_used = False
         speech_truth_gate_required = str(detected_dialogue_intent) in MODEL_GUIDED_SPEECH_INTENTS
         if speech_truth_gate_required:
@@ -1797,12 +1811,21 @@ class JaznEngine:
                     retry_template = self.template_registry.classify_body(
                         retry_body, detected_intent=str(detected_dialogue_intent)
                     )
-                    retry_validation = self.runtime_answer_validator.validate(
-                        user_text=text,
-                        body=retry_body,
-                        route=str(decision_dict.get("route") or ""),
-                        detected_intent=str(detected_dialogue_intent),
-                    )
+                    if retry_synthesis.adapter_response:
+                        retry_validation = self.runtime_answer_validator.validate_model_candidate(
+                            user_text=text,
+                            response=retry_synthesis.adapter_response,
+                            route=str(decision_dict.get("route") or ""),
+                            detected_intent=str(detected_dialogue_intent),
+                            template_origin=retry_template,
+                        )
+                    else:
+                        retry_validation = self.runtime_answer_validator.validate(
+                            user_text=text,
+                            body=retry_body,
+                            route=str(decision_dict.get("route") or ""),
+                            detected_intent=str(detected_dialogue_intent),
+                        )
                     if retry_validation.accepted and not retry_template.get("template_id"):
                         body = retry_body
                         template_origin = retry_template
@@ -2054,6 +2077,7 @@ class JaznEngine:
                 can_generate_model_guided_speech=can_generate_model_guided_speech,
                 requires_host_model=bool(decision_dict.get("requires_host_model")),
                 final_visible_integrity_valid=bool(decision_dict.get("origin_truth_valid") and answer_validation.accepted),
+                model_response=model_synthesis.adapter_response,
             )
             self.source_origin_ledger.append(source_entry)
             envelope.cognitive_frame["source_origin_ledger_entry"] = source_entry.to_dict()

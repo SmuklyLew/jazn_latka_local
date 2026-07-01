@@ -154,6 +154,60 @@ class RuntimeAnswerValidator:
     }
     def __init__(self) -> None:
         self.registry = RouteRegistry()
+
+    def validate_model_candidate(
+        self,
+        *,
+        user_text: str,
+        response: Any,
+        route: str,
+        detected_intent: str,
+        template_origin: dict[str, Any] | None = None,
+    ) -> RuntimeAnswerValidation:
+        """Validate adapter output as a candidate, never as authoritative runtime text."""
+        payload = response if isinstance(response, dict) else (
+            response.to_dict() if hasattr(response, "to_dict") else {}
+        )
+        body = str(payload.get("text") or "").strip()
+        checks = ["model_adapter_response_is_candidate_only"]
+        if not body:
+            checks.append("model_candidate_empty")
+            return self._bad(
+                "empty_model_candidate",
+                "model_candidate_rejected",
+                None,
+                detected_intent,
+                route,
+                checks,
+            )
+        if str(payload.get("status") or "") != "completed":
+            checks.append("model_candidate_generation_not_completed")
+            return self._bad(
+                "model_candidate_generation_not_completed",
+                "model_candidate_rejected",
+                None,
+                detected_intent,
+                route,
+                checks,
+            )
+        if (template_origin or {}).get("template_id"):
+            checks.append("model_candidate_matches_runtime_template")
+            return self._bad(
+                "template_like_model_candidate",
+                "model_candidate_rejected",
+                None,
+                detected_intent,
+                route,
+                checks,
+            )
+        result = self.validate(
+            user_text=user_text,
+            body=body,
+            route=route,
+            detected_intent=detected_intent,
+        )
+        result.checks.insert(0, "model_adapter_response_validated_by_runtime")
+        return result
     def _bad(self, reason: str, repair: str, body_text: str | None, detected_intent: str, route: str, checks: list[str], missing: list[str] | None = None, current_turn_grounding: dict[str, Any] | None = None) -> RuntimeAnswerValidation:
         return RuntimeAnswerValidation(SCHEMA_VERSION, False, reason, repair, False, True, detected_intent, route, body_text, checks, missing or [], current_turn_grounding=current_turn_grounding or {})
     def _looks_like_standalone_greeting(self, text: str) -> bool:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 import copy
+import os
 
 from .null_model_adapter import NullModelAdapter
 from .chatgpt_runtime_adapter import ChatgptRuntimeAdapter
@@ -10,6 +11,7 @@ from .openai_responses_adapter import OpenaiResponsesAdapter
 from .local_llm_adapter import LocalLlmAdapter
 from .lmstudio_runtime_adapter import LmStudioRuntimeAdapter
 from .adapter_contract import ContractOnlyModelAdapter, backend_config_skeletons
+from .openai_compatible_local_adapter import OpenAICompatibleLocalAdapter
 from latka_jazn.core.runtime_environment import CODEX_ADAPTER, LMSTUDIO_ADAPTER, apply_effective_runtime_adapter, detect_runtime_environment
 
 
@@ -33,7 +35,7 @@ def build_model_adapter(config: Any):
             max_output_tokens=int(getattr(config, "model_max_output_tokens", 800)),
             root=getattr(config, "root", None),
         )
-    if name in {"local", "ollama", "local_llm", "local_llm_adapter"}:
+    if name in {"local", "ollama", "local_llm_adapter"}:
         return LocalLlmAdapter(
             model=str(getattr(config, "local_model_name", "")),
             api_base=str(getattr(config, "local_model_api_base", "http://127.0.0.1:11434")),
@@ -41,11 +43,36 @@ def build_model_adapter(config: Any):
             max_output_tokens=int(getattr(config, "model_max_output_tokens", 800)),
             root=getattr(config, "root", None),
         )
+    if name in {"ollama_openai", "ollama_openai_compatible"}:
+        base = str(getattr(config, "local_model_api_base", "http://127.0.0.1:11434/v1"))
+        if not base.rstrip("/").endswith("/v1"):
+            base = base.rstrip("/") + "/v1"
+        return OpenAICompatibleLocalAdapter(
+            provider="ollama",
+            adapter_id="ollama_openai_compatible_adapter",
+            model=str(getattr(config, "local_model_name", "")),
+            api_base=base,
+            api_key=os.environ.get("JAZN_LOCAL_LLM_API_KEY", "ollama"),
+            timeout_seconds=float(getattr(config, "model_timeout_seconds", 45.0)),
+            max_output_tokens=int(getattr(config, "model_max_output_tokens", 800)),
+        )
+    if name in {"local_llm", "openai_compatible", "openai_compatible_local", "openai_compatible_local_adapter", "external_openai_compatible"}:
+        return OpenAICompatibleLocalAdapter(
+            provider=os.environ.get("JAZN_LOCAL_LLM_PROVIDER", "openai_compatible"),
+            model=os.environ.get("JAZN_LOCAL_LLM_MODEL", str(getattr(config, "local_model_name", ""))),
+            api_base=os.environ.get("JAZN_LOCAL_LLM_API_BASE", str(getattr(config, "local_model_api_base", "http://127.0.0.1:8080/v1"))),
+            api_key=os.environ.get("JAZN_LOCAL_LLM_API_KEY", ""),
+            timeout_seconds=float(getattr(config, "model_timeout_seconds", 45.0)),
+            max_output_tokens=int(getattr(config, "model_max_output_tokens", 800)),
+        )
     if name in {"llama_cpp", "llamacpp", "llama.cpp"}:
-        return ContractOnlyModelAdapter(
+        return OpenAICompatibleLocalAdapter(
             provider="llama_cpp",
+            adapter_id="llama_cpp_openai_compatible_adapter",
             model=str(getattr(config, "llama_cpp_model_name", "")),
-            endpoint=str(getattr(config, "llama_cpp_model_api_base", "http://127.0.0.1:8080/v1")),
+            api_base=str(getattr(config, "llama_cpp_model_api_base", "http://127.0.0.1:8080/v1")),
+            timeout_seconds=float(getattr(config, "model_timeout_seconds", 45.0)),
+            max_output_tokens=int(getattr(config, "model_max_output_tokens", 800)),
         )
     if name in {"lmstudio", "lm_studio", "lmstudio_runtime", LMSTUDIO_ADAPTER}:
         return LmStudioRuntimeAdapter(
