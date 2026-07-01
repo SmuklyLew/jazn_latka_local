@@ -1,0 +1,164 @@
+--- generate_Jazn_pack.py	2026-07-01 12:30:55.388560005 +0000
++++ generate_Jazn_pack_v2_4_release_name.py	2026-07-01 12:32:03.342933709 +0000
+@@ -37,6 +37,12 @@
+         jazn_latka_v14.8.9.zip.parts.sha256
+         jazn_latka_v14.8.9.zip.manifest.json
+ 
++    Jeśli dodatkowo PACKAGE_RELEASE_NAME = "trusted-time-runtime-write-voice-gate",
++    wynikiem będzie m.in.:
++
++        jazn_latka_v14.8.9-trusted-time-runtime-write-voice-gate.zip.001
++        jazn_latka_v14.8.9-trusted-time-runtime-write-voice-gate.zip.manifest.json
++
+     py .\generate_Jazn_pack.py "D:\.AI\jazn_latka_local" `
+   --out "D:\Desktop\pakiet" `  --part-size-mb 450 `  --compresslevel 6 `  --force `
+   --exclude ".git/*" `  --exclude ".vscode/*" `  --exclude ".codex/.codex/log/*" `
+@@ -56,7 +62,7 @@
+ 
+ from __future__ import annotations
+ 
+-VERSION = "2.3"
++VERSION = "2.4"
+ import argparse
+ import ast
+ import re
+@@ -85,6 +91,7 @@
+ APPEND_VERSION_TO_NAME = True  # True = dopisuje _v<PACKAGE_VERSION> przed .zip
+ VERSION_FILE = r""            # puste = auto, najpierw .\latka_jazn\version.py
+ VERSION_VARIABLES = ("PACKAGE_VERSION", "__version__", "VERSION")
++RELEASE_NAME_VARIABLES = ("PACKAGE_RELEASE_NAME",)
+ PACKAGE_RELEASE_NAME = r""
+ # Domyślne wykluczenia dla zwykłej paczki runtime.
+ # Te wzorce działają zawsze, chyba że użyjesz --no-default-excludes.
+@@ -204,6 +211,35 @@
+     )
+ 
+ 
++def read_optional_string_from_py(version_file: Path, variable_names: Iterable[str]) -> str:
++    """Czyta opcjonalną zmienną tekstową z pliku Python przez AST, bez importowania kodu."""
++    version_file = version_file.resolve()
++    if not version_file.exists() or not version_file.is_file():
++        raise FileNotFoundError(f"Nie znaleziono pliku: {version_file}")
++
++    text = version_file.read_text(encoding="utf-8-sig")
++    tree = ast.parse(text, filename=str(version_file))
++    wanted = set(variable_names)
++
++    for node in tree.body:
++        if isinstance(node, ast.Assign):
++            value = _literal_string_from_assignment(node.value)
++            if value is None:
++                continue
++            for target in node.targets:
++                if isinstance(target, ast.Name) and target.id in wanted:
++                    return value.strip().strip('"\'')
++        elif isinstance(node, ast.AnnAssign):
++            value = _literal_string_from_assignment(node.value) if node.value is not None else None
++            if value is None:
++                continue
++            target = node.target
++            if isinstance(target, ast.Name) and target.id in wanted:
++                return value.strip().strip('"\'')
++
++    return ""
++
++
+ def find_version_file(source_folder: Path, explicit_version_file: str | Path | None = None) -> Path:
+     """Znajduje version.py dla pakowanego projektu.
+ 
+@@ -257,15 +293,34 @@
+     return version
+ 
+ 
+-def apply_version_to_archive_name(archive_basename: str, package_version: str, *, enabled: bool = True) -> str:
++def normalize_release_name(value: str | None) -> str:
++    """Normalizuje PACKAGE_RELEASE_NAME do bezpiecznego sufiksu nazwy pliku."""
++    release = str(value or "").strip().strip('"\'')
++    if not release:
++        return ""
++    if any(ch in release for ch in '\\/>:<*?"|'):
++        raise ValueError(f"PACKAGE_RELEASE_NAME zawiera znaki niedozwolone w nazwie pliku: {release!r}")
++    release = re.sub(r"\s+", "-", release)
++    release = release.strip("-_.")
++    return release
++
++
++def apply_version_to_archive_name(
++    archive_basename: str,
++    package_version: str,
++    *,
++    package_release_name: str | None = None,
++    enabled: bool = True,
++) -> str:
+     """
+-    Zwraca finalną nazwę ZIP-a z wersją przed .zip.
++    Zwraca finalną nazwę ZIP-a z wersją i opcjonalną nazwą release przed .zip.
+ 
+     Przykłady:
+-      jazn_latka + 14.8.9       -> jazn_latka_v14.8.9.zip
+-      jazn_latka.zip + 14.8.9   -> jazn_latka_v14.8.9.zip
+-      jazn_latka_{version}.zip  -> jazn_latka_14.8.9.zip
+-      jazn_latka_v{version}.zip -> jazn_latka_v14.8.9.zip
++      jazn_latka + 14.8.9                  -> jazn_latka_v14.8.9.zip
++      jazn_latka + 14.8.9 + hotfix         -> jazn_latka_v14.8.9-hotfix.zip
++      jazn_latka.zip + 14.8.9              -> jazn_latka_v14.8.9.zip
++      jazn_latka_{version}.zip             -> jazn_latka_14.8.9.zip
++      jazn_latka_v{version}-{release}.zip  -> jazn_latka_v14.8.9-hotfix.zip
+     """
+     raw = archive_basename.strip()
+     if not raw:
+@@ -274,6 +329,7 @@
+     has_zip = raw.lower().endswith(".zip")
+     stem = raw[:-4] if has_zip else raw
+     version = normalize_version(package_version)
++    release = normalize_release_name(package_release_name)
+ 
+     if "{version}" in stem:
+         stem = stem.replace("{version}", version)
+@@ -282,6 +338,14 @@
+         if not stem.lower().endswith(suffix.lower()):
+             stem = f"{stem}{suffix}"
+ 
++    if "{release_name}" in stem or "{release}" in stem:
++        stem = stem.replace("{release_name}", release).replace("{release}", release)
++        stem = re.sub(r"[-_.]+$", "", stem)
++    elif enabled and release:
++        release_suffix = f"-{release}"
++        if not version.lower().endswith(release_suffix.lower()) and not stem.lower().endswith(release_suffix.lower()):
++            stem = f"{stem}{release_suffix}"
++
+     return f"{stem}.zip"
+ 
+ 
+@@ -591,9 +655,14 @@
+ 
+     resolved_version_file = find_version_file(source_folder, version_file)
+     package_version = read_version_from_py(resolved_version_file)
++    package_release_name = read_optional_string_from_py(resolved_version_file, RELEASE_NAME_VARIABLES)
++    if not package_release_name:
++        package_release_name = PACKAGE_RELEASE_NAME
++    package_release_name = normalize_release_name(package_release_name)
+     base_zip_name = apply_version_to_archive_name(
+         archive_basename,
+         package_version,
++        package_release_name=package_release_name,
+         enabled=append_version_to_name,
+     )
+ 
+@@ -609,6 +678,8 @@
+     print(f"Źródło: {source_folder}")
+     print(f"Wyjście: {out_dir}")
+     print(f"Wersja z version.py: {package_version} ({resolved_version_file})")
++    if package_release_name:
++        print(f"Release z version.py: {package_release_name}")
+     print(f"Nazwa: {base_zip_name}.001 ...")
+     print(f"Rozmiar części: {part_size_mb} MiB")
+     print(f"Plików: {len(files)}; katalogów: {len(dirs)}; rozmiar źródła: {human_size(source_total_size)}")
+@@ -674,6 +745,7 @@
+         "script": Path(__file__).name,
+         "script_version": f"v{VERSION}",
+         "package_version": package_version,
++        "package_release_name": package_release_name,
+         "version_file": str(resolved_version_file),
+         "archive_basename_requested": archive_basename,
+         "append_version_to_name": append_version_to_name,

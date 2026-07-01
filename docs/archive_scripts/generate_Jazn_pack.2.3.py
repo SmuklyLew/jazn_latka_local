@@ -1,69 +1,62 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 r"""
 generate_Jazn_pack.py
 
-Wersja v2: numer wersji jest czytany z version.py i dopisywany do nazw wyjĹ›ciowych.
-Tworzy archiwum ZIP bez zapisywania peĹ‚nego ZIP-a na dysku: strumieĹ„ ZIP jest
-od razu zapisywany do kolejnych czÄ™Ĺ›ci, np.:
+Wersja v2: numer wersji jest czytany z version.py i dopisywany do nazw wyjściowych.
+Tworzy archiwum ZIP bez zapisywania pełnego ZIP-a na dysku: strumień ZIP jest
+od razu zapisywany do kolejnych części, np.:
 
     nazwa.zip.001
     nazwa.zip.002
     nazwa.zip.003
 
-JednoczeĹ›nie tworzy pliki SHA256:
+Jednocześnie tworzy pliki SHA256:
 
-    nazwa.zip.parts.sha256          - SHA256 kaĹĽdej czÄ™Ĺ›ci
-    nazwa.zip.sha256                - SHA256 logicznego peĹ‚nego ZIP-a
-    nazwa.zip.source_files.sha256   - SHA256 plikĂłw ĹşrĂłdĹ‚owych w folderze
+    nazwa.zip.parts.sha256          - SHA256 każdej części
+    nazwa.zip.sha256                - SHA256 logicznego pełnego ZIP-a
+    nazwa.zip.source_files.sha256   - SHA256 plików źródłowych w folderze
     nazwa.zip.manifest.json         - manifest techniczny
-    nazwa.zip.join.ps1              - pomocniczy skrypt PowerShell do zĹ‚oĹĽenia peĹ‚nego ZIP-a
+    nazwa.zip.join.ps1              - pomocniczy skrypt PowerShell do złożenia pełnego ZIP-a
 
-WAĹ»NE:
+WAŻNE:
 - To NIE jest natywny wielodyskowy ZIP typu .z01/.z02/.zip.
-- To jest zwykĹ‚y poprawny ZIP zapisany strumieniowo do czÄ™Ĺ›ci .zip.001, .zip.002 itd.
-- Aby rozpakowaÄ‡, najpierw poĹ‚Ä…cz czÄ™Ĺ›ci w jeden plik .zip, potem rozpakuj.
-- Skrypt nie tworzy tymczasowego peĹ‚nego ZIP-a, wiÄ™c oszczÄ™dza miejsce na dysku.
+- To jest zwykły poprawny ZIP zapisany strumieniowo do części .zip.001, .zip.002 itd.
+- Aby rozpakować, najpierw połącz części w jeden plik .zip, potem rozpakuj.
+- Skrypt nie tworzy tymczasowego pełnego ZIP-a, więc oszczędza miejsce na dysku.
 
 
 
-PrzykĹ‚ady:
+Przykłady:
 
-    py generate_Jazn_pack_1.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --part-size-mb 480 --force
+    py generate_Jazn_pack.py "D:\\.AI\\jazn_latka_local" --out "D:\\Desktop\\pakiet" --part-size-mb 450 --force
 
-    JeĹ›li .\latka_jazn\version.py ma PACKAGE_VERSION = "14.8.9", wynikiem bÄ™dzie m.in.:
+    Jeśli .\latka_jazn\version.py ma PACKAGE_VERSION = "14.8.9", wynikiem będzie m.in.:
 
         jazn_latka_v14.8.9.zip.001
         jazn_latka_v14.8.9.zip.parts.sha256
         jazn_latka_v14.8.9.zip.manifest.json
 
     py .\generate_Jazn_pack.py "D:\.AI\jazn_latka_local" `
-  --out "D:\Desktop\pakiet" `
-  --part-size-mb 450 `
-  --compresslevel 6 `
-  --force `
-  --exclude ".git/*" `
-  --exclude ".vscode/*" `
-  --exclude ".codex/.codex/log/*" `
-  --exclude ".pytest_cache/*" `
-  --exclude ".pytest-tmp/*" `
-  --exclude ".mypy_cache/*" `
-  --exclude ".ruff_cache/*" `
-  --exclude "__pycache__/*" `
-  --exclude "*.pyc" `
-  --exclude "*.tmp" `
-  --exclude "*.partial" `
-  --exclude "*.tmp_extract_part" `
-  --exclude "exports/*" `
-  --exclude "reports/*" `
-  --exclude "*.patch"
+  --out "D:\Desktop\pakiet" `  --part-size-mb 450 `  --compresslevel 6 `  --force `
+  --exclude ".git/*" `  --exclude ".vscode/*" `  --exclude ".codex/.codex/log/*" `
 
-Konfiguracja bez argumentĂłw CLI jest niĹĽej w sekcji USTAWIENIA DOMYĹšLNE.
+    Od wersji v2.2 część bezpiecznych wykluczeń jest zapisana na stałe w
+    EXCLUDE_PATTERNS, np. .git/, cache, raporty, runtime_write_v1 i ciężkie
+    pliki processed/raw. Możesz dopisać własne:
+
+        py .\generate_Jazn_pack.py "D:\.AI\jazn_latka_local" --exclude "docs/"
+
+    Albo wyłączyć listę domyślną:
+
+        py .\generate_Jazn_pack.py "D:\.AI\jazn_latka_local" --no-default-excludes
+    
+Konfiguracja bez argumentów CLI jest niżej w sekcji USTAWIENIA DOMYŚLNE.
 """
 
-VERSION = "2.1"
-
 from __future__ import annotations
+
+VERSION = "2.3"
 import argparse
 import ast
 import re
@@ -76,30 +69,78 @@ from pathlib import Path, PurePosixPath
 import sys
 import time
 import zipfile
-from typing import BinaryIO, Iterable
+from typing import Any, BinaryIO, Iterable
 
 # =============================================================================
-# USTAWIENIA DOMYĹšLNE - moĹĽesz zmieniÄ‡ tutaj i uruchamiaÄ‡ skrypt bez argumentĂłw
+# USTAWIENIA DOMYŚLNE - możesz zmienić tutaj i uruchamiać skrypt bez argumentów
 # =============================================================================
 
 SOURCE_FOLDER = r""          # np. r"D:\.AI\latka_jazn_v14_8_2_work"
-OUTPUT_DIR = r""             # puste = folder nadrzÄ™dny SOURCE_FOLDER
-ARCHIVE_BASENAME = r"jazn_latka"  # domyĹ›lnie bez --name: jazn_latka_v<WERSJA>.zip.001
-PART_SIZE_MB = 500            # rozmiar jednej czÄ™Ĺ›ci w MiB
-COMPRESSION_LEVEL = 6         # 0-9 dla ZIP_DEFLATED; 0 szybciej/sĹ‚abiej, 9 wolniej/mocniej
-FORCE_OVERWRITE = False       # True = nadpisuje wczeĹ›niejsze czÄ™Ĺ›ci/manifesty
-INCLUDE_EMPTY_DIRS = True      # zapisuje teĹĽ puste katalogi
+OUTPUT_DIR = r""             # puste = folder nadrzędny SOURCE_FOLDER
+ARCHIVE_BASENAME = r"jazn_latka"  # domyślnie bez --name: jazn_latka_v<WERSJA>.zip.001
+PART_SIZE_MB = 500            # rozmiar jednej części w MiB
+COMPRESSION_LEVEL = 6         # 0-9 dla ZIP_DEFLATED; 0 szybciej/słabiej, 9 wolniej/mocniej
+FORCE_OVERWRITE = False       # True = nadpisuje wcześniejsze części/manifesty
+INCLUDE_EMPTY_DIRS = True      # zapisuje też puste katalogi
 APPEND_VERSION_TO_NAME = True  # True = dopisuje _v<PACKAGE_VERSION> przed .zip
 VERSION_FILE = r""            # puste = auto, najpierw .\latka_jazn\version.py
 VERSION_VARIABLES = ("PACKAGE_VERSION", "__version__", "VERSION")
+PACKAGE_RELEASE_NAME = r""
+# Domyślne wykluczenia dla zwykłej paczki runtime.
+# Te wzorce działają zawsze, chyba że użyjesz --no-default-excludes.
+#
+# Reguła praktyczna:
+# - folder możesz podać jako "memory/" albo "memory/*"; oba warianty wytną całą gałąź,
+# - dodatkowe wykluczenia możesz nadal dopisać z CLI przez --exclude "ścieżka/*",
+# - jeżeli chcesz spakować absolutnie wszystko, użyj --no-default-excludes.
 EXCLUDE_PATTERNS: list[str] = [
-    # PrzykĹ‚ady, domyĹ›lnie wyĹ‚Ä…czone. Odkomentuj, jeĹ›li chcesz pomijaÄ‡:
-    # ".git/*",
-    # "__pycache__/*",
-    # "*.pyc",
+
+    # Git / edytory / lokalny stan narzędzi
+    ".git/",
+    ".vscode/",
+    ".codex/",
+
+    # Python / test / cache
+    "__pycache__/",
+    ".pytest_cache/",
+    ".pytest-tmp/",
+    ".mypy_cache/",
+    ".ruff_cache/",
+    "*.pyc",
+    "*.pyo",
+
+    # Tymczasowe i odrzucone pliki
+    "*.tmp",
+    "*.partial",
+    "*.tmp_extract_part",
+    "*.bak",
+    "*.bad",
+    "*.corrupt",
+    "*.log",
+
+    # Paczki, backupy, raporty i artefakty patchowania
+    "exports/",
+    "reports/",
+    "backups/",
+    "backups_git/",
+    "*.patch",
+    "*.rej",
+    "*.orig",
+    "*_PATCH_REPORT.md",
+    "LATKA_*_COMMANDS.ps1",
+    "v14_*_sha256.txt",
+    "v14_*_patch_bundle.zip",
+    "v14_*_PATCH_FIXED_BUNDLE.zip",
+    "v14_*_FULL_PATCH_AND_RECOVERY_BUNDLE.zip",
+
+    # Najcięższe / niepotrzebne w paczce runtime dopóki zapis DB nie ma osobnego kontraktu
+    "memory/sqlite/runtime_write_v1/",
+    "memory/raw/runtime_events.jsonl",
+    "workspace_runtime/test_*.sqlite3",
+    "runtime-preview-*.json",
 ]
 
-CHUNK_SIZE = 1024 * 1024      # 1 MiB; rozmiar bufora czytania plikĂłw
+CHUNK_SIZE = 1024 * 1024      # 1 MiB; rozmiar bufora czytania plików
 
 # =============================================================================
 
@@ -119,19 +160,17 @@ def now_iso() -> str:
 
 
 def _literal_string_from_assignment(node: ast.AST) -> str | None:
-    """Zwraca tekst tylko dla prostych przypisaĹ„ staĹ‚ych, bez wykonywania version.py."""
+    """Zwraca tekst tylko dla prostych przypisań stałych, bez wykonywania version.py."""
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
-    if isinstance(node, ast.Str):  # zgodnoĹ›Ä‡ ze starszym AST
-        return node.s
     return None
 
 
 def read_version_from_py(version_file: Path, variable_names: Iterable[str] = VERSION_VARIABLES) -> str:
     """
-    Czyta wersjÄ™ z pliku version.py przez AST, bez importowania i bez uruchamiania kodu.
+    Czyta wersję z pliku version.py przez AST, bez importowania i bez uruchamiania kodu.
 
-    ObsĹ‚ugiwane zmienne domyĹ›lnie:
+    Obsługiwane zmienne domyślnie:
       - PACKAGE_VERSION = "14.8.9"
       - __version__ = "14.8.9"
       - VERSION = "14.8.9"
@@ -140,7 +179,7 @@ def read_version_from_py(version_file: Path, variable_names: Iterable[str] = VER
     if not version_file.exists() or not version_file.is_file():
         raise FileNotFoundError(f"Nie znaleziono pliku wersji: {version_file}")
 
-    text = version_file.read_text(encoding="utf-8")
+    text = version_file.read_text(encoding="utf-8-sig")
     tree = ast.parse(text, filename=str(version_file))
     wanted = set(variable_names)
 
@@ -168,10 +207,10 @@ def read_version_from_py(version_file: Path, variable_names: Iterable[str] = VER
 def find_version_file(source_folder: Path, explicit_version_file: str | Path | None = None) -> Path:
     """Znajduje version.py dla pakowanego projektu.
 
-    DomyĹ›lnie pierwszeĹ„stwo ma Ĺ›cieĹĽka wzglÄ™dna wobec aktualnego katalogu pracy:
+    Domyślnie pierwszeństwo ma ścieżka względna wobec aktualnego katalogu pracy:
       .\\latka_jazn\\version.py
 
-    DziÄ™ki temu zwykĹ‚e uruchomienie z katalogu projektu nie wymaga ani importu
+    Dzięki temu zwykłe uruchomienie z katalogu projektu nie wymaga ani importu
     pakietu, ani podawania --version-file.
     """
     if explicit_version_file:
@@ -203,12 +242,12 @@ def find_version_file(source_folder: Path, explicit_version_file: str | Path | N
 
     pretty = "\n".join(f"  - {p}" for p in unique_candidates)
     raise FileNotFoundError(
-        "Nie znaleziono version.py. Podaj --version-file albo umieĹ›Ä‡ plik w jednej z lokalizacji:\n" + pretty
+        "Nie znaleziono version.py. Podaj --version-file albo umieść plik w jednej z lokalizacji:\n" + pretty
     )
 
 
 def normalize_version(value: str) -> str:
-    """Normalizuje wersjÄ™ do postaci bez wiodÄ…cego v, np. v14.8.9 -> 14.8.9."""
+    """Normalizuje wersję do postaci bez wiodącego v, np. v14.8.9 -> 14.8.9."""
     version = str(value).strip().strip('"\'')
     version = re.sub(r"^v", "", version, flags=re.IGNORECASE)
     if not version:
@@ -220,9 +259,9 @@ def normalize_version(value: str) -> str:
 
 def apply_version_to_archive_name(archive_basename: str, package_version: str, *, enabled: bool = True) -> str:
     """
-    Zwraca finalnÄ… nazwÄ™ ZIP-a z wersjÄ… przed .zip.
+    Zwraca finalną nazwę ZIP-a z wersją przed .zip.
 
-    PrzykĹ‚ady:
+    Przykłady:
       jazn_latka + 14.8.9       -> jazn_latka_v14.8.9.zip
       jazn_latka.zip + 14.8.9   -> jazn_latka_v14.8.9.zip
       jazn_latka_{version}.zip  -> jazn_latka_14.8.9.zip
@@ -230,7 +269,7 @@ def apply_version_to_archive_name(archive_basename: str, package_version: str, *
     """
     raw = archive_basename.strip()
     if not raw:
-        raise ValueError("archive_basename nie moĹĽe byÄ‡ pusty")
+        raise ValueError("archive_basename nie może być pusty")
 
     has_zip = raw.lower().endswith(".zip")
     stem = raw[:-4] if has_zip else raw
@@ -247,7 +286,7 @@ def apply_version_to_archive_name(archive_basename: str, package_version: str, *
 
 
 def safe_zip_datetime(path: Path) -> tuple[int, int, int, int, int, int]:
-    """ZIP central directory nie obsĹ‚uguje dat < 1980 ani > 2107."""
+    """ZIP central directory nie obsługuje dat < 1980 ani > 2107."""
     try:
         tm = time.localtime(path.stat().st_mtime)
         year = min(max(tm.tm_year, 1980), 2107)
@@ -261,13 +300,31 @@ def rel_posix(path: Path, root: Path) -> str:
 
 
 def is_excluded(rel: str, patterns: Iterable[str]) -> bool:
-    rel = rel.replace("\\", "/")
+    """Sprawdza, czy ścieżka względna ma zostać pominięta.
+
+    Obsługiwane są zwykłe wzorce fnmatch oraz wygodne wpisy folderów:
+      - "memory/" wyklucza memory i całą zawartość,
+      - "memory/*" działa klasycznie przez fnmatch,
+      - "*.pyc" działa po całej ścieżce i po samej nazwie pliku.
+    """
+    rel = rel.replace("\\", "/").lstrip("/")
+    rel_name = PurePosixPath(rel).name
+
     for pat in patterns:
-        p = pat.strip().replace("\\", "/")
+        p = pat.strip().replace("\\", "/").lstrip("/")
         if not p:
             continue
-        if fnmatch.fnmatch(rel, p) or fnmatch.fnmatch(Path(rel).name, p):
+
+        # Wpis folderu bez gwiazdek, np. "memory/", ma ucinać całą gałąź.
+        if p.endswith("/"):
+            folder = p.rstrip("/")
+            if rel == folder or rel.startswith(folder + "/"):
+                return True
+            continue
+
+        if fnmatch.fnmatch(rel, p) or fnmatch.fnmatch(rel_name, p):
             return True
+
     return False
 
 
@@ -282,12 +339,12 @@ def is_relative_to(child: Path, parent: Path) -> bool:
 class SplitPartWriter:
     """
     Nie-seekowalny obiekt plikopodobny dla zipfile.ZipFile.
-    KaĹĽdy zapis trafia od razu do .zip.001, .zip.002 itd.
+    Każdy zapis trafia od razu do .zip.001, .zip.002 itd.
     """
 
     def __init__(self, out_dir: Path, base_zip_name: str, part_size: int, *, force: bool = False):
         if part_size <= 0:
-            raise ValueError("part_size musi byÄ‡ wiÄ™kszy od zera")
+            raise ValueError("part_size musi być większy od zera")
         self.out_dir = out_dir
         self.base_zip_name = base_zip_name
         self.part_size = part_size
@@ -297,7 +354,7 @@ class SplitPartWriter:
         self.current_part_no = 0
         self.current_part_written = 0
         self.current_file: BinaryIO | None = None
-        self.current_hash: hashlib._Hash | None = None
+        self.current_hash: Any | None = None
         self.full_hash = hashlib.sha256()
         self.parts: list[dict[str, object]] = []
         self.closed = False
@@ -329,7 +386,7 @@ class SplitPartWriter:
 
     def write(self, data) -> int:  # zipfile przekazuje bytes-like object
         if self.closed:
-            raise ValueError("zapis do zamkniÄ™tego SplitPartWriter")
+            raise ValueError("zapis do zamkniętego SplitPartWriter")
         if not data:
             return 0
 
@@ -387,9 +444,9 @@ class SplitPartWriter:
             return
         if not self.force:
             sample = "\n".join(f"  - {p}" for p in existing[:20])
-            more = "" if len(existing) <= 20 else f"\n  ... oraz {len(existing) - 20} wiÄ™cej"
+            more = "" if len(existing) <= 20 else f"\n  ... oraz {len(existing) - 20} więcej"
             raise FileExistsError(
-                "Znaleziono wczeĹ›niejsze pliki wyjĹ›ciowe. UĹĽyj --force albo zmieĹ„ --name/--out.\n"
+                "Znaleziono wcześniejsze pliki wyjściowe. Użyj --force albo zmień --name/--out.\n"
                 + sample
                 + more
             )
@@ -450,18 +507,18 @@ def discover_entries(root: Path, include_empty_dirs: bool, exclude_patterns: lis
 def make_zipinfo_for_file(src: Path, arcname: str, compression: int, compresslevel: int) -> zipfile.ZipInfo:
     zi = zipfile.ZipInfo(arcname, date_time=safe_zip_datetime(src))
     zi.compress_type = compression
-    # Python 3.13+ ma publiczne compress_level; starsze wersje uĹĽywajÄ… _compresslevel.
-    if hasattr(zi, "compress_level"):
+    # Python 3.13+ ma publiczne compress_level; starsze wersje używają _compresslevel.
+    # Ustawiamy przez setattr, żeby Pylance/Pyright nie zgłaszał błędu atrybutu.
+    for attr_name in ("compress_level", "_compresslevel"):
         try:
-            zi.compress_level = compresslevel  # type: ignore[attr-defined]
+            setattr(zi, attr_name, compresslevel)
         except Exception:
             pass
-    zi._compresslevel = compresslevel  # zgodne ze starszym zipfile
     try:
         mode = src.stat().st_mode
         zi.external_attr = (mode & 0xFFFF) << 16
         if os.name == "nt":
-            # Bit archiwalny/normalny dla lepszej zgodnoĹ›ci na Windows.
+            # Bit archiwalny/normalny dla lepszej zgodności na Windows.
             zi.external_attr |= 0x20
     except OSError:
         pass
@@ -480,20 +537,20 @@ def make_zipinfo_for_dir(src: Path, arcname: str) -> zipfile.ZipInfo:
 def write_join_script(out_dir: Path, base_zip_name: str) -> None:
     ps1 = out_dir / f"{base_zip_name}.join.ps1"
     final_zip = base_zip_name
-    content = f'''# ĹÄ…czy czÄ™Ĺ›ci {base_zip_name}.001, {base_zip_name}.002, ... w peĹ‚ny ZIP.
-# Uruchom w PowerShell w tym samym folderze co czÄ™Ĺ›ci:
+    content = f'''# Łączy części {base_zip_name}.001, {base_zip_name}.002, ... w pełny ZIP.
+# Uruchom w PowerShell w tym samym folderze co części:
 #   powershell -ExecutionPolicy Bypass -File .\\{base_zip_name}.join.ps1
 
 $ErrorActionPreference = "Stop"
 $base = "{base_zip_name}"
 $out = $base
 $parts = Get-ChildItem -LiteralPath . -File | Where-Object {{ $_.Name -match [regex]::Escape($base) + '\\.\\d{{3}}$' }} | Sort-Object Name
-if (-not $parts -or $parts.Count -eq 0) {{ throw "Brak czÄ™Ĺ›ci dla $base" }}
+if (-not $parts -or $parts.Count -eq 0) {{ throw "Brak części dla $base" }}
 if (Test-Path -LiteralPath $out) {{ Remove-Item -LiteralPath $out -Force }}
 $target = [System.IO.File]::Open($out, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write)
 try {{
     foreach ($p in $parts) {{
-        Write-Host "DodajÄ™ $($p.Name)..."
+        Write-Host "Dodaję $($p.Name)..."
         $src = [System.IO.File]::OpenRead($p.FullName)
         try {{ $src.CopyTo($target) }} finally {{ $src.Dispose() }}
     }}
@@ -501,7 +558,7 @@ try {{
     $target.Dispose()
 }}
 Write-Host "Gotowe: $out"
-Write-Host "SprawdĹş SHA256 peĹ‚nego ZIP-a:"
+Write-Host "Sprawdź SHA256 pełnego ZIP-a:"
 Write-Host "  Get-FileHash .\\{final_zip} -Algorithm SHA256"
 '''
     ps1.write_text(content, encoding="utf-8")
@@ -524,12 +581,12 @@ def create_split_zip(
     out_dir = out_dir.resolve()
 
     if not source_folder.exists() or not source_folder.is_dir():
-        raise NotADirectoryError(f"Folder ĹşrĂłdĹ‚owy nie istnieje albo nie jest folderem: {source_folder}")
+        raise NotADirectoryError(f"Folder źródłowy nie istnieje albo nie jest folderem: {source_folder}")
 
     if is_relative_to(out_dir, source_folder):
         raise ValueError(
-            "Folder wyjĹ›ciowy nie moĹĽe znajdowaÄ‡ siÄ™ wewnÄ…trz folderu ĹşrĂłdĹ‚owego, "
-            "bo archiwum mogĹ‚oby zaczÄ…Ä‡ pakowaÄ‡ wĹ‚asne czÄ™Ĺ›ci. Ustaw --out poza folderem ĹşrĂłdĹ‚owym."
+            "Folder wyjściowy nie może znajdować się wewnątrz folderu źródłowego, "
+            "bo archiwum mogłoby zacząć pakować własne części. Ustaw --out poza folderem źródłowym."
         )
 
     resolved_version_file = find_version_file(source_folder, version_file)
@@ -549,13 +606,13 @@ def create_split_zip(
 
     compression = zipfile.ZIP_DEFLATED
 
-    print(f"ĹąrĂłdĹ‚o: {source_folder}")
-    print(f"WyjĹ›cie: {out_dir}")
+    print(f"Źródło: {source_folder}")
+    print(f"Wyjście: {out_dir}")
     print(f"Wersja z version.py: {package_version} ({resolved_version_file})")
     print(f"Nazwa: {base_zip_name}.001 ...")
-    print(f"Rozmiar czÄ™Ĺ›ci: {part_size_mb} MiB")
-    print(f"PlikĂłw: {len(files)}; katalogĂłw: {len(dirs)}; rozmiar ĹşrĂłdĹ‚a: {human_size(source_total_size)}")
-    print("PakujÄ™ bez tworzenia peĹ‚nego ZIP-a na dysku...")
+    print(f"Rozmiar części: {part_size_mb} MiB")
+    print(f"Plików: {len(files)}; katalogów: {len(dirs)}; rozmiar źródła: {human_size(source_total_size)}")
+    print("Pakuję bez tworzenia pełnego ZIP-a na dysku...")
 
     try:
         with zipfile.ZipFile(
@@ -592,7 +649,7 @@ def create_split_zip(
                 added_files.append({"path": arc, "size_bytes": size, "sha256": digest})
 
                 if index % 100 == 0 or index == len(files):
-                    print(f"  dodano {index}/{len(files)} plikĂłw...")
+                    print(f"  dodano {index}/{len(files)} plików...")
     finally:
         writer.close()
 
@@ -615,7 +672,7 @@ def create_split_zip(
     manifest = {
         "created_at": now_iso(),
         "script": Path(__file__).name,
-        "script_version": "v2.1",
+        "script_version": f"v{VERSION}",
         "package_version": package_version,
         "version_file": str(resolved_version_file),
         "archive_basename_requested": archive_basename,
@@ -638,6 +695,7 @@ def create_split_zip(
         "parts_count": len(writer.parts),
         "parts": writer.parts,
         "exclude_patterns": exclude_patterns,
+        "default_exclude_patterns": EXCLUDE_PATTERNS,
         "include_empty_dirs": include_empty_dirs,
         "source_hash_file": source_sha_path.name,
         "parts_hash_file": parts_sha_path.name,
@@ -649,32 +707,33 @@ def create_split_zip(
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print("\nGotowe.")
-    print(f"CzÄ™Ĺ›ci: {len(writer.parts)}")
+    print(f"Części: {len(writer.parts)}")
     print(f"Rozmiar logicznego ZIP-a: {human_size(writer.total_written)}")
-    print(f"SHA256 peĹ‚nego ZIP-a: {full_zip_sha}")
-    print(f"SHA czÄ™Ĺ›ci: {parts_sha_path}")
-    print(f"SHA plikĂłw ĹşrĂłdĹ‚owych: {source_sha_path}")
+    print(f"SHA256 pełnego ZIP-a: {full_zip_sha}")
+    print(f"SHA części: {parts_sha_path}")
+    print(f"SHA plików źródłowych: {source_sha_path}")
     print(f"Manifest: {manifest_path}")
-    print(f"Skrypt Ĺ‚Ä…czenia: {out_dir / (base_zip_name + '.join.ps1')}")
+    print(f"Skrypt łączenia: {out_dir / (base_zip_name + '.join.ps1')}")
 
     return manifest
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Spakuj folder do ZIP-a zapisywanego od razu w czÄ™Ĺ›ciach .zip.001/.zip.002 z SHA256.",
+        description="Spakuj folder do ZIP-a zapisywanego od razu w częściach .zip.001/.zip.002 z SHA256.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("source", nargs="?", help="Folder do spakowania")
-    parser.add_argument("--out", help="Folder wyjĹ›ciowy; domyĹ›lnie folder nadrzÄ™dny ĹşrĂłdĹ‚a")
-    parser.add_argument("--name", help="Opcjonalna nazwa bazowa archiwum bez wersji, np. jazn_latka; jeĹ›li pominiesz, uĹĽyte bÄ™dzie jazn_latka_vX.Y.Z.zip")
-    parser.add_argument("--version-file", default=VERSION_FILE or None, help="ĹšcieĹĽka do version.py; domyĹ›lnie auto, najpierw .\\latka_jazn\\version.py")
+    parser.add_argument("--out", help="Folder wyjściowy; domyślnie folder nadrzędny źródła")
+    parser.add_argument("--name", help="Opcjonalna nazwa bazowa archiwum bez wersji, np. jazn_latka; jeśli pominiesz, użyte będzie jazn_latka_vX.Y.Z.zip")
+    parser.add_argument("--version-file", default=VERSION_FILE or None, help="Ścieżka do version.py; domyślnie auto, najpierw .\\latka_jazn\\version.py")
     parser.add_argument("--no-version-suffix", action="store_true", help="Nie dopisuj automatycznie _v<wersja> do nazwy ZIP-a")
-    parser.add_argument("--part-size-mb", type=int, default=PART_SIZE_MB, help="Rozmiar czÄ™Ĺ›ci w MiB")
+    parser.add_argument("--part-size-mb", type=int, default=PART_SIZE_MB, help="Rozmiar części w MiB")
     parser.add_argument("--compresslevel", type=int, default=COMPRESSION_LEVEL, choices=range(0, 10), metavar="0-9", help="Poziom kompresji ZIP_DEFLATED")
-    parser.add_argument("--force", action="store_true", default=FORCE_OVERWRITE, help="Nadpisz istniejÄ…ce pliki wyjĹ›ciowe")
-    parser.add_argument("--no-empty-dirs", action="store_true", help="Nie zapisuj pustych katalogĂłw")
-    parser.add_argument("--exclude", action="append", default=[], help="Wzorzec do pominiÄ™cia, np. .git/*; moĹĽna podaÄ‡ wiele razy")
+    parser.add_argument("--force", action="store_true", default=FORCE_OVERWRITE, help="Nadpisz istniejące pliki wyjściowe")
+    parser.add_argument("--no-empty-dirs", action="store_true", help="Nie zapisuj pustych katalogów")
+    parser.add_argument("--exclude", action="append", default=[], help="Dodatkowy wzorzec do pominięcia, np. docs/ albo memory/*; można podać wiele razy")
+    parser.add_argument("--no-default-excludes", action="store_true", help="Nie używaj EXCLUDE_PATTERNS z sekcji ustawień domyślnych; zostaw tylko --exclude z CLI")
     return parser.parse_args(argv)
 
 
@@ -687,12 +746,12 @@ def main(argv: list[str] | None = None) -> int:
 
     source_folder = Path(source_raw)
     if not source_folder.exists():
-        print(f"BĹÄ„D: folder nie istnieje: {source_folder}", file=sys.stderr)
+        print(f"BŁĄD: folder nie istnieje: {source_folder}", file=sys.stderr)
         return 2
 
     out_dir = Path(args.out or OUTPUT_DIR or source_folder.resolve().parent)
     archive_basename = args.name or ARCHIVE_BASENAME or "jazn_latka"
-    exclude_patterns = list(EXCLUDE_PATTERNS) + list(args.exclude or [])
+    exclude_patterns = ([] if args.no_default_excludes else list(EXCLUDE_PATTERNS)) + list(args.exclude or [])
 
     try:
         create_split_zip(
@@ -709,10 +768,10 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     except KeyboardInterrupt:
-        print("\nPrzerwano przez uĹĽytkownika.", file=sys.stderr)
+        print("\nPrzerwano przez użytkownika.", file=sys.stderr)
         return 130
     except Exception as exc:
-        print(f"BĹÄ„D: {exc}", file=sys.stderr)
+        print(f"BŁĄD: {exc}", file=sys.stderr)
         return 1
 
 
