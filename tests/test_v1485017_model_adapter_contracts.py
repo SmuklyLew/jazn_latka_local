@@ -177,7 +177,7 @@ def test_model_adapter_status_cli_does_not_require_openai_key(monkeypatch, capsy
     assert main.main(["--model-adapter-status"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["runtime_version"] == "v14.8.5.026B"
+    assert payload["runtime_version"] == JaznConfig().version
     assert payload["model_adapter_status"]["provider"] == "none"
     assert payload["model_adapter_status"]["selected_backend_adapter"] == "null_model_adapter"
     assert payload["model_adapter_status"]["effective_runtime_adapter"] == "null_model_adapter"

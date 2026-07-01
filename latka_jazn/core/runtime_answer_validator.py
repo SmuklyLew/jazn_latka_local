@@ -27,7 +27,20 @@ class RuntimeAnswerValidation:
     missing_required_components: list[str] = field(default_factory=list)
     truth_boundary: str = "Walidator nie udaje pełnego rozumienia. Wykrywa znane klasy nietrafień rozmownych i wymusza drugą próbę lub cannot_answer_directly."
     current_turn_grounding: dict[str, Any] = field(default_factory=dict)
-    def to_dict(self) -> dict[str, Any]: return asdict(self)
+
+    @property
+    def accepted(self) -> bool:
+        return bool(
+            self.is_topic_aligned
+            and self.can_show_to_user
+            and not self.must_regenerate
+            and not self.missing_required_components
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        data = asdict(self)
+        data["accepted"] = self.accepted
+        return data
 
 class RuntimeAnswerValidator:
     GENERIC_BODIES = (

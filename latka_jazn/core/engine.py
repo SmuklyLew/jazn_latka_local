@@ -112,6 +112,49 @@ MODEL_GUIDED_SPEECH_INTENTS = {
 }
 
 
+def _is_chatgpt_host_visible_bridge(adapter_status: dict[str, Any]) -> bool:
+    """Return True for the explicit ChatGPT host/copy-paste bridge.
+
+    This is not a local model call. It only means the visible language channel is
+    the ChatGPT host, so a validated runtime handler body may be passed through
+    without pretending that the local Python process generated model-guided
+    speech.
+    """
+    adapter_id = str(adapter_status.get("adapter_id") or adapter_status.get("name") or "").strip()
+    provider = str(adapter_status.get("provider") or "").strip()
+    kind = str(adapter_status.get("kind") or "").strip()
+    return (
+        adapter_id == "chatgpt_runtime_adapter"
+        and provider == "chatgpt_host"
+        and kind == "hosted_chatgpt_bridge"
+    )
+
+
+def _handler_body_can_cross_chatgpt_host_bridge(
+    *,
+    adapter_status: dict[str, Any],
+    handler_result: Any,
+    handler_missing: list[Any],
+    handler_required: list[Any],
+    handler_satisfied: set[Any],
+    template_origin: dict[str, Any],
+    validation: Any,
+) -> bool:
+    if not _is_chatgpt_host_visible_bridge(adapter_status):
+        return False
+    if not str(getattr(handler_result, "body", "") or "").strip():
+        return False
+    if list(handler_missing or []):
+        return False
+    if handler_required and not set(handler_required).issubset(handler_satisfied):
+        return False
+    if template_origin.get("template_id"):
+        return False
+    if not bool(getattr(validation, "accepted", False)):
+        return False
+    return True
+
+
 def _sync_conversation_decision_body(
     decision_dict: dict[str, Any],
     *,
@@ -1770,27 +1813,58 @@ class JaznEngine:
                         decision_dict["handler_generation_mode"] = "runtime_model_guided"
                         decision_dict["source_origin_detail"] = "runtime_model_guided_synthesis_retry"
             if not candidate_valid:
-                body = (
-                    "Nie mam w tej turze aktywnego modelu zdolnego wygenerować własną wypowiedź model-guided. "
-                    "Nie przedstawię tekstu handlera ani szablonu jako dynamicznej wypowiedzi Łatki. "
-                    "Ta tura wymaga generacji przez host/model."
+                host_bridge_accepts_handler = _handler_body_can_cross_chatgpt_host_bridge(
+                    adapter_status=adapter_status,
+                    handler_result=handler_result,
+                    handler_missing=handler_missing,
+                    handler_required=handler_required,
+                    handler_satisfied=handler_satisfied,
+                    template_origin=template_origin,
+                    validation=first_validation,
                 )
-                template_origin = self.template_registry.classify_body(
-                    body, detected_intent=str(detected_dialogue_intent)
-                )
-                decision_dict["handler_name"] = "RuntimeTurnTruthGate"
-                decision_dict["handler_generation_mode"] = "degraded_truth_disclosure"
-                decision_dict["source_origin_detail"] = "runtime_turn_truth_gate/model_guided_speech_unavailable"
-                decision_dict["fallback_classification"] = "cannot_answer_directly"
-                decision_dict["requires_host_model"] = True
-                decision_dict["runtime_answer_quality"] = "truthful_degraded_cannot_answer_directly"
-                decision_dict["model_generated"] = False
-                answer_validation = self.runtime_answer_validator.validate(
-                    user_text=text,
-                    body=body,
-                    route=str(decision_dict.get("route") or ""),
-                    detected_intent=str(detected_dialogue_intent),
-                )
+                if host_bridge_accepts_handler:
+                    decision_dict["chatgpt_host_visible_bridge"] = {
+                        "accepted": True,
+                        "reason": "validated_runtime_handler_body_no_local_model_call",
+                        "adapter_id": str(adapter_status.get("adapter_id") or adapter_status.get("name") or "chatgpt_runtime_adapter"),
+                        "provider": str(adapter_status.get("provider") or "chatgpt_host"),
+                        "truth_boundary": (
+                            "--chat-gpt uses the ChatGPT host as the visible language channel, but the local "
+                            "runtime still owns intent, routing, memory policy, validation and source provenance. "
+                            "This pass-through does not claim local model-guided generation."
+                        ),
+                    }
+                    decision_dict["fallback_classification"] = "not_fallback"
+                    decision_dict["requires_host_model"] = False
+                    decision_dict["runtime_answer_quality"] = "topic_aligned"
+                    decision_dict["model_generated"] = False
+                    decision_dict.setdefault(
+                        "source_origin_detail",
+                        str(getattr(handler_result, "source_origin_detail", "") or "chatgpt_host_bridge/validated_runtime_handler_body"),
+                    )
+                    answer_validation = first_validation
+                else:
+                    body = (
+                        "Nie mam w tej turze aktywnego modelu zdolnego wygenerować własną wypowiedź model-guided. "
+                        "Nie przedstawię tekstu handlera ani szablonu jako dynamicznej wypowiedzi Łatki. "
+                        "Ta tura wymaga generacji przez host/model."
+                    )
+                    template_origin = self.template_registry.classify_body(
+                        body, detected_intent=str(detected_dialogue_intent)
+                    )
+                    decision_dict["handler_name"] = "RuntimeTurnTruthGate"
+                    decision_dict["handler_generation_mode"] = "degraded_truth_disclosure"
+                    decision_dict["source_origin_detail"] = "runtime_turn_truth_gate/model_guided_speech_unavailable"
+                    decision_dict["fallback_classification"] = "cannot_answer_directly"
+                    decision_dict["requires_host_model"] = True
+                    decision_dict["runtime_answer_quality"] = "truthful_degraded_cannot_answer_directly"
+                    decision_dict["model_generated"] = False
+                    answer_validation = self.runtime_answer_validator.validate(
+                        user_text=text,
+                        body=body,
+                        route=str(decision_dict.get("route") or ""),
+                        detected_intent=str(detected_dialogue_intent),
+                    )
             else:
                 decision_dict["fallback_classification"] = "not_fallback"
                 decision_dict["requires_host_model"] = False
@@ -1921,10 +1995,18 @@ class JaznEngine:
                 decision_dict["fallback_classification"] = "rule_handler_response"
         decision_dict.setdefault("requires_host_model", False)
         decision_dict["final_answer_validation"] = answer_validation.to_dict()
+        chatgpt_host_visible_bridge = decision_dict.get("chatgpt_host_visible_bridge")
+        chatgpt_host_visible_bridge_accepted = bool(
+            isinstance(chatgpt_host_visible_bridge, dict)
+            and chatgpt_host_visible_bridge.get("accepted")
+        )
         decision_dict["origin_truth_valid"] = bool(
             decision_dict.get("fallback_classification") == "not_fallback"
-            and decision_dict.get("model_generated")
             and answer_validation.accepted
+            and (
+                decision_dict.get("model_generated")
+                or chatgpt_host_visible_bridge_accepted
+            )
         )
         if isinstance(decision_dict.get("turn_route_trace"), dict):
             decision_dict["turn_route_trace"].update({
