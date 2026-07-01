@@ -42,10 +42,13 @@ __pycache__/
 /*.patch
 /*.rej
 /*.orig
-/*.BAD.patch
+/* .BAD.patch
 /*_PATCH_REPORT.md
 /LATKA_*_COMMANDS.ps1
 
+# Local root inventory reports
+/docs/.root/
+/_root_list.py
 
 # Local packaging helper scripts
 /split_zip_sha.py
