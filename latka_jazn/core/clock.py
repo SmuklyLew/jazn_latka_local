@@ -37,6 +37,9 @@ class NetworkTimeCheckResult:
     elapsed_ms: int = 0
     timeout_seconds: float = 1.5
     urls_tried: list[str] = field(default_factory=list)
+    does_not_block_startup: bool = True
+    time_trust_state: str = "unknown_time_source"
+    fallback_sample: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -144,16 +147,27 @@ class WarsawClock:
                     elapsed_ms=elapsed_ms,
                     timeout_seconds=timeout_seconds,
                     urls_tried=[injected.source],
+                    does_not_block_startup=True,
+                    time_trust_state="trusted_time",
                 ).to_dict()
             sample = self._network_time(timeout_seconds=timeout_seconds, urls_tried=urls_tried)
             elapsed_ms = int((perf_counter() - started) * 1000)
             if sample is None:
+                fallback = self._local_time_sample()
                 return NetworkTimeCheckResult(
                     status="unavailable",
-                    error="network time unavailable; normal runtime must block ordinary visible replies or mark them degraded",
+                    error="network time unavailable; using explicit local machine fallback; this does not block runtime startup",
                     elapsed_ms=elapsed_ms,
                     timeout_seconds=timeout_seconds,
                     urls_tried=urls_tried,
+                    does_not_block_startup=True,
+                    time_trust_state="network_time_unavailable_local_machine_unverified",
+                    fallback_sample={
+                        "source": fallback.source,
+                        "trusted": fallback.trusted,
+                        "datetime_iso": fallback.dt.isoformat(),
+                        "error": fallback.error,
+                    },
                 ).to_dict()
             return NetworkTimeCheckResult(
                 status="ok",
@@ -162,6 +176,8 @@ class WarsawClock:
                 elapsed_ms=elapsed_ms,
                 timeout_seconds=timeout_seconds,
                 urls_tried=urls_tried,
+                does_not_block_startup=True,
+                time_trust_state="trusted_time",
             ).to_dict()
         except Exception as exc:
             elapsed_ms = int((perf_counter() - started) * 1000)
@@ -171,6 +187,14 @@ class WarsawClock:
                 elapsed_ms=elapsed_ms,
                 timeout_seconds=timeout_seconds,
                 urls_tried=urls_tried,
+                does_not_block_startup=True,
+                time_trust_state="network_time_check_error_local_machine_available",
+                fallback_sample={
+                    "source": self._local_time_sample().source,
+                    "trusted": False,
+                    "datetime_iso": self._local_time_sample().dt.isoformat(),
+                    "error": f"{type(exc).__name__}: {exc}",
+                },
             ).to_dict()
 
     def _network_time(self, *, timeout_seconds: float = 1.5, urls_tried: list[str] | None = None) -> TimeSample | None:

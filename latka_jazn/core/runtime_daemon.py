@@ -21,7 +21,7 @@ import uuid
 from latka_jazn.config import JaznConfig
 from latka_jazn.core.clock import WarsawClock
 from latka_jazn.core.runtime_session import JaznRuntimeSession
-from latka_jazn.core.runtime_truth_gate import daemon_active_state
+from latka_jazn.core.runtime_truth_gate import daemon_active_state, time_trust_state
 from latka_jazn.memory.runtime_write_access_contract import build_runtime_write_access_status
 from latka_jazn.tools.active_extraction_cache import (
     build_active_runtime_status,
@@ -172,12 +172,19 @@ def daemon_timestamp_contract(
     contract["daemon_status_network_time_allowed"] = network_allowed
     contract["daemon_status_network_time_timeout_seconds"] = float(timeout_seconds)
     contract["daemon_status_refresh_reason"] = reason
+    contract["time_trust_state"] = time_trust_state(
+        timestamp_trusted=bool(contract.get("trusted")),
+        timestamp_source=contract.get("source"),
+        time_error=contract.get("error"),
+    )
+    contract["does_not_block_startup"] = True
+    contract["runtime_startup_blocking"] = False
     if contract.get("trusted") is True:
         contract["daemon_status_time_mode"] = "trusted_time_confirmed"
         contract["error"] = None
     else:
-        contract["daemon_status_time_mode"] = "degraded_local_fallback"
-        contract["error"] = "daemon status could not confirm trusted network or injected time; active_state remains active_degraded"
+        contract["daemon_status_time_mode"] = "local_machine_unverified_nonblocking"
+        contract["error"] = contract.get("error") or "trusted network or injected time unavailable; using explicit local machine fallback without blocking runtime startup"
     return contract
 
 
@@ -409,15 +416,29 @@ class JaznDaemonServer(ThreadingHTTPServer):
         active = build_active_runtime_status(self.config.root, marker_output=self.marker_path)
         timestamp_contract = timestamp_contract or self.cached_timestamp_contract()
         runtime_version = str(active.get("version") or PACKAGE_VERSION)
-        active_state = "active_trusted" if timestamp_contract.get("trusted") is True else "active_degraded"
+        active_state = daemon_active_state(
+            marker_found=True,
+            pid_alive=True,
+            ping_ok=True,
+            timestamp_trusted=timestamp_contract.get("trusted"),
+        )
+        time_state = time_trust_state(
+            timestamp_trusted=timestamp_contract.get("trusted"),
+            timestamp_source=timestamp_contract.get("source"),
+            time_error=timestamp_contract.get("error"),
+        )
         runtime_write_access_status = build_runtime_write_access_status(self.config, initialize=False).to_dict()
         payload = {
             **active,
             "schema_version": DAEMON_SCHEMA_VERSION,
             "runtime_daemon": self.state.to_dict(),
             "active_state": active_state,
+            "runtime_active_state": active_state,
+            "time_trust_state": time_state,
             "timestamp_contract": timestamp_contract,
             "timestamp_trusted": bool(timestamp_contract.get("trusted")),
+            "timestamp_degraded": timestamp_contract.get("trusted") is not True,
+            "timestamp_does_not_block_startup": True,
             "runtime_write_access_status": runtime_write_access_status,
             "runtime_write_ready": bool(runtime_write_access_status.get("ok")),
             "daemon_pid": self.state.pid,
@@ -433,7 +454,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "runtime_version_full": PACKAGE_VERSION_FULL,
             "start_file": "main.py",
             "version": runtime_version,
-            "truth_boundary": "Ten marker oznacza działający lokalny proces daemonu tylko wtedy, gdy PID żyje, heartbeat jest świeży, /status odpowiada z localhost i active_state nie ukrywa trybu degraded. /status musi być szybkie i używa cache czasu; sieć odświeża osobny wątek.",
+            "truth_boundary": "Ten marker oznacza działający lokalny proces daemonu, gdy PID żyje, heartbeat jest świeży i /status odpowiada z localhost. Zaufanie czasu jest osobnym time_trust_state: brak czasu sieciowego nie blokuje startu, tylko jawnie oznacza lokalny czas maszyny jako niezweryfikowany.",
         }
         fresh, age, threshold = _heartbeat_fresh(payload)
         payload["heartbeat_fresh"] = fresh
@@ -448,15 +469,27 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "heartbeat_interval_seconds": self.heartbeat_interval,
         }
         heartbeat_fresh, heartbeat_age, heartbeat_threshold = _heartbeat_fresh(heartbeat_marker)
-        active_state = "active_trusted" if timestamp_contract.get("trusted") is True else "active_degraded"
         liveness_ok = bool(heartbeat_fresh and self.state.status != DAEMON_MARKER_STATUS_STOPPED)
         readiness_ok = bool(liveness_ok and self.marker_path.exists())
+        active_state = daemon_active_state(
+            marker_found=readiness_ok,
+            pid_alive=liveness_ok,
+            ping_ok=True,
+            timestamp_trusted=timestamp_contract.get("trusted"),
+        )
+        time_state = time_trust_state(
+            timestamp_trusted=timestamp_contract.get("trusted"),
+            timestamp_source=timestamp_contract.get("source"),
+            time_error=timestamp_contract.get("error"),
+        )
         return {
             "schema_version": DAEMON_SCHEMA_VERSION,
-            "ok": active_state == "active_trusted",
+            "ok": bool(readiness_ok and active_state == "active_trusted"),
             "liveness_ok": liveness_ok,
             "readiness_ok": readiness_ok,
             "active_state": active_state if readiness_ok else "inactive",
+            "runtime_active_state": active_state if readiness_ok else "inactive",
+            "time_trust_state": time_state,
             "daemon_pid": self.state.pid,
             "daemon_host": self.state.host,
             "daemon_port": self.state.port,
@@ -469,6 +502,8 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "endpoint": endpoint,
             "status_latency_ms": int(latency_ms or 0),
             "timestamp_trusted": bool(timestamp_contract.get("trusted")),
+            "timestamp_degraded": timestamp_contract.get("trusted") is not True,
+            "timestamp_does_not_block_startup": True,
             "timestamp_contract": timestamp_contract,
             "heartbeat_fresh": heartbeat_fresh,
             "heartbeat_age_seconds": heartbeat_age,
@@ -479,7 +514,7 @@ class JaznDaemonServer(ThreadingHTTPServer):
             "turn_count": self.state.turn_count,
             "sessions": len(self.sessions),
             "uptime_seconds": self.state.uptime_seconds(),
-            "truth_boundary": "Fast status endpoints avoid network and heavy cache work. active_trusted still requires an injected or network-confirmed trusted timestamp; active_degraded is alive but not fully trusted.",
+            "truth_boundary": "Fast status endpoints avoid network and heavy cache work. Runtime active_state depends on liveness/readiness; time_trust_state separately reports whether the timestamp is network/injected trusted or local machine unverified.",
         }
 
     def write_marker(self, *, status: str | None = None, timestamp_contract: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -776,9 +811,9 @@ def _probe_daemon_status(host: str, port: int, *, timeout: float = DEFAULT_LITE_
 def _daemon_degraded_recommendation(*, endpoint_reachable: bool, timestamp_trusted: bool | None, heartbeat_fresh: bool) -> dict[str, Any] | None:
     if endpoint_reachable and timestamp_trusted is not True:
         return {
-            "kind": "trusted_time_missing",
-            "summary": "Daemon żyje, ale nie ma potwierdzonego czasu. W środowisku ChatGPT wstrzyknij zaufany timestamp z loadera albo pozwól na network-time.",
-            "example": "python -X utf8 main.py --trusted-time-iso <ISO_FROM_CHATGPT_LOADER> --trusted-time-source chatgpt_loader --daemon-start",
+            "kind": "trusted_time_missing_nonblocking",
+            "summary": "Daemon żyje. Nie ma potwierdzonego czasu sieciowego/wstrzykniętego, więc czas jest lokalny i niezweryfikowany, ale nie blokuje startu runtime.",
+            "example": "Opcjonalnie: python -X utf8 main.py --trusted-time-iso <ISO_FROM_CHATGPT_LOADER> --trusted-time-source chatgpt_loader --daemon-start",
         }
     if heartbeat_fresh and not endpoint_reachable:
         return {
@@ -863,6 +898,9 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
     else:
         pid_alive_source = "unverified"
     timestamp_trusted = (ping or {}).get("timestamp_trusted") if isinstance(ping, dict) else None
+    timestamp_source = ((ping or {}).get("timestamp_contract") or {}).get("source") if isinstance(ping, dict) else None
+    timestamp_error = ((ping or {}).get("timestamp_contract") or {}).get("error") if isinstance(ping, dict) else None
+    time_state = time_trust_state(timestamp_trusted=timestamp_trusted, timestamp_source=timestamp_source, time_error=timestamp_error)
     active_state = daemon_active_state(marker_found=marker is not None, pid_alive=alive, ping_ok=endpoint_reachable, timestamp_trusted=timestamp_trusted)
     active_state_reason = "endpoint_status"
     if active_state == "inactive" and marker is not None and os_pid_alive and heartbeat_is_fresh:
@@ -873,6 +911,10 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
         "ok": active_state == "active_trusted",
         "active_state": active_state,
         "degraded": active_state == "active_degraded",
+        "runtime_active_state": active_state,
+        "time_trust_state": time_state,
+        "timestamp_degraded": timestamp_trusted is not True,
+        "timestamp_does_not_block_startup": True,
         "runtime_version": PACKAGE_VERSION_FULL,
         "active_root": str(config.root),
         "marker_path": str(marker_path),
@@ -888,6 +930,8 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
         "ping": ping,
         "ping_error": ping_error,
         "timestamp_trusted": timestamp_trusted,
+        "timestamp_source": timestamp_source,
+        "timestamp_error": timestamp_error,
         "heartbeat_fresh": heartbeat_is_fresh,
         "heartbeat_age_seconds": heartbeat_age_seconds,
         "heartbeat_fresh_threshold_seconds": heartbeat_fresh_threshold_seconds,
@@ -897,7 +941,7 @@ def status_daemon(config: JaznConfig, *, host: str = DEFAULT_DAEMON_HOST, port: 
             timestamp_trusted=timestamp_trusted,
             heartbeat_fresh=heartbeat_is_fresh,
         ),
-        "truth_boundary": "Status active_trusted wymaga markera, potwierdzonego procesu, lokalnego endpointu /status i zaufanego czasu sieciowego albo jawnie wstrzykniętego trusted timestampu z loadera. Jeżeli endpoint chwilowo nie odpowie, świeży heartbeat i żywy PID dają najwyżej active_degraded, nigdy active_trusted.",
+        "truth_boundary": "Status active_trusted wymaga markera, potwierdzonego procesu i lokalnego endpointu /status. Zaufany czas sieciowy albo wstrzyknięty jest raportowany osobno jako time_trust_state; jego brak nie blokuje startu runtime. Jeżeli endpoint chwilowo nie odpowie, świeży heartbeat i żywy PID dają active_degraded.",
     }
 
 

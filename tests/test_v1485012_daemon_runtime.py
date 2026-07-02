@@ -55,7 +55,7 @@ def test_daemon_status_without_running_process_is_truthful(tmp_path: Path):
 
 def test_daemon_marker_payload_uses_full_release_version(tmp_path: Path):
     (tmp_path / "main.py").write_text("print('stub')\n", encoding="utf-8")
-    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION}\n", encoding="utf-8")
+    (tmp_path / "VERSION.txt").write_text(f"{PACKAGE_VERSION_FULL}\n", encoding="utf-8")
     (tmp_path / "MANIFEST_CURRENT.json").write_text("{}\n", encoding="utf-8")
     marker_path = daemon_default_marker_path(tmp_path)
     write_active_runtime_marker(tmp_path, marker_output=marker_path)
@@ -131,8 +131,11 @@ def test_status_daemon_uses_endpoint_pid_match_when_os_probe_fails(monkeypatch, 
     assert status["pid_alive_os_probe"] is False
     assert status["pid_alive_source"] == "endpoint_pid_match"
     assert status["endpoint_pid_matches"] is True
-    assert status["active_state"] == "active_degraded"
-    assert status["ok"] is False
+    assert status["active_state"] == "active_trusted"
+    assert status["runtime_active_state"] == "active_trusted"
+    assert status["time_trust_state"] in {"unknown_time_source", "local_machine_unverified"}
+    assert status["timestamp_does_not_block_startup"] is True
+    assert status["ok"] is True
 
 
 def test_daemon_status_endpoint_uses_cached_time_without_blocking_network(monkeypatch, tmp_path: Path):
@@ -162,7 +165,10 @@ def test_daemon_status_endpoint_uses_cached_time_without_blocking_network(monkey
     finally:
         server.server_close()
 
-    assert payload["active_state"] == "active_degraded"
+    assert payload["active_state"] == "active_trusted"
+    assert payload["runtime_active_state"] == "active_trusted"
+    assert payload["time_trust_state"] == "local_machine_unverified"
+    assert payload["timestamp_does_not_block_startup"] is True
     assert payload["timestamp_contract"]["daemon_status_fast_path"] is True
     assert calls
     assert all(network_first is False for network_first, _timeout in calls)
