@@ -52,14 +52,16 @@ class RuntimeTruthGateResult:
     timestamp_present: bool | None = None
     timestamp_freshness_seconds: int | None = None
     timestamp_max_age_seconds: int | None = None
+    time_trust_state: str | None = None
+    runtime_active_state: str | None = None
     final_visible_integrity_valid: bool | None = None
     final_visible_origin_valid: bool | None = None
     truthful_degraded_disclosure: bool = False
     untrusted_timestamp_header: str | None = None
     truth_boundary: str = (
-        "Brama prawdy runtime dopuszcza zwykłą odpowiedź Jaźni, gdy finalny widoczny tekst ma "
-        "timestamp obecny i świeży. Czas sieciowy albo zaufany czas wstrzyknięty przez loader daje stan active_trusted. "
-        "Lokalny fallback bez zaufanego źródła daje stan active_degraded, ale nie blokuje samej rozmowy."
+        "Brama prawdy runtime rozdziela aktywność Jaźni od jakości źródła czasu. "
+        "Brak czasu sieciowego nie blokuje startu runtime ani zwykłej odpowiedzi, jeżeli timestamp jest obecny i świeży. "
+        "Lokalny czas maszyny pozostaje jawnie oznaczony jako niezweryfikowany, ale nie robi z żywego runtime active_degraded."
     )
 
     def to_dict(self) -> dict[str, Any]:
@@ -133,10 +135,14 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
     degraded_errors = [error for error in errors if error in TIMESTAMP_DEGRADED_ERRORS]
     ok = not blocking_errors
     degraded = bool(degraded_errors) and ok
+    time_trust = "trusted_time" if trusted is True and _source_is_network(source) else "local_machine_unverified" if present and freshness_ok else "time_unavailable"
+    active_state = "active_blocked" if not ok else "active_trusted"
+    if truthful_degraded_disclosure:
+        active_state = "active_degraded"
     return RuntimeTruthGateResult(
         ok=ok,
         normal_response_allowed=bool(ok and not truthful_degraded_disclosure),
-        active_state="active_degraded" if degraded or truthful_degraded_disclosure else ("active_trusted" if ok else "active_blocked"),
+        active_state=active_state,
         error_code=(disclosure_error if truthful_degraded_disclosure else ("timestamp_degraded" if degraded else (None if ok else "runtime_truth_gate_blocked"))),
         errors=errors,
         timestamp_source=str(source) if source is not None else None,
@@ -144,6 +150,8 @@ def evaluate_final_response_contract(contract: dict[str, Any] | None) -> Runtime
         timestamp_present=present,
         timestamp_freshness_seconds=int(freshness_seconds) if isinstance(freshness_seconds, int) else None,
         timestamp_max_age_seconds=int(max_age_seconds) if isinstance(max_age_seconds, int) else None,
+        time_trust_state=time_trust,
+        runtime_active_state=active_state,
         final_visible_integrity_valid=valid,
         final_visible_origin_valid=origin_truth_valid,
         truthful_degraded_disclosure=truthful_degraded_disclosure,
@@ -199,7 +207,7 @@ def apply_runtime_truth_gate(result: dict[str, Any]) -> tuple[dict[str, Any], di
             decision["normal_response_allowed"] = False
             decision["requires_host_model"] = True
             updated["conversation_decision"] = decision
-        elif gate.active_state == "active_degraded":
+        elif gate.error_code == "timestamp_degraded" or gate.time_trust_state == "local_machine_unverified":
             updated["timestamp_degraded"] = True
             updated["runtime_response_status"] = "normal_response_allowed_degraded_timestamp"
             decision = updated.get("conversation_decision") if isinstance(updated.get("conversation_decision"), dict) else {}
@@ -213,9 +221,20 @@ def apply_runtime_truth_gate(result: dict[str, Any]) -> tuple[dict[str, Any], di
     return updated, gate_payload
 
 
+def time_trust_state(*, timestamp_trusted: bool | None, timestamp_source: str | None = None, time_error: str | None = None) -> str:
+    source = str(timestamp_source or "").strip().lower()
+    if timestamp_trusted is True:
+        return "trusted_time"
+    if time_error or "network_time_unavailable" in source:
+        return "network_time_unavailable_local_machine_unverified"
+    if source:
+        return "local_machine_unverified"
+    return "unknown_time_source"
+
+
 def daemon_active_state(*, marker_found: bool, pid_alive: bool, ping_ok: bool, timestamp_trusted: bool | None) -> str:
+    # Runtime liveness is marker + process + endpoint. Timestamp trust is reported
+    # separately by time_trust_state; missing network time must not block startup.
     if not (marker_found and pid_alive and ping_ok):
         return "inactive"
-    if timestamp_trusted is True:
-        return "active_trusted"
-    return "active_degraded"
+    return "active_trusted"

@@ -13,6 +13,7 @@ from latka_jazn.core.runtime_truth_gate import (
     apply_runtime_truth_gate,
     daemon_active_state,
     evaluate_final_response_contract,
+    time_trust_state,
 )
 from latka_jazn.core.timestamp_policy import timestamp_runtime_policy
 from latka_jazn.core import chat_command_contract as chat_bridge
@@ -45,7 +46,9 @@ def test_truth_gate_allows_degraded_local_timestamp_without_blocking() -> None:
     gate = evaluate_final_response_contract(_contract(trusted=False, source="local_fallback"))
     assert gate.ok is True
     assert gate.normal_response_allowed is True
-    assert gate.active_state == "active_degraded"
+    assert gate.active_state == "active_trusted"
+    assert gate.runtime_active_state == "active_trusted"
+    assert gate.time_trust_state == "local_machine_unverified"
     assert gate.error_code == "timestamp_degraded"
     assert "timestamp_untrusted" in gate.errors
     assert "timestamp_source_not_network" in gate.errors
@@ -55,6 +58,7 @@ def test_truth_gate_allows_fresh_network_timestamp() -> None:
     gate = evaluate_final_response_contract(_contract(trusted=True, source="https://www.google.com/generate_204#http-date"))
     assert gate.ok is True
     assert gate.active_state == "active_trusted"
+    assert gate.time_trust_state == "trusted_time"
     assert gate.errors == []
 
 
@@ -66,7 +70,8 @@ def test_apply_truth_gate_marks_degraded_timestamp_without_replacing_visible_tex
     }
     updated, payload = apply_runtime_truth_gate(result)
     assert payload["normal_response_allowed"] is True
-    assert payload["active_state"] == "active_degraded"
+    assert payload["active_state"] == "active_trusted"
+    assert payload["time_trust_state"] == "local_machine_unverified"
     assert updated["ok"] is True
     assert updated["normal_response_blocked"] is False
     assert updated["timestamp_degraded"] is True
@@ -115,9 +120,15 @@ def test_chat_bridge_does_not_overwrite_runtime_truth_gate_block(monkeypatch, tm
     [
         (False, False, False, None, "inactive"),
         (True, True, False, True, "inactive"),
-        (True, True, True, False, "active_degraded"),
+        (True, True, True, False, "active_trusted"),
         (True, True, True, True, "active_trusted"),
     ],
 )
 def test_daemon_active_state_matrix(marker_found, pid_alive, ping_ok, timestamp_trusted, expected) -> None:
     assert daemon_active_state(marker_found=marker_found, pid_alive=pid_alive, ping_ok=ping_ok, timestamp_trusted=timestamp_trusted) == expected
+
+
+def test_time_trust_state_reports_untrusted_clock_separately() -> None:
+    assert time_trust_state(timestamp_trusted=True, timestamp_source="https://example.test#http-date") == "trusted_time"
+    assert time_trust_state(timestamp_trusted=False, timestamp_source="local_fallback") == "local_machine_unverified"
+    assert time_trust_state(timestamp_trusted=False, timestamp_source="network_time_unavailable") == "network_time_unavailable_local_machine_unverified"
