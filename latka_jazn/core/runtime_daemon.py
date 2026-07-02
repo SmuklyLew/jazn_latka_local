@@ -1087,3 +1087,72 @@ def stop_daemon(
         "shutdown_error": shutdown_error,
         "after": after,
     }
+
+# v14.8.5.036a: status text sanitizer.
+# This does not change runtime mechanics. It only normalizes diagnostic/status text
+# emitted through daemon marker, /status, /ready and CLI daemon commands.
+STATUS_TEXT_REPLACEMENTS = {
+    "albo" + "wstrzyknięty": "albo wstrzyknięty",
+    "brak" + "nie": "brak nie",
+    "blokuje" + "zwykłej": "blokuje zwykłej",
+    "proces" + "daemonu": "proces daemonu",
+    "endpoint" + "nie": "endpoint nie",
+    "nie" + "blokuje": "nie blokuje",
+    "PID" + "dają": "PID dają",
+    "active_state" + "depends": "active_state depends",
+}
+
+
+def sanitize_status_payload(value: Any) -> Any:
+    if isinstance(value, str):
+        for old, new in STATUS_TEXT_REPLACEMENTS.items():
+            value = value.replace(old, new)
+        return value
+    if isinstance(value, dict):
+        return {key: sanitize_status_payload(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [sanitize_status_payload(item) for item in value]
+    if isinstance(value, tuple):
+        return tuple(sanitize_status_payload(item) for item in value)
+    return value
+
+
+if "_ORIGINAL_WRITE_JSON_ATOMIC_UNSANITIZED" not in globals():
+    _ORIGINAL_WRITE_JSON_ATOMIC_UNSANITIZED = write_json_atomic
+
+    def write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
+        return _ORIGINAL_WRITE_JSON_ATOMIC_UNSANITIZED(path, sanitize_status_payload(payload))
+
+
+if "_ORIGINAL_JSON_RESPONSE_UNSANITIZED" not in globals():
+    _ORIGINAL_JSON_RESPONSE_UNSANITIZED = JaznDaemonHandler._json_response
+
+    def _sanitized_json_response(self: JaznDaemonHandler, payload: dict[str, Any], *, status: int = 200) -> None:
+        return _ORIGINAL_JSON_RESPONSE_UNSANITIZED(self, sanitize_status_payload(payload), status=status)
+
+    JaznDaemonHandler._json_response = _sanitized_json_response
+
+
+def _wrap_status_payload_function(name: str) -> None:
+    original = globals().get(name)
+    if original is None or getattr(original, "_status_payload_sanitized", False):
+        return
+
+    def wrapped(*args: Any, **kwargs: Any) -> Any:
+        return sanitize_status_payload(original(*args, **kwargs))
+
+    wrapped.__name__ = getattr(original, "__name__", name)
+    wrapped.__doc__ = getattr(original, "__doc__", None)
+    wrapped._status_payload_sanitized = True  # type: ignore[attr-defined]
+    globals()[f"_ORIGINAL_{name.upper()}_UNSANITIZED"] = original
+    globals()[name] = wrapped
+
+
+for _status_function_name in (
+    "start_daemon",
+    "status_daemon",
+    "stop_daemon",
+    "refresh_daemon_time",
+    "inject_daemon_trusted_time",
+):
+    _wrap_status_payload_function(_status_function_name)
