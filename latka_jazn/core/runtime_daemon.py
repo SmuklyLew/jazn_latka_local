@@ -575,6 +575,7 @@ class JaznDaemonHandler(BaseHTTPRequestHandler):
             return text
 
     def _json_response(self, payload: dict[str, Any], *, status: int = 200) -> None:
+        payload = sanitize_status_payload(payload)
         data = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
         try:
             self.send_response(status)
@@ -1088,7 +1089,7 @@ def stop_daemon(
         "after": after,
     }
 
-# v14.8.5.036a: status text sanitizer.
+# v14.8.5.036b: status text sanitizer.
 # This does not change runtime mechanics. It only normalizes diagnostic/status text
 # emitted through daemon marker, /status, /ready and CLI daemon commands.
 STATUS_TEXT_REPLACEMENTS = {
