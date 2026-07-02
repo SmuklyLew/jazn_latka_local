@@ -1097,6 +1097,9 @@ STATUS_TEXT_REPLACEMENTS = {
     "blokuje" + "zwykłej": "blokuje zwykłej",
     "proces" + "daemonu": "proces daemonu",
     "endpoint" + "nie": "endpoint nie",
+    "nie" + "blokuje": "nie blokuje",
+    "PID" + "dają": "PID dają",
+    "active_state" + "depends": "active_state depends",
 }
 
 
@@ -1153,4 +1156,3 @@ for _status_function_name in (
     "inject_daemon_trusted_time",
 ):
     _wrap_status_payload_function(_status_function_name)
-

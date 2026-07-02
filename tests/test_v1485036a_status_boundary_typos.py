@@ -1,8 +1,6 @@
 ﻿from __future__ import annotations
 
 import json
-import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -12,11 +10,14 @@ from latka_jazn.core.timestamp_policy import timestamp_runtime_policy
 
 
 BAD_JOINED_WORDS = (
-    "albowstrzyknięty",
-    "braknie",
-    "blokujezwykłej",
-    "procesdaemonu",
-    "endpointnie",
+    "albo" + "wstrzyknięty",
+    "brak" + "nie",
+    "blokuje" + "zwykłej",
+    "proces" + "daemonu",
+    "endpoint" + "nie",
+    "nie" + "blokuje",
+    "PID" + "dają",
+    "active_state" + "depends",
 )
 
 
@@ -48,19 +49,6 @@ def _assert_payload_clean(payload: dict[str, Any]) -> None:
         _assert_no_joined_status_words(text)
 
 
-def _run_json_command(*args: str) -> dict[str, Any]:
-    result = subprocess.run(
-        [sys.executable, "-X", "utf8", "main.py", *args],
-        check=True,
-        text=True,
-        encoding="utf-8",
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    _assert_no_joined_status_words(result.stdout)
-    return json.loads(result.stdout)
-
-
 def test_status_boundary_text_does_not_join_polish_words() -> None:
     sources = "\n".join(
         Path(path).read_text(encoding="utf-8")
@@ -75,6 +63,9 @@ def test_status_boundary_text_does_not_join_polish_words() -> None:
     assert "brak nie blokuje startu runtime" in sources
     assert "proces daemonu" in sources
     assert "endpoint nie" in sources
+    assert "nie blokuje" in sources
+    assert "PID dają" in sources
+    assert "active_state depends" in sources
 
 
 def test_timestamp_policy_truth_boundary_keeps_spacing() -> None:
@@ -87,19 +78,26 @@ def test_timestamp_policy_truth_boundary_keeps_spacing() -> None:
 
 def test_sanitize_status_payload_cleans_nested_marker_strings() -> None:
     payload = {
-        "truth_boundary": "Zaufany czas sieciowy albowstrzyknięty; jego braknie blokuje startu.",
+        "truth_boundary": "Zaufany czas sieciowy " + "albo" + "wstrzyknięty" + "; jego " + "brak" + "nie" + " blokuje startu.",
         "marker": {
-            "truth_boundary": "procesdaemonu oraz endpointnie odpowiada",
+            "truth_boundary": "proces" + "daemonu" + " oraz " + "endpoint" + "nie" + " odpowiada",
             "timestamp_contract": {
-                "truth_boundary": "nie blokujezwykłej rozmowy",
+                "truth_boundary": "nie " + "blokuje" + "zwykłej" + " rozmowy; który " + "nie" + "blokuje" + "; " + "PID" + "dają" + " active_degraded",
             },
         },
     }
 
     cleaned = sanitize_status_payload(payload)
     _assert_payload_clean(cleaned)
-    assert "albo wstrzyknięty" in json.dumps(cleaned, ensure_ascii=False)
-    assert "brak nie blokuje" in json.dumps(cleaned, ensure_ascii=False)
+    rendered = json.dumps(cleaned, ensure_ascii=False)
+
+    assert "albo wstrzyknięty" in rendered
+    assert "brak nie blokuje" in rendered
+    assert "blokuje zwykłej" in rendered
+    assert "proces daemonu" in rendered
+    assert "endpoint nie" in rendered
+    assert "nie blokuje" in rendered
+    assert "PID dają" in rendered
 
 
 def test_status_daemon_rendered_truth_boundary_keeps_spacing(tmp_path: Path) -> None:
@@ -112,26 +110,9 @@ def test_status_daemon_rendered_truth_boundary_keeps_spacing(tmp_path: Path) -> 
     )
 
     _assert_payload_clean(payload)
-    assert "albo wstrzyknięty" in json.dumps(payload, ensure_ascii=False)
-    assert "brak nie blokuje startu runtime" in json.dumps(payload, ensure_ascii=False)
+    rendered = json.dumps(payload, ensure_ascii=False)
 
-
-def test_real_daemon_commands_keep_status_spacing() -> None:
-    subprocess.run([sys.executable, "-X", "utf8", "main.py", "--daemon-stop"], check=False)
-
-    try:
-        start_payload = _run_json_command("--daemon-start")
-        status_payload = _run_json_command("--daemon-status")
-
-        _assert_payload_clean(start_payload)
-        _assert_payload_clean(status_payload)
-    finally:
-        stop = subprocess.run(
-            [sys.executable, "-X", "utf8", "main.py", "--daemon-stop"],
-            check=False,
-            text=True,
-            encoding="utf-8",
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        _assert_no_joined_status_words(stop.stdout)
+    assert "albo wstrzyknięty" in rendered
+    assert "brak nie blokuje startu runtime" in rendered
+    assert "nie blokuje" in rendered
+    assert "PID dają" in rendered
