@@ -9,9 +9,9 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, PACKAGE_VE
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNTIME_VERSION = "v14.8.5.026C"
-RELEASE_NAME = "voice-perspective-first-person-contract"
-PROJECT_VERSION = "14.8.5.26c0"
+RUNTIME_VERSION = "v14.8.6.0.A"
+RELEASE_NAME = "dokladne-naprawy-host-bridge-adaptery-time-source-i-drobne-potkniecia"
+PROJECT_VERSION = "14.8.6.0a0"
 
 
 def _checksum_entries(name: str) -> dict[str, str]:

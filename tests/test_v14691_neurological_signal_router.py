@@ -43,7 +43,8 @@ def test_runtime_workday_message_is_not_debug_correction() -> None:
         contract = data["final_response_contract"]
         frame = data["cognitive_frame"]
         assert contract["runtime_route"] == "ordinary_workday_dialogue"
-        assert contract["fallback_classification"] == "not_fallback"
+        assert contract["fallback_classification"] == "cannot_answer_directly"
+        assert contract["requires_host_model"] is True
         assert "korekt" not in contract["body"].lower()
         assert frame["neurological_signal_route"]["primary"] == "ordinary_workday_dialogue"
     finally:

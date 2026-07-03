@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-PACKAGE_VERSION = "v14.8.5.036b"
-PACKAGE_RELEASE_NAME = "time-source-status-boundary-typo-fix"
+PACKAGE_VERSION = "v14.8.6.0.A"
+PACKAGE_RELEASE_NAME = "dokladne-naprawy-host-bridge-adaptery-time-source-i-drobne-potkniecia"
 PACKAGE_VERSION_FULL = f"{PACKAGE_VERSION}-{PACKAGE_RELEASE_NAME}"
 RUNTIME_CONTRACT_VERSION = PACKAGE_VERSION
 RUNTIME_CONTRACT_VERSION_FULL = PACKAGE_VERSION_FULL

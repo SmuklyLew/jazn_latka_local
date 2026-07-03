@@ -1,8 +1,15 @@
 {
   "schema_version": "jazn_update_history_index/v14.6.10",
   "generated_at_utc": "2026-06-30T20:41:11.013147+00:00",
-  "active_version": "v14.8.5.026C",
+  "active_version": "v14.8.6.0.A",
   "entries": [
+    {
+      "version": "v14.8.6.0.A",
+      "release_name": "dokladne-naprawy-host-bridge-adaptery-time-source-i-drobne-potkniecia",
+      "path": "docs/patches/v14.8.6.0A_host_bridge_adapters_time_source_repair_REPORT.md",
+      "type": "patch",
+      "summary": "Repairs ChatGPT host-visible generation handshakes, daemon parity, adapter diagnostics and environment-aware time provenance."
+    },
     {
       "version": "v14.8.5.026C",
       "release_name": "voice-perspective-first-person-contract",
@@ -11,6 +18,6 @@
       "summary": "Normalizes voice-perspective release metadata and keeps memory exports out of MANIFEST_CURRENT."
     }
   ],
-  "entry_count": 1,
+  "entry_count": 2,
   "truth_boundary": "Indeks porządkuje historyczne manifesty. Nie oznacza, że wszystkie stare deklaracje muszą być aktywną funkcją runtime."
 }

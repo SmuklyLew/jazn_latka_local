@@ -3,9 +3,9 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from time import perf_counter
-from typing import Any
+from typing import Any, Mapping
 import email.utils
-import json, os, re, urllib.request
+import json, os, platform, re, urllib.request
 
 from .timestamp_policy import (
     TIMESTAMP_LOCAL_FALLBACK_ALLOWED_DEFAULT,
@@ -86,22 +86,168 @@ def resolve_timezone(timezone_name: str = "Europe/Warsaw"):
         return timezone.utc
 
 
+@dataclass(slots=True)
+class TimeSourceResolution:
+    platform_system: str
+    os_name: str
+    shell: str
+    terminal: str
+    timestamp_source: str
+    timestamp_source_detail: str
+    timestamp_trusted: bool
+    timestamp_freshness_ok: bool
+    timestamp_freshness_seconds: int
+    timezone_key: str
+    utc_iso: str
+    local_iso: str
+    human_time_header: str
+    status: str
+    timezone_status: str
+    degradation_reason: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+class TimeSourceResolver:
+    """Central, environment-aware timestamp resolver.
+
+    Python's aware UTC clock is the local baseline. Network and injected time
+    may raise trust, but the resolver never labels system time as network time.
+    Missing IANA data degrades the Warsaw conversion without crashing runtime.
+    """
+
+    def __init__(
+        self,
+        timezone_name: str = "Europe/Warsaw",
+        *,
+        env: Mapping[str, str] | None = None,
+    ) -> None:
+        self.timezone_name = timezone_name
+        self.env = env if env is not None else os.environ
+        self.timezone_degraded = False
+        self.timezone_degradation_reason: str | None = None
+        try:
+            self.tz = ZoneInfo(timezone_name)
+            self.timezone_status = "iana_zoneinfo"
+        except ZoneInfoNotFoundError:
+            self.tz = resolve_timezone(timezone_name)
+            self.timezone_degraded = True
+            self.timezone_status = "degraded_fixed_offset" if timezone_name == "Europe/Warsaw" else "degraded_utc"
+            self.timezone_degradation_reason = (
+                f"ZoneInfo timezone '{timezone_name}' is unavailable; install the tzdata package on Windows or provide an IANA tzdb. "
+                "Runtime uses a controlled fallback and does not claim full timezone accuracy."
+            )
+
+    def environment(self) -> dict[str, str]:
+        return {
+            "platform_system": platform.system() or "unknown",
+            "os_name": os.name or "unknown",
+            "shell": self._detect_shell(self.env),
+            "terminal": self._detect_terminal(self.env),
+        }
+
+    @staticmethod
+    def _detect_shell(env: Mapping[str, str]) -> str:
+        shell = str(env.get("SHELL") or "").strip().replace("\\", "/").rsplit("/", 1)[-1].lower()
+        if shell:
+            if "bash" in shell:
+                return "bash"
+            if "zsh" in shell:
+                return "zsh"
+            if "fish" in shell:
+                return "fish"
+            return shell
+        if env.get("PSModulePath") or env.get("POWERSHELL_DISTRIBUTION_CHANNEL"):
+            return "powershell"
+        comspec = str(env.get("ComSpec") or env.get("COMSPEC") or "").replace("\\", "/").lower()
+        if comspec.endswith("/cmd.exe"):
+            return "cmd"
+        return "unknown"
+
+    @staticmethod
+    def _detect_terminal(env: Mapping[str, str]) -> str:
+        if env.get("WT_SESSION"):
+            return "windows_terminal"
+        term_program = str(env.get("TERM_PROGRAM") or "").strip().lower()
+        if term_program:
+            return term_program
+        term = str(env.get("TERM") or "").strip().lower()
+        return term or "unknown"
+
+    @staticmethod
+    def _classify_source(sample: TimeSample) -> str:
+        source = str(sample.source or "").strip().lower()
+        if sample.trusted and (
+            source.startswith(("http://", "https://", "network_", "ntp_", "test_network"))
+            or source.startswith(("chatgpt_web_time_tool", "chatgpt_loader_time", "openai_web_time_tool", "external_trusted_time", "injected_trusted_time"))
+            or "#http-date" in source
+        ):
+            return "network"
+        if source in {"system_utc", "utc_system_clock"}:
+            return "system_utc"
+        if source in {"local_fallback", "system_local", "local_machine"}:
+            return "system_local"
+        if source:
+            return "runtime_fallback"
+        return "unavailable"
+
+    @staticmethod
+    def _header(local_dt: datetime, timezone_name: str) -> str:
+        offset_seconds = int(local_dt.utcoffset().total_seconds()) if local_dt.utcoffset() else 0
+        offset_hours = offset_seconds // 3600
+        sign = "+" if offset_hours >= 0 else ""
+        return f"[🕒 {local_dt:%Y-%m-%d %H:%M:%S} GMT{sign}{offset_hours}, {POLISH_WEEKDAYS[local_dt.weekday()]}, {timezone_name}]"
+
+    def resolve(self, sample: TimeSample, *, max_age_seconds: int = TIMESTAMP_MAX_AGE_SECONDS) -> TimeSourceResolution:
+        environment = self.environment()
+        degradation: list[str] = []
+        sample_dt = sample.dt
+        if sample_dt.tzinfo is None:
+            sample_dt = sample_dt.replace(tzinfo=timezone.utc)
+            degradation.append("naive_datetime_assumed_utc")
+        utc_now = datetime.now(timezone.utc)
+        sample_utc = sample_dt.astimezone(timezone.utc)
+        local_dt = sample_utc.astimezone(self.tz)
+        freshness_seconds = abs(int((utc_now - sample_utc).total_seconds()))
+        freshness_ok = freshness_seconds <= max_age_seconds
+        source_class = self._classify_source(sample)
+        trusted = bool(sample.trusted and source_class == "network" and freshness_ok)
+        if self.timezone_degradation_reason:
+            degradation.append(self.timezone_degradation_reason)
+        if sample.error:
+            degradation.append(str(sample.error))
+        if not freshness_ok:
+            degradation.append(f"timestamp_stale:{freshness_seconds}s>{max_age_seconds}s")
+        if source_class != "network":
+            degradation.append("local_machine_time_unverified")
+        status = "active_trusted" if trusted and not self.timezone_degraded else "active_degraded"
+        if source_class == "unavailable":
+            status = "unavailable"
+        return TimeSourceResolution(
+            **environment,
+            timestamp_source=source_class,
+            timestamp_source_detail=str(sample.source or "unavailable"),
+            timestamp_trusted=trusted,
+            timestamp_freshness_ok=freshness_ok,
+            timestamp_freshness_seconds=freshness_seconds,
+            timezone_key=self.timezone_name,
+            utc_iso=sample_utc.isoformat(),
+            local_iso=local_dt.isoformat(),
+            human_time_header=self._header(local_dt, self.timezone_name),
+            status=status,
+            timezone_status=self.timezone_status,
+            degradation_reason="; ".join(dict.fromkeys(degradation)) or None,
+        )
+
+
 class WarsawClock:
     def __init__(self, timezone_name: str = "Europe/Warsaw") -> None:
         self.timezone_name = timezone_name
-        self.degraded = False
-        self.degraded_reason: str | None = None
-        try:
-            self.tz = ZoneInfo(timezone_name)
-        except ZoneInfoNotFoundError:
-            self.tz = resolve_timezone(timezone_name)
-            self.degraded = True
-            self.degraded_reason = (
-                f"ZoneInfo timezone '{timezone_name}' is not available. "
-                "Install tzdata with: py -m pip install tzdata. "
-                "Using a degraded Europe/Warsaw fixed-offset fallback for startup; "
-                "this is not a full IANA timezone database."
-            )
+        self.resolver = TimeSourceResolver(timezone_name)
+        self.tz = self.resolver.tz
+        self.degraded = self.resolver.timezone_degraded
+        self.degraded_reason = self.resolver.timezone_degradation_reason
         self.last_sample: TimeSample | None = None
 
     def now(
@@ -298,11 +444,8 @@ class WarsawClock:
         # P0 timestamp: gdy nie przekazano próbki, header sam próbuje czasu sieciowego.
         # Lokalny fallback pozostaje jawnie nieufny w TimeSample.trusted/source.
         sample = sample or self.now(network_first=network_first)
-        dt = sample.dt.astimezone(self.tz)
-        offset_seconds = int(dt.utcoffset().total_seconds()) if dt.utcoffset() else 0
-        offset_hours = offset_seconds // 3600
-        sign = "+" if offset_hours >= 0 else ""
-        return f"[🕒 {dt:%Y-%m-%d %H:%M:%S} GMT{sign}{offset_hours}, {POLISH_WEEKDAYS[dt.weekday()]}, Europe/Warsaw]"
+        return self.resolver.resolve(sample).human_time_header
+
     def sample_contract(self, sample: TimeSample | None = None) -> dict[str, Any]:
         sample = sample or self.last_sample or self.now(network_first=TIMESTAMP_NETWORK_FIRST_DEFAULT)
         policy = timestamp_runtime_policy()
@@ -310,9 +453,11 @@ class WarsawClock:
         if injected_max_age is not None and self._source_is_injected_trusted_time(sample.source):
             # Keep injected-time freshness validation consistent with the clock acceptance policy.
             policy["max_age_seconds"] = injected_max_age
+        resolution = self.resolver.resolve(sample, max_age_seconds=int(policy["max_age_seconds"]))
         return {
             **policy,
-            "timestamp_header": self.header(sample),
+            **resolution.to_dict(),
+            "timestamp_header": resolution.human_time_header,
             "sample_iso": sample.dt.isoformat(),
             "source": sample.source,
             "trusted": sample.trusted,

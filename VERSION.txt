@@ -1,1 +1,1 @@
-v14.8.5.036b-time-source-status-boundary-typo-fix
+v14.8.6.0.A-dokladne-naprawy-host-bridge-adaptery-time-source-i-drobne-potkniecia

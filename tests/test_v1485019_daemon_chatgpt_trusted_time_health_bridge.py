@@ -96,9 +96,10 @@ def test_status_daemon_recommends_trusted_time_when_alive_but_degraded(monkeypat
 
     status = runtime_daemon_module.status_daemon(cfg)
 
-    assert status["active_state"] == "active_degraded"
+    assert status["active_state"] == "active_trusted"
+    assert status["time_trust_state"] == "unknown_time_source"
     assert status["ping_endpoint"] == "/ready"
-    assert status["recommended_repair"]["kind"] == "trusted_time_missing"
+    assert status["recommended_repair"]["kind"] == "trusted_time_missing_nonblocking"
 
 
 def test_chat_daemon_returns_structured_error_on_empty_message(tmp_path: Path) -> None:

@@ -54,8 +54,32 @@ class ModelGuidedResponseSynthesizer:
         response_policy: dict[str, Any],
     ) -> ModelGuidedSynthesis:
         status = adapter.describe() if hasattr(adapter, "describe") else {"status": "unknown"}
+        adapter_id = str(status.get("adapter_id") or status.get("name") or "none")
+        provider = str(status.get("provider") or adapter_id)
+        model = str(status.get("model") or status.get("model_name") or "none")
+        if adapter_id == "chatgpt_runtime_adapter":
+            return ModelGuidedSynthesis(
+                False,
+                draft_body,
+                "host_visible_generation_requested",
+                provider,
+                model,
+                "host_chatgpt_bridge_requires_external_visible_reply",
+                [],
+                source_origin="chatgpt_host_bridge",
+            )
+        if adapter_id == "null_model_adapter":
+            return ModelGuidedSynthesis(
+                False,
+                draft_body,
+                str(status.get("status") or "not_configured"),
+                provider,
+                model,
+                "null_model_adapter_has_no_generation_capability",
+                [],
+            )
         if status.get("status") != "configured":
-            return ModelGuidedSynthesis(False, draft_body, str(status.get("status") or "not_configured"), str(status.get("name") or "none"), str(status.get("model") or "none"), "model_adapter_not_configured", [])
+            return ModelGuidedSynthesis(False, draft_body, str(status.get("status") or "not_configured"), provider, model, "model_adapter_not_configured", [])
         if detected_intent in self.PROTECTED_INTENTS or bool(response_policy.get("exact_runtime_required")):
             return ModelGuidedSynthesis(False, draft_body, "skipped", str(status.get("name") or "unknown"), str(status.get("model") or "unknown"), "intent_requires_exact_runtime_or_external_source", [])
 

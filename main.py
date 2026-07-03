@@ -1,4 +1,4 @@
-# Current package version: v14.8.5.026C-voice-perspective-first-person-contract
+# Current package version: v14.8.6.0.A-dokladne-naprawy-host-bridge-adaptery-time-source-i-drobne-potkniecia
 from __future__ import annotations
 
 import argparse
@@ -64,7 +64,7 @@ from latka_jazn.nlp_reasoning.source_registry import PolishReasoningSourceRegist
 from latka_jazn.nlp_reasoning.adapters.online_lookup import PolishOnlineLookupPlanner
 from latka_jazn.core.turn_route_trace import TurnRouteTrace
 from latka_jazn.nlp_reasoning.lexical_resource_registry import LexicalResourceRegistry
-from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_lm_studio_cli_settings, apply_local_llm_cli_settings, apply_openai_cli_settings, run_jsonl_chat_bridge, write_chat_bridge_payload
+from latka_jazn.core.chat_command_contract import apply_chat_cli_settings, apply_chatgpt_cli_settings, apply_lm_studio_cli_settings, apply_local_llm_cli_settings, apply_openai_cli_settings, build_chatgpt_host_bridge_turn_contract, run_jsonl_chat_bridge, write_chat_bridge_payload
 from latka_jazn.core.bridge_discovery import discover_runtime_bridges
 from latka_jazn.core.turn_timeout import RuntimeSessionWorker, runtime_turn_timeout_seconds
 from latka_jazn.core.runtime_daemon import (
@@ -309,6 +309,11 @@ def _try_chat_gpt_one_shot_via_daemon(
             "truth_boundary": "--chat-gpt używa daemon fast path tylko gdy marker i lokalny endpoint potwierdzają żywy runtime; inaczej wraca do lokalnego JSONL bridge.",
         })
     result["chatgpt_bridge"] = result.get("chat_bridge")
+    result["chatgpt_host_bridge"] = build_chatgpt_host_bridge_turn_contract(
+        result,
+        user_text=text,
+        chat_bridge_meta=result["chat_bridge"],
+    )
     write_chat_bridge_payload(sys.stdout, result, output_mode=output_mode)
     return 0
 

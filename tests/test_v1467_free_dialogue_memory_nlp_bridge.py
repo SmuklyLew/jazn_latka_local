@@ -105,6 +105,7 @@ def test_runtime_preview_payload_for_memory_question_is_not_obligation_fallback(
         engine.shutdown()
     payload = envelope.to_dict()
 
-    assert payload["final_response_contract"]["fallback_classification"] == "not_fallback"
+    assert payload["final_response_contract"]["fallback_classification"] == "repair_fallback"
+    assert payload["final_response_contract"]["final_visible_integrity"]["origin_truth_valid"] is False
     assert payload["final_response_contract"]["runtime_route"] in {"free_memory_dialogue_no_source", "free_memory_experience_dialogue"}
     assert "Odpowiedź runtime ma teraz wyraźny obowiązek" not in payload["final_visible_text"]

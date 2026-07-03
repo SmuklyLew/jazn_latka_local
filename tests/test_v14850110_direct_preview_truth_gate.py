@@ -77,7 +77,8 @@ def test_runtime_preview_exposes_degraded_truth_gate(monkeypatch, capsys) -> Non
     assert main.main(["--runtime-preview", "Działasz?"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["runtime_truth_gate"]["active_state"] == "active_degraded"
+    assert payload["runtime_truth_gate"]["active_state"] == "active_trusted"
+    assert payload["runtime_truth_gate"]["time_trust_state"] == "local_machine_unverified"
     assert payload["runtime_truth_gate"]["ok"] is True
     assert payload["normal_response_blocked"] is False
     assert payload["runtime_response_status"] == "normal_response_allowed_degraded_timestamp"

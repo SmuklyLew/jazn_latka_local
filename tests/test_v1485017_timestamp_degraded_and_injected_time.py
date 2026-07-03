@@ -93,7 +93,8 @@ def test_degraded_local_integrity_remains_strict_but_truth_gate_allows() -> None
 
     assert gate.ok is True
     assert gate.normal_response_allowed is True
-    assert gate.active_state == "active_degraded"
+    assert gate.active_state == "active_trusted"
+    assert gate.time_trust_state == "local_machine_unverified"
     assert gate.final_visible_integrity_valid is False
     assert "timestamp_untrusted" in gate.errors
     assert "timestamp_source_not_network" in gate.errors

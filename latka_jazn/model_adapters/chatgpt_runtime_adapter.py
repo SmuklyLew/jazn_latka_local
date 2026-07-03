@@ -36,7 +36,7 @@ class ChatgptRuntimeAdapter:
             endpoint_reachable=None,
             probe_state="not_probed",
             can_attempt_model_guided_speech=False,
-            failure_reason="host_model_not_callable_from_local_runtime",
+            failure_reason="host_chatgpt_bridge_requires_external_visible_reply",
             requires_api_key=False,
             availability_basis="explicit_chat_gpt_bridge_command",
             backend_only=True,
@@ -54,6 +54,9 @@ class ChatgptRuntimeAdapter:
                 "model": self.model or "chatgpt_host_model",
                 "api_base": None,
                 "host_runtime": "chatgpt_visible_layer",
+                "host_visible_generation_required": True,
+                "host_must_generate_visible_reply": True,
+                "host_bridge_phase": "host_visible_generation_requested",
                 "conversation_state_contract": (
                     "ciągłość odpowiedzi hosta ChatGPT jest kanałem rozmowy, nie dowodem samodzielnej pamięci lokalnego procesu"
                 ),

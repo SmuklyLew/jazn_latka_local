@@ -83,8 +83,8 @@ def test_daemon_timestamp_contract_remains_degraded_when_network_check_disabled(
     assert contract["trusted"] is False
     assert contract["source"] == "local_fallback"
     assert contract["daemon_status_network_time_checked"] is False
-    assert contract["daemon_status_time_mode"] == "degraded_local_fallback"
-    assert "could not confirm trusted" in contract["error"]
+    assert contract["daemon_status_time_mode"] == "local_machine_unverified_nonblocking"
+    assert "without blocking runtime startup" in contract["error"]
 
 
 def test_presence_classifier_understands_ale_jest_tu_latka() -> None:

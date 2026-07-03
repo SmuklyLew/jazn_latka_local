@@ -37,6 +37,7 @@ def test_process_turn_positive_feedback_is_short_relevant_and_timestamped() -> N
     timestamp = envelope["trace"]["timestamp_header"]
     assert frame["dialogue_intent_classifier"]["primary_intent"] == "positive_feedback_current_turn"
     assert final_text.startswith(timestamp)
-    assert "To mnie cieszy. Ten krok zadziałał." in final_text
+    assert "wymaga generacji przez host/model" in final_text
     assert "Zatrzymuję się przy tym zdaniu" not in final_text
-    assert frame["conversation_decision"]["response_generation_mode"] != "runtime_repair"
+    assert envelope["final_response_contract"]["fallback_classification"] == "cannot_answer_directly"
+    assert envelope["final_response_contract"]["requires_host_model"] is True

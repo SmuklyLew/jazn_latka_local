@@ -11,9 +11,9 @@ from latka_jazn.version import PACKAGE_RELEASE_NAME, PACKAGE_VERSION, RUNTIME_CO
 
 
 def test_runtime_version_is_current_model_adapter_contracts() -> None:
-    assert PACKAGE_VERSION == "v14.8.5.036b"
+    assert PACKAGE_VERSION == "v14.8.6.0.A"
     assert RUNTIME_CONTRACT_VERSION == PACKAGE_VERSION
-    assert PACKAGE_RELEASE_NAME == "time-source-status-boundary-typo-fix"
+    assert PACKAGE_RELEASE_NAME == "dokladne-naprawy-host-bridge-adaptery-time-source-i-drobne-potkniecia"
 
 
 def test_active_runtime_access_contract_modes_are_explicit() -> None:

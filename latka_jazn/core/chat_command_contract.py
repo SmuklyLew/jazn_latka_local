@@ -445,9 +445,18 @@ def extract_final_visible_text_from_result(payload: dict[str, Any]) -> str:
 
 
 def write_chat_bridge_payload(stdout: TextIO, payload: dict[str, Any], *, output_mode: BridgeOutputMode = "jsonl") -> None:
-    if output_mode == "final_visible_text":
+    host_bridge = payload.get("chatgpt_host_bridge") if isinstance(payload.get("chatgpt_host_bridge"), dict) else {}
+    host_generation_required = bool(host_bridge.get("host_must_generate_visible_reply"))
+    if output_mode == "final_visible_text" and not host_generation_required:
         stdout.write(extract_final_visible_text_from_result(payload) + "\n")
     else:
+        if output_mode == "final_visible_text" and host_generation_required:
+            payload = dict(payload)
+            payload["chat_bridge_output"] = {
+                "requested_mode": "final_visible_text",
+                "effective_mode": "jsonl_host_bridge_envelope",
+                "reason": "host_visible_generation_requested_cannot_be_hidden_by_final_only",
+            }
         stdout.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
     stdout.flush()
 
